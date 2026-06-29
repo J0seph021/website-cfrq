@@ -10,8 +10,8 @@
   --color-cfrq-ink: #1b2417;
   --color-cfrq-tint: #eaf4e0;
 
-  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
-  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Fraunces Variable", Georgia, "Times New Roman", serif;
+  --font-body: "Inter Variable", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 html {
