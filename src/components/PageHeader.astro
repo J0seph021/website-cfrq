@@ -1,0 +1,35 @@
+---
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+
+interface Props {
+  eyebrow?: string;
+  title: string;
+  subtitle?: string;
+  image?: ImageMetadata;
+}
+const { eyebrow, title, subtitle, image } = Astro.props;
+---
+
+<section class="relative isolate overflow-hidden bg-cfrq-deep">
+  {
+    image && (
+      <Image
+        src={image}
+        alt=""
+        widths={[768, 1280, 1920]}
+        sizes="100vw"
+        loading="eager"
+        class="absolute inset-0 -z-10 h-full w-full object-cover"
+      />
+    )
+  }
+  <div class="absolute inset-0 -z-10 bg-cfrq-deep/82"></div>
+  <div class="mx-auto max-w-6xl px-5 py-16 md:py-20">
+    {eyebrow && <p class="mb-3 text-[13px] font-medium uppercase tracking-[0.12em] text-cfrq-green">{eyebrow}</p>}
+    <h1 class="max-w-[24ch] font-display text-4xl font-medium leading-[1.12] text-cfrq-cream md:text-5xl">
+      {title}
+    </h1>
+    {subtitle && <p class="mt-5 max-w-[58ch] text-lg leading-relaxed text-cfrq-cream/85">{subtitle}</p>}
+  </div>
+</section>

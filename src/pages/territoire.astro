@@ -1,0 +1,64 @@
+---
+import { Image } from "astro:assets";
+import Base from "../layouts/Base.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import PageHeader from "../components/PageHeader.astro";
+import CTASection from "../components/CTASection.astro";
+import { site } from "../data/site";
+
+import territoire from "../assets/photos/territoire.jpg";
+---
+
+<Base title="Territoire desservi — CFRQ" description="CFRQ dessert un vaste territoire en forêt privée : Québec, Portneuf, Charlevoix, Côte-Nord, Mauricie, Bois-Francs et Chaudière-Appalaches.">
+  <Header />
+  <main id="contenu">
+    <PageHeader
+      eyebrow="Territoire desservi"
+      title="Un conseiller forestier présent sur un vaste territoire"
+      subtitle="Accrédité auprès des 6 agences régionales de mise en valeur des forêts privées, sans territoire exclusif ni adhésion obligatoire."
+    />
+
+    <section class="mx-auto max-w-6xl px-5 py-14 md:py-20">
+      <div class="grid gap-12 md:grid-cols-[1fr_1fr] md:items-center">
+        <div>
+          <h2 class="font-display text-3xl font-medium text-cfrq-deep">Les régions que nous couvrons</h2>
+          <p class="mt-3 text-[17px] leading-relaxed text-black/75">
+            Parce que nous sommes un conseiller indépendant, nous pouvons accompagner tout
+            propriétaire de boisé, peu importe la superficie, sur l'ensemble de notre territoire.
+          </p>
+          <ul class="mt-6 grid grid-cols-2 gap-3">
+            {
+              site.regions.map((r) => (
+                <li class="flex items-center gap-2 rounded-xl border border-black/5 bg-white px-4 py-3 text-[15.5px] text-cfrq-deep">
+                  <svg viewBox="0 0 20 20" class="h-5 w-5 flex-none text-cfrq-green" aria-hidden="true">
+                    <path fill="currentColor" d="M10 2a5 5 0 0 0-5 5c0 3.5 5 11 5 11s5-7.5 5-11a5 5 0 0 0-5-5zm0 7a2 2 0 1 1 0-4 2 2 0 0 1 0 4z" />
+                  </svg>
+                  {r}
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+        <div class="overflow-hidden rounded-2xl border border-black/5">
+          <Image src={territoire} alt="Carte du territoire desservi par CFRQ" widths={[600, 1000]} sizes="(min-width: 768px) 480px, 100vw" class="w-full object-cover" />
+        </div>
+      </div>
+
+      <div class="mt-12 rounded-2xl bg-cfrq-tint p-7">
+        <h2 class="font-display text-xl font-medium text-cfrq-deep">Bientôt : une carte interactive</h2>
+        <p class="mt-2 max-w-[72ch] text-[15.5px] leading-relaxed text-cfrq-ink/80">
+          Nous développons une carte interactive de votre secteur, alimentée par nos propres couches
+          cartographiques PlaniLogix : cadastre, peuplements, érablières, milieux sensibles et plus
+          encore. Un outil unique pour visualiser votre boisé et planifier vos interventions.
+        </p>
+      </div>
+    </section>
+
+    <CTASection
+      title="Vous n'êtes pas certain d'être sur notre territoire ?"
+      text="Écrivez-nous votre municipalité, on vous répond rapidement."
+    />
+  </main>
+  <Footer />
+</Base>

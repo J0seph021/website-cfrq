@@ -1,53 +1,57 @@
 ---
 import Logo from "./Logo.astro";
+import { withBase } from "../lib/url";
+import { services } from "../data/services";
 
-const colonnes = [
-  {
-    titre: "Services",
-    liens: [
-      "Aménagement forestier",
-      "Érablière et acériculture",
-      "Évaluation et expertise légale",
-      "Foresterie urbaine",
-      "Succession et transfert",
-    ],
-  },
-  {
-    titre: "Clientèles",
-    liens: ["Propriétaires de boisés", "Producteurs acéricoles", "Municipalités", "Promoteurs"],
-  },
-  {
-    titre: "Ressources",
-    liens: ["Calculateur de taxes", "Guides du propriétaire", "Blogue", "Podcast"],
-  },
+const navigation = [
+  { label: "À propos de nous", href: withBase("/a-propos") },
+  { label: "Territoire desservi", href: withBase("/territoire") },
+  { label: "Demande de plants", href: withBase("/plants") },
+  { label: "Espace client", href: withBase("/espace-client") },
+  { label: "Contact", href: withBase("/contact") },
+];
+const legal = [
+  { label: "Politique de confidentialité", href: withBase("/confidentialite") },
+  { label: "Termes et conditions", href: withBase("/termes") },
 ];
 ---
 
 <footer class="bg-cfrq-deep text-cfrq-cream">
-  <div class="mx-auto grid max-w-6xl gap-10 px-5 py-14 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
+  <div class="mx-auto grid max-w-6xl gap-10 px-5 py-14 md:grid-cols-[1.5fr_1fr_1fr_1fr]">
     <div>
-      <Logo class="h-8 w-auto text-cfrq-cream" />
+      <Logo class="h-9 w-auto text-cfrq-cream" />
       <p class="mt-4 max-w-xs text-[15px] leading-relaxed text-cfrq-cream/75">
         Conseillers Forestiers de la Région de Québec inc. Des ingénieurs forestiers indépendants,
         au service de votre boisé depuis 1996.
       </p>
     </div>
-    {
-      colonnes.map((c) => (
-        <div>
-          <h2 class="mb-3 text-[15px] font-medium text-cfrq-green">{c.titre}</h2>
-          <ul class="space-y-2 text-[15px] text-cfrq-cream/75">
-            {c.liens.map((l) => (
-              <li>
-                <a href="#" class="transition-colors hover:text-cfrq-cream">
-                  {l}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))
-    }
+
+    <div>
+      <h2 class="mb-3 text-[15px] font-medium text-cfrq-green">Services</h2>
+      <ul class="space-y-2 text-[15px] text-cfrq-cream/75">
+        {services.map((s) => (
+          <li><a href={withBase(`/services/${s.slug}`)} class="transition-colors hover:text-cfrq-cream">{s.titre}</a></li>
+        ))}
+      </ul>
+    </div>
+
+    <div>
+      <h2 class="mb-3 text-[15px] font-medium text-cfrq-green">Navigation</h2>
+      <ul class="space-y-2 text-[15px] text-cfrq-cream/75">
+        {navigation.map((l) => (
+          <li><a href={l.href} class="transition-colors hover:text-cfrq-cream">{l.label}</a></li>
+        ))}
+      </ul>
+    </div>
+
+    <div>
+      <h2 class="mb-3 text-[15px] font-medium text-cfrq-green">Légal</h2>
+      <ul class="space-y-2 text-[15px] text-cfrq-cream/75">
+        {legal.map((l) => (
+          <li><a href={l.href} class="transition-colors hover:text-cfrq-cream">{l.label}</a></li>
+        ))}
+      </ul>
+    </div>
   </div>
   <div class="border-t border-white/10">
     <div class="mx-auto flex max-w-6xl flex-col gap-2 px-5 py-5 text-[13px] text-cfrq-cream/60 sm:flex-row sm:items-center sm:justify-between">

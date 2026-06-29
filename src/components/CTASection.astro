@@ -1,0 +1,31 @@
+---
+import { withBase } from "../lib/url";
+
+interface Props {
+  title?: string;
+  text?: string;
+  ctaLabel?: string;
+  ctaHref?: string;
+}
+const {
+  title = "Parlez à un ingénieur forestier",
+  text = "Une visite-conseil, c'est le meilleur point de départ pour votre boisé. Sans engagement.",
+  ctaLabel = "Réserver une visite-conseil",
+  ctaHref = withBase("/contact"),
+} = Astro.props;
+---
+
+<section class="bg-cfrq-deep-2">
+  <div class="mx-auto flex max-w-6xl flex-col items-start gap-6 px-5 py-14 md:flex-row md:items-center md:justify-between">
+    <div>
+      <h2 class="font-display text-2xl font-medium text-cfrq-cream md:text-3xl">{title}</h2>
+      <p class="mt-2 max-w-[54ch] text-[16px] leading-relaxed text-cfrq-cream/80">{text}</p>
+    </div>
+    <a
+      href={ctaHref}
+      class="flex-none rounded-lg bg-cfrq-green px-6 py-3.5 text-[16px] font-medium text-[#123005] transition-colors hover:bg-cfrq-green-hover"
+    >
+      {ctaLabel}
+    </a>
+  </div>
+</section>

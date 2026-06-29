@@ -1,43 +1,84 @@
 ---
 import Logo from "./Logo.astro";
+import { withBase } from "../lib/url";
+import { services } from "../data/services";
 
-const links = [
-  { label: "Services", href: "#services" },
-  { label: "Clientèles", href: "#clienteles" },
-  { label: "Outils", href: "#calculateur" },
-  { label: "Ressources", href: "#ressources" },
-  { label: "À propos", href: "#a-propos" },
+const nav = [
+  { label: "Services", href: withBase("/services") },
+  { label: "À propos", href: withBase("/a-propos") },
+  { label: "Territoire", href: withBase("/territoire") },
+  { label: "Demande de plants", href: withBase("/plants") },
 ];
 ---
 
 <header class="sticky top-0 z-40 border-b border-black/5 bg-cfrq-cream/95 backdrop-blur">
   <nav class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-3" aria-label="Navigation principale">
-    <a href={import.meta.env.BASE_URL || "/"} class="flex items-center gap-2 text-cfrq-ink" aria-label="Accueil CFRQ">
-      <Logo class="h-7 w-auto" />
+    <a href={withBase("/")} class="flex items-center gap-2 text-cfrq-ink" aria-label="Accueil CFRQ">
+      <Logo class="h-8 w-auto" />
     </a>
 
-    <ul class="hidden items-center gap-7 text-[15px] text-cfrq-deep md:flex">
-      {
-        links.map((l) => (
-          <li>
-            <a href={l.href} class="transition-colors hover:text-cfrq-leaf">
-              {l.label}
+    <ul class="hidden items-center gap-7 text-[15px] text-cfrq-deep lg:flex">
+      <li class="group relative">
+        <a href={withBase("/services")} class="flex items-center gap-1 py-2 transition-colors hover:text-cfrq-leaf">
+          Services
+          <svg viewBox="0 0 20 20" class="h-3.5 w-3.5" aria-hidden="true"><path fill="currentColor" d="M5 7l5 6 5-6z" /></svg>
+        </a>
+        <div class="invisible absolute left-0 top-full w-72 rounded-xl border border-black/5 bg-white p-2 opacity-0 shadow-lg transition-all group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+          {services.map((s) => (
+            <a href={withBase(`/services/${s.slug}`)} class="block rounded-lg px-3 py-2 text-[14px] text-cfrq-ink transition-colors hover:bg-cfrq-tint">
+              {s.titre}
             </a>
-          </li>
-        ))
-      }
+          ))}
+        </div>
+      </li>
+      <li><a href={withBase("/a-propos")} class="py-2 transition-colors hover:text-cfrq-leaf">À propos</a></li>
+      <li><a href={withBase("/territoire")} class="py-2 transition-colors hover:text-cfrq-leaf">Territoire</a></li>
+      <li><a href={withBase("/plants")} class="py-2 transition-colors hover:text-cfrq-leaf">Demande de plants</a></li>
     </ul>
 
     <div class="flex items-center gap-3">
-      <a href="#espace-client" class="hidden text-[15px] text-cfrq-leaf hover:underline sm:inline">
+      <a href={withBase("/espace-client")} class="hidden text-[15px] text-cfrq-leaf hover:underline sm:inline">
         Espace client
       </a>
-      <a
-        href="#contact"
-        class="rounded-lg bg-cfrq-green px-4 py-2.5 text-[15px] font-medium text-[#123005] transition-colors hover:bg-cfrq-green-hover"
-      >
+      <a href={withBase("/contact")} class="hidden rounded-lg bg-cfrq-green px-4 py-2.5 text-[15px] font-medium text-[#123005] transition-colors hover:bg-cfrq-green-hover sm:inline">
         Visite-conseil
       </a>
+      <button
+        id="menu-toggle"
+        type="button"
+        class="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-black/10 text-cfrq-deep lg:hidden"
+        aria-label="Ouvrir le menu"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+      >
+        <svg viewBox="0 0 24 24" class="h-6 w-6" aria-hidden="true"><path fill="currentColor" d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z" /></svg>
+      </button>
     </div>
   </nav>
+
+  <div id="mobile-menu" class="hidden border-t border-black/5 bg-cfrq-cream lg:hidden">
+    <ul class="mx-auto max-w-6xl px-5 py-3 text-[16px] text-cfrq-deep">
+      <li><a href={withBase("/services")} class="block py-2.5">Services</a></li>
+      {services.map((s) => (
+        <li><a href={withBase(`/services/${s.slug}`)} class="block py-2 pl-4 text-[15px] text-cfrq-ink/80">{s.titre}</a></li>
+      ))}
+      {nav.slice(1).map((l) => (
+        <li><a href={l.href} class="block py-2.5">{l.label}</a></li>
+      ))}
+      <li><a href={withBase("/espace-client")} class="block py-2.5">Espace client</a></li>
+      <li class="pt-2">
+        <a href={withBase("/contact")} class="block rounded-lg bg-cfrq-green px-4 py-3 text-center font-medium text-[#123005]">Réserver une visite-conseil</a>
+      </li>
+    </ul>
+  </div>
 </header>
+
+<script>
+  const btn = document.getElementById("menu-toggle");
+  const menu = document.getElementById("mobile-menu");
+  btn?.addEventListener("click", () => {
+    const open = menu?.classList.toggle("hidden") === false;
+    btn.setAttribute("aria-expanded", String(open));
+    btn.setAttribute("aria-label", open ? "Fermer le menu" : "Ouvrir le menu");
+  });
+</script>

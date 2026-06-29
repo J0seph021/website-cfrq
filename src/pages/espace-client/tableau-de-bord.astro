@@ -1,0 +1,226 @@
+---
+import { Image } from "astro:assets";
+import Base from "../../layouts/Base.astro";
+import Logo from "../../components/Logo.astro";
+import { withBase } from "../../lib/url";
+import { clientDemo as c } from "../../data/clientDemo";
+import carte from "../../assets/photos/boise-mature.jpg";
+
+const superficieTotale = c.proprietes.reduce((t, p) => t + p.superficie, 0);
+const budgetPct = Math.round((c.budget.utilise / c.budget.alloue) * 100);
+const cad = (n: number) => n.toLocaleString("fr-CA") + " $";
+
+const menu = [
+  { label: "Tableau de bord", href: "#tableau", actif: true },
+  { label: "Mes propriétés", href: "#proprietes" },
+  { label: "Plan d'aménagement", href: "#plan" },
+  { label: "Travaux", href: "#travaux" },
+  { label: "Documents", href: "#documents" },
+  { label: "Cartographie", href: "#carte" },
+];
+
+const stats = [
+  { valeur: superficieTotale.toLocaleString("fr-CA") + " ha", label: "Superficie totale" },
+  { valeur: String(c.proprietes.length), label: "Lots boisés" },
+  { valeur: cad(c.remboursementTaxes2025), label: "Taxes remboursées 2025" },
+  { valeur: budgetPct + " %", label: "Budget PAMVFP utilisé" },
+];
+---
+
+<Base title="Tableau de bord — Espace client CFRQ" description="Espace client CFRQ (démonstration).">
+  <div class="min-h-screen bg-cfrq-cream">
+    <header class="sticky top-0 z-30 bg-cfrq-deep text-cfrq-cream">
+      <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-3">
+        <div class="flex items-center gap-3">
+          <a href={withBase("/")} class="text-cfrq-cream" aria-label="Accueil CFRQ"><Logo class="h-7 w-auto" /></a>
+          <span class="hidden border-l border-white/20 pl-3 text-[14px] text-cfrq-cream/70 sm:inline">Espace client</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2">
+            <span class="flex h-9 w-9 items-center justify-center rounded-full bg-cfrq-green text-[14px] font-medium text-[#123005]">JT</span>
+            <span class="hidden text-[14px] sm:inline">{c.nom}</span>
+          </div>
+          <a href={withBase("/espace-client")} class="rounded-lg border border-white/25 px-3 py-2 text-[13px] text-cfrq-cream/90 transition-colors hover:bg-white/10">
+            Déconnexion
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <div class="bg-cfrq-green/15 text-center text-[13px] text-cfrq-deep">
+      <div class="mx-auto max-w-6xl px-5 py-2">Démonstration. Toutes les données affichées sont fictives.</div>
+    </div>
+
+    <div id="tableau" class="mx-auto grid max-w-6xl gap-8 px-5 py-8 md:grid-cols-[210px_1fr]">
+      <aside class="hidden md:block">
+        <nav class="sticky top-24 space-y-1" aria-label="Navigation de l'espace client">
+          {
+            menu.map((m) => (
+              <a
+                href={m.href}
+                class={`block rounded-lg px-3 py-2.5 text-[15px] transition-colors ${m.actif ? "bg-cfrq-tint font-medium text-cfrq-deep" : "text-cfrq-ink/70 hover:bg-cfrq-tint/60"}`}
+              >
+                {m.label}
+              </a>
+            ))
+          }
+        </nav>
+      </aside>
+
+      <main>
+        <div class="flex flex-wrap items-center gap-3">
+          <h1 class="font-display text-3xl font-medium text-cfrq-deep">Bonjour, {c.prenom}</h1>
+          <span class="rounded-full bg-cfrq-green/20 px-3 py-1 text-[13px] font-medium text-cfrq-leaf">{c.statut}</span>
+        </div>
+        <p class="mt-1 text-[15px] text-black/55">Dossier {c.numero} · Région {c.region} · Client depuis {c.membreDepuis}</p>
+
+        <div class="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
+          {
+            stats.map((s) => (
+              <div class="rounded-xl bg-white p-4">
+                <div class="text-[13px] text-black/55">{s.label}</div>
+                <div class="mt-1 font-display text-2xl font-medium text-cfrq-deep">{s.valeur}</div>
+              </div>
+            ))
+          }
+        </div>
+
+        <section id="proprietes" class="mt-10">
+          <h2 class="font-display text-xl font-medium text-cfrq-deep">Mes propriétés</h2>
+          <div class="mt-4 overflow-hidden rounded-2xl border border-black/5 bg-white">
+            <table class="w-full text-left text-[15px]">
+              <thead class="bg-cfrq-tint/60 text-[13px] uppercase tracking-wide text-cfrq-leaf">
+                <tr>
+                  <th class="px-4 py-3 font-medium">Lot</th>
+                  <th class="px-4 py-3 font-medium">Municipalité</th>
+                  <th class="px-4 py-3 font-medium">Superficie</th>
+                  <th class="hidden px-4 py-3 font-medium sm:table-cell">Peuplements</th>
+                </tr>
+              </thead>
+              <tbody>
+                {
+                  c.proprietes.map((p) => (
+                    <tr class="border-t border-black/5">
+                      <td class="px-4 py-3 font-medium text-cfrq-deep">{p.lot}</td>
+                      <td class="px-4 py-3 text-black/70">{p.municipalite}</td>
+                      <td class="px-4 py-3 text-black/70">{p.superficie} ha</td>
+                      <td class="hidden px-4 py-3 text-black/60 sm:table-cell">{p.peuplements}</td>
+                    </tr>
+                  ))
+                }
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="mt-10 grid gap-8 lg:grid-cols-2">
+          <section id="plan">
+            <h2 class="font-display text-xl font-medium text-cfrq-deep">Plan d'aménagement</h2>
+            <div class="mt-4 rounded-2xl border border-black/5 bg-white p-6">
+              <div class="flex items-center justify-between">
+                <span class="rounded-full bg-cfrq-green/20 px-3 py-1 text-[13px] font-medium text-cfrq-leaf">{c.plan.statut}</span>
+                <span class="text-[14px] text-black/55">{c.plan.debut} – {c.plan.fin}</span>
+              </div>
+              <div class="mt-5">
+                <div class="flex justify-between text-[14px] text-black/60">
+                  <span>Progression du plan</span>
+                  <span class="font-medium text-cfrq-deep">{c.plan.progression} %</span>
+                </div>
+                <div class="mt-2 h-2.5 overflow-hidden rounded-full bg-cfrq-tint">
+                  <div class="h-full rounded-full bg-cfrq-green" style={`width:${c.plan.progression}%`}></div>
+                </div>
+              </div>
+              <div class="mt-5 rounded-xl bg-cfrq-tint p-4 text-[14px] text-cfrq-ink/80">
+                Budget {c.budget.programme} : <strong class="font-medium">{cad(c.budget.utilise)}</strong> utilisés sur {cad(c.budget.alloue)} alloués.
+              </div>
+            </div>
+          </section>
+
+          <section id="echeances">
+            <h2 class="font-display text-xl font-medium text-cfrq-deep">Échéances à venir</h2>
+            <ul class="mt-4 space-y-3">
+              {
+                c.echeances.map((e) => (
+                  <li class="flex items-start gap-3 rounded-2xl border border-black/5 bg-white p-4">
+                    <span class="mt-1 flex h-9 w-9 flex-none items-center justify-center rounded-lg bg-cfrq-tint text-cfrq-leaf">
+                      <svg viewBox="0 0 24 24" class="h-5 w-5" aria-hidden="true"><path fill="currentColor" d="M7 2v2H5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2V2h-2v2H9V2zm12 7v10H5V9z" /></svg>
+                    </span>
+                    <div>
+                      <div class="text-[15px] font-medium text-cfrq-deep">{e.titre}</div>
+                      <div class="text-[13px] text-black/55">{e.date}</div>
+                    </div>
+                  </li>
+                ))
+              }
+            </ul>
+          </section>
+        </div>
+
+        <section id="travaux" class="mt-10">
+          <h2 class="font-display text-xl font-medium text-cfrq-deep">Travaux</h2>
+          <div class="mt-4 space-y-3">
+            {
+              c.travaux.map((t) => (
+                <div class="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-black/5 bg-white p-4">
+                  <div>
+                    <div class="text-[15.5px] font-medium text-cfrq-deep">{t.type}</div>
+                    <div class="text-[13.5px] text-black/55">{t.lot} · {t.surface} · {t.date}</div>
+                  </div>
+                  <span
+                    class={`rounded-full px-3 py-1 text-[13px] font-medium ${t.statut === "En cours" ? "bg-cfrq-green/20 text-cfrq-leaf" : "bg-black/5 text-black/55"}`}
+                  >
+                    {t.statut}
+                  </span>
+                </div>
+              ))
+            }
+          </div>
+        </section>
+
+        <div class="mt-10 grid gap-8 lg:grid-cols-2">
+          <section id="documents">
+            <h2 class="font-display text-xl font-medium text-cfrq-deep">Documents</h2>
+            <ul class="mt-4 divide-y divide-black/5 overflow-hidden rounded-2xl border border-black/5 bg-white">
+              {
+                c.documents.map((d) => (
+                  <li class="flex items-center justify-between gap-3 px-4 py-3.5">
+                    <div class="flex items-center gap-3">
+                      <span class="flex h-9 w-9 flex-none items-center justify-center rounded-lg bg-cfrq-tint text-cfrq-leaf">
+                        <svg viewBox="0 0 24 24" class="h-5 w-5" aria-hidden="true"><path fill="currentColor" d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm7 1.5L18.5 9H13z" /></svg>
+                      </span>
+                      <div>
+                        <div class="text-[14.5px] font-medium text-cfrq-deep">{d.nom}</div>
+                        <div class="text-[12.5px] text-black/50">{d.type} · {d.taille} · {d.date}</div>
+                      </div>
+                    </div>
+                    <span class="text-cfrq-leaf" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" class="h-5 w-5"><path fill="currentColor" d="M12 16l-5-5 1.4-1.4L11 12.2V3h2v9.2l2.6-2.6L17 11zM5 19h14v2H5z" /></svg>
+                    </span>
+                  </li>
+                ))
+              }
+            </ul>
+          </section>
+
+          <section id="carte">
+            <h2 class="font-display text-xl font-medium text-cfrq-deep">Cartographie</h2>
+            <div class="relative mt-4 overflow-hidden rounded-2xl border border-black/5">
+              <Image src={carte} alt="Aperçu cartographique du boisé" widths={[500, 900]} sizes="(min-width: 1024px) 480px, 100vw" class="h-64 w-full object-cover" />
+              <div class="absolute inset-0 bg-cfrq-deep/45"></div>
+              <div class="absolute inset-0 flex flex-col items-center justify-center text-center text-cfrq-cream">
+                <svg viewBox="0 0 24 24" class="h-8 w-8 text-cfrq-green" aria-hidden="true"><path fill="currentColor" d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z" /></svg>
+                <p class="mt-2 max-w-[28ch] text-[14px] text-cfrq-cream/85">Carte interactive de vos lots, peuplements et milieux sensibles (à venir).</p>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="mt-10 rounded-2xl bg-cfrq-deep p-6 text-cfrq-cream">
+          <h2 class="font-display text-lg font-medium">Besoin d'un coup de main ?</h2>
+          <p class="mt-2 text-[15px] text-cfrq-cream/80">Votre ingénieur forestier attitré est disponible pour répondre à vos questions.</p>
+          <a href={withBase("/contact")} class="mt-4 inline-block rounded-lg bg-cfrq-green px-5 py-3 text-[15px] font-medium text-[#123005] hover:bg-cfrq-green-hover">Nous écrire</a>
+        </div>
+      </main>
+    </div>
+  </div>
+</Base>

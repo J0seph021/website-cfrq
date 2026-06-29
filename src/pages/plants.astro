@@ -1,0 +1,115 @@
+---
+import Base from "../layouts/Base.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import PageHeader from "../components/PageHeader.astro";
+
+const essences = [
+  {
+    nom: "Érable à sucre",
+    terrain: "Terrain élevé, frais et riche, sol profond, sous couvert avec d'autres essences.",
+  },
+  {
+    nom: "Chêne rouge",
+    terrain: "Site sec, enrichissement sous-couvert de pinède et d'érablière sur sols minces.",
+  },
+  {
+    nom: "Chêne à gros fruits",
+    terrain: "Milieu semi-fermé (sous-couvert, friche embroussaillée) ou herbacé, sol argileux sec.",
+  },
+];
+
+const inputClass =
+  "h-12 w-full rounded-lg border border-black/15 bg-white px-4 text-[16px] outline-none focus:border-cfrq-green";
+---
+
+<Base title="Demande de plants non subventionnés — CFRQ" description="Commandez vos plants feuillus non subventionnés auprès de CFRQ : érable à sucre, chêne rouge, chêne à gros fruits.">
+  <Header />
+  <main id="contenu">
+    <PageHeader
+      eyebrow="Reboisement"
+      title="Demande de plants non subventionnés"
+      subtitle="Érable à sucre, chêne rouge et chêne à gros fruits, pour enrichir votre boisé."
+    />
+
+    <section class="mx-auto max-w-6xl px-5 py-14 md:py-20">
+      <div class="grid gap-4 sm:grid-cols-3">
+        {
+          essences.map((e) => (
+            <div class="rounded-2xl border border-black/5 bg-white p-6">
+              <h2 class="font-display text-lg font-medium text-cfrq-deep">{e.nom}</h2>
+              <p class="mt-2 text-[15px] leading-relaxed text-black/65">{e.terrain}</p>
+            </div>
+          ))
+        }
+      </div>
+
+      <div class="mt-8 rounded-2xl bg-cfrq-tint p-6 text-[15px] leading-relaxed text-cfrq-ink/85">
+        <p>
+          Pour les résineux, une prescription sylvicole doit être préparée au préalable. Le reboisement
+          de friche avec des plants du gouvernement doit être autorisé par le MAPAQ. Renseignez-vous
+          auprès de l'ingénieur forestier de votre secteur.
+        </p>
+        <p class="mt-3">
+          Idéalement, les demandes doivent être complétées <strong class="font-medium">avant le 1er mai</strong>.
+          Les plants sont distribués à la fin du mois de mai (la date précise est transmise par
+          courriel). Des frais de transport de 22 $ par sac (50 plants) s'appliquent à la réception.
+          Les quantités demandées ne sont pas garanties.
+        </p>
+      </div>
+
+      <form id="plants-form" class="mt-10 max-w-3xl space-y-4">
+        <h2 class="font-display text-2xl font-medium text-cfrq-deep">Formulaire de demande</h2>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <input class={inputClass} type="text" name="prenom" placeholder="Prénom" required aria-label="Prénom" />
+          <input class={inputClass} type="text" name="nom" placeholder="Nom" required aria-label="Nom" />
+          <input class={inputClass} type="text" name="municipalite" placeholder="Municipalité" required aria-label="Municipalité" />
+          <input class={inputClass} type="email" name="courriel" placeholder="Courriel" required aria-label="Courriel" />
+          <input class={inputClass} type="tel" name="telephone" placeholder="Téléphone" required aria-label="Téléphone" />
+          <input class={inputClass} type="tel" name="telephone2" placeholder="Téléphone (autre)" aria-label="Téléphone autre" />
+        </div>
+
+        <fieldset class="rounded-2xl border border-black/10 p-5">
+          <legend class="px-2 text-[15px] font-medium text-cfrq-deep">Quantités (multiples de 50)</legend>
+          <div class="grid gap-4 sm:grid-cols-3">
+            {
+              essences.map((e) => (
+                <label class="block text-[14px] text-black/65">
+                  {e.nom}
+                  <input class={`${inputClass} mt-1`} type="number" min="0" step="50" name={`qte_${e.nom}`} placeholder="0" aria-label={`Quantité ${e.nom}`} />
+                </label>
+              ))
+            }
+          </div>
+        </fieldset>
+
+        <textarea class="min-h-28 w-full rounded-lg border border-black/15 bg-white p-4 text-[16px] outline-none focus:border-cfrq-green" name="message" placeholder="Votre message" aria-label="Votre message"></textarea>
+
+        <label class="flex items-start gap-3 text-[14px] leading-relaxed text-black/70">
+          <input type="checkbox" required class="mt-1 h-5 w-5 accent-cfrq-green" />
+          <span>
+            Je comprends et j'accepte que les quantités demandées ne sont pas garanties et que des
+            frais de transport de 22 $ le sac (50 plants) devront être acquittés à la réception.
+          </span>
+        </label>
+
+        <button type="submit" class="rounded-lg bg-cfrq-green px-6 py-3.5 text-[16px] font-medium text-[#123005] transition-colors hover:bg-cfrq-green-hover">
+          Envoyer ma demande
+        </button>
+        <p id="plants-ok" class="hidden rounded-xl border border-cfrq-green/40 bg-cfrq-tint p-4 text-[15px] text-cfrq-deep">
+          Merci, votre demande de plants est enregistrée. Nous vous confirmerons les détails par courriel.
+        </p>
+      </form>
+    </section>
+  </main>
+  <Footer />
+</Base>
+
+<script>
+  const f = document.getElementById("plants-form");
+  f?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    document.getElementById("plants-ok")?.classList.remove("hidden");
+    (f as HTMLFormElement).reset();
+  });
+</script>

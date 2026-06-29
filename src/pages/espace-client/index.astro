@@ -1,0 +1,51 @@
+---
+import { Image } from "astro:assets";
+import Base from "../../layouts/Base.astro";
+import Logo from "../../components/Logo.astro";
+import { withBase } from "../../lib/url";
+import boise from "../../assets/photos/boise-sentier.jpg";
+
+const inputClass =
+  "h-12 w-full rounded-lg border border-black/15 bg-white px-4 text-[16px] outline-none focus:border-cfrq-green";
+const dashboard = withBase("/espace-client/tableau-de-bord");
+---
+
+<Base title="Espace client — CFRQ" description="Accédez à votre relevé forestier : dossiers, plans, travaux et documents.">
+  <main id="contenu" class="relative isolate flex min-h-screen items-center justify-center px-5 py-12">
+    <Image src={boise} alt="" widths={[768, 1280, 1920]} sizes="100vw" class="absolute inset-0 -z-10 h-full w-full object-cover" />
+    <div class="absolute inset-0 -z-10 bg-cfrq-deep/88"></div>
+
+    <div class="w-full max-w-md rounded-2xl bg-white p-8 shadow-xl">
+      <a href={withBase("/")} class="flex justify-center text-cfrq-ink" aria-label="Accueil CFRQ">
+        <Logo class="h-9 w-auto" />
+      </a>
+      <h1 class="mt-6 text-center font-display text-2xl font-medium text-cfrq-deep">Espace client</h1>
+      <p class="mt-1 text-center text-[15px] text-black/60">Votre relevé forestier, en ligne.</p>
+
+      <form id="login-form" class="mt-6 space-y-4">
+        <input class={inputClass} type="email" name="courriel" placeholder="Courriel" autocomplete="username" aria-label="Courriel" />
+        <input class={inputClass} type="password" name="mdp" placeholder="Mot de passe" autocomplete="current-password" aria-label="Mot de passe" />
+        <button type="submit" class="w-full rounded-lg bg-cfrq-green px-6 py-3.5 text-[16px] font-medium text-[#123005] transition-colors hover:bg-cfrq-green-hover">
+          Se connecter
+        </button>
+      </form>
+
+      <div class="mt-5 rounded-xl bg-cfrq-tint p-4 text-center text-[14px] leading-relaxed text-cfrq-ink/80">
+        Démonstration. Cliquez sur <strong class="font-medium">Se connecter</strong> pour explorer un
+        compte client fictif.
+      </div>
+
+      <a href={withBase("/")} class="mt-5 block text-center text-[14px] text-cfrq-leaf hover:underline">
+        Retour au site
+      </a>
+    </div>
+  </main>
+</Base>
+
+<script define:vars={{ dashboard }}>
+  const f = document.getElementById("login-form");
+  f?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    window.location.href = dashboard;
+  });
+</script>

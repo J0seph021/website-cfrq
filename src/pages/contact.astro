@@ -1,0 +1,88 @@
+---
+import Base from "../layouts/Base.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import PageHeader from "../components/PageHeader.astro";
+import { site } from "../data/site";
+
+const inputClass =
+  "h-12 w-full rounded-lg border border-black/15 bg-white px-4 text-[16px] outline-none focus:border-cfrq-green";
+---
+
+<Base title="Contact — CFRQ" description="Communiquez avec CFRQ pour une visite-conseil ou toute question sur votre boisé.">
+  <Header />
+  <main id="contenu">
+    <PageHeader
+      eyebrow="Contact"
+      title="Parlons de votre boisé"
+      subtitle="Une visite-conseil est le meilleur point de départ. Écrivez-nous ou appelez-nous directement."
+    />
+
+    <section class="mx-auto grid max-w-6xl gap-12 px-5 py-14 md:grid-cols-[1.3fr_1fr] md:py-20">
+      <div>
+        <form id="contact-form" class="space-y-4">
+          <div class="grid gap-4 sm:grid-cols-2">
+            <input class={inputClass} type="text" name="nom" placeholder="Votre nom" required aria-label="Votre nom" />
+            <input class={inputClass} type="email" name="courriel" placeholder="Votre courriel" required aria-label="Votre courriel" />
+          </div>
+          <input class={inputClass} type="text" name="sujet" placeholder="Sujet" aria-label="Sujet" />
+          <select class={inputClass} name="region" aria-label="Votre région" required>
+            <option value="">Votre région</option>
+            {site.regions.map((r) => <option value={r}>{r}</option>)}
+            <option value="Autre">Autre</option>
+          </select>
+          <textarea class="min-h-32 w-full rounded-lg border border-black/15 bg-white p-4 text-[16px] outline-none focus:border-cfrq-green" name="message" placeholder="Votre message" required aria-label="Votre message"></textarea>
+          <button type="submit" class="rounded-lg bg-cfrq-green px-6 py-3.5 text-[16px] font-medium text-[#123005] transition-colors hover:bg-cfrq-green-hover">
+            Envoyer ma demande
+          </button>
+          <p id="contact-ok" class="hidden rounded-xl border border-cfrq-green/40 bg-cfrq-tint p-4 text-[15px] text-cfrq-deep">
+            Merci, votre message est prêt. On vous revient rapidement. Pour une réponse immédiate, appelez-nous au {site.tel}.
+          </p>
+        </form>
+      </div>
+
+      <aside class="space-y-6">
+        <div class="rounded-2xl border border-black/5 bg-white p-6">
+          <h2 class="font-display text-lg font-medium text-cfrq-deep">Nous rejoindre</h2>
+          <dl class="mt-4 space-y-4 text-[15.5px]">
+            <div>
+              <dt class="text-black/55">Téléphone</dt>
+              <dd><a href={site.telHref} class="font-medium text-cfrq-leaf hover:underline">{site.tel}</a></dd>
+            </div>
+            <div>
+              <dt class="text-black/55">Courriel</dt>
+              <dd><a href={`mailto:${site.courriel}`} class="font-medium text-cfrq-leaf hover:underline">{site.courriel}</a></dd>
+            </div>
+            <div>
+              <dt class="text-black/55">Adresse</dt>
+              <dd class="text-cfrq-ink/85">
+                {site.nom}<br />
+                {site.adresse.ligne1}<br />
+                {site.adresse.ville} {site.adresse.code}
+              </dd>
+            </div>
+          </dl>
+        </div>
+        <div class="rounded-2xl bg-cfrq-deep p-6 text-cfrq-cream">
+          <h2 class="font-display text-lg font-medium">Vous voulez estimer vos taxes ?</h2>
+          <p class="mt-2 text-[15px] leading-relaxed text-cfrq-cream/80">
+            Calculez en quelques secondes le remboursement de taxes foncières auquel vous pourriez avoir droit.
+          </p>
+          <a href={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/#calculateur`} class="mt-4 inline-block rounded-lg bg-cfrq-green px-5 py-3 text-[15px] font-medium text-[#123005] hover:bg-cfrq-green-hover">
+            Ouvrir le calculateur
+          </a>
+        </div>
+      </aside>
+    </section>
+  </main>
+  <Footer />
+</Base>
+
+<script>
+  const f = document.getElementById("contact-form");
+  f?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    document.getElementById("contact-ok")?.classList.remove("hidden");
+    (f as HTMLFormElement).reset();
+  });
+</script>

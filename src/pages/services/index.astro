@@ -1,0 +1,68 @@
+---
+import { Image } from "astro:assets";
+import Base from "../../layouts/Base.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import PageHeader from "../../components/PageHeader.astro";
+import CTASection from "../../components/CTASection.astro";
+import { services } from "../../data/services";
+import { withBase } from "../../lib/url";
+
+import peuplement from "../../assets/photos/peuplement.jpg";
+import foretTravaux from "../../assets/photos/foret-travaux.jpg";
+import erabliere from "../../assets/photos/erabliere.jpg";
+import heroRecolte from "../../assets/photos/hero-recolte.jpg";
+import territoire from "../../assets/photos/territoire.jpg";
+import boiseMature from "../../assets/photos/boise-mature.jpg";
+
+const imgMap = {
+  peuplement,
+  "foret-travaux": foretTravaux,
+  erabliere,
+  "hero-recolte": heroRecolte,
+  territoire,
+};
+---
+
+<Base title="Nos services — CFRQ" description="Aménagement, opérations, évaluation, érablière, foresterie urbaine et soutien aux entrepreneurs, signés par des ingénieurs forestiers.">
+  <Header />
+  <main id="contenu">
+    <PageHeader
+      eyebrow="Nos services"
+      title="De la santé de votre forêt aux mandats les plus techniques"
+      subtitle="Six champs d'expertise, tous signés par des ingénieurs forestiers membres de l'OIFQ. Du conseil ponctuel jusqu'au clé en main."
+      image={boiseMature}
+    />
+
+    <section class="mx-auto max-w-6xl px-5 py-14 md:py-20">
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {
+          services.map((s) => (
+            <a
+              href={withBase(`/services/${s.slug}`)}
+              class="group overflow-hidden rounded-2xl border border-black/5 bg-white transition-colors hover:border-cfrq-green/40"
+            >
+              <Image
+                src={imgMap[s.image]}
+                alt={s.titre}
+                widths={[400, 800]}
+                sizes="(min-width: 1024px) 360px, (min-width: 640px) 50vw, 100vw"
+                class="h-44 w-full object-cover"
+              />
+              <div class="p-6">
+                <h2 class="font-display text-xl font-medium text-cfrq-deep">{s.titre}</h2>
+                <p class="mt-2 text-[15px] leading-relaxed text-black/65">{s.tagline}</p>
+                <span class="mt-4 inline-block text-[14px] font-medium text-cfrq-leaf">
+                  En savoir plus
+                </span>
+              </div>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <CTASection />
+  </main>
+  <Footer />
+</Base>

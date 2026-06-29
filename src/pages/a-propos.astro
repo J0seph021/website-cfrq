@@ -1,0 +1,127 @@
+---
+import { Image } from "astro:assets";
+import Base from "../layouts/Base.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import PageHeader from "../components/PageHeader.astro";
+import CTASection from "../components/CTASection.astro";
+import { site } from "../data/site";
+
+import recolteBois from "../assets/photos/recolte-bois.jpg";
+import peuplement from "../assets/photos/peuplement.jpg";
+
+const valeurs = [
+  {
+    titre: "Expertise crédible",
+    texte:
+      "Une équipe d'ingénieurs et de techniciens forestiers membres de l'OIFQ, avec près de 30 ans de pratique sur le terrain.",
+  },
+  {
+    titre: "Indépendance",
+    texte:
+      "Conseiller indépendant accrédité auprès des 6 agences régionales. Nous travaillons pour vos objectifs, pas pour une coopérative.",
+  },
+  {
+    titre: "Aménagement écosystémique",
+    texte:
+      "Un respect intégré des composantes écologiques du milieu, en harmonie avec les vocations de votre territoire.",
+  },
+  {
+    titre: "Technologie",
+    texte:
+      "Cartographie de précision et suivi numérique des dossiers, propulsés par notre plateforme forestière PlaniLogix.",
+  },
+];
+
+const partenaires = [
+  "Entrepreneurs forestiers",
+  "Transporteurs de bois",
+  "MRC et municipalités",
+  "Agences régionales",
+  "Ministères (MRNF, MAPAQ)",
+  "Syndicats et offices de producteurs",
+];
+---
+
+<Base title="À propos de nous — CFRQ" description="Depuis 1996, CFRQ accompagne les propriétaires de boisés privés du Québec avec une équipe d'ingénieurs et de techniciens forestiers.">
+  <Header />
+  <main id="contenu">
+    <PageHeader
+      eyebrow="À propos de nous"
+      title="Au service de votre boisé depuis 1996"
+      subtitle="Conseiller forestier accrédité auprès des 6 agences régionales de mise en valeur des forêts privées, présent sur un vaste territoire."
+      image={recolteBois}
+    />
+
+    <section class="mx-auto grid max-w-6xl gap-12 px-5 py-14 md:grid-cols-[1.4fr_1fr] md:py-20">
+      <div class="space-y-5 text-[17px] leading-relaxed text-black/75">
+        <p>
+          Depuis 1996, CFRQ développe son expertise auprès d'une clientèle variée de propriétaires de
+          boisés privés inscrits au Programme d'aide à la mise en valeur des forêts privées (PAMVFP).
+          Gestionnaire d'un budget annuel moyen de 1,6 million de dollars issu de ce programme, notre
+          équipe expérimentée excelle dans l'encadrement technique d'une large gamme de travaux
+          sylvicoles.
+        </p>
+        <p>
+          Depuis sa fondation, plus de 3 000 clients actifs ont eu recours à nos services
+          professionnels pour mettre en œuvre leurs projets forestiers, dans le cadre d'une production
+          durable de matière ligneuse, sur de petites comme de grandes propriétés privées.
+        </p>
+        <p>
+          Au fil des années, CFRQ a adapté ses stratégies d'intervention aux exigences d'un
+          aménagement forestier écosystémique, qui sous-tend un respect intégré des diverses
+          composantes écologiques du milieu, tout en respectant les objectifs de chaque client et les
+          réglementations en vigueur.
+        </p>
+      </div>
+      <div class="overflow-hidden rounded-2xl border border-black/5">
+        <Image src={peuplement} alt="Peuplement forestier aménagé" widths={[500, 900]} sizes="(min-width: 768px) 420px, 100vw" class="h-full w-full object-cover" />
+      </div>
+    </section>
+
+    <section class="bg-cfrq-deep text-cfrq-cream">
+      <div class="mx-auto grid max-w-6xl gap-6 px-5 py-12 sm:grid-cols-2 lg:grid-cols-4">
+        {
+          site.stats.map((s) => (
+            <div>
+              <div class="font-display text-3xl font-medium text-cfrq-green">{s.valeur}</div>
+              <div class="mt-1 text-[15px] text-cfrq-cream/80">{s.label}</div>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="mx-auto max-w-6xl px-5 py-14 md:py-20">
+      <h2 class="font-display text-3xl font-medium text-cfrq-deep">Ce qui nous distingue</h2>
+      <div class="mt-8 grid gap-6 sm:grid-cols-2">
+        {
+          valeurs.map((v) => (
+            <div class="rounded-2xl border border-black/5 bg-white p-7">
+              <h3 class="font-display text-xl font-medium text-cfrq-deep">{v.titre}</h3>
+              <p class="mt-3 text-[15.5px] leading-relaxed text-black/70">{v.texte}</p>
+            </div>
+          ))
+        }
+      </div>
+
+      <div class="mt-12 rounded-2xl bg-cfrq-tint p-7">
+        <h2 class="font-display text-xl font-medium text-cfrq-deep">Un réseau de collaboration</h2>
+        <p class="mt-2 max-w-[70ch] text-[15.5px] leading-relaxed text-cfrq-ink/80">
+          CFRQ a l'habitude de collaborer efficacement avec les nombreux intervenants impliqués dans
+          une saine gestion de la ressource :
+        </p>
+        <ul class="mt-4 flex flex-wrap gap-2">
+          {
+            partenaires.map((p) => (
+              <li class="rounded-full bg-white px-4 py-1.5 text-[14px] text-cfrq-deep">{p}</li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+
+    <CTASection />
+  </main>
+  <Footer />
+</Base>
