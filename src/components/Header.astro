@@ -1,0 +1,43 @@
+---
+import Logo from "./Logo.astro";
+
+const links = [
+  { label: "Services", href: "#services" },
+  { label: "Clientèles", href: "#clienteles" },
+  { label: "Outils", href: "#calculateur" },
+  { label: "Ressources", href: "#ressources" },
+  { label: "À propos", href: "#a-propos" },
+];
+---
+
+<header class="sticky top-0 z-40 border-b border-black/5 bg-cfrq-cream/95 backdrop-blur">
+  <nav class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-3" aria-label="Navigation principale">
+    <a href={import.meta.env.BASE_URL || "/"} class="flex items-center gap-2 text-cfrq-ink" aria-label="Accueil CFRQ">
+      <Logo class="h-7 w-auto" />
+    </a>
+
+    <ul class="hidden items-center gap-7 text-[15px] text-cfrq-deep md:flex">
+      {
+        links.map((l) => (
+          <li>
+            <a href={l.href} class="transition-colors hover:text-cfrq-leaf">
+              {l.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="flex items-center gap-3">
+      <a href="#espace-client" class="hidden text-[15px] text-cfrq-leaf hover:underline sm:inline">
+        Espace client
+      </a>
+      <a
+        href="#contact"
+        class="rounded-lg bg-cfrq-green px-4 py-2.5 text-[15px] font-medium text-[#123005] transition-colors hover:bg-cfrq-green-hover"
+      >
+        Visite-conseil
+      </a>
+    </div>
+  </nav>
+</header>
