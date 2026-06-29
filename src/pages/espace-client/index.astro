@@ -7,10 +7,9 @@ import boise from "../../assets/photos/boise-sentier.jpg";
 
 const inputClass =
   "h-12 w-full rounded-lg border border-black/15 bg-white px-4 text-[16px] outline-none focus:border-cfrq-green";
-const dashboard = withBase("/espace-client/tableau-de-bord");
 ---
 
-<Base title="Espace client — CFRQ" description="Accédez à votre relevé forestier : dossiers, plans, travaux et documents.">
+<Base title="Espace client — CFRQ" description="Accédez à votre relevé forestier : dossiers, lots, plans et documents.">
   <main id="contenu" class="relative isolate flex min-h-screen items-center justify-center px-5 py-12">
     <Image src={boise} alt="" widths={[768, 1280, 1920]} sizes="100vw" class="absolute inset-0 -z-10 h-full w-full object-cover" />
     <div class="absolute inset-0 -z-10 bg-cfrq-deep/88"></div>
@@ -23,17 +22,15 @@ const dashboard = withBase("/espace-client/tableau-de-bord");
       <p class="mt-1 text-center text-[15px] text-black/60">Votre relevé forestier, en ligne.</p>
 
       <form id="login-form" class="mt-6 space-y-4">
-        <input class={inputClass} type="email" name="courriel" placeholder="Courriel" autocomplete="username" aria-label="Courriel" />
-        <input class={inputClass} type="password" name="mdp" placeholder="Mot de passe" autocomplete="current-password" aria-label="Mot de passe" />
-        <button type="submit" class="w-full rounded-lg bg-cfrq-green px-6 py-3.5 text-[16px] font-medium text-[#123005] transition-colors hover:bg-cfrq-green-hover">
-          Se connecter
+        <input id="courriel" class={inputClass} type="email" name="courriel" placeholder="Votre courriel" autocomplete="email" aria-label="Votre courriel" required />
+        <div id="bloc-code" class="hidden">
+          <input id="code" class={inputClass} inputmode="numeric" autocomplete="one-time-code" placeholder="Code reçu par courriel" aria-label="Code de connexion" />
+        </div>
+        <button id="btn" type="submit" class="w-full rounded-lg bg-cfrq-green px-6 py-3.5 text-[16px] font-medium text-[#123005] transition-colors hover:bg-cfrq-green-hover disabled:opacity-60">
+          Recevoir mon code
         </button>
+        <p id="msg" class="text-center text-[14px] leading-relaxed text-cfrq-leaf" role="status"></p>
       </form>
-
-      <div class="mt-5 rounded-xl bg-cfrq-tint p-4 text-center text-[14px] leading-relaxed text-cfrq-ink/80">
-        Démonstration. Cliquez sur <strong class="font-medium">Se connecter</strong> pour explorer un
-        compte client fictif.
-      </div>
 
       <a href={withBase("/")} class="mt-5 block text-center text-[14px] text-cfrq-leaf hover:underline">
         Retour au site
@@ -42,10 +39,47 @@ const dashboard = withBase("/espace-client/tableau-de-bord");
   </main>
 </Base>
 
-<script define:vars={{ dashboard }}>
-  const f = document.getElementById("login-form");
-  f?.addEventListener("submit", (e) => {
+<script>
+  import { supabase } from "../../lib/supabaseClient";
+  import { withBase } from "../../lib/url";
+
+  const dashboard = withBase("/espace-client/tableau-de-bord");
+  const f = document.getElementById("login-form") as HTMLFormElement;
+  const blocCode = document.getElementById("bloc-code")!;
+  const btn = document.getElementById("btn")!;
+  const msg = document.getElementById("msg")!;
+  const courrielEl = document.getElementById("courriel") as HTMLInputElement;
+  const codeEl = document.getElementById("code") as HTMLInputElement;
+  let etape: "email" | "code" = "email";
+
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) location.replace(dashboard);
+
+  f.addEventListener("submit", async (e) => {
     e.preventDefault();
-    window.location.href = dashboard;
+    const email = courrielEl.value.trim();
+    if (!email) return;
+    btn.setAttribute("disabled", "true");
+
+    if (etape === "email") {
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: { shouldCreateUser: true },
+      });
+      btn.removeAttribute("disabled");
+      if (error) { msg.textContent = "Une erreur est survenue. Réessayez."; return; }
+      etape = "code";
+      blocCode.classList.remove("hidden");
+      btn.textContent = "Se connecter";
+      courrielEl.setAttribute("readonly", "true");
+      msg.textContent = "Code envoyé. Vérifiez vos courriels (et les indésirables).";
+      codeEl.focus();
+    } else {
+      const token = codeEl.value.trim();
+      const { error } = await supabase.auth.verifyOtp({ email, token, type: "email" });
+      btn.removeAttribute("disabled");
+      if (error) { msg.textContent = "Code invalide ou expiré. Réessayez."; return; }
+      location.href = dashboard;
+    }
   });
 </script>
