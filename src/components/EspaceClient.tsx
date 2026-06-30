@@ -81,11 +81,27 @@ export default function EspaceClient() {
   const lotsParPropriete = (id: number) => d.lots.filter((l) => l.propriete_id === id).length;
   const initiales = nom.split(/\s+/).map((m: string) => m[0]).join("").slice(0, 2).toUpperCase();
 
+  // Les travaux réels vivent dans la carte (la table public.travaux n'est pas alimentée).
+  // On les dérive du GeoJSON, dédupliqués, pour la stat et la liste.
+  const travauxCarte: Row[] = (() => {
+    const feats = (d.carte?.geojson?.features ?? []).filter((f: any) => f.properties?.couche === "travaux");
+    const vus = new Set<string>();
+    const out: Row[] = [];
+    for (const f of feats) {
+      const p = f.properties ?? {};
+      const cle = [p.traitement, p.annee, p.no_prescription, p.hectares].join("|");
+      if (vus.has(cle)) continue;
+      vus.add(cle);
+      out.push(p);
+    }
+    return out;
+  })();
+
   const stats = [
     { valeur: nf.format(superficieTotale) + " ha", label: "Superficie totale" },
     { valeur: String(d.proprietes.length), label: "Propriétés" },
     { valeur: String(d.lots.length), label: "Lots boisés" },
-    { valeur: String(d.travaux.length), label: "Travaux au dossier" },
+    { valeur: String(travauxCarte.length), label: "Travaux au dossier" },
   ];
 
   return (
@@ -193,16 +209,18 @@ export default function EspaceClient() {
           <section>
             <h2 className="font-display text-xl font-medium text-cfrq-deep">Travaux</h2>
             <div className="mt-4 space-y-3">
-              {d.travaux.length > 0 ? (
-                d.travaux.map((t) => (
-                  <div key={t.id} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-black/5 bg-white p-4">
+              {travauxCarte.length > 0 ? (
+                travauxCarte.map((t, i) => (
+                  <div key={i} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-black/5 bg-white p-4">
                     <div>
-                      <div className="text-[15.5px] font-medium text-cfrq-deep">{t.type_travaux ?? "Travaux"}</div>
-                      <div className="text-[13.5px] text-black/55">{[t.no_lot, t.surface, t.date_travaux].filter(Boolean).join(" · ")}</div>
+                      <div className="text-[15.5px] font-medium text-cfrq-deep">{t.traitement ?? "Travaux réalisés"}</div>
+                      <div className="text-[13.5px] text-black/55">
+                        {[t.no_prescription ? "Prescription " + t.no_prescription : null, t.hectares != null ? t.hectares + " ha" : null].filter(Boolean).join(" · ")}
+                      </div>
                     </div>
-                    <span className={"rounded-full px-3 py-1 text-[13px] font-medium " + (t.statut === "En cours" ? "bg-cfrq-green/20 text-cfrq-leaf" : "bg-black/5 text-black/55")}>
-                      {t.statut ?? "—"}
-                    </span>
+                    {t.annee && (
+                      <span className="rounded-full bg-black/5 px-3 py-1 text-[13px] font-medium text-black/55">{t.annee}</span>
+                    )}
                   </div>
                 ))
               ) : (
