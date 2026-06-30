@@ -58,6 +58,13 @@ export default function EspaceClient() {
     window.location.replace(withBase("/espace-client"));
   }
 
+  // Ouvre un document via une URL signée temporaire (RLS: ses propres fichiers seulement).
+  async function ouvrirDoc(path?: string) {
+    if (!path) return;
+    const { data } = await supabase.storage.from("documents").createSignedUrl(path, 300);
+    if (data?.signedUrl) window.open(data.signedUrl, "_blank", "noopener");
+  }
+
   if (loading || !d) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-cfrq-cream text-cfrq-deep">
@@ -126,7 +133,7 @@ export default function EspaceClient() {
               <span className="text-[13px] text-black/50">Cliquez un peuplement pour voir le détail</span>
             </div>
             <div className="mt-4">
-              <CarteForet data={d.carte.geojson} bbox={d.carte.bbox} />
+              <CarteForet data={d.carte.geojson} bbox={d.carte.bbox} documents={d.documents} />
             </div>
           </section>
         )}
@@ -211,9 +218,18 @@ export default function EspaceClient() {
             {d.documents.length > 0 ? (
               <ul className="divide-y divide-black/5">
                 {d.documents.map((doc) => (
-                  <li key={doc.id} className="flex items-center justify-between py-3 text-[15px]">
-                    <span className="font-medium text-cfrq-deep">{doc.nom_document}</span>
-                    <span className="text-[13px] text-black/50">{doc.date_document}</span>
+                  <li key={doc.id}>
+                    <button
+                      onClick={() => ouvrirDoc(doc.storage_path)}
+                      disabled={!doc.storage_path}
+                      className="flex w-full items-center justify-between gap-3 py-3 text-left text-[15px] disabled:cursor-default"
+                    >
+                      <span className="flex items-center gap-2 font-medium text-cfrq-deep">
+                        {doc.storage_path && <span aria-hidden>📄</span>}
+                        <span className={doc.storage_path ? "hover:underline" : ""}>{doc.nom_document}</span>
+                      </span>
+                      <span className="shrink-0 text-[13px] text-black/50">{doc.taille ?? doc.date_document}</span>
+                    </button>
                   </li>
                 ))}
               </ul>

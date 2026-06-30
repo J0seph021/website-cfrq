@@ -1,15 +1,19 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
+import { supabase } from "../lib/supabaseClient";
 
 type FeatureCollection = { type: "FeatureCollection"; features: any[] };
 type Bbox = [number, number, number, number];
+type Doc = { reference?: string; type_document?: string; storage_path?: string; nom_document?: string };
 
 interface Props {
   /** FeatureCollection déjà chargée (couches taguées par propriété `couche`). */
   data: FeatureCollection;
   /** Cadre [minLng, minLat, maxLng, maxLat] pour le zoom initial. */
   bbox?: Bbox | null;
+  /** Documents du producteur (table public.documents), pour lier les PDF au clic. */
+  documents?: Doc[];
 }
 
 // Couches affichables, dans l'ordre d'empilement (du bas vers le haut).
@@ -48,7 +52,7 @@ function couleurAppellations(features: any[]): { expr: any; legende: { nom: stri
   return { expr, legende };
 }
 
-export default function CarteForet({ data, bbox }: Props) {
+export default function CarteForet({ data, bbox, documents = [] }: Props) {
   const conteneur = useRef<HTMLDivElement>(null);
   const carte = useRef<maplibregl.Map | null>(null);
   const [visibles, setVisibles] = useState<Record<string, boolean>>({
@@ -62,6 +66,27 @@ export default function CarteForet({ data, bbox }: Props) {
     () => couleurAppellations(data?.features ?? []),
     [data]
   );
+
+  // Index des documents par numéro de prescription (pour le clic sur un polygone).
+  const docsParRef = useMemo(() => {
+    const m = new Map<string, Doc[]>();
+    for (const d of documents) {
+      if (!d.reference) continue;
+      const arr = m.get(d.reference);
+      if (arr) arr.push(d); else m.set(d.reference, [d]);
+    }
+    return m;
+  }, [documents]);
+  const docsRef = useRef(docsParRef);
+  docsRef.current = docsParRef;
+
+  // Ouvre un PDF via une URL signée temporaire (RLS: le client n'accède qu'à ses propres documents).
+  useEffect(() => {
+    (window as any).__cfrqDoc = async (path: string) => {
+      const { data: s } = await supabase.storage.from("documents").createSignedUrl(path, 300);
+      if (s?.signedUrl) window.open(s.signedUrl, "_blank", "noopener");
+    };
+  }, []);
 
   useEffect(() => {
     if (!conteneur.current || carte.current) return;
@@ -124,7 +149,7 @@ export default function CarteForet({ data, bbox }: Props) {
         map.on("click", couche, (e) => {
           const p = e.features?.[0]?.properties as Record<string, any> | undefined;
           if (!p) return;
-          popup.setLngLat(e.lngLat).setHTML(contenuPopup(p)).addTo(map);
+          popup.setLngLat(e.lngLat).setHTML(contenuPopup(p, docsRef.current)).addTo(map);
         });
       }
     });
@@ -220,7 +245,7 @@ const STATUTS: Record<string, string> = {
   approuve: "Approuvé", refuse: "Refusé", paye: "Payé", complete: "Complété",
 };
 
-function contenuPopup(p: Record<string, any>): string {
+function contenuPopup(p: Record<string, any>, docsParRef?: Map<string, Doc[]>): string {
   const esc = (s: any) => String(s ?? "").replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]!));
   const ligne = (label: string, val: any, unite = "") =>
     val == null || val === ""
@@ -231,6 +256,15 @@ function contenuPopup(p: Record<string, any>): string {
     (sous ? `<div style="color:#6b7280;font-size:11px;margin-bottom:4px">${esc(sous)}</div>` : `<div style="height:4px"></div>`);
   const wrap = (inner: string) =>
     `<div style="max-height:260px;overflow:auto;font-size:12.5px;line-height:1.45;padding-right:4px">${inner}</div>`;
+  // Liens vers les PDF (prescription, rapport) liés à un numéro de prescription.
+  const liensDocs = (no?: string) => {
+    const docs = no && docsParRef ? docsParRef.get(no) ?? [] : [];
+    if (!docs.length) return "";
+    const lbl = (t?: string) => (t === "prescription" ? "Prescription (PDF)" : t === "rapport" ? "Rapport d'exécution (PDF)" : "Document (PDF)");
+    const lien = (d: Doc) =>
+      `<a href="#" onclick="window.__cfrqDoc('${esc(d.storage_path)}');return false;" style="display:block;margin-top:4px;color:#1f6feb;font-weight:600;text-decoration:none">📄 ${lbl(d.type_document)}</a>`;
+    return `<div style="margin-top:6px;padding-top:6px;border-top:1px solid #eee">${docs.map(lien).join("")}</div>`;
+  };
 
   switch (p.couche) {
     case "peuplement":
@@ -258,7 +292,8 @@ function contenuPopup(p: Record<string, any>): string {
         titre("Travaux réalisés", p.no_prescription ? `Prescription nº ${p.no_prescription}` : "") +
         (p.traitement ? `<div style="font-weight:600;color:#2f7d32;margin-bottom:3px">${esc(p.traitement)}</div>` : "") +
         ligne("Année", p.annee) +
-        ligne("Superficie", p.hectares, " ha")
+        ligne("Superficie", p.hectares, " ha") +
+        liensDocs(p.no_prescription)
       );
     case "prescription":
       return wrap(
@@ -269,7 +304,8 @@ function contenuPopup(p: Record<string, any>): string {
         ligne("Superficie", p.hectares, " ha") +
         ligne("Lots", p.lots) +
         ligne("Prescrit par", p.prescrit_par) +
-        ligne("Date du rapport", p.date_rapport)
+        ligne("Date du rapport", p.date_rapport) +
+        liensDocs(p.no_prescription)
       );
     case "propriete":
       return wrap(titre("Limites de la propriété"));
