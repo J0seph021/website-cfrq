@@ -31,6 +31,8 @@ const COULEUR_TRAVAUX = "#e8a13a";
 const COULEUR_PRESCRIPTION = "#1f6feb";
 const COULEUR_PROPRIETE = "#ffffff";
 
+const estPetitEcran = () => typeof window !== "undefined" && window.innerWidth < 640;
+
 function couleurAppellations(features: any[]): { expr: any; legende: { nom: string; couleur: string }[] } {
   const noms = Array.from(
     new Set(
@@ -40,7 +42,6 @@ function couleurAppellations(features: any[]): { expr: any; legende: { nom: stri
     )
   ).sort();
   const legende = noms.map((nom, i) => ({ nom, couleur: PALETTE[i % PALETTE.length] }));
-  // Expression MapLibre: match sur l'appellation -> couleur.
   const expr: any = ["match", ["coalesce", ["get", "appellation"], "Non classé"]];
   for (const { nom, couleur } of legende) expr.push(nom, couleur);
   expr.push("#9e9e9e"); // défaut
@@ -51,11 +52,11 @@ export default function CarteForet({ data, bbox }: Props) {
   const conteneur = useRef<HTMLDivElement>(null);
   const carte = useRef<maplibregl.Map | null>(null);
   const [visibles, setVisibles] = useState<Record<string, boolean>>({
-    peuplement: true,
-    travaux: true,
-    prescription: true,
-    propriete: true,
+    peuplement: true, travaux: true, prescription: true, propriete: true,
   });
+  // Sur mobile, les panneaux démarrent repliés pour laisser voir la carte.
+  const [couchesOuvert, setCouchesOuvert] = useState(!estPetitEcran());
+  const [legendeOuverte, setLegendeOuverte] = useState(!estPetitEcran());
 
   const { expr: couleurPeuplement, legende } = useMemo(
     () => couleurAppellations(data?.features ?? []),
@@ -73,9 +74,7 @@ export default function CarteForet({ data, bbox }: Props) {
         sources: {
           ortho: {
             type: "raster",
-            tiles: [
-              "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-            ],
+            tiles: ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],
             tileSize: 256,
             attribution: "Imagerie © Esri · Données CFRQ / PlaniLogix",
           },
@@ -84,14 +83,14 @@ export default function CarteForet({ data, bbox }: Props) {
       },
       center: [-72.2, 46.8],
       zoom: 9,
+      cooperativeGestures: estPetitEcran(), // un doigt fait défiler la page, deux doigts déplacent la carte
     });
     carte.current = map;
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
-    map.scrollZoom.disable(); // évite de capturer le scroll de la page; molette + ctrl ou boutons +/-
+    if (!estPetitEcran()) map.scrollZoom.disable();
 
     map.on("load", () => {
       map.addSource("foret", { type: "geojson", data });
-
       map.addLayer({
         id: "peuplement-fill", source: "foret", type: "fill",
         filter: ["==", ["get", "couche"], "peuplement"],
@@ -113,12 +112,10 @@ export default function CarteForet({ data, bbox }: Props) {
         paint: { "line-color": COULEUR_PROPRIETE, "line-width": 2.5 },
       });
 
-      // Zoom sur la propriété.
       if (bbox && bbox.length === 4) {
-        map.fitBounds([[bbox[0], bbox[1]], [bbox[2], bbox[3]]], { padding: 40, animate: false });
+        map.fitBounds([[bbox[0], bbox[1]], [bbox[2], bbox[3]]], { padding: 30, animate: false });
       }
 
-      // Popups d'information.
       const popup = new maplibregl.Popup({ closeButton: false, maxWidth: "260px" });
       const cibles = ["peuplement-fill", "travaux-fill", "prescription-line", "propriete-line"];
       for (const couche of cibles) {
@@ -132,7 +129,9 @@ export default function CarteForet({ data, bbox }: Props) {
       }
     });
 
-    return () => { map.remove(); carte.current = null; };
+    const onResize = () => map.resize();
+    window.addEventListener("resize", onResize);
+    return () => { window.removeEventListener("resize", onResize); map.remove(); carte.current = null; };
   }, [data, bbox, couleurPeuplement]);
 
   function basculer(id: string) {
@@ -140,56 +139,76 @@ export default function CarteForet({ data, bbox }: Props) {
       const nv = { ...v, [id]: !v[id] };
       const map = carte.current;
       if (map) {
-        const layers = id === "prescription" ? ["prescription-line"]
-          : id === "propriete" ? ["propriete-line"]
-          : [`${id}-fill`];
-        for (const l of layers) {
-          if (map.getLayer(l)) map.setLayoutProperty(l, "visibility", nv[id] ? "visible" : "none");
-        }
+        const l = id === "prescription" ? "prescription-line" : id === "propriete" ? "propriete-line" : `${id}-fill`;
+        if (map.getLayer(l)) map.setLayoutProperty(l, "visibility", nv[id] ? "visible" : "none");
       }
       return nv;
     });
   }
 
+  const pastille = (id: string) => {
+    if (id === "travaux") return { background: COULEUR_TRAVAUX, border: "none" };
+    if (id === "prescription") return { background: "transparent", border: `2px dashed ${COULEUR_PRESCRIPTION}` };
+    if (id === "propriete") return { background: "transparent", border: "2px solid #b9c2cc" };
+    return { background: "#558b2f", border: "none" };
+  };
+
   return (
     <div className="relative overflow-hidden rounded-2xl border border-black/5 bg-cfrq-deep">
-      <div ref={conteneur} className="h-[460px] w-full" />
+      <div ref={conteneur} className="h-[68vh] min-h-[460px] w-full sm:h-[560px]" />
 
-      {/* Contrôles de couches */}
-      <div className="absolute left-3 top-3 rounded-xl bg-white/95 p-3 text-[13px] shadow-lg backdrop-blur">
-        <div className="mb-1.5 font-medium text-cfrq-deep">Couches</div>
-        <div className="space-y-1">
-          {COUCHES.map((c) => (
-            <label key={c.id} className="flex cursor-pointer items-center gap-2 text-black/70">
-              <input type="checkbox" checked={visibles[c.id]} onChange={() => basculer(c.id)}
-                className="accent-cfrq-green" />
-              <span className="inline-flex items-center gap-1.5">
-                <span className="inline-block h-3 w-3 rounded-sm" style={{
-                  background: c.id === "travaux" ? COULEUR_TRAVAUX
-                    : c.id === "prescription" ? "transparent"
-                    : c.id === "propriete" ? "transparent" : "#558b2f",
-                  border: c.id === "prescription" ? `2px dashed ${COULEUR_PRESCRIPTION}`
-                    : c.id === "propriete" ? "2px solid #b9c2cc" : "none",
-                }} />
-                {c.label}
-              </span>
-            </label>
-          ))}
-        </div>
+      {/* Couches (repliable) */}
+      <div className="absolute left-2 top-2 sm:left-3 sm:top-3">
+        {couchesOuvert ? (
+          <div className="rounded-xl bg-white/95 p-3 text-[13px] shadow-lg backdrop-blur">
+            <button onClick={() => setCouchesOuvert(false)}
+              className="mb-1.5 flex w-full items-center justify-between gap-4 font-medium text-cfrq-deep">
+              Couches <span aria-hidden className="text-black/40">✕</span>
+            </button>
+            <div className="space-y-1">
+              {COUCHES.map((c) => (
+                <label key={c.id} className="flex cursor-pointer items-center gap-2 text-black/70">
+                  <input type="checkbox" checked={visibles[c.id]} onChange={() => basculer(c.id)} className="accent-cfrq-green" />
+                  <span className="inline-flex items-center gap-1.5">
+                    <span className="inline-block h-3 w-3 rounded-sm" style={pastille(c.id)} />
+                    {c.label}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <button onClick={() => setCouchesOuvert(true)}
+            className="flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-2 text-[13px] font-medium text-cfrq-deep shadow-lg backdrop-blur">
+            <span aria-hidden>▦</span> Couches
+          </button>
+        )}
       </div>
 
-      {/* Légende des peuplements */}
+      {/* Légende des peuplements (repliable) */}
       {legende.length > 0 && visibles.peuplement && (
-        <div className="absolute bottom-3 right-3 max-h-[180px] max-w-[230px] overflow-auto rounded-xl bg-white/95 p-3 text-[12px] shadow-lg backdrop-blur">
-          <div className="mb-1.5 font-medium text-cfrq-deep">Types de peuplement</div>
-          <ul className="space-y-1">
-            {legende.map((l) => (
-              <li key={l.nom} className="flex items-center gap-2 text-black/70">
-                <span className="inline-block h-3 w-3 shrink-0 rounded-sm" style={{ background: l.couleur }} />
-                <span className="leading-tight">{l.nom}</span>
-              </li>
-            ))}
-          </ul>
+        <div className="absolute bottom-8 right-2 sm:bottom-3 sm:right-3">
+          {legendeOuverte ? (
+            <div className="max-h-[42vh] max-w-[230px] overflow-auto rounded-xl bg-white/95 p-3 text-[12px] shadow-lg backdrop-blur sm:max-h-[200px]">
+              <button onClick={() => setLegendeOuverte(false)}
+                className="mb-1.5 flex w-full items-center justify-between gap-4 font-medium text-cfrq-deep">
+                Types de peuplement <span aria-hidden className="text-black/40">✕</span>
+              </button>
+              <ul className="space-y-1">
+                {legende.map((l) => (
+                  <li key={l.nom} className="flex items-center gap-2 text-black/70">
+                    <span className="inline-block h-3 w-3 shrink-0 rounded-sm" style={{ background: l.couleur }} />
+                    <span className="leading-tight">{l.nom}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : (
+            <button onClick={() => setLegendeOuverte(true)}
+              className="flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-2 text-[12px] font-medium text-cfrq-deep shadow-lg backdrop-blur">
+              <span aria-hidden>🎨</span> Légende
+            </button>
+          )}
         </div>
       )}
     </div>

@@ -26,10 +26,10 @@ if (!PLANILOGIX_DB_URL || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
   process.exit(1);
 }
 
-// Tolérances de simplification (en degrés ~ 1m ≈ 0.000009).
-const TOL_PROP = 0.00012;   // contour de propriété (généralisé)
-const TOL_PEUP = 0.00006;   // peuplements (plus fin)
-const TOL_AUTRE = 0.00008;  // travaux / prescriptions
+// Pleine fidélité: AUCUNE simplification des polygones (les formes ne sont pas modifiées).
+// On valide les géométries et on arrondit les coordonnées à ~0,1 m (6 décimales).
+// La taille n'est volontairement pas optimisée: on privilégie l'exactitude.
+const PRECISION = 6;
 
 const SQL_FEATURECOLLECTION = `
 WITH prop AS (
@@ -37,26 +37,26 @@ WITH prop AS (
   FROM planilogix.v_proprietes WHERE producteur_id = $1 AND geom IS NOT NULL
 ),
 raw AS (
-  SELECT 'propriete'::text AS couche, jsonb_build_object('nom','Propriété') AS props, p.g4326 AS g, ${TOL_PROP}::float AS tol FROM prop p
+  SELECT 'propriete'::text AS couche, jsonb_build_object('nom','Propriété') AS props, p.g4326 AS g FROM prop p
   UNION ALL
   SELECT 'peuplement', jsonb_build_object('appellation',pe.appellation,'essences',pe.essences,'superficie_ha',round(pe.superficie_ha::numeric,2),'classe_age',pe.classe_age),
-         ST_Transform(pe.geom,4326), ${TOL_PEUP} FROM planilogix.peuplements pe, prop WHERE ST_Intersects(pe.geom,prop.g)
+         ST_Transform(pe.geom,4326) FROM planilogix.peuplements pe, prop WHERE ST_Intersects(pe.geom,prop.g)
   UNION ALL
   SELECT 'travaux', jsonb_build_object('hectares',round(t.hectares::numeric,2)),
-         ST_Transform(t.geom,4326), ${TOL_AUTRE} FROM planilogix.travaux_geo t, prop WHERE ST_Intersects(t.geom,prop.g)
+         ST_Transform(t.geom,4326) FROM planilogix.travaux_geo t, prop WHERE ST_Intersects(t.geom,prop.g)
   UNION ALL
   SELECT 'prescription', jsonb_build_object('no_prescription',pr.no_prescription,'statut',pr.statut_courant,'hectares',round(pr.hectares::numeric,2)),
-         ST_Transform(pr.geom,4326), ${TOL_AUTRE} FROM planilogix.v_prescription_actif pr, prop WHERE ST_Intersects(pr.geom,prop.g)
+         ST_Transform(pr.geom,4326) FROM planilogix.v_prescription_actif pr, prop WHERE ST_Intersects(pr.geom,prop.g)
 ),
 clean AS (
-  SELECT couche, props, ST_CollectionExtract(ST_MakeValid(ST_SimplifyPreserveTopology(g, tol)),3) AS g FROM raw
+  SELECT couche, props, ST_CollectionExtract(ST_MakeValid(g),3) AS g FROM raw
 )
 SELECT
   (SELECT '['||round(ST_XMin(g4326)::numeric,5)||','||round(ST_YMin(g4326)::numeric,5)||','||round(ST_XMax(g4326)::numeric,5)||','||round(ST_YMax(g4326)::numeric,5)||']' FROM prop) AS bbox,
   count(*) FILTER (WHERE NOT ST_IsEmpty(g)) AS nb_features,
   jsonb_build_object('type','FeatureCollection','features',
     coalesce(jsonb_agg(jsonb_build_object('type','Feature','properties',props||jsonb_build_object('couche',couche),
-      'geometry', ST_AsGeoJSON(g,5)::jsonb)) FILTER (WHERE NOT ST_IsEmpty(g)), '[]'::jsonb)) AS geojson
+      'geometry', ST_AsGeoJSON(g,${PRECISION})::jsonb)) FILTER (WHERE NOT ST_IsEmpty(g)), '[]'::jsonb)) AS geojson
 FROM clean;
 `;
 
@@ -66,7 +66,12 @@ WHERE producteur_id IS NOT NULL AND geom IS NOT NULL
 ORDER BY producteur_id;
 `;
 
-const pgClient = new pg.Client({ connectionString: PLANILOGIX_DB_URL });
+// On retire un éventuel sslmode de l'URL (sinon pg le traite en verify-full et
+// rejette le certificat du pooler Supabase) et on applique un SSL permissif.
+const pgClient = new pg.Client({
+  connectionString: PLANILOGIX_DB_URL.replace(/[?&]sslmode=[^&]*/gi, ""),
+  ssl: { rejectUnauthorized: false },
+});
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
   auth: { persistSession: false },
 });
