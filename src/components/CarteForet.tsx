@@ -145,7 +145,7 @@ export default function CarteForet({ data, bbox, documents = [] }: Props) {
       const cibles = ["peuplement-fill", "travaux-fill", "prescription-line", "propriete-line"];
       for (const couche of cibles) {
         map.on("mouseenter", couche, () => (map.getCanvas().style.cursor = "pointer"));
-        map.on("mouseleave", couche, () => { map.getCanvas().style.cursor = ""; popup.remove(); });
+        map.on("mouseleave", couche, () => { map.getCanvas().style.cursor = ""; });
         map.on("click", couche, (e) => {
           const p = e.features?.[0]?.properties as Record<string, any> | undefined;
           if (!p) return;
