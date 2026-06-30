@@ -196,6 +196,26 @@ export default function EspaceClient() {
                     {pf.no_plan && <div className="mt-3 text-black/70">Plan {pf.no_plan}</div>}
                   </div>
                 ))
+              ) : d.documents.some((x) => x.type_document === "paf") ? (
+                <ul className="divide-y divide-black/5">
+                  {d.documents
+                    .filter((x) => x.type_document === "paf")
+                    .map((doc) => (
+                      <li key={doc.id}>
+                        <button
+                          onClick={() => ouvrirDoc(doc.storage_path)}
+                          disabled={!doc.storage_path}
+                          className="flex w-full items-center justify-between gap-3 py-3 text-left text-[15px] disabled:cursor-default"
+                        >
+                          <span className="flex items-center gap-2 font-medium text-cfrq-deep">
+                            <span aria-hidden>📄</span>
+                            <span className={doc.storage_path ? "hover:underline" : ""}>{doc.nom_document}</span>
+                          </span>
+                          <span className="shrink-0 text-[13px] text-black/50">{doc.date_document ?? doc.taille}</span>
+                        </button>
+                      </li>
+                    ))}
+                </ul>
               ) : (
                 <p className="text-[15px] leading-relaxed text-black/60">
                   Aucun plan d'aménagement structuré à votre dossier pour le moment. C'est l'étape qui
@@ -233,9 +253,9 @@ export default function EspaceClient() {
         <section className="mt-10">
           <h2 className="font-display text-xl font-medium text-cfrq-deep">Documents</h2>
           <div className="mt-4 rounded-2xl border border-black/5 bg-white p-6">
-            {d.documents.length > 0 ? (
+            {d.documents.filter((x) => x.type_document !== "paf").length > 0 ? (
               <ul className="divide-y divide-black/5">
-                {d.documents.map((doc) => (
+                {d.documents.filter((x) => x.type_document !== "paf").map((doc) => (
                   <li key={doc.id}>
                     <button
                       onClick={() => ouvrirDoc(doc.storage_path)}
