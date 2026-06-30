@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { withBase } from "../lib/url";
+import CarteForet from "./CarteForet";
 
 type Row = Record<string, any>;
 interface Dossier {
@@ -10,6 +11,7 @@ interface Dossier {
   paf: Row[];
   travaux: Row[];
   documents: Row[];
+  carte: Row | null;
 }
 
 const nf = new Intl.NumberFormat("fr-CA", { maximumFractionDigits: 1 });
@@ -24,13 +26,14 @@ export default function EspaceClient() {
     (async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) { window.location.replace(withBase("/espace-client")); return; }
-      const [prod, props, lots, paf, travaux, docs] = await Promise.all([
+      const [prod, props, lots, paf, travaux, docs, carte] = await Promise.all([
         supabase.from("producteurs").select("*").maybeSingle(),
         supabase.from("proprietes").select("*").order("no_propriete"),
         supabase.from("lots").select("*"),
         supabase.from("paf").select("*"),
         supabase.from("travaux").select("*"),
         supabase.from("documents").select("*"),
+        supabase.from("cartes").select("geojson,bbox").maybeSingle(),
       ]);
       if (!alive) return;
       setD({
@@ -40,6 +43,7 @@ export default function EspaceClient() {
         paf: paf.data ?? [],
         travaux: travaux.data ?? [],
         documents: docs.data ?? [],
+        carte: carte.data ?? null,
       });
       setLoading(false);
     })();
@@ -114,6 +118,18 @@ export default function EspaceClient() {
             </div>
           ))}
         </div>
+
+        {d.carte?.geojson && (
+          <section className="mt-10">
+            <div className="flex flex-wrap items-end justify-between gap-2">
+              <h2 className="font-display text-xl font-medium text-cfrq-deep">Ma forêt</h2>
+              <span className="text-[13px] text-black/50">Cliquez un peuplement pour voir le détail</span>
+            </div>
+            <div className="mt-4">
+              <CarteForet data={d.carte.geojson} bbox={d.carte.bbox} />
+            </div>
+          </section>
+        )}
 
         <section className="mt-10">
           <h2 className="font-display text-xl font-medium text-cfrq-deep">Mes propriétés</h2>
