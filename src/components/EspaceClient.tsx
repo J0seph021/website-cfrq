@@ -19,10 +19,22 @@ const nf = new Intl.NumberFormat("fr-CA", { maximumFractionDigits: 1 });
 const nf2 = new Intl.NumberFormat("fr-CA", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const nfEnt = new Intl.NumberFormat("fr-CA", { maximumFractionDigits: 0 });
 const ha = (v: any) => (v == null ? "—" : nf.format(Number(v)) + " ha");
+const cad = (n: number) =>
+  new Intl.NumberFormat("fr-CA", { style: "currency", currency: "CAD", maximumFractionDigits: 0 }).format(n);
 
-// Facteur de stock de carbone (moyenne provinciale): ~188 tC/ha x 3,667 (CO2/C) ~ 690 t CO2eq/ha.
-// Source: MRNF / RNCan (reservoirs forestiers du Quebec meridional). Estimation pedagogique, jamais une mesure du lot.
-const FACTEUR_CO2_PAR_HA = 690;
+// Catalogue du produit "Portrait des forêts" (relevé patrimonial payant).
+// Source: schéma portrait.releve_items du projet Supabase (complet 299$, volets 79$).
+const PORTRAIT = {
+  complet: { titre: "Relevé complet", prix: 299, icone: "⭐", desc: "Les six volets réunis : le portrait intégral de votre forêt." },
+  themes: [
+    { theme: "bois", titre: "Valeur du bois", prix: 79, icone: "🌳" },
+    { theme: "carbone", titre: "Carbone", prix: 79, icone: "🌍" },
+    { theme: "acericulture", titre: "Potentiel acéricole", prix: 79, icone: "🍁" },
+    { theme: "faune", titre: "Habitat faunique", prix: 79, icone: "🦌" },
+    { theme: "biodiversite", titre: "Biodiversité", prix: 79, icone: "🌿" },
+    { theme: "fiscalite", titre: "Leviers fiscaux", prix: 79, icone: "📋" },
+  ],
+};
 
 /* ------------------------------------------------------------------ */
 /* Hooks d'animation, tous neutralises sous prefers-reduced-motion.    */
@@ -119,16 +131,30 @@ const props = (carte: Row | null, couche: string): Row[] =>
     .filter((f: any) => f.properties?.couche === couche)
     .map((f: any) => f.properties as Row);
 
-function essencesDistinctes(peuplements: Row[]): number {
+// Le champ "essences" est une liste de NOMS COMPLETS separes par " / "
+// (ex. "Épinette blanche / Sapin baumier"). On decoupe UNIQUEMENT sur "/", puis
+// on exclut les regroupements (Feuillus tolerants, Bouleaux...) et les non-arbres
+// (Herbacees, Framboisier...) pour ne compter que de vraies essences d'arbres.
+const NON_ESPECE = /aulne|feuillus|éricac|ericac|herbac|herbe|framboisier|noisetier|arbuste|non[-\s]?commerc|sapin et épinette|inconnu|dénud|denud|coupe|régénér|regener|eau\b|chemin|gravier|sol\b|friche/i;
+const GROUPE_PLURIEL = new Set([
+  "bouleaux", "épinettes", "epinettes", "érables", "erables", "peupliers", "pins",
+  "sapins", "mélèzes", "melezes", "cerisiers", "chênes", "chenes", "frênes", "frenes",
+  "ormes", "tilleuls", "aulnes", "feuillus", "résineux", "resineux",
+]);
+
+// Liste triee des vraies essences d'arbres recensees au dossier.
+function essencesArbres(peuplements: Row[]): string[] {
   const s = new Set<string>();
   for (const p of peuplements) {
-    String(p.essences ?? "")
-      .split(/[\s,;/]+/)
-      .map((x) => x.trim())
-      .filter((x) => x.length > 1)
-      .forEach((x) => s.add(x));
+    for (const raw of String(p.essences ?? "").split("/")) {
+      const sp = raw.trim();
+      if (sp.length < 2) continue;
+      const low = sp.toLowerCase();
+      if (NON_ESPECE.test(low) || GROUPE_PLURIEL.has(low)) continue;
+      s.add(sp);
+    }
   }
-  return s.size;
+  return [...s].sort((a, b) => a.localeCompare(b, "fr"));
 }
 
 function appellations(peuplements: Row[]): { nb: number; top: string[] } {
@@ -191,9 +217,17 @@ export function DashboardView({ d, onLogout }: { d: Dossier; onLogout?: () => vo
   // Agregats reels
   const peuplements = useMemo(() => props(d.carte, "peuplement"), [d.carte]);
   const nbPeuplements = peuplements.length;
-  const nbEssences = useMemo(() => essencesDistinctes(peuplements), [peuplements]);
+  const especes = useMemo(() => essencesArbres(peuplements), [peuplements]);
+  const nbEssences = especes.length;
   const { nb: nbAppellations, top: topAppellations } = useMemo(() => appellations(peuplements), [peuplements]);
   const travauxCarte = useMemo(() => travauxDepuisCarte(d.carte), [d.carte]);
+  const [travauxOuvert, setTravauxOuvert] = useState(false);
+  const LIMITE_TRAVAUX = 5;
+  const travauxTries = useMemo(
+    () => [...travauxCarte].sort((a, b) => String(b.annee ?? "").localeCompare(String(a.annee ?? ""))),
+    [travauxCarte]
+  );
+  const pafDocs = useMemo(() => d.documents.filter((x) => x.type_document === "paf"), [d.documents]);
   const prescriptions = useMemo(() => prescriptionsDepuisCarte(d.carte), [d.carte]);
   const nbPrioHaute = useMemo(() => peuplements.filter(estPrioriteHaute).length, [peuplements]);
   const nbTraitementRec = useMemo(
@@ -216,7 +250,7 @@ export function DashboardView({ d, onLogout }: { d: Dossier; onLogout?: () => vo
       return {
         valeur: nbEssences, decimals: 0, mot: nbEssences > 1 ? "essences d'arbres" : "essence d'arbre",
         avant: "Votre forêt abrite",
-        sous: `Sur ${nf2.format(superficieTotale)} hectares, nos forestiers ont cartographié ${nfEnt.format(nbPeuplements)} peuplements et recensé ${nfEnt.format(nbAppellations)} types distincts. Une forêt diversifiée, c'est une forêt en santé, que vous protégez.`,
+        sous: `Sur ${nf2.format(superficieTotale)} hectares, nos forestiers ont cartographié ${nfEnt.format(nbPeuplements)} peuplements. Une forêt diversifiée, c'est une forêt en santé, que vous protégez.`,
       };
     }
     if (superficieBoisee > 0) {
@@ -282,37 +316,29 @@ export function DashboardView({ d, onLogout }: { d: Dossier; onLogout?: () => vo
     };
   }, [nbPrioHaute, prescriptions, aPaf]);
 
-  // Carbone (estimation honnete)
-  const carbone = useMemo(() => {
-    if (superficieBoisee <= 0) return null;
-    const stock = Math.round((superficieBoisee * FACTEUR_CO2_PAR_HA) / 1000) * 1000;
-    const seqMin = Math.round(superficieBoisee * 3);
-    const seqMax = Math.round(superficieBoisee * 5);
-    const voitures = Math.round(stock / 4.6 / 500) * 500;
-    return { stock, seqMin, seqMax, voitures };
-  }, [superficieBoisee]);
-
   // Ouvre un document via une URL signee temporaire (RLS: ses propres fichiers seulement).
   async function ouvrirDoc(path?: string) {
     if (!path) return;
     const { data } = await supabase.storage.from("documents").createSignedUrl(path, 300);
     if (data?.signedUrl) window.open(data.signedUrl, "_blank", "noopener");
   }
-  const docPourPrescription = (no?: string) =>
-    no ? d.documents.find((x) => x.reference === no && (x.type_document === "rapport" || x.type_document === "prescription")) : undefined;
-
-  // Travaux groupes par annee (frise)
-  const travauxParAnnee = useMemo(() => {
-    const m = new Map<string, Row[]>();
-    for (const t of travauxCarte) {
-      const a = String(t.annee ?? "").match(/\d{4}/)?.[0] ?? "Autres";
-      if (!m.has(a)) m.set(a, []);
-      m.get(a)!.push(t);
-    }
-    return [...m.entries()].sort((x, y) => y[0].localeCompare(x[0]));
-  }, [travauxCarte]);
+  // Pour un travail: ouvrir d'abord la PRESCRIPTION reliee, sinon le rapport d'execution.
+  const docPourTravail = (no?: string) =>
+    no
+      ? d.documents.find((x) => x.reference === no && x.type_document === "prescription") ??
+        d.documents.find((x) => x.reference === no && x.type_document === "rapport")
+      : undefined;
 
   const docsHorsPaf = d.documents.filter((x) => x.type_document !== "paf");
+
+  // Commande du Portrait (interim: courriel pre-rempli; voir TODO Stripe pour l'achat en ligne).
+  const lienCommande = `mailto:${site.courriel}?subject=${encodeURIComponent(
+    "Commande - Portrait des forêts"
+  )}&body=${encodeURIComponent(
+    `Bonjour,\n\nJe souhaite commander mon Portrait des forêts.\n\nDossier : ${nom}${
+      d.producteur?.no_prod ? " (" + d.producteur.no_prod + ")" : ""
+    }\n\nMerci.`
+  )}`;
 
   return (
     <div className="min-h-screen bg-cfrq-cream">
@@ -408,12 +434,20 @@ export function DashboardView({ d, onLogout }: { d: Dossier; onLogout?: () => vo
             <div className="rounded-2xl bg-cfrq-tint p-6 md:p-8">
               <p className="font-display text-xl leading-relaxed text-cfrq-ink md:text-2xl">
                 {superficieBoisee > 0 ? `Sur vos ${nf.format(superficieBoisee)} hectares boisés, ` : "Sur votre forêt, "}
-                nos forestiers ont recensé {nfEnt.format(nbAppellations)} types de peuplements et {nfEnt.format(nbEssences)} essences d'arbres différentes. C'est le signe d'une forêt diversifiée et résiliente, mieux armée face aux insectes, aux maladies et au climat.
+                nos forestiers ont cartographié {nfEnt.format(nbPeuplements)} peuplements et recensé {nfEnt.format(nbEssences)} essences d'arbres différentes. C'est le signe d'une forêt diversifiée et résiliente, mieux armée face aux insectes, aux maladies et au climat.
               </p>
               {topAppellations.length >= 2 && (
                 <p className="mt-3 text-[15px] text-cfrq-ink/65">
                   Vos peuplements les plus présents : {topAppellations.join(", ")}.
                 </p>
+              )}
+              {especes.length >= 4 && (
+                <details className="group mt-3">
+                  <summary className="cursor-pointer list-none text-[14px] font-medium text-cfrq-leaf">
+                    Voir les {nfEnt.format(especes.length)} essences recensées
+                  </summary>
+                  <p className="mt-2 text-[14px] leading-relaxed text-cfrq-ink/70">{especes.join(", ")}.</p>
+                </details>
               )}
             </div>
           </Reveal>
@@ -506,8 +540,8 @@ export function DashboardView({ d, onLogout }: { d: Dossier; onLogout?: () => vo
           <Reveal className="mt-10">
             <section>
               <h2 className="font-display text-xl font-medium text-cfrq-deep">Vos propriétés</h2>
-              <div className="mt-4 overflow-hidden rounded-2xl border border-black/5 bg-white">
-                <table className="w-full text-left text-[15px]">
+              <div className="mt-4 overflow-x-auto rounded-2xl border border-black/5 bg-white">
+                <table className="w-full min-w-[460px] text-left text-[15px]">
                   <thead className="bg-cfrq-tint/60 text-[13px] uppercase tracking-wide text-cfrq-leaf">
                     <tr>
                       <th className="px-4 py-3 font-medium">Propriété</th>
@@ -534,84 +568,102 @@ export function DashboardView({ d, onLogout }: { d: Dossier; onLogout?: () => vo
           </Reveal>
         )}
 
-        {/* Plan d'amenagement + Travaux (frise) */}
-        <div className="mt-10 grid gap-8 lg:grid-cols-2">
-          <Reveal>
-            <section>
-              <h2 className="font-display text-xl font-medium text-cfrq-deep">Votre plan d'aménagement</h2>
-              <div className="mt-4 rounded-2xl border border-black/5 bg-white p-6">
-                {d.paf.length > 0 ? (
-                  d.paf.map((pf) => (
+        {/* Plan d'amenagement */}
+        <Reveal className="mt-10">
+          <section>
+            <h2 className="font-display text-xl font-medium text-cfrq-deep">Votre plan d'aménagement</h2>
+            <div className="mt-4 rounded-2xl border border-cfrq-green/15 bg-gradient-to-br from-cfrq-tint to-white p-6 md:p-8">
+              {d.paf.length > 0 ? (
+                <div className="space-y-4">
+                  {d.paf.map((pf) => (
                     <div key={pf.id} className="text-[15px]">
-                      <div className="flex items-center justify-between">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
                         <span className="rounded-full bg-cfrq-green/20 px-3 py-1 text-[13px] font-medium text-cfrq-leaf">{pf.statut_courant ?? "Actif"}</span>
-                        <span className="text-black/55">{pf.date_plan ?? ""}{pf.date_echeance ? " → " + pf.date_echeance : ""}</span>
+                        <span className="text-black/55">{pf.date_plan ?? ""}{pf.date_echeance ? " au " + pf.date_echeance : ""}</span>
                       </div>
                       {pf.no_plan && <div className="mt-3 text-black/70">Plan {pf.no_plan}</div>}
                     </div>
-                  ))
-                ) : d.documents.some((x) => x.type_document === "paf") ? (
-                  <ul className="divide-y divide-black/5">
-                    {d.documents.filter((x) => x.type_document === "paf").map((doc) => (
-                      <li key={doc.id}>
-                        <button onClick={() => ouvrirDoc(doc.storage_path)} disabled={!doc.storage_path}
-                          className="flex w-full items-center justify-between gap-3 py-3 text-left text-[15px] disabled:cursor-default">
-                          <span className="flex items-center gap-2 font-medium text-cfrq-deep">
-                            <span aria-hidden>📄</span>
-                            <span className={doc.storage_path ? "hover:underline" : ""}>{doc.nom_document}</span>
-                          </span>
-                          <span className="shrink-0 text-[13px] text-black/50">{doc.date_document ?? doc.taille}</span>
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-[15px] leading-relaxed text-black/60">
-                    Aucun plan d'aménagement structuré à votre dossier pour le moment. C'est l'étape qui donne accès aux programmes d'aide.{" "}
-                    <a href={withBase("/contact")} className="font-medium text-cfrq-leaf hover:underline">Nous en parler</a>.
-                  </p>
-                )}
-              </div>
-            </section>
-          </Reveal>
-
-          <Reveal delay={80}>
-            <section>
-              <h2 className="font-display text-xl font-medium text-cfrq-deep">Vos travaux, année par année</h2>
-              {travauxParAnnee.length > 0 ? (
-                <div className="mt-4 space-y-6">
-                  {travauxParAnnee.map(([annee, liste]) => (
-                    <div key={annee} className="relative pl-6">
-                      <span className="absolute left-0 top-1.5 h-3 w-3 rounded-full bg-cfrq-green" aria-hidden></span>
-                      <span className="absolute left-1.5 top-4 h-[calc(100%-0.5rem)] w-px bg-cfrq-green/25" aria-hidden></span>
-                      <div className="text-[13px] font-medium uppercase tracking-wide text-cfrq-leaf">{annee}</div>
-                      <div className="mt-2 space-y-2">
-                        {liste.map((t, i) => {
-                          const doc = docPourPrescription(t.no_prescription);
-                          return (
-                            <div key={i} className="rounded-2xl border border-black/5 bg-white p-4">
-                              <div className="text-[15.5px] font-medium text-cfrq-deep">{t.traitement ?? "Travaux réalisés"}</div>
-                              <div className="mt-0.5 text-[13.5px] text-black/55">
-                                {[t.hectares != null ? nf.format(Number(t.hectares)) + " ha" : null, t.no_prescription ? "Prescription " + t.no_prescription : null].filter(Boolean).join(" · ")}
-                              </div>
-                              {doc?.storage_path && (
-                                <button onClick={() => ouvrirDoc(doc.storage_path)} className="mt-2 inline-flex items-center gap-1.5 text-[13.5px] font-medium text-cfrq-leaf hover:underline">
-                                  <span aria-hidden>📄</span> Voir le rapport
-                                </button>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
                   ))}
                 </div>
+              ) : pafDocs.length > 0 ? (
+                <div>
+                  <div className="flex items-start gap-4">
+                    <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-cfrq-green/15 text-2xl" aria-hidden>📘</span>
+                    <div>
+                      <div className="font-display text-lg font-medium text-cfrq-deep">Plan d'aménagement forestier</div>
+                      <p className="mt-1 max-w-xl text-[15px] leading-relaxed text-black/60">
+                        La feuille de route de votre boisé : objectifs, peuplements et travaux recommandés. {pafDocs.length} document{pafDocs.length > 1 ? "s" : ""} à votre dossier.
+                      </p>
+                    </div>
+                  </div>
+                  <ul className="mt-5 grid gap-2 sm:grid-cols-2">
+                    {pafDocs.map((doc) => {
+                      const annee = String(doc.nom_document ?? "").match(/\b(19|20)\d{2}\b/)?.[0];
+                      return (
+                        <li key={doc.id}>
+                          <button onClick={() => ouvrirDoc(doc.storage_path)} disabled={!doc.storage_path}
+                            className="flex w-full items-center justify-between gap-3 rounded-xl border border-black/5 bg-white px-4 py-3 text-left transition-colors hover:border-cfrq-green/40 disabled:cursor-default">
+                            <span className="flex items-center gap-2 font-medium text-cfrq-deep">
+                              <span aria-hidden>📄</span>
+                              <span className={doc.storage_path ? "hover:underline" : ""}>{doc.nom_document}</span>
+                            </span>
+                            <span className="shrink-0 text-[13px] font-medium text-cfrq-leaf">{annee ?? "Ouvrir"}</span>
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
               ) : (
-                <div className="mt-4 rounded-2xl border border-black/5 bg-white p-4 text-[15px] text-black/60">Aucun travail consigné pour le moment.</div>
+                <p className="text-[15px] leading-relaxed text-black/60">
+                  Aucun plan d'aménagement structuré à votre dossier pour le moment. C'est l'étape qui donne accès aux programmes d'aide.{" "}
+                  <a href={withBase("/contact")} className="font-medium text-cfrq-leaf hover:underline">Nous en parler</a>.
+                </p>
+              )}
+            </div>
+          </section>
+        </Reveal>
+
+        {/* Travaux realises (plafonnes, cliquables vers la prescription) */}
+        {travauxTries.length > 0 && (
+          <Reveal className="mt-10">
+            <section>
+              <div className="flex flex-wrap items-end justify-between gap-2">
+                <h2 className="font-display text-xl font-medium text-cfrq-deep">Vos travaux réalisés</h2>
+                <span className="text-[13px] text-black/50">{travauxTries.length} au total</span>
+              </div>
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                {(travauxOuvert ? travauxTries : travauxTries.slice(0, LIMITE_TRAVAUX)).map((t, i) => {
+                  const doc = docPourTravail(t.no_prescription);
+                  const cliquable = !!doc?.storage_path;
+                  const libelle = doc?.type_document === "rapport" ? "Voir le rapport" : "Voir la prescription";
+                  const annee = String(t.annee ?? "").match(/\d{4}/)?.[0];
+                  const Conteneur: any = cliquable ? "button" : "div";
+                  return (
+                    <Conteneur key={i}
+                      onClick={cliquable ? () => ouvrirDoc(doc!.storage_path) : undefined}
+                      className={`flex w-full items-center justify-between gap-3 rounded-2xl border border-black/5 bg-white p-4 text-left ${cliquable ? "transition-colors hover:border-cfrq-green/40" : ""}`}>
+                      <div>
+                        <div className="text-[15.5px] font-medium text-cfrq-deep">{t.traitement ?? "Travaux réalisés"}</div>
+                        <div className="mt-0.5 text-[13.5px] text-black/55">
+                          {[t.hectares != null ? nf.format(Number(t.hectares)) + " ha" : null, cliquable ? libelle : null].filter(Boolean).join(" · ")}
+                        </div>
+                      </div>
+                      {annee && <span className="shrink-0 rounded-full bg-cfrq-tint px-3 py-1 text-[13px] font-medium text-cfrq-leaf">{annee}</span>}
+                    </Conteneur>
+                  );
+                })}
+              </div>
+              {travauxTries.length > LIMITE_TRAVAUX && (
+                <button onClick={() => setTravauxOuvert((o) => !o)}
+                  className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-cfrq-green/30 px-4 py-2.5 text-[14px] font-medium text-cfrq-leaf transition-colors hover:bg-cfrq-tint">
+                  {travauxOuvert ? "Voir moins" : `Voir les ${travauxTries.length - LIMITE_TRAVAUX} autres travaux`}
+                  <span aria-hidden className={`transition-transform ${travauxOuvert ? "rotate-180" : ""}`}>⌄</span>
+                </button>
               )}
             </section>
           </Reveal>
-        </div>
+        )}
 
         {/* Documents */}
         <Reveal className="mt-10">
@@ -669,34 +721,42 @@ export function DashboardView({ d, onLogout }: { d: Dossier; onLogout?: () => vo
           </section>
         </Reveal>
 
-        {/* Estimation carbone */}
-        {carbone && (
-          <Reveal className="mt-10">
-            <section className="rounded-2xl bg-cfrq-tint p-6 md:p-8">
-              <h2 className="font-display text-xl font-medium text-cfrq-deep">Estimation : le carbone de votre forêt</h2>
-              <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                <div className="rounded-xl bg-white/70 p-5">
-                  <div className="text-[13px] text-cfrq-leaf">Carbone stocké (ordre de grandeur)</div>
-                  <div className="mt-1 font-display text-3xl font-medium text-cfrq-deep">
-                    <CountUp value={carbone.stock} /> t
-                  </div>
-                  <div className="mt-1 text-[13.5px] text-cfrq-ink/65">de CO₂, comparable aux émissions annuelles de près de {nfEnt.format(carbone.voitures)} voitures.</div>
+        {/* Votre Portrait des forets (releve patrimonial payant) */}
+        <Reveal className="mt-10">
+          <section className="overflow-hidden rounded-2xl border border-cfrq-green/20 bg-gradient-to-br from-cfrq-tint to-white p-6 md:p-8">
+            <div className="max-w-2xl">
+              <h2 className="font-display text-xl font-medium text-cfrq-deep">Allez plus loin : votre Portrait des forêts</h2>
+              <p className="mt-2 text-[15.5px] leading-relaxed text-black/65">
+                Le relevé de patrimoine de votre boisé, préparé par vos ingénieurs à partir de l'inventaire écoforestier et de vos données : sa valeur en bois, le carbone qu'il stocke, son potentiel acéricole, sa qualité d'habitat, sa richesse écologique et vos leviers fiscaux. Des chiffres propres à votre forêt.
+              </p>
+            </div>
+            <div className="mt-5 grid gap-3 lg:grid-cols-3">
+              <div className="rounded-xl border-2 border-cfrq-green/40 bg-white p-5 lg:row-span-2">
+                <span className="rounded-full bg-cfrq-green/15 px-2.5 py-0.5 text-[12px] font-medium text-cfrq-leaf">Le plus complet</span>
+                <div className="mt-3 flex items-center gap-2">
+                  <span className="text-2xl" aria-hidden>{PORTRAIT.complet.icone}</span>
+                  <span className="font-display text-lg font-medium text-cfrq-deep">{PORTRAIT.complet.titre}</span>
                 </div>
-                <div className="rounded-xl bg-white/70 p-5">
-                  <div className="text-[13px] text-cfrq-leaf">Capté chaque année (estimation)</div>
-                  <div className="mt-1 font-display text-3xl font-medium text-cfrq-deep">{nfEnt.format(carbone.seqMin)} à {nfEnt.format(carbone.seqMax)} t</div>
-                  <div className="mt-1 text-[13.5px] text-cfrq-ink/65">de CO₂ de plus chaque année pendant la croissance de votre forêt.</div>
-                </div>
+                <div className="mt-1 font-display text-3xl font-medium text-cfrq-deep">{cad(PORTRAIT.complet.prix)}</div>
+                <p className="mt-2 text-[14px] leading-relaxed text-black/60">{PORTRAIT.complet.desc}</p>
               </div>
-              <details className="group mt-4">
-                <summary className="cursor-pointer list-none text-[14px] font-medium text-cfrq-leaf">Comment ce chiffre est calculé</summary>
-                <p className="mt-2 max-w-3xl text-[13.5px] leading-relaxed text-cfrq-ink/70">
-                  Estimation pédagogique fondée sur des moyennes provinciales (MRNF, RNCan) appliquées à vos {nf.format(superficieBoisee)} hectares boisés, et non sur une mesure de votre lot. Le chiffre réel varie selon l'âge, les essences, la station et les travaux. Pour valoriser ce carbone (crédits compensatoires), il faut un projet certifié : parlez-en à votre ingénieur forestier.
-                </p>
-              </details>
-            </section>
-          </Reveal>
-        )}
+              <ul className="grid gap-2 sm:grid-cols-2 lg:col-span-2">
+                {PORTRAIT.themes.map((t) => (
+                  <li key={t.theme} className="flex items-center justify-between gap-2 rounded-xl border border-black/5 bg-white px-4 py-3">
+                    <span className="flex items-center gap-2 font-medium text-cfrq-deep"><span aria-hidden>{t.icone}</span>{t.titre}</span>
+                    <span className="shrink-0 text-[14px] font-medium text-cfrq-leaf">{cad(t.prix)}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2">
+              <a href={lienCommande} className="inline-block rounded-lg bg-cfrq-green px-5 py-3 text-[15px] font-medium text-[#123005] transition-colors hover:bg-cfrq-green-hover">
+                Commander mon Portrait
+              </a>
+              <span className="text-[13.5px] text-black/55">Livré en PDF, taxes incluses. Ou par téléphone au {site.tel}.</span>
+            </div>
+          </section>
+        </Reveal>
 
         {/* Transmettre votre foret (succession) */}
         {(travauxCarte.length > 0 || d.documents.length > 0) && (
