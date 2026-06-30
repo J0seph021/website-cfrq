@@ -116,7 +116,7 @@ export default function CarteForet({ data, bbox }: Props) {
         map.fitBounds([[bbox[0], bbox[1]], [bbox[2], bbox[3]]], { padding: 30, animate: false });
       }
 
-      const popup = new maplibregl.Popup({ closeButton: false, maxWidth: "260px" });
+      const popup = new maplibregl.Popup({ closeButton: true, maxWidth: "290px" });
       const cibles = ["peuplement-fill", "travaux-fill", "prescription-line", "propriete-line"];
       for (const couche of cibles) {
         map.on("mouseenter", couche, () => (map.getCanvas().style.cursor = "pointer"));
@@ -215,27 +215,62 @@ export default function CarteForet({ data, bbox }: Props) {
   );
 }
 
+const STATUTS: Record<string, string> = {
+  demande: "Demande", en_execution: "En exécution", rapport_soumis: "Rapport soumis",
+  approuve: "Approuvé", refuse: "Refusé", paye: "Payé", complete: "Complété",
+};
+
 function contenuPopup(p: Record<string, any>): string {
   const esc = (s: any) => String(s ?? "").replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]!));
-  const ligne = (label: string, val: any) =>
-    val == null || val === "" ? "" : `<div style="display:flex;gap:8px;justify-content:space-between"><span style="color:#6b7280">${label}</span><span style="font-weight:500;text-align:right">${esc(val)}</span></div>`;
-  const titre = (t: string) => `<div style="font-weight:600;color:#1b3a13;margin-bottom:4px">${t}</div>`;
+  const ligne = (label: string, val: any, unite = "") =>
+    val == null || val === ""
+      ? ""
+      : `<div style="display:flex;gap:10px;justify-content:space-between;padding:1px 0"><span style="color:#6b7280">${label}</span><span style="font-weight:500;text-align:right">${esc(val)}${unite}</span></div>`;
+  const titre = (t: string, sous = "") =>
+    `<div style="font-weight:600;color:#1b3a13">${esc(t)}</div>` +
+    (sous ? `<div style="color:#6b7280;font-size:11px;margin-bottom:4px">${esc(sous)}</div>` : `<div style="height:4px"></div>`);
+  const wrap = (inner: string) =>
+    `<div style="max-height:260px;overflow:auto;font-size:12.5px;line-height:1.45;padding-right:4px">${inner}</div>`;
 
   switch (p.couche) {
     case "peuplement":
-      return titre(p.appellation ?? "Peuplement") +
+      return wrap(
+        titre(p.appellation ?? "Peuplement", p.no_peup ? `Peuplement nº ${p.no_peup}` : "") +
         ligne("Essences", p.essences) +
-        ligne("Superficie", p.superficie_ha != null ? `${p.superficie_ha} ha` : null) +
-        ligne("Âge", p.classe_age);
+        ligne("Superficie", p.superficie_ha, " ha") +
+        ligne("Classe d'âge", p.classe_age) +
+        ligne("Densité", p.densite) +
+        ligne("Hauteur", p.hauteur_m, " m") +
+        ligne("Surface terrière", p.surface_terriere, " m²/ha") +
+        ligne("Diamètre moyen", p.diametre_moyen, " cm") +
+        ligne("Volume", p.volume_m3_ha, " m³/ha") +
+        ligne("Volume total", p.volume_total_m3, " m³") +
+        ligne("Drainage", p.drainage) +
+        ligne("Pente", p.pente) +
+        ligne("Perturbation", p.perturbation) +
+        (p.traitements_rec
+          ? `<div style="margin-top:5px;padding-top:5px;border-top:1px solid #eee"><span style="color:#6b7280">Traitement recommandé</span><div style="font-weight:600;color:#2f7d32">${esc(p.traitements_rec)}</div></div>`
+          : "") +
+        ligne("Priorité", p.priorite)
+      );
     case "travaux":
-      return titre("Travaux réalisés") + ligne("Superficie", p.hectares != null ? `${p.hectares} ha` : null);
+      return wrap(titre("Travaux réalisés") + ligne("Superficie", p.hectares, " ha"));
     case "prescription":
-      return titre("Prescription " + (p.no_prescription ?? "")) +
-        ligne("Statut", p.statut) +
-        ligne("Superficie", p.hectares != null ? `${p.hectares} ha` : null);
+      return wrap(
+        titre("Prescription sylvicole", p.no_prescription ? `nº ${p.no_prescription}` : "") +
+        ligne("Statut", STATUTS[p.statut] ?? p.statut) +
+        ligne("Superficie", p.hectares, " ha") +
+        (p.codes_travaux
+          ? `<div style="margin-top:4px;padding-top:4px;border-top:1px solid #eee"><span style="color:#6b7280">Traitements prescrits</span><div style="font-weight:600;color:#2f7d32">${esc(p.codes_travaux)}</div></div>`
+          : "") +
+        ligne("Programme", p.programmes) +
+        ligne("Lots", p.lots) +
+        ligne("Prescrit par", p.prescrit_par) +
+        ligne("Date du rapport", p.date_rapport)
+      );
     case "propriete":
-      return titre("Limites de la propriété");
+      return wrap(titre("Limites de la propriété"));
     default:
-      return titre("Élément");
+      return wrap(titre("Élément"));
   }
 }

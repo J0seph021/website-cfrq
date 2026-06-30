@@ -39,14 +39,38 @@ WITH prop AS (
 raw AS (
   SELECT 'propriete'::text AS couche, jsonb_build_object('nom','Propriété') AS props, p.g4326 AS g FROM prop p
   UNION ALL
-  SELECT 'peuplement', jsonb_build_object('appellation',pe.appellation,'essences',pe.essences,'superficie_ha',round(pe.superficie_ha::numeric,2),'classe_age',pe.classe_age),
+  SELECT 'peuplement', jsonb_strip_nulls(jsonb_build_object(
+           'no_peup', pe.no_peup,
+           'appellation', pe.appellation,
+           'essences', pe.essences,
+           'superficie_ha', round(pe.superficie_ha::numeric,2),
+           'classe_age', pe.classe_age,
+           'densite', pe.densite,
+           'hauteur_m', pe.hauteur_m,
+           'surface_terriere', round(pe.surface_terriere::numeric,1),
+           'diametre_moyen', round(pe.diametre_moyen::numeric,1),
+           'volume_m3_ha', round(pe.volume_m3_ha::numeric,1),
+           'volume_total_m3', round(pe.volume_total_m3::numeric,0),
+           'drainage', pe.drainage,
+           'pente', pe.pente,
+           'perturbation', pe.perturbation,
+           'traitements_rec', pe.traitements_rec,
+           'priorite', pe.priorite)),
          ST_Transform(pe.geom,4326) FROM planilogix.peuplements pe, prop WHERE ST_Intersects(pe.geom,prop.g)
   UNION ALL
   SELECT 'travaux', jsonb_build_object('hectares',round(t.hectares::numeric,2)),
          ST_Transform(t.geom,4326) FROM planilogix.travaux_geo t, prop WHERE ST_Intersects(t.geom,prop.g)
   UNION ALL
-  SELECT 'prescription', jsonb_build_object('no_prescription',pr.no_prescription,'statut',pr.statut_courant,'hectares',round(pr.hectares::numeric,2)),
-         ST_Transform(pr.geom,4326) FROM planilogix.v_prescription_actif pr, prop WHERE ST_Intersects(pr.geom,prop.g)
+  SELECT 'prescription', jsonb_strip_nulls(jsonb_build_object(
+           'no_prescription',pc.no_prescription,
+           'statut',pc.statut_courant,
+           'hectares',round(pc.superficie::numeric,2),
+           'codes_travaux',pc.codes_travaux,
+           'programmes',pc.programmes,
+           'lots',pc.lots,
+           'prescrit_par',pc.prescrit_par,
+           'date_rapport',pc.date_rapport)),
+         ST_Transform(pc.geom,4326) FROM planilogix.v_prescription_carte pc, prop WHERE ST_Intersects(pc.geom,prop.g)
 ),
 clean AS (
   SELECT couche, props, ST_CollectionExtract(ST_MakeValid(g),3) AS g FROM raw
