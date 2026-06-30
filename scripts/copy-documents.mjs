@@ -20,6 +20,11 @@
  */
 import pg from "pg";
 import { createClient } from "@supabase/supabase-js";
+import fs from "node:fs";
+import { fileURLToPath } from "node:url";
+
+// Filigrane (watermark) pour le mode --incremental : dernier maj_le poussé.
+const WM_PATH = fileURLToPath(new URL("./.copy-watermark", import.meta.url));
 
 const {
   PLANILOGIX_DB_URL, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY,
@@ -101,7 +106,10 @@ async function traiterProducteur(id) {
 
 async function main() {
   await pgc.connect();
-  let ids = process.argv.slice(2).filter((a) => a !== "--all").map(Number).filter(Boolean);
+  const incremental = process.argv.includes("--incremental");
+  let ids = process.argv.slice(2).filter((a) => !a.startsWith("--")).map(Number).filter(Boolean);
+  let newWatermark = null;
+
   if (process.argv.includes("--all")) {
     const { rows } = await pgc.query(
       `SELECT DISTINCT producteur_id FROM planilogix.centre_doc_fichier
@@ -109,16 +117,40 @@ async function main() {
        ORDER BY producteur_id`, [TYPES]);
     ids = rows.map((r) => r.producteur_id);
     console.log(`--all : ${ids.length} producteurs avec au moins un document.`);
+  } else if (incremental) {
+    // Seulement les producteurs dont un document a changé depuis le dernier passage.
+    let wm = "1970-01-01T00:00:00Z";
+    try { wm = fs.readFileSync(WM_PATH, "utf8").trim() || wm; } catch { /* premier run */ }
+    const max = await pgc.query(`SELECT max(maj_le) m FROM planilogix.centre_doc_fichier`);
+    newWatermark = max.rows[0]?.m ? new Date(max.rows[0].m).toISOString() : wm;
+    const { rows } = await pgc.query(
+      `SELECT DISTINCT producteur_id FROM planilogix.centre_doc_fichier
+       WHERE producteur_id IS NOT NULL AND statut='uploaded' AND sp_type_code = ANY($1)
+         AND maj_le > $2::timestamptz ORDER BY producteur_id`, [TYPES, wm]);
+    ids = rows.map((r) => r.producteur_id);
+    console.log(`--incremental : ${ids.length} producteur(s) modifié(s) depuis ${wm}.`);
+    if (!ids.length) {
+      if (newWatermark) fs.writeFileSync(WM_PATH, newWatermark);
+      console.log("Rien à synchroniser.");
+      await pgc.end();
+      return;
+    }
   }
-  if (!ids.length) { console.error("usage: copy-documents.mjs <producteur_id...> | --all"); process.exit(1); }
+  if (!ids.length) { console.error("usage: copy-documents.mjs <producteur_id...> | --all | --incremental"); process.exit(1); }
 
   let tot = { copies: 0, erreurs: 0, total: 0 };
   for (let i = 0; i < ids.length; i++) {
-    const r = await traiterProducteur(ids[i]);
-    tot.copies += r.copies; tot.erreurs += r.erreurs; tot.total += r.total;
+    try {
+      const r = await traiterProducteur(ids[i]);
+      tot.copies += r.copies; tot.erreurs += r.erreurs; tot.total += r.total;
+    } catch (e) {
+      tot.erreurs++;
+      console.error(`Producteur ${ids[i]} ABANDONNE: ${e.message}`);
+    }
     if (ids.length > 5 && (i + 1) % 25 === 0) console.log(`--- ${i + 1}/${ids.length} producteurs ---`);
   }
   console.log(`\nTOTAL: ${tot.copies} copiés / ${tot.total} (${tot.erreurs} erreurs) sur ${ids.length} producteurs.`);
+  if (incremental && newWatermark) fs.writeFileSync(WM_PATH, newWatermark);
   await pgc.end();
 }
 main().catch((e) => { console.error(e); process.exit(1); });
