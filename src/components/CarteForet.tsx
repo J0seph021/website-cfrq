@@ -254,16 +254,19 @@ function contenuPopup(p: Record<string, any>): string {
         ligne("Priorité", p.priorite)
       );
     case "travaux":
-      return wrap(titre("Travaux réalisés") + ligne("Superficie", p.hectares, " ha"));
+      return wrap(
+        titre("Travaux réalisés", p.no_prescription ? `Prescription nº ${p.no_prescription}` : "") +
+        (p.traitement ? `<div style="font-weight:600;color:#2f7d32;margin-bottom:3px">${esc(p.traitement)}</div>` : "") +
+        ligne("Année", p.annee) +
+        ligne("Superficie", p.hectares, " ha")
+      );
     case "prescription":
       return wrap(
         titre("Prescription sylvicole", p.no_prescription ? `nº ${p.no_prescription}` : "") +
+        (p.traitement ? `<div style="font-weight:600;color:#2f7d32;margin:2px 0 4px">${esc(p.traitement)}</div>` : "") +
         ligne("Statut", STATUTS[p.statut] ?? p.statut) +
+        ligne("Année", p.annee) +
         ligne("Superficie", p.hectares, " ha") +
-        (p.codes_travaux
-          ? `<div style="margin-top:4px;padding-top:4px;border-top:1px solid #eee"><span style="color:#6b7280">Traitements prescrits</span><div style="font-weight:600;color:#2f7d32">${esc(p.codes_travaux)}</div></div>`
-          : "") +
-        ligne("Programme", p.programmes) +
         ligne("Lots", p.lots) +
         ligne("Prescrit par", p.prescrit_par) +
         ligne("Date du rapport", p.date_rapport)

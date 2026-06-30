@@ -36,6 +36,21 @@ WITH prop AS (
   SELECT ST_Union(geom) AS g, ST_Transform(ST_Union(geom),4326) AS g4326
   FROM planilogix.v_proprietes WHERE producteur_id = $1 AND geom IS NOT NULL
 ),
+-- Dictionnaire code de traitement -> libellé lisible (une description par code).
+dict AS (
+  SELECT DISTINCT ON (code_pr) code_pr, description
+  FROM sigga.travaux WHERE description IS NOT NULL AND code_pr IS NOT NULL
+  ORDER BY code_pr, description
+),
+-- Traitements lisibles + année, agrégés par prescription.
+trait AS (
+  SELECT pt.no_prescription,
+         string_agg(DISTINCT coalesce(d.description, pt.code_pr), ' / ') AS traitements,
+         max(pt.annee) AS annee
+  FROM planilogix.prescription_traitement pt
+  LEFT JOIN dict d ON d.code_pr = pt.code_pr
+  GROUP BY pt.no_prescription
+),
 raw AS (
   SELECT 'propriete'::text AS couche, jsonb_build_object('nom','Propriété') AS props, p.g4326 AS g FROM prop p
   UNION ALL
@@ -58,19 +73,29 @@ raw AS (
            'priorite', pe.priorite)),
          ST_Transform(pe.geom,4326) FROM planilogix.peuplements pe, prop WHERE ST_Intersects(pe.geom,prop.g)
   UNION ALL
-  SELECT 'travaux', jsonb_build_object('hectares',round(t.hectares::numeric,2)),
-         ST_Transform(t.geom,4326) FROM planilogix.travaux_geo t, prop WHERE ST_Intersects(t.geom,prop.g)
+  SELECT 'travaux', jsonb_strip_nulls(jsonb_build_object(
+           'no_prescription', left(t.id_travaux,13),
+           'traitement', tr.traitements,
+           'annee', tr.annee,
+           'hectares', round(t.hectares::numeric,2))),
+         ST_Transform(t.geom,4326)
+  FROM planilogix.travaux_geo t
+  JOIN prop ON ST_Intersects(t.geom, prop.g)
+  LEFT JOIN trait tr ON tr.no_prescription = left(t.id_travaux,13)
   UNION ALL
   SELECT 'prescription', jsonb_strip_nulls(jsonb_build_object(
            'no_prescription',pc.no_prescription,
            'statut',pc.statut_courant,
+           'traitement', tr.traitements,
+           'annee', tr.annee,
            'hectares',round(pc.superficie::numeric,2),
-           'codes_travaux',pc.codes_travaux,
-           'programmes',pc.programmes,
            'lots',pc.lots,
            'prescrit_par',pc.prescrit_par,
            'date_rapport',pc.date_rapport)),
-         ST_Transform(pc.geom,4326) FROM planilogix.v_prescription_carte pc, prop WHERE ST_Intersects(pc.geom,prop.g)
+         ST_Transform(pc.geom,4326)
+  FROM planilogix.v_prescription_carte pc
+  JOIN prop ON ST_Intersects(pc.geom, prop.g)
+  LEFT JOIN trait tr ON tr.no_prescription = pc.no_prescription
 ),
 clean AS (
   SELECT couche, props, ST_CollectionExtract(ST_MakeValid(g),3) AS g FROM raw
