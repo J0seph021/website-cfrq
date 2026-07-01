@@ -25,7 +25,7 @@ const cad = (n: number) =>
 // Catalogue du produit "Portrait des forêts" (relevé patrimonial payant).
 // Source: schéma portrait.releve_items du projet Supabase (complet 299$, volets 79$).
 const PORTRAIT = {
-  complet: { titre: "Relevé complet", prix: 299, icone: "⭐", desc: "Les six volets réunis : le portrait intégral de votre forêt." },
+  complet: { theme: "complet", titre: "Relevé complet", prix: 299, icone: "⭐", desc: "Les six volets réunis : le portrait intégral de votre forêt." },
   themes: [
     { theme: "bois", titre: "Valeur du bois", prix: 79, icone: "🌳" },
     { theme: "carbone", titre: "Carbone", prix: 79, icone: "🌍" },
@@ -35,6 +35,23 @@ const PORTRAIT = {
     { theme: "fiscalite", titre: "Leviers fiscaux", prix: 79, icone: "📋" },
   ],
 };
+
+// Liens de paiement Stripe (MODE TEST / bac à sable). Le token à usage unique du
+// client est ajouté en client_reference_id pour que le webhook associe l'achat au
+// bon dossier. Pour le lancement: recréer ces liens en LIVE et remplacer ces URLs.
+const PAYMENT_LINKS: Record<string, string> = {
+  complet:      "https://buy.stripe.com/test_dRm3cueyEe428pO3oifnO07",
+  bois:         "https://buy.stripe.com/test_14A6oG0HO7FE21q2kefnO01",
+  carbone:      "https://buy.stripe.com/test_28E3cu4Y46BAbC01gafnO02",
+  acericulture: "https://buy.stripe.com/test_aFa9ASfCI0dc49ybUOfnO03",
+  faune:        "https://buy.stripe.com/test_5kQeVc76c6BA8pOcYSfnO04",
+  biodiversite: "https://buy.stripe.com/test_6oUfZg76cf86gWke2WfnO05",
+  fiscalite:    "https://buy.stripe.com/test_4gMcN41LSaRQ9tS6AufnO06",
+};
+
+// Offre du relevé pour le client connecté (statut acheté par thème).
+export type OffreItem = { theme: string; titre: string; prix_cents: number; achete: boolean; pdf?: boolean };
+export type Offre = { nom?: string; statut?: string; items: OffreItem[] } | null;
 
 /* ------------------------------------------------------------------ */
 /* Hooks d'animation, tous neutralises sous prefers-reduced-motion.    */
@@ -210,8 +227,18 @@ function estProducteurReconnu(prod: Row | null): boolean {
 /* Vue presentationnelle (testable avec des donnees factices).         */
 /* ------------------------------------------------------------------ */
 
-export function DashboardView({ d, onLogout }: { d: Dossier; onLogout?: () => void }) {
+export function DashboardView({ d, offre = null, onLogout }: { d: Dossier; offre?: Offre; onLogout?: () => void }) {
   const nom = d.producteur?.nom ?? "Votre dossier";
+  const [achatEnCours, setAchatEnCours] = useState<string | null>(null);
+
+  // Statut d'achat par thème (vide tant qu'aucun relevé n'existe: tout est offert à l'achat).
+  const acheteParTheme = useMemo(() => {
+    const m = new Map<string, boolean>();
+    for (const it of offre?.items ?? []) m.set(it.theme, it.achete);
+    return m;
+  }, [offre]);
+  const themesUnitaires = ["bois", "carbone", "acericulture", "faune", "biodiversite", "fiscalite"];
+  const toutAchete = themesUnitaires.every((t) => acheteParTheme.get(t));
   const initiales = nom.split(/\s+/).map((m: string) => m[0]).join("").slice(0, 2).toUpperCase();
 
   // Agregats reels
@@ -339,6 +366,25 @@ export function DashboardView({ d, onLogout }: { d: Dossier; onLogout?: () => vo
       d.producteur?.no_prod ? " (" + d.producteur.no_prod + ")" : ""
     }\n\nMerci.`
   )}`;
+
+  // Achat d'un volet (ou du complet): on demande au serveur un token à usage unique
+  // rattaché au dossier du client connecté, puis on l'envoie au paiement Stripe.
+  // Si la commande en ligne n'est pas encore branchée, on retombe sur le courriel.
+  async function acheter(theme: string) {
+    if (achatEnCours) return;
+    setAchatEnCours(theme);
+    try {
+      const { data, error } = await supabase.rpc("portrait_token_client");
+      const token = (data as any)?.token as string | undefined;
+      const base = PAYMENT_LINKS[theme];
+      if (error || !token || !base) throw error ?? new Error("commande indisponible");
+      const url = base + (base.includes("?") ? "&" : "?") + "client_reference_id=" + encodeURIComponent(token);
+      window.location.href = url;
+    } catch {
+      setAchatEnCours(null);
+      window.location.href = lienCommande; // repli: courriel pré-rempli
+    }
+  }
 
   return (
     <div className="min-h-screen bg-cfrq-cream">
@@ -731,30 +777,46 @@ export function DashboardView({ d, onLogout }: { d: Dossier; onLogout?: () => vo
               </p>
             </div>
             <div className="mt-5 grid gap-3 lg:grid-cols-3">
-              <div className="rounded-xl border-2 border-cfrq-green/40 bg-white p-5 lg:row-span-2">
-                <span className="rounded-full bg-cfrq-green/15 px-2.5 py-0.5 text-[12px] font-medium text-cfrq-leaf">Le plus complet</span>
+              {/* Le complet, mis en avant */}
+              <div className="flex flex-col rounded-xl border-2 border-cfrq-green/40 bg-white p-5 lg:row-span-2">
+                <span className="w-fit rounded-full bg-cfrq-green/15 px-2.5 py-0.5 text-[12px] font-medium text-cfrq-leaf">Le plus complet</span>
                 <div className="mt-3 flex items-center gap-2">
                   <span className="text-2xl" aria-hidden>{PORTRAIT.complet.icone}</span>
                   <span className="font-display text-lg font-medium text-cfrq-deep">{PORTRAIT.complet.titre}</span>
                 </div>
                 <div className="mt-1 font-display text-3xl font-medium text-cfrq-deep">{cad(PORTRAIT.complet.prix)}</div>
                 <p className="mt-2 text-[14px] leading-relaxed text-black/60">{PORTRAIT.complet.desc}</p>
+                {toutAchete ? (
+                  <span className="mt-4 inline-flex w-fit items-center gap-1.5 rounded-lg bg-cfrq-tint px-4 py-2.5 text-[14px] font-medium text-cfrq-leaf">✓ Déjà à votre dossier</span>
+                ) : (
+                  <button onClick={() => acheter("complet")} disabled={!!achatEnCours}
+                    className="mt-4 inline-flex items-center justify-center gap-2 rounded-lg bg-cfrq-green px-5 py-3 text-[15px] font-medium text-[#123005] transition-colors hover:bg-cfrq-green-hover disabled:opacity-60">
+                    {achatEnCours === "complet" ? "Redirection…" : "Commander le complet"}
+                  </button>
+                )}
               </div>
+              {/* Volets à l'unité */}
               <ul className="grid gap-2 sm:grid-cols-2 lg:col-span-2">
-                {PORTRAIT.themes.map((t) => (
-                  <li key={t.theme} className="flex items-center justify-between gap-2 rounded-xl border border-black/5 bg-white px-4 py-3">
-                    <span className="flex items-center gap-2 font-medium text-cfrq-deep"><span aria-hidden>{t.icone}</span>{t.titre}</span>
-                    <span className="shrink-0 text-[14px] font-medium text-cfrq-leaf">{cad(t.prix)}</span>
-                  </li>
-                ))}
+                {PORTRAIT.themes.map((t) => {
+                  const paye = acheteParTheme.get(t.theme);
+                  return (
+                    <li key={t.theme} className="flex items-center justify-between gap-2 rounded-xl border border-black/5 bg-white px-4 py-3">
+                      <span className="flex items-center gap-2 font-medium text-cfrq-deep"><span aria-hidden>{t.icone}</span>{t.titre}</span>
+                      {paye ? (
+                        <span className="shrink-0 rounded-full bg-cfrq-tint px-3 py-1 text-[13px] font-medium text-cfrq-leaf">✓ Payé</span>
+                      ) : (
+                        <button onClick={() => acheter(t.theme)} disabled={!!achatEnCours}
+                          aria-label={`Commander le volet ${t.titre} pour ${cad(t.prix)}`}
+                          className="shrink-0 rounded-lg border border-cfrq-green/40 px-3.5 py-2 text-[14px] font-medium text-cfrq-leaf transition-colors hover:bg-cfrq-tint disabled:opacity-60">
+                          {achatEnCours === t.theme ? "…" : cad(t.prix)}
+                        </button>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
-            <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2">
-              <a href={lienCommande} className="inline-block rounded-lg bg-cfrq-green px-5 py-3 text-[15px] font-medium text-[#123005] transition-colors hover:bg-cfrq-green-hover">
-                Commander mon Portrait
-              </a>
-              <span className="text-[13.5px] text-black/55">Livré en PDF, taxes incluses. Ou par téléphone au {site.tel}.</span>
-            </div>
+            <p className="mt-5 text-[13.5px] text-black/55">Livré en PDF, taxes incluses. Une question, ou vous préférez commander de vive voix ? Appelez-nous au {site.tel}.</p>
           </section>
         </Reveal>
 
@@ -794,13 +856,14 @@ function ParcoursBar({ pourcentage }: { pourcentage: number }) {
 export default function EspaceClient() {
   const [loading, setLoading] = useState(true);
   const [d, setD] = useState<Dossier | null>(null);
+  const [offre, setOffre] = useState<Offre>(null);
 
   useEffect(() => {
     let alive = true;
     (async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) { window.location.replace(withBase("/espace-client")); return; }
-      const [prod, proprietes, lots, paf, travaux, docs, carte] = await Promise.all([
+      const [prod, proprietes, lots, paf, travaux, docs, carte, offreRes] = await Promise.all([
         supabase.from("producteurs").select("*").maybeSingle(),
         supabase.from("proprietes").select("*").order("no_propriete"),
         supabase.from("lots").select("*"),
@@ -808,6 +871,8 @@ export default function EspaceClient() {
         supabase.from("travaux").select("*"),
         supabase.from("documents").select("*"),
         supabase.from("cartes").select("geojson,bbox").maybeSingle(),
+        // Offre du Portrait (statut d'achat). RPC absente -> erreur silencieuse, offre = null.
+        supabase.rpc("portrait_offre_client"),
       ]);
       if (!alive) return;
       setD({
@@ -819,6 +884,7 @@ export default function EspaceClient() {
         documents: docs.data ?? [],
         carte: carte.data ?? null,
       });
+      setOffre((offreRes?.data as Offre) ?? null);
       setLoading(false);
     })();
     const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => {
@@ -843,5 +909,5 @@ export default function EspaceClient() {
     );
   }
 
-  return <DashboardView d={d} onLogout={logout} />;
+  return <DashboardView d={d} offre={offre} onLogout={logout} />;
 }
