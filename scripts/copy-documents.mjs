@@ -65,6 +65,16 @@ function nomLisible(tcode, no, annee) {
   return `Plan d'aménagement forestier${annee ? " " + String(annee).replace(/\.0$/, "") : ""}`;
 }
 
+// Clé Storage : Supabase refuse accents/apostrophes/virgules/() dans la clé d'objet
+// ("Invalid key"). On translittère (NFKD), on retire le non-ASCII, puis on remplace tout
+// caractère hors [A-Za-z0-9._-] par "_". Le libellé affiché vient de nomLisible(), donc
+// l'accentuation reste visible côté client; seule la clé interne est assainie.
+function safeName(name) {
+  return name
+    .normalize("NFKD").replace(/[^\x00-\x7F]/g, "")
+    .replace(/[^A-Za-z0-9._-]/g, "_");
+}
+
 async function traiterProducteur(id) {
   const { rows: docs } = await pgc.query(SQL_DOCS, [id, TYPES]);
   // Idempotence: on repart propre pour ce producteur (types gérés ici).
@@ -79,7 +89,7 @@ async function traiterProducteur(id) {
       const dl = await plani.storage.from(PLANI_DOC_BUCKET).download(r.storage_key);
       if (dl.error) throw new Error("download: " + dl.error.message);
       const buf = Buffer.from(await dl.data.arrayBuffer());
-      const dest = `${id}/${meta.dossier}/${r.nom_fichier}`;
+      const dest = `${id}/${meta.dossier}/${safeName(r.nom_fichier)}`;
       const up = await site.storage.from("documents").upload(dest, buf, {
         contentType: "application/pdf", upsert: true,
       });
