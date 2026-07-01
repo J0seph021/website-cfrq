@@ -239,6 +239,31 @@ export function DashboardView({ d, offre = null, onLogout }: { d: Dossier; offre
   }, [offre]);
   const themesUnitaires = ["bois", "carbone", "acericulture", "faune", "biodiversite", "fiscalite"];
   const toutAchete = themesUnitaires.every((t) => acheteParTheme.get(t));
+
+  // Retour "back" depuis Stripe (bfcache) ou reprise de focus: on relâche l'état
+  // de chargement, sinon les boutons restent désactivés (« … » figé).
+  useEffect(() => {
+    const relacher = () => setAchatEnCours(null);
+    window.addEventListener("pageshow", relacher);
+    window.addEventListener("focus", relacher);
+    return () => {
+      window.removeEventListener("pageshow", relacher);
+      window.removeEventListener("focus", relacher);
+    };
+  }, []);
+
+  // Retour après paiement (?paye=1): remerciement + on descend à la section Portrait.
+  const [paye, setPaye] = useState(false);
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("paye") !== "1") return;
+    setPaye(true);
+    const aller = () => document.getElementById("portrait")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    // Deux passes: la 2e recale après le chargement de la carte et des images.
+    const t1 = setTimeout(aller, 400);
+    const t2 = setTimeout(aller, 1200);
+    window.history.replaceState({}, "", window.location.pathname + "#portrait");
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, []);
   const initiales = nom.split(/\s+/).map((m: string) => m[0]).join("").slice(0, 2).toUpperCase();
 
   // Agregats reels
@@ -386,26 +411,49 @@ export function DashboardView({ d, offre = null, onLogout }: { d: Dossier; offre
     }
   }
 
+  // Sommaire: uniquement les sections réellement affichées (ancrage + retour post-paiement).
+  const sommaire = [
+    d.carte?.geojson ? { id: "foret", label: "Ma forêt" } : null,
+    { id: "parcours", label: "Mon parcours" },
+    d.proprietes.length > 0 ? { id: "proprietes", label: "Mes propriétés" } : null,
+    { id: "plan", label: "Mon plan" },
+    travauxTries.length > 0 ? { id: "travaux", label: "Mes travaux" } : null,
+    { id: "documents", label: "Mes documents" },
+    { id: "portrait", label: "Mon Portrait" },
+  ].filter(Boolean) as { id: string; label: string }[];
+
   return (
     <div className="min-h-screen bg-cfrq-cream">
-      <header className="sticky top-0 z-30 bg-cfrq-deep text-cfrq-cream">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-3">
-          <div className="flex items-center gap-3">
-            <a href={withBase("/")} className="font-display text-xl text-cfrq-cream" aria-label="Accueil CFRQ">
-              CFR<span style={{ color: "#5abd2a" }}>Q</span>
-            </a>
-            <span className="hidden border-l border-white/20 pl-3 text-[14px] text-cfrq-cream/70 sm:inline">Espace client</span>
+      <div className="sticky top-0 z-30">
+        <header className="bg-cfrq-deep text-cfrq-cream">
+          <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-3">
+            <div className="flex items-center gap-3">
+              <a href={withBase("/")} className="font-display text-xl text-cfrq-cream" aria-label="Accueil CFRQ">
+                CFR<span style={{ color: "#5abd2a" }}>Q</span>
+              </a>
+              <span className="hidden border-l border-white/20 pl-3 text-[14px] text-cfrq-cream/70 sm:inline">Espace client</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-cfrq-green text-[13px] font-medium text-[#123005]">{initiales}</span>
+              {onLogout && (
+                <button onClick={onLogout} className="rounded-lg border border-white/25 px-3 py-2 text-[13px] text-cfrq-cream/90 transition-colors hover:bg-white/10">
+                  Déconnexion
+                </button>
+              )}
+            </div>
           </div>
-          <div className="flex items-center gap-3">
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-cfrq-green text-[13px] font-medium text-[#123005]">{initiales}</span>
-            {onLogout && (
-              <button onClick={onLogout} className="rounded-lg border border-white/25 px-3 py-2 text-[13px] text-cfrq-cream/90 transition-colors hover:bg-white/10">
-                Déconnexion
-              </button>
-            )}
+        </header>
+        <nav aria-label="Sommaire" className="border-b border-black/10 bg-cfrq-cream/95 backdrop-blur">
+          <div className="mx-auto flex max-w-6xl gap-1.5 overflow-x-auto px-4 py-2">
+            {sommaire.map((s) => (
+              <a key={s.id} href={`#${s.id}`}
+                className="whitespace-nowrap rounded-full px-3 py-1.5 text-[13.5px] font-medium text-cfrq-leaf transition-colors hover:bg-cfrq-tint">
+                {s.label}
+              </a>
+            ))}
           </div>
-        </div>
-      </header>
+        </nav>
+      </div>
 
       <div className="mx-auto max-w-6xl px-5 py-8">
         {/* Salutation */}
@@ -502,7 +550,7 @@ export function DashboardView({ d, offre = null, onLogout }: { d: Dossier; offre
         {/* Carte interactive */}
         {d.carte?.geojson && (
           <Reveal className="mt-10">
-            <section>
+            <section id="foret" className="scroll-mt-28">
               <div className="flex flex-wrap items-end justify-between gap-2">
                 <h2 className="font-display text-xl font-medium text-cfrq-deep">Votre forêt, lot par lot</h2>
                 <span className="text-[13px] text-black/50">Touchez un peuplement pour voir le détail</span>
@@ -516,7 +564,7 @@ export function DashboardView({ d, offre = null, onLogout }: { d: Dossier; offre
 
         {/* Parcours forestier (jauge) */}
         <Reveal className="mt-10">
-          <section className="rounded-2xl border border-black/5 bg-white p-6">
+          <section id="parcours" className="scroll-mt-28 rounded-2xl border border-black/5 bg-white p-6">
             <div className="flex flex-wrap items-end justify-between gap-2">
               <h2 className="font-display text-xl font-medium text-cfrq-deep">Votre parcours forestier</h2>
               <span className="text-[14px] font-medium text-cfrq-leaf">
@@ -584,7 +632,7 @@ export function DashboardView({ d, offre = null, onLogout }: { d: Dossier; offre
         {/* Mes proprietes */}
         {d.proprietes.length > 0 && (
           <Reveal className="mt-10">
-            <section>
+            <section id="proprietes" className="scroll-mt-28">
               <h2 className="font-display text-xl font-medium text-cfrq-deep">Vos propriétés</h2>
               <div className="mt-4 overflow-x-auto rounded-2xl border border-black/5 bg-white">
                 <table className="w-full min-w-[460px] text-left text-[15px]">
@@ -616,7 +664,7 @@ export function DashboardView({ d, offre = null, onLogout }: { d: Dossier; offre
 
         {/* Plan d'amenagement */}
         <Reveal className="mt-10">
-          <section>
+          <section id="plan" className="scroll-mt-28">
             <h2 className="font-display text-xl font-medium text-cfrq-deep">Votre plan d'aménagement</h2>
             <div className="mt-4 rounded-2xl border border-cfrq-green/15 bg-gradient-to-br from-cfrq-tint to-white p-6 md:p-8">
               {d.paf.length > 0 ? (
@@ -673,7 +721,7 @@ export function DashboardView({ d, offre = null, onLogout }: { d: Dossier; offre
         {/* Travaux realises (plafonnes, cliquables vers la prescription) */}
         {travauxTries.length > 0 && (
           <Reveal className="mt-10">
-            <section>
+            <section id="travaux" className="scroll-mt-28">
               <div className="flex flex-wrap items-end justify-between gap-2">
                 <h2 className="font-display text-xl font-medium text-cfrq-deep">Vos travaux réalisés</h2>
                 <span className="text-[13px] text-black/50">{travauxTries.length} au total</span>
@@ -713,7 +761,7 @@ export function DashboardView({ d, offre = null, onLogout }: { d: Dossier; offre
 
         {/* Documents */}
         <Reveal className="mt-10">
-          <section id="documents">
+          <section id="documents" className="scroll-mt-28">
             <h2 className="font-display text-xl font-medium text-cfrq-deep">Vos documents</h2>
             <p className="mt-1 text-[14.5px] text-black/55">Vos plans, prescriptions et rapports signés, conservés au même endroit : un boisé documenté, plus facile à entretenir et à transmettre.</p>
             <div className="mt-4 rounded-2xl border border-black/5 bg-white p-6">
@@ -769,7 +817,12 @@ export function DashboardView({ d, offre = null, onLogout }: { d: Dossier; offre
 
         {/* Votre Portrait des forets (releve patrimonial payant) */}
         <Reveal className="mt-10">
-          <section className="overflow-hidden rounded-2xl border border-cfrq-green/20 bg-gradient-to-br from-cfrq-tint to-white p-6 md:p-8">
+          <section id="portrait" className="scroll-mt-28 overflow-hidden rounded-2xl border border-cfrq-green/20 bg-gradient-to-br from-cfrq-tint to-white p-6 md:p-8">
+            {paye && (
+              <div className="mb-5 rounded-xl border border-cfrq-green/40 bg-white/80 p-4 text-[15px] leading-relaxed text-cfrq-deep">
+                <strong className="font-medium">Merci, votre paiement est reçu.</strong> Vos relevés payés sont marqués « Payé » ci-dessous. Une copie vous est aussi envoyée par courriel.
+              </div>
+            )}
             <div className="max-w-2xl">
               <h2 className="font-display text-xl font-medium text-cfrq-deep">Allez plus loin : votre Portrait des forêts</h2>
               <p className="mt-2 text-[15.5px] leading-relaxed text-black/65">
@@ -891,6 +944,19 @@ export default function EspaceClient() {
       if (!s) window.location.replace(withBase("/espace-client"));
     });
     return () => { alive = false; sub.subscription.unsubscribe(); };
+  }, []);
+
+  // Après un retour de paiement, le webhook Stripe peut prendre un instant à
+  // marquer l'achat: on rafraîchit l'offre quelques fois pour afficher « Payé ».
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("paye") !== "1") return;
+    let n = 0;
+    const id = setInterval(async () => {
+      const { data } = await supabase.rpc("portrait_offre_client");
+      if (data) setOffre(data as Offre);
+      if (++n >= 3) clearInterval(id);
+    }, 2000);
+    return () => clearInterval(id);
   }, []);
 
   async function logout() {
