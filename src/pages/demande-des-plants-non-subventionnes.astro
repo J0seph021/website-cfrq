@@ -1,0 +1,153 @@
+---
+import Base from "../layouts/Base.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { site } from "../data/site";
+
+const essences = [
+  { nom: "Érable à sucre", texte: "Terrain élevé, frais et riche, sol profond, sous couvert avec d'autres essences." },
+  { nom: "Chêne rouge", texte: "Site sec, enrichissement sous-couvert de pinède et d'érablière sur sols minces." },
+  { nom: "Chêne à gros fruits", texte: "Milieu semi-fermé (sous-couvert, friche embroussaillée) ou herbacé, sol argileux sec." },
+];
+
+const quantites = [
+  { id: "q-erable", label: "Érable à sucre", aria: "Quantité érable à sucre" },
+  { id: "q-chene-rouge", label: "Chêne rouge", aria: "Quantité chêne rouge" },
+  { id: "q-chene-gros", label: "Chêne à gros fruits", aria: "Quantité chêne à gros fruits" },
+];
+
+const ld = {
+  "@context": "https://schema.org",
+  "@graph": [
+    { "@type": "WebPage", "@id": "https://cfrq.ca/demande-des-plants-non-subventionnes/#webpage", url: "https://cfrq.ca/demande-des-plants-non-subventionnes/", name: "Demande de plants non subventionnés | CFRQ", description: "Commande de plants feuillus non subventionnés : érable à sucre, chêne rouge, chêne à gros fruits.", inLanguage: "fr-CA", about: { "@id": "https://cfrq.ca/#organization" } },
+    { "@type": "BreadcrumbList", itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Accueil", item: "https://cfrq.ca/" },
+      { "@type": "ListItem", position: 2, name: "Services", item: "https://cfrq.ca/services/" },
+      { "@type": "ListItem", position: 3, name: "Plants", item: "https://cfrq.ca/demande-des-plants-non-subventionnes/" },
+    ] },
+    { "@type": "Service", name: "Fourniture de plants forestiers non subventionnés", provider: { "@id": "https://cfrq.ca/#organization" }, description: "Plants feuillus (érable à sucre, chêne rouge, chêne à gros fruits) pour l'enrichissement des boisés privés." },
+  ],
+};
+
+const eyebrow = "text-[12.5px] font-semibold uppercase tracking-[0.18em]";
+const champ = "h-12 w-full rounded-[10px] border border-black/15 bg-white px-4 text-[16px] outline-none transition-shadow focus:border-cfrq-green focus:shadow-[0_0_0_3px_rgba(90,189,42,.18)]";
+---
+
+<Base
+  title="Demande de plants non subventionnés | CFRQ"
+  description="Commandez vos plants feuillus non subventionnés, érable à sucre, chêne rouge, chêne à gros fruits, pour enrichir votre boisé. Formulaire de demande CFRQ."
+  canonical="/demande-des-plants-non-subventionnes/"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(ld)} slot="head" />
+
+  <Header />
+  <main id="contenu">
+    <!-- HERO -->
+    <section style="background:linear-gradient(160deg,#EAF4E0,#F7F5EE 60%)">
+      <div class="mx-auto max-w-[1160px] px-[22px] pb-[48px] pt-[72px]">
+        <p class={`${eyebrow} tracking-[0.2em] text-cfrq-leaf`}>Reboisement</p>
+        <h1 class="mt-3 max-w-[720px] font-display font-medium text-cfrq-deep text-[clamp(36px,6vw,54px)] leading-[1.03] tracking-[-0.02em] text-balance">
+          Demande de plants non subventionnés
+        </h1>
+        <p class="mt-5 max-w-[600px] text-[19px] leading-[1.55] text-cfrq-ink/70">
+          Érable à sucre, chêne rouge et chêne à gros fruits, pour enrichir votre boisé.
+        </p>
+      </div>
+    </section>
+
+    <!-- ESSENCES + REGLES -->
+    <section class="mx-auto max-w-[1160px] px-[22px] pt-[52px]">
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {essences.map((e) => (
+          <div class="rounded-[18px] border border-black/5 bg-white p-6">
+            <h2 class="font-display text-[20px] font-medium text-cfrq-deep">{e.nom}</h2>
+            <p class="mt-2.5 text-[14.5px] leading-[1.6] text-cfrq-ink/65">{e.texte}</p>
+          </div>
+        ))}
+      </div>
+      <div class="mt-[22px] rounded-[18px] border border-cfrq-green/[.18] bg-cfrq-tint px-6 py-[22px]">
+        <p class="text-[14.5px] leading-[1.65] text-cfrq-ink/[.82]">
+          Pour les résineux, une prescription sylvicole doit être préparée au préalable. Le reboisement de friche avec des plants du gouvernement doit être autorisé par le MAPAQ. Renseignez-vous auprès de l'ingénieur forestier de votre secteur.
+        </p>
+        <p class="mt-3 text-[14.5px] leading-[1.65] text-cfrq-ink/[.82]">
+          Idéalement, les demandes doivent être complétées <strong class="font-semibold text-cfrq-deep">avant le 1<sup>er</sup> mai</strong>. Les plants sont distribués à la fin du mois de mai (la date précise est transmise par courriel). Des frais de transport de <strong class="font-semibold text-cfrq-deep">22 $ par sac (50 plants)</strong> s'appliquent à la réception. Les quantités demandées ne sont pas garanties.
+        </p>
+      </div>
+    </section>
+
+    <!-- FORMULAIRE -->
+    <section class="mx-auto max-w-[1160px] px-[22px] pb-5 pt-10">
+      <div class="max-w-[820px] rounded-3xl border border-black/5 bg-white p-[clamp(24px,3vw,36px)]">
+        <h2 class="mb-5 font-display text-[24px] font-medium text-cfrq-deep">Formulaire de demande</h2>
+
+        <form id="plants-form">
+          <div class="grid gap-3.5 sm:grid-cols-2">
+            <input name="prenom" type="text" required placeholder="Prénom" aria-label="Prénom" class={champ} />
+            <input name="nom" type="text" required placeholder="Nom" aria-label="Nom" class={champ} />
+            <input name="muni" type="text" required placeholder="Municipalité" aria-label="Municipalité" class={champ} />
+            <input name="courriel" type="email" required placeholder="Courriel" aria-label="Courriel" class={champ} />
+            <input name="tel" type="tel" required placeholder="Téléphone" aria-label="Téléphone" class={champ} />
+            <input name="tel2" type="tel" placeholder="Téléphone (autre)" aria-label="Téléphone autre" class={champ} />
+          </div>
+
+          <fieldset class="mt-[18px] rounded-2xl border border-black/10 p-5">
+            <legend class="px-2 text-[14.5px] font-semibold text-cfrq-deep">Quantités (multiples de 50)</legend>
+            <div class="grid gap-3.5 sm:grid-cols-3">
+              {quantites.map((q) => (
+                <label class="block text-[14px] text-cfrq-ink/70">
+                  {q.label}
+                  <input name={q.id} type="number" min="0" step="50" placeholder="0" aria-label={q.aria} class={`mt-1.5 ${champ}`} />
+                </label>
+              ))}
+            </div>
+          </fieldset>
+
+          <textarea name="message" rows="4" placeholder="Votre message" aria-label="Votre message" class="mt-4 w-full resize-y rounded-[10px] border border-black/15 bg-white p-4 text-[16px] outline-none transition-shadow focus:border-cfrq-green focus:shadow-[0_0_0_3px_rgba(90,189,42,.18)]"></textarea>
+
+          <label class="mt-4 flex items-start gap-[11px] text-[14px] leading-[1.55] text-cfrq-ink/[.72]">
+            <input name="consent" type="checkbox" required class="mt-[3px] h-5 w-5 accent-cfrq-green" />
+            <span>Je comprends et j'accepte que les quantités demandées ne sont pas garanties et que des frais de transport de 22 $ le sac (50 plants) devront être acquittés à la réception.</span>
+          </label>
+
+          <button type="submit" class="mt-5 rounded-xl bg-cfrq-green px-7 py-[15px] text-[16px] font-bold text-[#123005] transition-colors hover:bg-cfrq-green-hover">
+            Envoyer ma demande
+          </button>
+          <p id="plants-ok" class="mt-4 hidden rounded-xl border border-cfrq-green/40 bg-cfrq-tint p-4 text-[15px] text-cfrq-deep" role="status" aria-live="polite">
+            Merci ! Votre logiciel de courriel s'ouvre avec votre demande de plants. Pour toute question, appelez-nous au {site.tel}.
+          </p>
+        </form>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Base>
+
+<script>
+  const f = document.getElementById("plants-form") as HTMLFormElement | null;
+  const ok = document.getElementById("plants-ok");
+  f?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (!f.reportValidity()) return;
+    const d = new FormData(f);
+    const v = (k: string) => String(d.get(k) ?? "").trim();
+    const corps = [
+      `Prénom : ${v("prenom")}`,
+      `Nom : ${v("nom")}`,
+      `Municipalité : ${v("muni")}`,
+      `Courriel : ${v("courriel")}`,
+      `Téléphone : ${v("tel")}`,
+      `Téléphone (autre) : ${v("tel2") || "(aucun)"}`,
+      "",
+      "Quantités demandées :",
+      `- Érable à sucre : ${v("q-erable") || "0"}`,
+      `- Chêne rouge : ${v("q-chene-rouge") || "0"}`,
+      `- Chêne à gros fruits : ${v("q-chene-gros") || "0"}`,
+      "",
+      "Message :",
+      v("message") || "(aucun)",
+    ].join("\n");
+    const sujet = `Demande de plants, ${v("prenom")} ${v("nom")}`;
+    window.location.href = `mailto:cfrq@cfrq.ca?subject=${encodeURIComponent(sujet)}&body=${encodeURIComponent(corps)}`;
+    ok?.classList.remove("hidden");
+  });
+</script>

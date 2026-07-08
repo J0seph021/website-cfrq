@@ -43,8 +43,8 @@ export const clientDemo = {
 
   documents: [
     { nom: "Plan d'aménagement forestier 2021-2031", type: "PDF", taille: "4,2 Mo", date: "Juin 2021" },
-    { nom: "Prescription sylvicole — Éclaircie 2026", type: "PDF", taille: "1,1 Mo", date: "Avr. 2026" },
-    { nom: "Rapport d'exécution — Reboisement 2025", type: "PDF", taille: "2,7 Mo", date: "Nov. 2025" },
+    { nom: "Prescription sylvicole, Éclaircie 2026", type: "PDF", taille: "1,1 Mo", date: "Avr. 2026" },
+    { nom: "Rapport d'exécution, Reboisement 2025", type: "PDF", taille: "2,7 Mo", date: "Nov. 2025" },
     { nom: "Certificat de producteur forestier", type: "PDF", taille: "320 Ko", date: "Juil. 2021" },
   ],
 

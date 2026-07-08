@@ -11,7 +11,7 @@ export interface Service {
 
 export const services: Service[] = [
   {
-    slug: "amenagement-forestier",
+    slug: "amenagement",
     titre: "Aménagement forestier",
     tagline: "Un boisé en santé, étape par étape.",
     intro:
@@ -37,7 +37,7 @@ export const services: Service[] = [
     icone: "tree",
   },
   {
-    slug: "operations-forestieres",
+    slug: "operation-forestieres",
     titre: "Opérations forestières",
     tagline: "Du service à la carte au clé en main.",
     intro:
@@ -94,7 +94,7 @@ export const services: Service[] = [
     icone: "droplet",
   },
   {
-    slug: "arboriculture-foresterie-urbaine",
+    slug: "arboriculture-et-foresterie-urbaine",
     titre: "Arboriculture et foresterie urbaine",
     tagline: "Des arbres sains, des milieux sécuritaires.",
     intro:
@@ -110,7 +110,7 @@ export const services: Service[] = [
     icone: "building",
   },
   {
-    slug: "service-entrepreneurs",
+    slug: "service-aux-entrepreneurs-en-travaux-sylvicoles",
     titre: "Service aux entrepreneurs en travaux sylvicoles",
     tagline: "Le soutien technique en forêt publique.",
     intro:

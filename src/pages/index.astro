@@ -3,143 +3,366 @@ import { Image } from "astro:assets";
 import Base from "../layouts/Base.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
-import TaxCalculator from "../components/TaxCalculator.tsx";
-import { services } from "../data/services";
+import { site } from "../data/site";
 import { withBase } from "../lib/url";
 
 import heroRecolte from "../assets/photos/hero-recolte.jpg";
-import erabliere from "../assets/photos/erabliere.jpg";
 import peuplement from "../assets/photos/peuplement.jpg";
+import inventaire from "../assets/photos/inventaire.jpg";
 import foretTravaux from "../assets/photos/foret-travaux.jpg";
-import territoire from "../assets/photos/territoire.jpg";
+import erabliere from "../assets/photos/erabliere.jpg";
+import boiseMature from "../assets/photos/boise-mature.jpg";
 
-const imgMap = {
-  peuplement,
-  "foret-travaux": foretTravaux,
-  erabliere,
-  "hero-recolte": heroRecolte,
-  territoire,
+const etapes = [
+  {
+    num: "01",
+    img: peuplement,
+    alt: "Visite terrain",
+    titre: "La visite terrain",
+    texte: "Nos techniciens se rendent sur votre propriété pour évaluer votre boisé et cerner les possibilités. ",
+    fort: "Gratuit, sans engagement.",
+  },
+  {
+    num: "02",
+    img: inventaire,
+    alt: "Plan et rapport forestier",
+    titre: "Le plan & le rapport",
+    texte: "Notre ingénieur forestier rédige votre plan d'aménagement : diagnostic, recommandations, et les ",
+    fort: "programmes d'aide auxquels vous avez droit.",
+  },
+  {
+    num: "03",
+    img: foretTravaux,
+    alt: "Travaux sylvicoles",
+    titre: "Les travaux réalisés",
+    texte: "On réalise et coordonne les interventions : reboisement, éclaircie, coupes d'assainissement, ",
+    fort: "dans les règles de l'art.",
+  },
+];
+
+const servicesApercu = [
+  { chip: "Diagnostic & plan", chipBrun: false, titre: "Aménagement forestier", texte: "Le plan qui met votre boisé en santé et ouvre l'accès aux programmes d'aide." },
+  { chip: "Récolte clé en main", chipBrun: false, titre: "Opérations forestières", texte: "Du martelage à la mise en marché, on encadre la récolte de A à Z." },
+  { chip: "Acériculture", chipBrun: true, titre: "Érablière & acériculture", texte: "Santé du peuplement, normes d'entaillage et cartographie GPS de votre réseau." },
+  { chip: "Expertise légale", chipBrun: false, titre: "Évaluation & expertise", texte: "Valeur marchande, dommages, expropriation : le juste prix, démontré et défendu." },
+  { chip: "Milieu urbain", chipBrun: false, titre: "Arboriculture & foresterie urbaine", texte: "Santé et risque des arbres pour municipalités, promoteurs et propriétaires." },
+  { chip: "Forêt publique", chipBrun: false, titre: "Service aux entrepreneurs", texte: "Supervision et planification pour les travaux sylvicoles en forêt publique." },
+];
+
+const profils = [
+  { titre: "Nouveau propriétaire", texte: "Vous venez d'hériter ou d'acheter ? On vous explique tout, sans jargon." },
+  { titre: "Propriétaire de longue date", texte: "Un plan à jour et une forêt en santé à transmettre aux vôtres." },
+  { titre: "Acériculteur", texte: "Une érablière productive et durable, saison après saison." },
+  { titre: "Municipalité ou promoteur", texte: "Des arbres évalués et sécurisés, signés par des ingénieurs forestiers." },
+];
+
+const espaceAtouts = [
+  { titre: "Suivi de vos dossiers", texte: "Plan et travaux, en temps réel." },
+  { titre: "Documents & contrats", texte: "Plans et rapports téléchargeables." },
+  { titre: "Cartes de votre propriété", texte: "La cartographie de votre boisé, à jour." },
+];
+
+const realisations = [
+  { img: foretTravaux, alt: "Éclaircie commerciale", titre: "Éclaircie commerciale", legende: "Boisé privé · Portneuf" },
+  { img: erabliere, alt: "Aménagement d'érablière", titre: "Aménagement d'érablière", legende: "Érablière · Charlevoix" },
+  { img: boiseMature, alt: "Plan d'aménagement", titre: "Plan d'aménagement & reboisement", legende: "Boisé mixte · Mauricie" },
+];
+
+const faq = [
+  { q: "Combien coûte une première visite ?", parts: ["La première visite-conseil sur votre propriété est ", { fort: "gratuite et sans engagement", vert: true }, ". Un technicien se déplace pour évaluer votre boisé et discuter de vos objectifs."] },
+  { q: "Ai-je droit à de l'aide financière ?", parts: ["Oui. Avec un plan d'aménagement, vous avez accès au ", { fort: "PAMVFP", vert: false }, ", au Programme de financement forestier et au remboursement des taxes foncières des producteurs forestiers reconnus."] },
+  { q: "Qu'est-ce qu'un plan d'aménagement ?", parts: ["Un portrait de votre forêt (peuplements, potentiel, milieux à protéger) préparé par un ingénieur forestier, avec des scénarios adaptés à vos objectifs. C'est aussi la porte d'entrée vers l'aide financière."] },
+  { q: "J'ai hérité d'un boisé et je n'y connais rien.", parts: ["Aucun problème. On accompagne les nouveaux propriétaires du début à la fin : visite terrain, plan, travaux et suivi. Aucune connaissance forestière requise de votre part."] },
+  { q: "Faites-vous les plans ou aussi les travaux ?", parts: ["Les deux. Nos ingénieurs planifient et signent les rapports; nos techniciens supervisent la réalisation sur le terrain, jusqu'au paiement des entrepreneurs."] },
+  { q: "Quelles régions desservez-vous ?", parts: ["La grande région de Québec et l'est du Québec : Québec (Capitale-Nationale), Portneuf, Charlevoix, Côte-Nord, Mauricie, Bois-Francs, Chaudière et Appalaches."] },
+];
+
+const orgLd = {
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "@id": "https://cfrq.ca/#organization",
+  name: "Conseillers Forestiers de la Région de Québec inc.",
+  alternateName: "CFRQ",
+  url: "https://cfrq.ca/",
+  description:
+    "Cabinet d'ingénieurs et de techniciens forestiers accrédité, fondé en 1996, qui accompagne les propriétaires de boisés privés de la région de Québec : plan d'aménagement, travaux sylvicoles, récolte, évaluation forestière, érablière et aide financière.",
+  foundingDate: "1996",
+  telephone: "+1-367-777-0555",
+  email: "cfrq@cfrq.ca",
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "6021, boulevard Wilfrid-Hamel, bureau 200",
+    addressLocality: "L'Ancienne-Lorette",
+    addressRegion: "QC",
+    postalCode: "G2E 2H3",
+    addressCountry: "CA",
+  },
+  areaServed: [
+    { "@type": "AdministrativeArea", name: "Capitale-Nationale (Québec)" },
+    { "@type": "AdministrativeArea", name: "Portneuf" },
+    { "@type": "AdministrativeArea", name: "Charlevoix" },
+    { "@type": "AdministrativeArea", name: "Côte-Nord" },
+    { "@type": "AdministrativeArea", name: "Mauricie" },
+    { "@type": "AdministrativeArea", name: "Bois-Francs" },
+    { "@type": "AdministrativeArea", name: "Chaudière" },
+    { "@type": "AdministrativeArea", name: "Appalaches" },
+  ],
+  knowsAbout: [
+    "Aménagement forestier",
+    "Sylviculture",
+    "Récolte forestière",
+    "Évaluation forestière",
+    "Acériculture",
+    "Foresterie urbaine",
+    "Reboisement",
+    "Programme d'aide à la mise en valeur des forêts privées (PAMVFP)",
+  ],
+  hasOfferCatalog: {
+    "@type": "OfferCatalog",
+    name: "Services forestiers",
+    itemListElement: [
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Aménagement forestier", description: "Plan d'aménagement, préparation de terrain, reboisement, éducation de peuplement et travaux forêt-faune." } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Opérations forestières", description: "Prescription, permis, voirie, transport et mise en marché des bois : du service à la carte au clé en main." } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Évaluation forestière", description: "Évaluation de propriété, expertise d'expropriation, évaluation de dommages et inventaire forestier." } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Érablière et acériculture", description: "Bilan de santé, analyse de sol, évaluation du nombre d'entailles, plan d'érablière et cartographie GPS." } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Arboriculture et foresterie urbaine", description: "Évaluation de la santé et du risque des arbres, boisés municipaux et accompagnement des promoteurs." } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Relevé de portefeuille forestier", description: "Portrait personnalisé de la valeur, de la croissance et du potentiel de votre boisé." } },
+    ],
+  },
 };
 
-const piliers = [
-  { titre: "Expertise crédible", texte: "Signé par des ingénieurs forestiers membres de l'OIFQ, avec près de 30 ans de pratique." },
-  { titre: "Indépendance", texte: "On travaille pour vous. Aucune coopérative, aucune adhésion, aucune superficie minimale." },
-  { titre: "Technologie", texte: "Cartographie interactive et portail client, propulsés par notre plateforme PlaniLogix." },
-];
+const faqLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    { "@type": "Question", name: "Combien coûte une première visite d'un conseiller forestier?", acceptedAnswer: { "@type": "Answer", text: "La première visite-conseil sur votre propriété est gratuite et sans engagement. Un technicien forestier de CFRQ se déplace pour évaluer votre boisé et discuter de vos objectifs." } },
+    { "@type": "Question", name: "Ai-je droit à de l'aide financière pour aménager mon boisé?", acceptedAnswer: { "@type": "Answer", text: "Oui. Avec un plan d'aménagement, vous avez accès au Programme d'aide à la mise en valeur des forêts privées (PAMVFP), au Programme de financement forestier et au remboursement des taxes foncières des producteurs forestiers reconnus." } },
+    { "@type": "Question", name: "Qu'est-ce qu'un plan d'aménagement forestier?", acceptedAnswer: { "@type": "Answer", text: "C'est un portrait de votre forêt (composition des peuplements, potentiel de production, milieux à protéger) préparé par un ingénieur forestier, avec des scénarios sylvicoles adaptés à vos objectifs. C'est aussi la porte d'entrée vers l'aide financière." } },
+    { "@type": "Question", name: "Je viens d'hériter d'un boisé et je n'y connais rien. Pouvez-vous m'aider?", acceptedAnswer: { "@type": "Answer", text: "Oui. CFRQ accompagne les nouveaux propriétaires du début à la fin : visite terrain, plan, travaux et suivi. Aucune connaissance forestière n'est requise de votre part." } },
+    { "@type": "Question", name: "Faites-vous seulement les plans ou aussi les travaux?", acceptedAnswer: { "@type": "Answer", text: "Les deux. Nos ingénieurs forestiers planifient et signent les rapports; nos techniciens supervisent la réalisation des travaux sur le terrain, jusqu'au paiement des entrepreneurs." } },
+    { "@type": "Question", name: "Quelles régions desservez-vous?", acceptedAnswer: { "@type": "Answer", text: "La grande région de Québec et l'est du Québec : Capitale-Nationale (Québec), Portneuf, Charlevoix, Côte-Nord, Mauricie, Bois-Francs, Chaudière et Appalaches." } },
+  ],
+};
 
-const stats = [
-  "5 ingénieurs forestiers (OIFQ)",
-  "3 000+ clients accompagnés",
-  "6 agences, partout au Québec",
-  "Conseiller indépendant",
-];
+const eyebrow = "text-[12.5px] font-semibold uppercase tracking-[0.18em]";
+const h2 = "font-display font-medium text-cfrq-deep text-[clamp(32px,5vw,46px)] leading-[1.04] tracking-[-0.015em] text-balance";
+const btnVert = "inline-flex items-center gap-2 rounded-xl bg-cfrq-green font-bold text-[#123005] transition-colors hover:bg-[#6ecb3e]";
 ---
 
-<Base>
+<Base
+  title="CFRQ : Conseillers forestiers accrédités | Aménagement de boisés privés, région de Québec"
+  description="CFRQ (Conseillers Forestiers de la Région de Québec inc.), cabinet d'ingénieurs et de techniciens forestiers accrédité depuis 1996. Plan d'aménagement, travaux sylvicoles, récolte, évaluation, érablière et aide financière (PAMVFP). Première visite gratuite."
+  canonical="/"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(orgLd)} slot="head" />
+  <script type="application/ld+json" set:html={JSON.stringify(faqLd)} slot="head" />
+
   <Header />
   <main id="contenu">
-    <section class="relative isolate overflow-hidden">
-      <Image src={heroRecolte} alt="Travaux de récolte forestière en forêt privée au Québec" widths={[768, 1280, 1920, 2560]} sizes="100vw" loading="eager" fetchpriority="high" class="absolute inset-0 -z-10 h-full w-full object-cover" />
-      <div class="absolute inset-0 -z-10 bg-cfrq-deep/78"></div>
-
-      <div class="mx-auto max-w-6xl px-5 py-24 sm:py-28 md:py-36">
-        <p class="mb-5 text-[13px] font-medium uppercase tracking-[0.12em] text-cfrq-green">
-          Ingénieurs forestiers, OIFQ, depuis 1996
-        </p>
-        <h1 class="max-w-[18ch] font-display text-4xl font-medium leading-[1.1] text-cfrq-cream sm:text-5xl md:text-6xl">
-          Protégez votre boisé. Faites-en un projet de vie en santé.
-        </h1>
-        <p class="mt-6 max-w-[54ch] text-lg leading-relaxed text-cfrq-cream/85">
-          Votre forestier de famille. Des ingénieurs indépendants qui planifient, cartographient et
-          aménagent votre forêt, partout au Québec, sans adhésion ni superficie minimale.
-        </p>
-        <div class="mt-9 flex flex-wrap gap-4">
-          <a href="#calculateur" class="rounded-lg bg-cfrq-green px-6 py-3.5 text-[16px] font-medium text-[#123005] transition-colors hover:bg-cfrq-green-hover">
-            Calculer mon remboursement de taxes
-          </a>
-          <a href={withBase("/contact")} class="rounded-lg border border-cfrq-cream/50 px-6 py-3.5 text-[16px] font-medium text-cfrq-cream transition-colors hover:bg-cfrq-cream/10">
-            Réserver une visite-conseil
-          </a>
+    <!-- 3.1 HERO -->
+    <section id="top" class="relative isolate flex min-h-[640px] items-center overflow-hidden bg-[#16200f]">
+      <Image src={heroRecolte} alt="Forêt privée québécoise" widths={[768, 1280, 1920, 2560]} sizes="100vw" loading="eager" fetchpriority="high" class="absolute inset-0 -z-10 h-full w-full object-cover" />
+      <div class="absolute inset-0 -z-10" style="background:linear-gradient(100deg,rgba(15,22,10,.90) 0%,rgba(15,22,10,.72) 44%,rgba(15,22,10,.32) 80%,rgba(15,22,10,.12) 100%)"></div>
+      <div class="mx-auto w-full max-w-[1160px] px-[22px] py-[90px]">
+        <div class="max-w-[640px]">
+          <p class={`${eyebrow} tracking-[0.2em] text-cfrq-green-light`}>Conseiller forestier accrédité · depuis 1996</p>
+          <h1 class="mt-4 font-display font-medium text-cfrq-cream text-[clamp(42px,7.5vw,66px)] leading-[1.02] tracking-[-0.02em] text-balance">
+            Donnez de la valeur à votre boisé.
+          </h1>
+          <p class="mt-5 max-w-[560px] text-[19px] leading-[1.55] text-[#dce2d2]">
+            Nos techniciens évaluent votre forêt sur le terrain, notre ingénieur forestier signe votre plan, et nous réalisons les travaux. Vous n'avez qu'à en profiter.
+          </p>
+          <div class="mt-8 flex flex-wrap gap-4">
+            <a href={withBase("/contact")} class={`${btnVert} px-7 py-[15px] text-[15.5px]`}>
+              Réserver une visite gratuite <span aria-hidden="true">→</span>
+            </a>
+            <a href={withBase("/services")} class="inline-flex items-center rounded-[11px] border-[1.5px] border-[rgba(247,245,239,.42)] bg-[rgba(247,245,239,.08)] px-[26px] py-3.5 text-[15px] font-semibold text-cfrq-cream transition-colors hover:bg-[rgba(247,245,239,.16)] hover:text-white">
+              Nos services
+            </a>
+          </div>
+          <p class="mt-7 text-[13.5px] text-[#b7c0a8]">
+            Ingénieur forestier & techniciens · Québec, Portneuf, Charlevoix, Côte-Nord, Mauricie, Bois-Francs, Chaudière · Appalaches
+          </p>
         </div>
       </div>
     </section>
 
-    <section class="bg-cfrq-deep-2 text-cfrq-cream">
-      <div class="mx-auto flex max-w-6xl flex-wrap justify-between gap-x-8 gap-y-3 px-5 py-5 text-[15px]">
-        {
-          stats.map((s) => (
-            <span class="flex items-center gap-2">
-              <svg viewBox="0 0 20 20" class="h-4 w-4 flex-none text-cfrq-green" aria-hidden="true"><path fill="currentColor" d="M8 13.2 4.8 10l-1.4 1.4L8 16l9-9-1.4-1.4z" /></svg>
-              {s}
-            </span>
-          ))
-        }
+    <!-- 3.2 STATS -->
+    <section class="bg-cfrq-deep text-cfrq-cream">
+      <div class="mx-auto grid max-w-[1160px] grid-cols-2 gap-[22px] px-[22px] py-[30px] md:grid-cols-4">
+        {site.stats.map((s) => (
+          <div>
+            <p class="font-display text-[30px] font-medium leading-none">{s.valeur}</p>
+            <p class="mt-1 text-[13px] text-cfrq-cream/65">{s.label}</p>
+          </div>
+        ))}
       </div>
     </section>
 
-    <section class="mx-auto max-w-6xl px-5 py-16 md:py-20">
-      <div class="grid gap-6 md:grid-cols-3">
-        {
-          piliers.map((p) => (
-            <div class="rounded-2xl border border-black/5 bg-white p-7">
-              <h2 class="font-display text-xl font-medium text-cfrq-deep">{p.titre}</h2>
-              <p class="mt-3 text-[15.5px] leading-relaxed text-black/70">{p.texte}</p>
+    <!-- 3.3 COMMENT ON TRAVAILLE -->
+    <section class="mx-auto max-w-[1160px] px-[22px] pb-5 pt-[88px]">
+      <div class="max-w-[680px]">
+        <p class={`${eyebrow} text-cfrq-leaf`}>Comment on travaille</p>
+        <h2 class={`mt-3.5 ${h2}`}>De votre boisé aux travaux réalisés</h2>
+        <p class="mt-4 text-[17px] leading-relaxed text-cfrq-ink/65">
+          Un parcours simple et encadré. Vous savez toujours où vous en êtes, et vous n'êtes jamais seul devant votre forêt.
+        </p>
+      </div>
+      <div class="mt-12 grid gap-[26px] sm:grid-cols-2 lg:grid-cols-3">
+        {etapes.map((e) => (
+          <div>
+            <div class="relative">
+              <Image src={e.img} alt={e.alt} widths={[400, 800]} sizes="(min-width:1024px) 360px, (min-width:640px) 50vw, 100vw" class="aspect-[4/3] w-full rounded-[18px] border border-black/5 object-cover" />
+              <span class="absolute left-3.5 top-3.5 flex h-10 w-10 items-center justify-center rounded-full bg-cfrq-green-light font-display text-[18px] font-semibold text-[#123005]">{e.num}</span>
             </div>
-          ))
-        }
+            <h3 class="mt-[18px] font-display text-[23px] font-medium text-cfrq-deep">{e.titre}</h3>
+            <p class="mt-2 text-[15px] leading-relaxed text-cfrq-ink/[.62]">{e.texte}<strong class="font-semibold text-[#2e6b1e]">{e.fort}</strong></p>
+          </div>
+        ))}
       </div>
     </section>
 
-    <section id="calculateur" class="bg-white/60">
-      <div class="mx-auto max-w-6xl px-5 py-16 md:py-20">
-        <p class="mb-2 text-[13px] font-medium uppercase tracking-[0.1em] text-cfrq-leaf">Outil, estimation gratuite</p>
-        <h2 class="font-display text-3xl font-medium text-cfrq-deep md:text-4xl">Combien pourriez-vous récupérer en taxes ?</h2>
-        <p class="mb-8 mt-3 max-w-[60ch] text-[16px] leading-relaxed text-black/70">
-          Un producteur forestier reconnu peut récupérer jusqu'à 85 % des taxes foncières de son boisé
-          grâce à des travaux d'aménagement admissibles. Bougez les curseurs pour estimer.
-        </p>
-        <TaxCalculator client:load />
+    <!-- 3.4 SERVICES APERCU -->
+    <section class="mx-auto max-w-[1160px] px-[22px] pb-5 pt-20">
+      <div class="flex flex-wrap items-end justify-between gap-4">
+        <div class="max-w-[620px]">
+          <p class={`${eyebrow} text-cfrq-leaf`}>Nos services</p>
+          <h2 class={`mt-3.5 ${h2}`}>Un seul partenaire pour toute votre forêt</h2>
+        </div>
+        <a href={withBase("/services")} class="text-[15px] font-semibold text-cfrq-leaf transition-colors hover:text-cfrq-green">Voir tous les services →</a>
+      </div>
+      <div class="mt-10 grid gap-[18px] sm:grid-cols-2 lg:grid-cols-3">
+        {servicesApercu.map((s) => (
+          <a href={withBase("/services")} class="group block rounded-[18px] border border-black/5 bg-white p-6 transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-1 hover:border-cfrq-green/40 hover:shadow-[0_16px_40px_rgba(20,51,26,.1)]">
+            <span class:list={["text-[11px] font-bold uppercase tracking-[0.14em]", s.chipBrun ? "text-[#8a6a3b]" : "text-cfrq-leaf"]}>{s.chip}</span>
+            <h3 class="mt-2.5 font-display text-[22px] font-medium text-cfrq-deep">{s.titre}</h3>
+            <p class="mt-2 text-[14px] leading-relaxed text-cfrq-ink/60">{s.texte}</p>
+          </a>
+        ))}
       </div>
     </section>
 
-    <section id="services" class="mx-auto max-w-6xl px-5 py-16 md:py-20">
-      <h2 class="font-display text-3xl font-medium text-cfrq-deep md:text-4xl">Nos services</h2>
-      <p class="mb-8 mt-3 max-w-[60ch] text-[16px] leading-relaxed text-black/70">
-        De la santé de votre forêt jusqu'aux mandats les plus techniques, signés par des ingénieurs.
-      </p>
-      <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {
-          services.map((s) => (
-            <a href={withBase(`/services/${s.slug}`)} class="group overflow-hidden rounded-2xl border border-black/5 bg-white transition-colors hover:border-cfrq-green/40">
-              <Image src={imgMap[s.image]} alt={s.titre} widths={[400, 800]} sizes="(min-width: 1024px) 360px, (min-width: 640px) 50vw, 100vw" class="h-40 w-full object-cover" />
-              <div class="p-6">
-                <h3 class="font-display text-lg font-medium text-cfrq-deep">{s.titre}</h3>
-                <p class="mt-2 text-[15px] leading-relaxed text-black/65">{s.tagline}</p>
+    <!-- 3.5 PROGRAMMES -->
+    <section class="mt-20 bg-[#1e2a16]">
+      <div class="mx-auto flex max-w-[1160px] flex-wrap items-center gap-x-14 gap-y-10 px-[22px] py-[84px]">
+        <div class="flex-1 basis-[260px]">
+          <p class="font-display text-[clamp(80px,12vw,108px)] font-medium leading-[.9] text-cfrq-green-light">62 %</p>
+          <p class="mt-4 max-w-[320px] text-[18px] text-[#d3dbc6]">des propriétaires forestiers ignorent les programmes d'aide auxquels ils ont droit.<span class="text-[#8fa378]">*</span></p>
+          <p class="mt-3.5 text-[12px] text-[#7e8c6a]">* Enquête FPFQ / Groupe AGÉCO, 2025</p>
+        </div>
+        <div class="flex-[1.3] basis-[380px]">
+          <p class={`${eyebrow} text-cfrq-green-light`}>Aide financière</p>
+          <h2 class="mt-3 font-display text-[clamp(32px,5vw,44px)] font-medium leading-[1.04] tracking-[-0.015em] text-cfrq-cream">Pas vous.</h2>
+          <p class="mt-4 max-w-[520px] text-[17px] leading-relaxed text-[#c7cfb8]">
+            On connaît le PAMVFP, le programme de financement forestier et le remboursement des taxes foncières des producteurs reconnus. On identifie ce qui s'applique à votre boisé, et on s'occupe de la paperasse avec vous.
+          </p>
+          <a href={withBase("/contact")} class={`${btnVert} mt-6 px-[26px] py-3.5 text-[15px]`}>Parler à un conseiller <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3.6 PROFILS -->
+    <section class="mx-auto max-w-[1160px] px-[22px] pb-5 pt-[84px]">
+      <div class="max-w-[680px]">
+        <p class={`${eyebrow} text-cfrq-leaf`}>Peu importe votre situation</p>
+        <h2 class={`mt-3.5 font-display font-medium text-cfrq-deep text-[clamp(30px,4.5vw,40px)] leading-[1.05] tracking-[-0.015em] text-balance`}>On a une réponse pour votre réalité</h2>
+      </div>
+      <div class="mt-9 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {profils.map((p) => (
+          <div class="rounded-2xl border border-black/5 bg-white p-[22px]">
+            <h3 class="font-display text-[20px] font-medium text-cfrq-deep">{p.titre}</h3>
+            <p class="mt-2 text-[13.5px] leading-relaxed text-cfrq-ink/60">{p.texte}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- 3.7 ESPACE CLIENT -->
+    <section class="mx-auto max-w-[1160px] px-[22px] pb-5 pt-[84px]">
+      <div class="flex flex-wrap items-center justify-between gap-8 rounded-3xl border border-cfrq-green/[.18] p-[clamp(28px,4vw,48px)]" style="background:linear-gradient(140deg,#EAF4E0,#FFFFFF 65%)">
+        <div class="flex-1 basis-[420px]">
+          <p class={`${eyebrow} text-cfrq-leaf`}>Espace client</p>
+          <h2 class={`mt-3 font-display font-medium text-cfrq-deep text-[clamp(30px,4.5vw,42px)] leading-[1.05] tracking-[-0.015em]`}>Votre boisé, en ligne</h2>
+          <p class="mt-4 max-w-[460px] text-[16.5px] leading-relaxed text-cfrq-ink/[.68]">
+            Suivez l'avancement de vos projets, retrouvez vos documents et consultez les cartes de votre propriété, en tout temps.
+          </p>
+          <a href={withBase("/espace-client")} class="mt-6 inline-flex items-center gap-2 rounded-[11px] bg-cfrq-deep px-6 py-3.5 font-semibold text-cfrq-cream transition-colors hover:bg-cfrq-deep-2">
+            Accéder à l'espace client <span aria-hidden="true">→</span>
+          </a>
+        </div>
+        <div class="flex-1 basis-[280px] space-y-3">
+          {espaceAtouts.map((a) => (
+            <div class="flex items-start gap-3 rounded-[14px] bg-white/70 px-[18px] py-4">
+              <span class="mt-1.5 h-[9px] w-[9px] flex-none rounded-full bg-cfrq-green"></span>
+              <div>
+                <p class="text-[15px] font-semibold text-cfrq-deep">{a.titre}</p>
+                <p class="text-[13.5px] text-cfrq-ink/60">{a.texte}</p>
               </div>
-            </a>
-          ))
-        }
+            </div>
+          ))}
+        </div>
       </div>
     </section>
 
-    <section id="territoire" class="relative isolate overflow-hidden">
-      <Image src={territoire} alt="Territoire desservi par CFRQ" widths={[768, 1280, 1920]} sizes="100vw" class="absolute inset-0 -z-10 h-full w-full object-cover" />
-      <div class="absolute inset-0 -z-10 bg-cfrq-deep/85"></div>
-      <div class="mx-auto max-w-6xl px-5 py-20 text-center">
-        <h2 class="mx-auto max-w-[22ch] font-display text-3xl font-medium text-cfrq-cream md:text-4xl">
-          Une carte interactive de votre territoire
-        </h2>
-        <p class="mx-auto mt-4 max-w-[58ch] text-[16px] leading-relaxed text-cfrq-cream/85">
-          Capitale-Nationale, Charlevoix, Côte-Nord, Mauricie. Bientôt, explorez votre secteur sur une
-          carte vivante, alimentée par nos propres couches PlaniLogix.
+    <!-- 3.8 REALISATIONS -->
+    <section class="mx-auto max-w-[1160px] px-[22px] pb-5 pt-[84px]">
+      <div class="max-w-[620px]">
+        <p class={`${eyebrow} text-cfrq-leaf`}>Réalisations</p>
+        <h2 class={`mt-3.5 ${h2}`}>Des travaux dont on est fiers</h2>
+      </div>
+      <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {realisations.map((r) => (
+          <div>
+            <Image src={r.img} alt={r.alt} widths={[400, 800]} sizes="(min-width:1024px) 360px, (min-width:640px) 50vw, 100vw" class="aspect-[3/2] w-full rounded-2xl border border-black/5 object-cover" />
+            <h3 class="mt-3.5 font-display text-[20px] font-medium text-cfrq-deep">{r.titre}</h3>
+            <p class="mt-1 text-[13.5px] text-cfrq-ink/55">{r.legende}</p>
+          </div>
+        ))}
+      </div>
+      <p class="mt-[18px] text-[12.5px] text-cfrq-ink/45">Exemples illustratifs, à remplacer par vos projets réels et leurs photos.</p>
+    </section>
+
+    <!-- 3.9 TEMOIGNAGE -->
+    <section class="mx-auto max-w-[900px] px-[22px] py-20 text-center">
+      <p class="font-display text-[clamp(26px,4.5vw,40px)] font-normal italic leading-[1.35] text-cfrq-deep">
+        « Ils sont venus sur mon terrain, m'ont tout expliqué simplement, et ont trouvé une subvention à laquelle je n'avais jamais pensé. »
+      </p>
+      <p class="mt-[22px] text-[14.5px] text-cfrq-ink/55">- Propriétaire accompagné, région de Québec <span class="text-[#9a9e90]">· témoignage à personnaliser</span></p>
+    </section>
+
+    <!-- 3.10 FAQ -->
+    <section aria-labelledby="faq-titre" class="mx-auto max-w-[1160px] px-[22px] pb-[72px] pt-10">
+      <div class="max-w-[680px]">
+        <p class={`${eyebrow} text-cfrq-leaf`}>Questions fréquentes</p>
+        <h2 id="faq-titre" class={`mt-3.5 ${h2}`}>On répond à vos questions</h2>
+        <p class="mt-4 text-[17px] leading-relaxed text-cfrq-ink/65">
+          Les questions qu'on nous pose le plus souvent. Vous ne trouvez pas la vôtre ? <a href={withBase("/contact")} class="font-semibold text-cfrq-leaf hover:text-cfrq-green">Écrivez-nous</a>.
         </p>
-        <div class="mt-8 flex flex-wrap justify-center gap-4">
-          <a href={withBase("/territoire")} class="rounded-lg bg-cfrq-green px-6 py-3.5 text-[16px] font-medium text-[#123005] transition-colors hover:bg-cfrq-green-hover">
-            Voir le territoire
-          </a>
-          <a href={withBase("/contact")} class="rounded-lg border border-cfrq-cream/50 px-6 py-3.5 text-[16px] font-medium text-cfrq-cream transition-colors hover:bg-cfrq-cream/10">
-            Parler à un ingénieur forestier
-          </a>
+      </div>
+      <div class="mt-10 grid gap-4 md:grid-cols-2">
+        {faq.map((item) => (
+          <div class="rounded-2xl border border-black/5 bg-white p-[26px]">
+            <h3 class="font-display text-[20px] font-medium leading-tight text-cfrq-deep">{item.q}</h3>
+            <p class="mt-3 text-[15px] leading-relaxed text-cfrq-ink/70">
+              {item.parts.map((part) =>
+                typeof part === "string" ? part : <strong class:list={["font-semibold", part.vert ? "text-cfrq-leaf" : "text-cfrq-deep"]}>{part.fort}</strong>
+              )}
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- 3.11 CTA FINAL -->
+    <section class="mx-auto max-w-[1160px] px-[22px] pb-[84px]">
+      <div class="rounded-3xl px-[clamp(34px,5vw,60px)] py-[clamp(34px,5vw,60px)] text-center text-cfrq-cream" style="background:linear-gradient(140deg,#1D4011,#14331A)">
+        <h2 class="mx-auto font-display text-[clamp(30px,5vw,50px)] font-medium leading-[1.06] text-balance">Prêt à donner de la valeur à votre boisé ?</h2>
+        <p class="mx-auto mt-4 max-w-[540px] text-[18px] leading-relaxed text-cfrq-cream/[.82]">
+          La première visite de votre boisé est gratuite et sans engagement. Un technicien se déplace, et on part de là.
+        </p>
+        <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+          <a href={withBase("/contact")} class={`${btnVert} px-8 py-4 text-[16.5px]`}>Réserver ma visite gratuite</a>
+          <p class="text-[16px] text-cfrq-cream/85">ou <a href={site.telHref} class="font-semibold text-cfrq-cream hover:underline">{site.tel}</a></p>
         </div>
       </div>
     </section>

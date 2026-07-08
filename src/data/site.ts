@@ -17,12 +17,13 @@ export const site = {
     "Côte-Nord",
     "Mauricie",
     "Bois-Francs",
-    "Chaudière-Appalaches",
+    "Chaudière",
+    "Appalaches",
   ],
   stats: [
     { valeur: "Depuis 1996", label: "Conseiller forestier accrédité" },
     { valeur: "3 000+", label: "Clients accompagnés" },
-    { valeur: "1,6 M$", label: "Budget PAMVFP géré par an" },
-    { valeur: "35 000 m³", label: "Bois récolté supervisé par an" },
+    { valeur: "35 000 m³", label: "Bois récolté supervisé / an" },
+    { valeur: "1,6 M$", label: "Budget PAMVFP géré / an" },
   ],
 };

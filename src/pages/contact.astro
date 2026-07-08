@@ -2,87 +2,172 @@
 import Base from "../layouts/Base.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
-import PageHeader from "../components/PageHeader.astro";
 import { site } from "../data/site";
 
-const inputClass =
-  "h-12 w-full rounded-lg border border-black/15 bg-white px-4 text-[16px] outline-none focus:border-cfrq-green";
+const besoins = [
+  "Aménagement forestier / plan",
+  "Opérations forestières / récolte",
+  "Érablière & acériculture",
+  "Évaluation ou expertise légale",
+  "Arboriculture / foresterie urbaine",
+  "Je ne sais pas encore",
+];
+
+const chipsTerritoire = [...site.regions.slice(0, 6), site.regions.slice(6).join(" · ")];
+
+const ld = {
+  "@context": "https://schema.org",
+  "@graph": [
+    { "@type": "WebPage", "@id": "https://cfrq.ca/contact/#webpage", url: "https://cfrq.ca/contact/", name: "Contact | CFRQ", description: "Coordonnées de CFRQ et prise de rendez-vous pour une visite gratuite.", inLanguage: "fr-CA", about: { "@id": "https://cfrq.ca/#organization" } },
+    { "@type": "BreadcrumbList", itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Accueil", item: "https://cfrq.ca/" },
+      { "@type": "ListItem", position: 2, name: "Contact", item: "https://cfrq.ca/contact/" },
+    ] },
+    { "@type": "Organization", "@id": "https://cfrq.ca/#organization", contactPoint: { "@type": "ContactPoint", telephone: "+1-367-777-0555", email: "cfrq@cfrq.ca", contactType: "customer service", areaServed: "CA-QC", availableLanguage: "French" }, address: { "@type": "PostalAddress", streetAddress: "6021, boulevard Wilfrid-Hamel, bureau 200", addressLocality: "L'Ancienne-Lorette", addressRegion: "QC", postalCode: "G2E 2H3", addressCountry: "CA" } },
+  ],
+};
+
+const eyebrow = "text-[12.5px] font-semibold uppercase tracking-[0.18em]";
+const champ = "h-12 w-full rounded-[10px] border border-black/15 bg-white px-4 text-[16px] outline-none transition-shadow focus:border-cfrq-green focus:shadow-[0_0_0_3px_rgba(90,189,42,.18)]";
+const labelCls = "text-[13.5px] font-medium text-cfrq-ink/70";
+const miniCarte = "background:radial-gradient(circle at 40% 40%,rgba(90,189,42,.14),rgba(90,189,42,0) 50%),repeating-linear-gradient(0deg,rgba(20,51,26,.05) 0 1px,transparent 1px 30px),repeating-linear-gradient(90deg,rgba(20,51,26,.05) 0 1px,transparent 1px 30px),#EEF4E5";
 ---
 
-<Base title="Contact — CFRQ" description="Communiquez avec CFRQ pour une visite-conseil ou toute question sur votre boisé.">
+<Base
+  title="Contact, réservez une visite gratuite de votre boisé | CFRQ"
+  description="Joignez CFRQ : 367 777-0555, cfrq@cfrq.ca, L'Ancienne-Lorette. Réservez une première visite gratuite de votre boisé par un conseiller forestier."
+  canonical="/contact/"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(ld)} slot="head" />
+
   <Header />
   <main id="contenu">
-    <PageHeader
-      eyebrow="Contact"
-      title="Parlons de votre boisé"
-      subtitle="Une visite-conseil est le meilleur point de départ. Écrivez-nous ou appelez-nous directement."
-    />
-
-    <section class="mx-auto grid max-w-6xl gap-12 px-5 py-14 md:grid-cols-[1.3fr_1fr] md:py-20">
-      <div>
-        <form id="contact-form" class="space-y-4">
-          <div class="grid gap-4 sm:grid-cols-2">
-            <input class={inputClass} type="text" name="nom" placeholder="Votre nom" required aria-label="Votre nom" />
-            <input class={inputClass} type="email" name="courriel" placeholder="Votre courriel" required aria-label="Votre courriel" />
-          </div>
-          <input class={inputClass} type="text" name="sujet" placeholder="Sujet" aria-label="Sujet" />
-          <select class={inputClass} name="region" aria-label="Votre région" required>
-            <option value="">Votre région</option>
-            {site.regions.map((r) => <option value={r}>{r}</option>)}
-            <option value="Autre">Autre</option>
-          </select>
-          <textarea class="min-h-32 w-full rounded-lg border border-black/15 bg-white p-4 text-[16px] outline-none focus:border-cfrq-green" name="message" placeholder="Votre message" required aria-label="Votre message"></textarea>
-          <button type="submit" class="rounded-lg bg-cfrq-green px-6 py-3.5 text-[16px] font-medium text-[#123005] transition-colors hover:bg-cfrq-green-hover">
-            Envoyer ma demande
-          </button>
-          <p id="contact-ok" class="hidden rounded-xl border border-cfrq-green/40 bg-cfrq-tint p-4 text-[15px] text-cfrq-deep">
-            Merci, votre message est prêt. On vous revient rapidement. Pour une réponse immédiate, appelez-nous au {site.tel}.
-          </p>
-        </form>
+    <!-- HERO -->
+    <section style="background:linear-gradient(160deg,#EAF4E0,#F7F5EE 60%)">
+      <div class="mx-auto max-w-[1160px] px-[22px] pb-[52px] pt-[72px]">
+        <p class={`${eyebrow} tracking-[0.2em] text-cfrq-leaf`}>Contact</p>
+        <h1 class="mt-3 max-w-[720px] font-display font-medium text-cfrq-deep text-[clamp(38px,6.5vw,58px)] leading-[1.02] tracking-[-0.02em] text-balance">
+          Parlons de votre boisé
+        </h1>
+        <p class="mt-5 max-w-[600px] text-[19px] leading-[1.55] text-cfrq-ink/70">
+          La première visite de votre boisé est <strong class="font-semibold text-cfrq-deep">gratuite et sans engagement</strong>. Remplissez le formulaire ou appelez-nous, un technicien se déplace, et on part de là.
+        </p>
       </div>
+    </section>
 
-      <aside class="space-y-6">
-        <div class="rounded-2xl border border-black/5 bg-white p-6">
-          <h2 class="font-display text-lg font-medium text-cfrq-deep">Nous rejoindre</h2>
-          <dl class="mt-4 space-y-4 text-[15.5px]">
-            <div>
-              <dt class="text-black/55">Téléphone</dt>
-              <dd><a href={site.telHref} class="font-medium text-cfrq-leaf hover:underline">{site.tel}</a></dd>
+    <!-- FORMULAIRE + COORDONNEES -->
+    <section class="mx-auto max-w-[1160px] px-[22px] pb-5 pt-[56px]">
+      <div class="flex flex-wrap items-start gap-[26px]">
+        <!-- Formulaire -->
+        <div class="flex-[1.5] basis-[440px] rounded-3xl border border-black/5 bg-white p-[clamp(24px,3vw,36px)]">
+          <h2 class="font-display text-[24px] font-medium text-cfrq-deep">Demander ma visite gratuite</h2>
+          <p class="mt-1 text-[14px] text-cfrq-ink/60">On vous répond en un jour ouvrable.</p>
+
+          <form id="contact-form" class="mt-6">
+            <div class="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label for="c-nom" class={labelCls}>Nom complet</label>
+                <input id="c-nom" name="nom" type="text" required placeholder="Votre nom" class={`mt-1.5 ${champ}`} />
+              </div>
+              <div>
+                <label for="c-courriel" class={labelCls}>Courriel</label>
+                <input id="c-courriel" name="courriel" type="email" required placeholder="vous@exemple.ca" class={`mt-1.5 ${champ}`} />
+              </div>
+              <div>
+                <label for="c-tel" class={labelCls}>Téléphone</label>
+                <input id="c-tel" name="tel" type="tel" required placeholder="(418) 000-0000" class={`mt-1.5 ${champ}`} />
+              </div>
+              <div>
+                <label for="c-muni" class={labelCls}>Municipalité du boisé</label>
+                <input id="c-muni" name="muni" type="text" required placeholder="Ex. Saint-Raymond" class={`mt-1.5 ${champ}`} />
+              </div>
+              <div class="sm:col-span-2">
+                <label for="c-type" class={labelCls}>Votre besoin</label>
+                <select id="c-type" name="besoin" class={`mt-1.5 ${champ}`}>
+                  {besoins.map((b) => <option value={b}>{b}</option>)}
+                </select>
+              </div>
+              <div class="sm:col-span-2">
+                <label for="c-msg" class={labelCls}>Votre message <span class="font-normal text-cfrq-ink/50">(facultatif)</span></label>
+                <textarea id="c-msg" name="message" rows="4" placeholder="Parlez-nous de votre boisé, sa superficie approximative, vos objectifs…" class="mt-1.5 w-full rounded-[10px] border border-black/15 bg-white p-4 text-[16px] outline-none transition-shadow focus:border-cfrq-green focus:shadow-[0_0_0_3px_rgba(90,189,42,.18)]"></textarea>
+              </div>
             </div>
-            <div>
-              <dt class="text-black/55">Courriel</dt>
-              <dd><a href={`mailto:${site.courriel}`} class="font-medium text-cfrq-leaf hover:underline">{site.courriel}</a></dd>
-            </div>
-            <div>
-              <dt class="text-black/55">Adresse</dt>
-              <dd class="text-cfrq-ink/85">
-                {site.nom}<br />
-                {site.adresse.ligne1}<br />
-                {site.adresse.ville} {site.adresse.code}
-              </dd>
-            </div>
-          </dl>
+            <button type="submit" class="mt-[22px] w-full rounded-xl bg-cfrq-green px-6 py-4 text-[16px] font-bold text-[#123005] transition-colors hover:bg-cfrq-green-hover">
+              Demander ma visite gratuite
+            </button>
+            <p class="mt-3 text-center text-[12.5px] text-cfrq-ink/50">Vos renseignements restent confidentiels et ne servent qu'à vous recontacter.</p>
+            <p id="contact-ok" class="mt-4 hidden rounded-xl border border-cfrq-green/40 bg-cfrq-tint p-4 text-center text-[15px] text-cfrq-deep" role="status" aria-live="polite">
+              Merci ! Votre logiciel de courriel s'ouvre avec votre demande. Pour une réponse immédiate, appelez-nous au {site.tel}.
+            </p>
+          </form>
         </div>
-        <div class="rounded-2xl bg-cfrq-deep p-6 text-cfrq-cream">
-          <h2 class="font-display text-lg font-medium">Vous voulez estimer vos taxes ?</h2>
-          <p class="mt-2 text-[15px] leading-relaxed text-cfrq-cream/80">
-            Calculez en quelques secondes le remboursement de taxes foncières auquel vous pourriez avoir droit.
-          </p>
-          <a href={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/#calculateur`} class="mt-4 inline-block rounded-lg bg-cfrq-green px-5 py-3 text-[15px] font-medium text-[#123005] hover:bg-cfrq-green-hover">
-            Ouvrir le calculateur
-          </a>
+
+        <!-- Coordonnées -->
+        <div class="flex-1 basis-[300px] space-y-4">
+          <div class="rounded-[22px] bg-cfrq-deep p-[26px] text-cfrq-cream">
+            <p class="text-[11px] font-bold uppercase tracking-[0.16em] text-cfrq-green-light">Nous joindre</p>
+            <div class="mt-[18px] space-y-4">
+              <div>
+                <p class="text-[12.5px] text-cfrq-cream/60">Téléphone</p>
+                <a href={site.telHref} class="font-display text-[22px] font-medium text-cfrq-cream hover:text-cfrq-green-light">{site.tel}</a>
+              </div>
+              <div>
+                <p class="text-[12.5px] text-cfrq-cream/60">Courriel</p>
+                <a href={`mailto:${site.courriel}`} class="text-[16px] font-medium text-cfrq-cream hover:text-cfrq-green-light">{site.courriel}</a>
+              </div>
+              <div>
+                <p class="text-[12.5px] text-cfrq-cream/60">Bureau</p>
+                <address class="text-[15px] not-italic leading-[1.5] text-cfrq-cream/90">
+                  {site.adresse.ligne1}<br />
+                  {site.adresse.ville} {site.adresse.code}
+                </address>
+              </div>
+            </div>
+          </div>
+          <div class="relative min-h-[200px] overflow-hidden rounded-[22px] border border-black/5" style={miniCarte}>
+            <span class="absolute h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full bg-cfrq-green" style="left:50%;top:46%;box-shadow:0 0 0 6px rgba(90,189,42,.25)"></span>
+            <span class="absolute bottom-3.5 left-3.5 rounded-lg bg-white/85 px-[11px] py-[5px] text-[12px] font-medium text-cfrq-deep">L'Ancienne-Lorette (Québec)</span>
+          </div>
         </div>
-      </aside>
+      </div>
+    </section>
+
+    <!-- TERRITOIRE -->
+    <section class="mx-auto max-w-[1160px] px-[22px] pb-5 pt-16">
+      <div class="rounded-3xl border border-cfrq-green/[.14] bg-[#eef2e6] p-[clamp(28px,4vw,44px)]">
+        <p class={`${eyebrow} text-cfrq-leaf`}>Notre territoire</p>
+        <h2 class="mt-3 max-w-[620px] font-display text-[clamp(26px,4vw,36px)] font-medium text-cfrq-deep">On dessert la grande région de Québec et au-delà</h2>
+        <div class="mt-[22px] flex flex-wrap gap-2.5">
+          {chipsTerritoire.map((r) => (
+            <span class="rounded-full border border-cfrq-green/25 bg-white px-4 py-[9px] text-[14.5px] font-medium text-cfrq-deep">{r}</span>
+          ))}
+        </div>
+      </div>
     </section>
   </main>
   <Footer />
 </Base>
 
 <script>
-  const f = document.getElementById("contact-form");
+  const f = document.getElementById("contact-form") as HTMLFormElement | null;
+  const ok = document.getElementById("contact-ok");
   f?.addEventListener("submit", (e) => {
     e.preventDefault();
-    document.getElementById("contact-ok")?.classList.remove("hidden");
-    (f as HTMLFormElement).reset();
+    if (!f.reportValidity()) return;
+    const d = new FormData(f);
+    const v = (k: string) => String(d.get(k) ?? "").trim();
+    const corps = [
+      `Nom : ${v("nom")}`,
+      `Courriel : ${v("courriel")}`,
+      `Téléphone : ${v("tel")}`,
+      `Municipalité du boisé : ${v("muni")}`,
+      `Besoin : ${v("besoin")}`,
+      "",
+      "Message :",
+      v("message") || "(aucun)",
+    ].join("\n");
+    const sujet = `Demande de visite gratuite, ${v("nom")}`;
+    window.location.href = `mailto:cfrq@cfrq.ca?subject=${encodeURIComponent(sujet)}&body=${encodeURIComponent(corps)}`;
+    ok?.classList.remove("hidden");
   });
 </script>

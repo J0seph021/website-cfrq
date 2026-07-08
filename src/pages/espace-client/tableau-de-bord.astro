@@ -3,6 +3,10 @@ import Base from "../../layouts/Base.astro";
 import EspaceClient from "../../components/EspaceClient.tsx";
 ---
 
-<Base title="Tableau de bord — Espace client CFRQ" description="Votre dossier forestier en ligne.">
+<Base
+  title="Espace client | CFRQ"
+  description="Suivez l'état de vos dossiers, téléchargez vos documents et consultez les cartes de votre propriété dans votre espace client CFRQ."
+  robots="noindex, follow"
+>
   <EspaceClient client:only="react" />
 </Base>

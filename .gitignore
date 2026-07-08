@@ -17,3 +17,6 @@ pnpm-debug.log*
 Thumbs.db
 
 scripts/.copy-watermark
+
+# archives de transfert de design (gros binaires, hors depot)
+*.zip

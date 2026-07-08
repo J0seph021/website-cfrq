@@ -3,66 +3,267 @@ import { Image } from "astro:assets";
 import Base from "../../layouts/Base.astro";
 import Header from "../../components/Header.astro";
 import Footer from "../../components/Footer.astro";
-import PageHeader from "../../components/PageHeader.astro";
-import CTASection from "../../components/CTASection.astro";
-import { services } from "../../data/services";
+import { site } from "../../data/site";
 import { withBase } from "../../lib/url";
 
 import peuplement from "../../assets/photos/peuplement.jpg";
 import foretTravaux from "../../assets/photos/foret-travaux.jpg";
-import erabliere from "../../assets/photos/erabliere.jpg";
 import heroRecolte from "../../assets/photos/hero-recolte.jpg";
+import erabliere from "../../assets/photos/erabliere.jpg";
 import territoire from "../../assets/photos/territoire.jpg";
-import boiseMature from "../../assets/photos/boise-mature.jpg";
+import inventaire from "../../assets/photos/inventaire.jpg";
 
-const imgMap = {
-  peuplement,
-  "foret-travaux": foretTravaux,
-  erabliere,
-  "hero-recolte": heroRecolte,
-  territoire,
+const approche = [
+  { num: "01", titre: "La visite terrain", texte: "Nos techniciens évaluent votre forêt." },
+  { num: "02", titre: "Le plan & le rapport", texte: "Signés par un ingénieur forestier." },
+  { num: "03", titre: "Les travaux", texte: "Réalisés dans les règles de l'art." },
+];
+
+const cartes = [
+  {
+    slug: "amenagement",
+    img: peuplement,
+    alt: "Peuplement forestier",
+    eyebrow: "Diagnostic & plan",
+    brun: false,
+    titre: "Aménagement forestier",
+    accroche: "Un boisé en santé, étape par étape.",
+    texte: "Le plan d'aménagement est l'étape incontournable pour planifier vos interventions et accéder aux programmes d'aide financière. Nous bâtissons une stratégie durable, adaptée à vos objectifs et à votre terrain.",
+    chips: ["Plan d'aménagement", "Reboisement", "Préparation de terrain", "Éducation de peuplement", "Travaux forêt-faune"],
+    encadre: {
+      titre: "Le plan d'aménagement donne accès à",
+      points: [
+        "Programme d'aide à la mise en valeur des forêts privées (PAMVFP)",
+        "Programme de financement forestier",
+        "Remboursement des taxes foncières des producteurs reconnus",
+      ],
+    },
+  },
+  {
+    slug: "operation-forestieres",
+    img: foretTravaux,
+    alt: "Travaux en forêt",
+    eyebrow: "Récolte clé en main",
+    brun: false,
+    titre: "Opérations forestières",
+    accroche: "Du service à la carte au clé en main.",
+    texte: "Nous supervisons chaque année la récolte de 35 000 m³ de bois sur les propriétés de nos clients. Du martelage à la mise en marché, nous encadrons les travaux de A à Z pour que vous ayez l'esprit tranquille.",
+    chips: ["Prescription de travaux", "Voirie forestière", "Gestion du transport", "Mise en marché des bois"],
+    encadre: {
+      titre: "Format clé en main",
+      points: [
+        "Un contrat qui précise le partage des revenus, établi avant le début des travaux",
+        "Supervision complète, de la planification à la vente du bois",
+      ],
+    },
+  },
+  {
+    slug: "evaluation-forestiere",
+    img: heroRecolte,
+    alt: "Évaluation forestière",
+    eyebrow: "Expertise légale",
+    brun: false,
+    titre: "Évaluation forestière & expertise légale",
+    accroche: "Le juste prix, démontré et défendu.",
+    texte: "Valeur marchande, dommages causés par un tiers ou potentiel d'une propriété : nous effectuons les relevés et recherches nécessaires pour démontrer et justifier le juste prix de votre boisé, y compris devant les tribunaux.",
+    chips: ["Évaluation de propriété", "Expertise en expropriation", "Évaluation des dommages", "Inventaire forestier", "Témoignage d'expert"],
+  },
+  {
+    slug: "erabliere",
+    img: erabliere,
+    alt: "Érablière",
+    eyebrow: "Acériculture",
+    brun: true,
+    titre: "Érablière & acériculture",
+    accroche: "Maximisez le potentiel de votre érablière.",
+    texte: "De la santé du peuplement à la conformité d'entaillage, nous accompagnons les producteurs acéricoles avec des relevés précis et une cartographie GPS de leur réseau de collecte.",
+    chips: ["Bilan de santé", "Analyse de sol", "Normes d'entaillage", "Plan d'érablière (PPAQ)", "Cartographie GPS"],
+  },
+  {
+    slug: "arboriculture-et-foresterie-urbaine",
+    img: territoire,
+    alt: "Foresterie urbaine",
+    eyebrow: "Milieu urbain",
+    brun: false,
+    titre: "Arboriculture & foresterie urbaine",
+    accroche: "Des arbres sains, des milieux sécuritaires.",
+    texte: "Pour les municipalités, les promoteurs et les propriétaires, nous évaluons la santé et le risque des arbres et prescrivons les travaux correctifs requis, signés par des ingénieurs forestiers.",
+    chips: ["Santé de l'arbre", "Évaluation du risque", "Boisés municipaux", "Accompagnement des promoteurs"],
+  },
+  {
+    slug: "service-aux-entrepreneurs-en-travaux-sylvicoles",
+    img: inventaire,
+    alt: "Inventaire en forêt publique",
+    eyebrow: "Forêt publique",
+    brun: false,
+    titre: "Service aux entrepreneurs sylvicoles",
+    accroche: "Le soutien technique en forêt publique.",
+    texte: "Un service de supervision et de planification offert aux entreprises qui réalisent des travaux sylvicoles en forêt publique.",
+    chips: ["Plan sondage", "Compilation des inventaires", "Analyse des résultats", "Prescription"],
+  },
+];
+
+const releveBarres = [
+  { label: "Valeur du bois sur pied", pct: 74 },
+  { label: "Accroissement annuel", pct: 48 },
+  { label: "Potentiel d'aménagement", pct: 63 },
+];
+
+const ld = {
+  "@context": "https://schema.org",
+  "@graph": [
+    { "@type": "WebPage", "@id": "https://cfrq.ca/services/#webpage", url: "https://cfrq.ca/services/", name: "Services forestiers | CFRQ", description: "Aménagement, opérations, évaluation, érablière, foresterie urbaine et relevé de portefeuille forestier.", inLanguage: "fr-CA", about: { "@id": "https://cfrq.ca/#organization" } },
+    { "@type": "BreadcrumbList", itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Accueil", item: "https://cfrq.ca/" },
+      { "@type": "ListItem", position: 2, name: "Services", item: "https://cfrq.ca/services/" },
+    ] },
+    { "@type": "OfferCatalog", name: "Services forestiers de CFRQ", provider: { "@id": "https://cfrq.ca/#organization" }, itemListElement: [
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Aménagement forestier", description: "Plan d'aménagement, préparation de terrain, reboisement, éducation de peuplement et travaux forêt-faune.", provider: { "@id": "https://cfrq.ca/#organization" } } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Opérations forestières", description: "Prescription, permis, voirie, transport et mise en marché des bois : du service à la carte au clé en main.", provider: { "@id": "https://cfrq.ca/#organization" } } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Évaluation forestière", description: "Évaluation de propriété, expertise d'expropriation, évaluation de dommages et inventaire forestier.", provider: { "@id": "https://cfrq.ca/#organization" } } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Érablière et acériculture", description: "Bilan de santé, analyse de sol, évaluation du nombre d'entailles, plan d'érablière et cartographie GPS.", provider: { "@id": "https://cfrq.ca/#organization" } } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Arboriculture et foresterie urbaine", description: "Santé et risque des arbres, boisés municipaux et accompagnement des promoteurs.", provider: { "@id": "https://cfrq.ca/#organization" } } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Relevé de portefeuille forestier", description: "Portrait personnalisé de la valeur, de la croissance et du potentiel de votre boisé.", provider: { "@id": "https://cfrq.ca/#organization" } } },
+    ] },
+  ],
 };
+
+const eyebrow = "text-[12.5px] font-semibold uppercase tracking-[0.18em]";
 ---
 
-<Base title="Nos services — CFRQ" description="Aménagement, opérations, évaluation, érablière, foresterie urbaine et soutien aux entrepreneurs, signés par des ingénieurs forestiers.">
+<Base
+  title="Services forestiers : aménagement, récolte, érablière | CFRQ"
+  description="Plan d'aménagement, opérations forestières, évaluation, érablière, foresterie urbaine et relevé de portefeuille forestier. CFRQ, ingénieurs forestiers accrédités depuis 1996."
+  canonical="/services/"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(ld)} slot="head" />
+
   <Header />
   <main id="contenu">
-    <PageHeader
-      eyebrow="Nos services"
-      title="De la santé de votre forêt aux mandats les plus techniques"
-      subtitle="Six champs d'expertise, tous signés par des ingénieurs forestiers membres de l'OIFQ. Du conseil ponctuel jusqu'au clé en main."
-      image={boiseMature}
-    />
-
-    <section class="mx-auto max-w-6xl px-5 py-14 md:py-20">
-      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {
-          services.map((s) => (
-            <a
-              href={withBase(`/services/${s.slug}`)}
-              class="group overflow-hidden rounded-2xl border border-black/5 bg-white transition-colors hover:border-cfrq-green/40"
-            >
-              <Image
-                src={imgMap[s.image]}
-                alt={s.titre}
-                widths={[400, 800]}
-                sizes="(min-width: 1024px) 360px, (min-width: 640px) 50vw, 100vw"
-                class="h-44 w-full object-cover"
-              />
-              <div class="p-6">
-                <h2 class="font-display text-xl font-medium text-cfrq-deep">{s.titre}</h2>
-                <p class="mt-2 text-[15px] leading-relaxed text-black/65">{s.tagline}</p>
-                <span class="mt-4 inline-block text-[14px] font-medium text-cfrq-leaf">
-                  En savoir plus
-                </span>
-              </div>
-            </a>
-          ))
-        }
+    <!-- HERO -->
+    <section style="background:linear-gradient(160deg,#EAF4E0,#F7F5EE 60%)">
+      <div class="mx-auto max-w-[1160px] px-[22px] pb-[60px] pt-[76px]">
+        <p class={`${eyebrow} tracking-[0.2em] text-cfrq-leaf`}>Nos services</p>
+        <h1 class="mt-3 max-w-[800px] font-display font-medium text-cfrq-deep text-[clamp(40px,7vw,62px)] leading-[1.02] tracking-[-0.02em] text-balance">
+          Un seul partenaire, du conseil à l'exécution
+        </h1>
+        <p class="mt-5 max-w-[620px] text-[19px] leading-[1.55] text-cfrq-ink/70 text-pretty">
+          Nos techniciens vont sur le terrain, nos ingénieurs forestiers signent vos plans et rapports, et nous réalisons les travaux. Tout ce dont votre forêt a besoin, réuni sous un même toit depuis 1996.
+        </p>
+        <div class="mt-10 grid gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
+          {site.stats.map((s) => (
+            <div class="border-l-2 border-cfrq-green pl-4">
+              <p class="font-display text-[26px] font-medium text-cfrq-deep">{s.valeur}</p>
+              <p class="mt-1 text-[13px] text-cfrq-ink/60">{s.label}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
 
-    <CTASection />
+    <!-- APPROCHE -->
+    <section class="bg-cfrq-deep text-cfrq-cream">
+      <div class="mx-auto flex max-w-[1160px] flex-wrap items-center gap-x-11 gap-y-7 px-[22px] py-11">
+        <div class="flex-1 basis-[220px]">
+          <p class="text-[12px] font-semibold uppercase tracking-[0.18em] text-cfrq-green-light">Notre approche</p>
+          <p class="mt-2 font-display text-[24px] font-medium leading-tight">De votre boisé aux travaux réalisés</p>
+        </div>
+        <div class="flex flex-[2] basis-[460px] flex-wrap gap-[18px]">
+          {approche.map((e) => (
+            <div class="flex-1 basis-[130px]">
+              <p class="font-display text-[22px] text-cfrq-green-light">{e.num}</p>
+              <p class="mt-1 text-[14.5px] font-semibold">{e.titre}</p>
+              <p class="mt-0.5 text-[13px] leading-relaxed text-cfrq-cream/70">{e.texte}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- SERVICES GRID -->
+    <section class="mx-auto max-w-[1160px] px-[22px] pb-10 pt-[68px]">
+      <div class="grid items-start gap-6 lg:grid-cols-2">
+        {cartes.map((c) => (
+          <a href={withBase(`/${c.slug}`)} class="group block overflow-hidden rounded-[22px] border border-black/5 bg-white transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-1 hover:border-cfrq-green/40 hover:shadow-[0_16px_40px_rgba(20,51,26,.1)]">
+            <Image src={c.img} alt={c.alt} widths={[400, 800, 1120]} sizes="(min-width:1024px) 540px, 100vw" class="aspect-video w-full object-cover" />
+            <div class="px-[26px] pb-7 pt-[26px]">
+              <span class:list={["text-[11.5px] font-bold uppercase tracking-[0.14em]", c.brun ? "text-[#8a6a3b]" : "text-cfrq-leaf"]}>{c.eyebrow}</span>
+              <h2 class="mt-2.5 font-display text-[25px] font-medium text-cfrq-deep">{c.titre}</h2>
+              <p class:list={["mt-1 text-[15px] font-medium", c.brun ? "text-[#8a6a3b]" : "text-cfrq-leaf"]}>{c.accroche}</p>
+              <p class="mt-3 text-[14.5px] leading-[1.6] text-cfrq-ink/[.68]">{c.texte}</p>
+              <div class="mt-4 flex flex-wrap gap-[7px]">
+                {c.chips.map((chip) => (
+                  <span class:list={["rounded-full px-[11px] py-[5px] text-[12.5px]", c.brun ? "bg-[#f0e7d8] text-[#7a5a2e]" : "bg-cfrq-tint text-[#2e6b1e]"]}>{chip}</span>
+                ))}
+              </div>
+              {c.encadre && (
+                <div class="mt-[18px] rounded-[14px] border border-cfrq-green/20 bg-[#f3f7ec] px-[18px] py-4">
+                  <p class="text-[12px] font-bold uppercase tracking-[0.06em] text-cfrq-leaf">{c.encadre.titre}</p>
+                  <ul class="mt-2.5 space-y-2">
+                    {c.encadre.points.map((p) => (
+                      <li class="flex items-start gap-[9px]">
+                        <span class="mt-[7px] h-1.5 w-1.5 flex-none rounded-full bg-cfrq-green"></span>
+                        <span class="text-[13.5px] leading-[1.45] text-cfrq-ink">{p}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- RELEVE DE PORTEFEUILLE -->
+    <section aria-labelledby="releve-titre" class="mx-auto max-w-[1160px] px-[22px] pb-6 pt-7">
+      <div class="flex flex-wrap items-center gap-x-12 gap-y-9 rounded-3xl border border-cfrq-green/20 p-[clamp(28px,4vw,48px)]" style="background:linear-gradient(140deg,#EAF4E0,#FFFFFF 66%)">
+        <div class="flex-[1.2] basis-[380px]">
+          <span class="inline-flex items-center gap-2 rounded-full bg-cfrq-green px-3 py-[5px] text-[11.5px] font-bold uppercase tracking-[0.12em] text-[#123005]">Nouveau service</span>
+          <h2 id="releve-titre" class="mt-4 font-display text-[clamp(28px,4vw,40px)] font-medium leading-[1.05] tracking-[-0.015em] text-cfrq-deep text-balance">Relevé de portefeuille forestier</h2>
+          <p class="mt-2 font-display text-[19px] italic text-cfrq-leaf">Votre forêt vaut plus que son bois.</p>
+          <p class="mt-4 max-w-[480px] text-[16px] leading-[1.6] text-cfrq-ink/70">
+            Un portrait personnalisé de la <strong class="font-semibold text-cfrq-deep">valeur</strong>, de la <strong class="font-semibold text-cfrq-deep">croissance</strong> et du <strong class="font-semibold text-cfrq-deep">potentiel</strong> de votre boisé (bâti à partir de l'inventaire écoforestier du ministère et des données de votre propre propriété).
+          </p>
+          <a href={withBase("/espace-client")} class="mt-[22px] inline-flex items-center gap-2 rounded-[11px] bg-cfrq-deep px-6 py-3.5 text-[15px] font-semibold text-cfrq-cream transition-colors hover:bg-cfrq-deep-2">
+            Découvrir le relevé <span aria-hidden="true">→</span>
+          </a>
+        </div>
+        <div class="flex-1 basis-[300px]">
+          <div class="rounded-[18px] border border-black/5 bg-white p-6 shadow-[0_24px_44px_-30px_rgba(20,51,26,.55)]">
+            <div class="flex items-center justify-between">
+              <span class="text-[12px] font-bold uppercase tracking-[0.12em] text-cfrq-leaf">Votre relevé</span>
+              <span class="font-mono text-[11px] text-cfrq-ink/40">exemple</span>
+            </div>
+            <div class="mt-[18px] flex flex-col gap-[15px]">
+              {releveBarres.map((b) => (
+                <div>
+                  <p class="text-[13.5px] text-cfrq-deep">{b.label}</p>
+                  <div class="mt-1.5 h-[7px] w-full overflow-hidden rounded bg-[#eaf0e1]">
+                    <div class="h-full rounded bg-cfrq-green" style={`width:${b.pct}%`}></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <p class="mt-3.5 border-t border-black/5 pt-3.5 text-[12.5px] text-cfrq-ink/55">Disponible dans votre espace client.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA FINAL -->
+    <section class="mx-auto max-w-[1160px] px-[22px] pb-20 pt-5">
+      <div class="flex flex-wrap items-center justify-between gap-6 rounded-3xl px-[clamp(30px,5vw,52px)] py-[clamp(30px,5vw,52px)] text-cfrq-cream" style="background:linear-gradient(140deg,#1D4011,#14331A)">
+        <div class="flex-1 basis-[380px]">
+          <h2 class="font-display text-[clamp(28px,4vw,40px)] font-medium leading-[1.08] text-balance">Un projet pour votre boisé ?</h2>
+          <p class="mt-3 max-w-[440px] text-[17px] leading-[1.55] text-cfrq-cream/[.82]">La première visite de votre boisé est gratuite et sans engagement. Un technicien se déplace, et on part de là.</p>
+        </div>
+        <div class="flex flex-none flex-wrap items-center gap-3.5">
+          <a href={withBase("/contact")} class="inline-flex items-center gap-2 rounded-xl bg-cfrq-green px-[26px] py-[15px] text-[16px] font-bold text-[#123005] transition-colors hover:bg-[#6ecb3e]">Réserver une visite gratuite</a>
+          <p class="text-[16px] text-cfrq-cream/85">ou&nbsp;<a href={site.telHref} class="font-semibold text-white hover:underline">{site.tel}</a></p>
+        </div>
+      </div>
+    </section>
   </main>
   <Footer />
 </Base>

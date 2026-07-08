@@ -265,6 +265,7 @@ export function DashboardView({ d, offre = null, onLogout }: { d: Dossier; offre
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
   const initiales = nom.split(/\s+/).map((m: string) => m[0]).join("").slice(0, 2).toUpperCase();
+  const prenom = d.producteur ? nom.split(/\s+/)[0] : null;
 
   // Agregats reels
   const peuplements = useMemo(() => props(d.carte, "peuplement"), [d.carte]);
@@ -425,18 +426,18 @@ export function DashboardView({ d, offre = null, onLogout }: { d: Dossier; offre
   return (
     <div className="min-h-screen bg-cfrq-cream">
       <div className="sticky top-0 z-30">
-        <header className="bg-cfrq-deep text-cfrq-cream">
-          <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-3">
+        <header className="border-b border-black/[.07] bg-white">
+          <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-[11px]">
             <div className="flex items-center gap-3">
-              <a href={withBase("/")} className="font-display text-xl text-cfrq-cream" aria-label="Accueil CFRQ">
+              <a href={withBase("/")} className="font-display text-xl text-cfrq-deep" aria-label="Accueil CFRQ">
                 CFR<span style={{ color: "#5abd2a" }}>Q</span>
               </a>
-              <span className="hidden border-l border-white/20 pl-3 text-[14px] text-cfrq-cream/70 sm:inline">Espace client</span>
+              <span className="hidden border-l border-black/10 pl-3 text-[14px] text-cfrq-ink/60 sm:inline">Espace client</span>
             </div>
             <div className="flex items-center gap-3">
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-cfrq-green text-[13px] font-medium text-[#123005]">{initiales}</span>
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-cfrq-green text-[13px] font-semibold text-[#123005]">{initiales}</span>
               {onLogout && (
-                <button onClick={onLogout} className="rounded-lg border border-white/25 px-3 py-2 text-[13px] text-cfrq-cream/90 transition-colors hover:bg-white/10">
+                <button onClick={onLogout} className="rounded-full border border-black/15 px-3.5 py-2 text-[13px] text-cfrq-leaf transition-colors hover:bg-cfrq-tint">
                   Déconnexion
                 </button>
               )}
@@ -457,70 +458,76 @@ export function DashboardView({ d, offre = null, onLogout }: { d: Dossier; offre
 
       <div className="mx-auto max-w-6xl px-5 py-8">
         {/* Salutation */}
-        <div className="flex flex-wrap items-center gap-3">
-          <h1 className="font-display text-3xl font-medium text-cfrq-deep">{salutation}</h1>
-          <span className="rounded-full bg-cfrq-green/20 px-3 py-1 text-[13px] font-medium text-cfrq-leaf">{nom}</span>
+        <div className="flex flex-wrap items-center gap-2.5">
+          <h1 className="font-display text-[clamp(24px,6vw,30px)] font-medium text-cfrq-deep">{salutation}{prenom ? `, ${prenom}` : ""}</h1>
+          {d.producteur?.no_prod && (
+            <span className="rounded-full bg-cfrq-green/[.18] px-3 py-1 text-[13px] font-medium text-cfrq-leaf">{d.producteur.no_prod}</span>
+          )}
           {reconnu && (
             <span className="rounded-full bg-cfrq-tint px-3 py-1 text-[13px] font-medium text-cfrq-leaf">Producteur forestier reconnu</span>
           )}
         </div>
-        <p className="mt-1 text-[15px] text-black/55">Voici votre forêt, à jour.</p>
+        <p className="mt-1 text-[15px] text-cfrq-ink/55">Voici votre forêt, à jour.</p>
 
-        {/* Heros patrimonial */}
-        <div className="relative mt-6 overflow-hidden rounded-3xl border border-cfrq-green/15 bg-gradient-to-br from-cfrq-tint to-white p-7 md:p-10">
-          <svg aria-hidden viewBox="0 0 24 24" className="pointer-events-none absolute -right-6 -top-6 h-44 w-44 text-cfrq-green/10 md:h-56 md:w-56" fill="currentColor">
-            <path d="M12 2C7 6 4 10 4 15a8 8 0 0 0 16 0c0-5-3-9-8-13Zm0 4c3 2.5 5 5.5 5 9a5 5 0 0 1-5 5V6Z" />
-          </svg>
-          <div className="relative">
-            <div className="text-[15px] font-medium text-cfrq-leaf">{heros.avant}</div>
-            <div className="mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-              <CountUp value={heros.valeur} decimals={heros.decimals} className="font-display text-6xl leading-none font-medium text-cfrq-deep md:text-7xl" />
-              <span className="font-display text-2xl font-medium text-cfrq-deep md:text-3xl">{heros.mot}</span>
+        {/* Poste de commande : heros patrimonial + prochaine etape + ingenieur */}
+        <div className="mt-6 flex flex-wrap gap-[18px]">
+          {/* Heros patrimonial (colonne large) */}
+          <div className="relative flex-[2] basis-[400px] overflow-hidden rounded-3xl border border-cfrq-green/[.18] bg-gradient-to-br from-cfrq-tint to-white p-[clamp(22px,4vw,34px)]">
+            <svg aria-hidden viewBox="0 0 24 24" className="pointer-events-none absolute -right-6 -top-6 h-44 w-44 text-cfrq-green/10 md:h-52 md:w-52" fill="currentColor">
+              <path d="M12 2C7 6 4 10 4 15a8 8 0 0 0 16 0c0-5-3-9-8-13Zm0 4c3 2.5 5 5.5 5 9a5 5 0 0 1-5 5V6Z" />
+            </svg>
+            <div className="relative">
+              <div className="text-[15px] font-medium text-cfrq-leaf">{heros.avant}</div>
+              <div className="mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                <CountUp value={heros.valeur} decimals={heros.decimals} className="font-display text-[clamp(52px,11vw,72px)] font-medium leading-[.9] text-cfrq-deep" />
+                <span className="font-display text-[clamp(22px,5vw,28px)] font-medium text-cfrq-deep">{heros.mot}</span>
+              </div>
+              <p className="mt-4 max-w-[460px] text-[17px] leading-relaxed text-cfrq-ink/[.68]">{heros.sous}</p>
+              {reperes.length >= 2 && (
+                <div className="mt-6 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+                  {reperes.map((r) => (
+                    <div key={r.label} className="rounded-[14px] bg-white/70 px-3.5 py-3">
+                      <div className="text-[12.5px] text-cfrq-ink/55">{r.label}</div>
+                      <div className="mt-1 font-display text-2xl font-medium text-cfrq-deep">
+                        <CountUp value={r.valeur} decimals={r.decimals} />{r.suffixe}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-            <p className="mt-4 max-w-2xl text-[17px] leading-relaxed text-cfrq-ink/70 md:text-[18px]">{heros.sous}</p>
           </div>
-        </div>
 
-        {/* Sous-bande de reperes */}
-        {reperes.length >= 2 && (
-          <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
-            {reperes.map((r) => (
-              <div key={r.label} className="rounded-xl bg-white p-4">
-                <div className="text-[13px] text-black/55">{r.label}</div>
-                <div className="mt-1 font-display text-2xl font-medium text-cfrq-deep">
-                  <CountUp value={r.valeur} decimals={r.decimals} />{r.suffixe}
+          {/* Colonne droite : prochaine etape + ingenieur */}
+          <div className="flex flex-1 basis-[280px] flex-col gap-[18px]">
+            <section className="rounded-3xl border border-cfrq-green/[.28] bg-white p-6">
+              <p className="text-[12px] font-semibold uppercase tracking-[0.1em] text-cfrq-leaf">Votre prochaine étape</p>
+              <h2 className="mt-2 font-display text-[21px] font-medium leading-snug text-cfrq-deep">{action.titre}</h2>
+              <p className="mt-2 text-[14px] leading-relaxed text-cfrq-ink/65">{action.sous}</p>
+              <a href={action.href} className="mt-4 inline-flex items-center gap-2 rounded-[10px] bg-cfrq-green px-[18px] py-2.5 text-[14.5px] font-semibold text-[#123005] transition-colors hover:bg-cfrq-green-hover">
+                {action.cta} <span aria-hidden>→</span>
+              </a>
+            </section>
+
+            <div className="rounded-3xl border border-black/5 bg-white p-5">
+              <div className="flex items-center gap-3">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-cfrq-tint text-cfrq-leaf" aria-hidden>
+                  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.6">
+                    <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" /><path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6" strokeLinecap="round" />
+                  </svg>
+                </span>
+                <div>
+                  <div className="font-display text-[16px] font-medium text-cfrq-deep">Votre ingénieur forestier</div>
+                  <p className="text-[13px] text-cfrq-ink/60">Une question ? On vous répond.</p>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
-
-        {/* Votre ingenieur de confiance */}
-        <Reveal className="mt-8">
-          <div className="flex flex-col gap-4 rounded-2xl border border-cfrq-green/20 bg-white p-6 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-4">
-              <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-cfrq-tint text-cfrq-leaf" aria-hidden>
-                <svg viewBox="0 0 24 24" className="h-8 w-8" fill="none" stroke="currentColor" strokeWidth="1.6">
-                  <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" /><path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6" strokeLinecap="round" />
-                </svg>
-              </span>
-              <div>
-                <div className="font-display text-lg font-medium text-cfrq-deep">Votre ingénieur forestier</div>
-                <p className="mt-0.5 max-w-md text-[15px] leading-relaxed text-black/60">
-                  Une question sur votre boisé ? L'équipe des Conseillers forestiers de la région de Québec vous accompagne, sans jargon.
-                </p>
+              <div className="mt-4 flex gap-2.5">
+                <a href={site.telHref} className="flex-1 rounded-[10px] bg-cfrq-tint px-3 py-2.5 text-center text-[14px] font-semibold text-cfrq-leaf transition-colors hover:bg-[#dcebcb]">Appeler</a>
+                <a href={`mailto:${site.courriel}`} className="flex-1 rounded-[10px] border border-cfrq-green/40 px-3 py-2.5 text-center text-[14px] font-semibold text-cfrq-leaf transition-colors hover:bg-cfrq-tint">Écrire</a>
               </div>
             </div>
-            <div className="flex shrink-0 flex-wrap gap-3">
-              <a href={site.telHref} className="inline-flex items-center gap-2 rounded-lg bg-cfrq-green px-5 py-3 text-[15px] font-medium text-[#123005] transition-colors hover:bg-cfrq-green-hover">
-                <span aria-hidden>📞</span> Appeler
-              </a>
-              <a href={`mailto:${site.courriel}`} className="inline-flex items-center gap-2 rounded-lg border border-cfrq-green/40 px-5 py-3 text-[15px] font-medium text-cfrq-leaf transition-colors hover:bg-cfrq-tint">
-                <span aria-hidden>✉️</span> Écrire
-              </a>
-            </div>
           </div>
-        </Reveal>
+        </div>
 
         {/* Narration biodiversite / sante */}
         {(nbEssences >= 4 || nbAppellations >= 4) && (
@@ -588,17 +595,6 @@ export function DashboardView({ d, offre = null, onLogout }: { d: Dossier; offre
                 <span className="font-medium text-cfrq-leaf">Prochaine étape : {action.cta.toLowerCase()}</span>
               </li>
             </ul>
-          </section>
-        </Reveal>
-
-        {/* Prochaine meilleure action */}
-        <Reveal className="mt-8">
-          <section className="rounded-2xl border border-cfrq-green/25 bg-white p-6">
-            <h2 className="font-display text-lg font-medium text-cfrq-deep">{action.titre}</h2>
-            <p className="mt-2 max-w-2xl text-[15.5px] leading-relaxed text-black/65">{action.sous}</p>
-            <a href={action.href} className="mt-4 inline-block rounded-lg bg-cfrq-green px-5 py-3 text-[15px] font-medium text-[#123005] transition-colors hover:bg-cfrq-green-hover">
-              {action.cta}
-            </a>
           </section>
         </Reveal>
 

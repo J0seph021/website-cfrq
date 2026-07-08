@@ -1,62 +1,86 @@
 ---
 import Logo from "./Logo.astro";
 import { withBase } from "../lib/url";
-import { services } from "../data/services";
+import { site } from "../data/site";
 
-const navigation = [
-  { label: "À propos de nous", href: withBase("/a-propos") },
-  { label: "Territoire desservi", href: withBase("/territoire") },
-  { label: "Demande de plants", href: withBase("/plants") },
-  { label: "Espace client", href: withBase("/espace-client") },
-  { label: "Contact", href: withBase("/contact") },
+const servicesLinks = [
+  { label: "Aménagement forestier", href: "/amenagement" },
+  { label: "Opérations forestières", href: "/operation-forestieres" },
+  { label: "Évaluation & expertise", href: "/evaluation-forestiere" },
+  { label: "Érablière & acériculture", href: "/erabliere" },
 ];
-const legal = [
-  { label: "Politique de confidentialité", href: withBase("/confidentialite") },
-  { label: "Termes et conditions", href: withBase("/termes") },
+const explorer = [
+  { label: "Accueil", href: "/" },
+  { label: "Tous les services", href: "/services" },
+  { label: "Territoire desservi", href: "/territoire-desservi" },
+  { label: "Demande de plants", href: "/demande-des-plants-non-subventionnes" },
+  { label: "Espace client", href: "/espace-client" },
 ];
+const regions = [
+  "Québec",
+  "Portneuf",
+  "Charlevoix",
+  "Côte-Nord",
+  "Mauricie",
+  "Bois-Francs",
+  "Chaudière",
+  "Appalaches",
+];
+const annee = new Date().getFullYear();
+const linkClass = "text-[14px] text-[#d3dbc6] transition-colors hover:text-cfrq-green-light";
+const labelClass = "mb-4 text-[11px] font-bold uppercase tracking-[0.16em] text-[#7e8c6a]";
 ---
 
 <footer class="bg-cfrq-deep text-cfrq-cream">
-  <div class="mx-auto grid max-w-6xl gap-10 px-5 py-14 md:grid-cols-[1.5fr_1fr_1fr_1fr]">
-    <div>
-      <Logo class="h-9 w-auto text-cfrq-cream" />
-      <p class="mt-4 max-w-xs text-[15px] leading-relaxed text-cfrq-cream/75">
-        Conseillers Forestiers de la Région de Québec inc. Des ingénieurs forestiers indépendants,
-        au service de votre boisé depuis 1996.
+  <div class="mx-auto max-w-[1160px] px-[22px] pb-8 pt-[60px]">
+    <div class="grid gap-9 md:grid-cols-[1.6fr_1fr_1fr_1.2fr]">
+      <div>
+        <Logo class="h-8 w-auto text-cfrq-cream" />
+        <p class="mt-4 max-w-[260px] text-[13.5px] leading-relaxed text-cfrq-cream/70">
+          Conseillers Forestiers de la Région de Québec inc. Conseiller forestier accrédité depuis {site.depuis}.
+        </p>
+      </div>
+
+      <nav aria-label="Services">
+        <h2 class={labelClass}>Services</h2>
+        <ul class="space-y-2.5">
+          {servicesLinks.map((l) => (
+            <li><a href={withBase(l.href)} class={linkClass}>{l.label}</a></li>
+          ))}
+        </ul>
+      </nav>
+
+      <nav aria-label="Explorer">
+        <h2 class={labelClass}>Explorer</h2>
+        <ul class="space-y-2.5">
+          {explorer.map((l) => (
+            <li><a href={withBase(l.href)} class={linkClass}>{l.label}</a></li>
+          ))}
+        </ul>
+      </nav>
+
+      <div>
+        <h2 class={labelClass}>Contact</h2>
+        <ul class="space-y-2.5">
+          <li><a href={site.telHref} class={linkClass}>{site.tel}</a></li>
+          <li><a href={`mailto:${site.courriel}`} class={linkClass}>{site.courriel}</a></li>
+        </ul>
+        <address class="mt-3 text-[14px] not-italic leading-relaxed text-cfrq-cream/70">
+          {site.adresse.ligne1}<br />
+          {site.adresse.ville} {site.adresse.code}
+        </address>
+      </div>
+    </div>
+
+    <div class="mt-10 flex flex-col gap-3 border-t border-white/10 pt-6 text-[12.5px] text-[#7e8c6a] sm:flex-row sm:items-center sm:justify-between">
+      <p>
+        © {annee} CFRQ, Conseillers Forestiers de la Région de Québec inc.
+        <span class="px-1">·</span>
+        <a href={withBase("/termes-et-conditions")} class="text-cfrq-green-light hover:underline">Termes</a>
+        <span class="px-1">·</span>
+        <a href={withBase("/politique-de-confidentialite-et-sur-les-cookies")} class="text-cfrq-green-light hover:underline">Confidentialité</a>
       </p>
-    </div>
-
-    <div>
-      <h2 class="mb-3 text-[15px] font-medium text-cfrq-green">Services</h2>
-      <ul class="space-y-2 text-[15px] text-cfrq-cream/75">
-        {services.map((s) => (
-          <li><a href={withBase(`/services/${s.slug}`)} class="transition-colors hover:text-cfrq-cream">{s.titre}</a></li>
-        ))}
-      </ul>
-    </div>
-
-    <div>
-      <h2 class="mb-3 text-[15px] font-medium text-cfrq-green">Navigation</h2>
-      <ul class="space-y-2 text-[15px] text-cfrq-cream/75">
-        {navigation.map((l) => (
-          <li><a href={l.href} class="transition-colors hover:text-cfrq-cream">{l.label}</a></li>
-        ))}
-      </ul>
-    </div>
-
-    <div>
-      <h2 class="mb-3 text-[15px] font-medium text-cfrq-green">Légal</h2>
-      <ul class="space-y-2 text-[15px] text-cfrq-cream/75">
-        {legal.map((l) => (
-          <li><a href={l.href} class="transition-colors hover:text-cfrq-cream">{l.label}</a></li>
-        ))}
-      </ul>
-    </div>
-  </div>
-  <div class="border-t border-white/10">
-    <div class="mx-auto flex max-w-6xl flex-col gap-2 px-5 py-5 text-[13px] text-cfrq-cream/60 sm:flex-row sm:items-center sm:justify-between">
-      <span>© {new Date().getFullYear()} CFRQ inc. Tous droits réservés.</span>
-      <span>Ingénieurs forestiers membres de l'OIFQ</span>
+      <p>{regions.join(" · ")}</p>
     </div>
   </div>
 </footer>

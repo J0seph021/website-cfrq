@@ -9,7 +9,9 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   site: process.env.SITE_URL || 'https://cfrq.ca',
   base: process.env.SITE_BASE || '/',
-  trailingSlash: 'ignore',
+  // Slash final systematique pour coller aux URLs WordPress historiques
+  // (ex. /amenagement/) et preserver le referencement acquis.
+  trailingSlash: 'always',
   integrations: [react()],
   vite: {
     plugins: [tailwindcss()],

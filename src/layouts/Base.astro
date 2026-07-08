@@ -6,12 +6,32 @@ import "../styles/global.css";
 interface Props {
   title?: string;
   description?: string;
+  /** Chemin canonique (ex. "/services/"). Par défaut : chemin courant. */
+  canonical?: string;
+  /** Directive robots. Ex. "noindex, follow" pour les pages privées. */
+  robots?: string;
+  /** Image Open Graph (chemin absolu ou relatif au site). */
+  ogImage?: string;
 }
 
 const {
   title = "CFRQ, Conseillers forestiers de la région de Québec",
   description = "Des ingénieurs forestiers indépendants pour protéger, aménager et mettre en valeur votre boisé, partout au Québec.",
+  canonical,
+  robots,
+  ogImage,
 } = Astro.props;
+
+// URL canonique absolue à partir de Astro.site (configuré dans astro.config.mjs).
+const siteOrigin = (Astro.site ?? new URL("https://cfrq.ca")).origin;
+const canonicalPath = canonical ?? Astro.url.pathname;
+const canonicalUrl = new URL(canonicalPath, siteOrigin).href;
+const ogImageUrl = ogImage ? new URL(ogImage, siteOrigin).href : undefined;
+
+// Aperçu GitHub Pages (*.github.io) : ne jamais laisser indexer, pour éviter tout
+// contenu dupliqué avec cfrq.ca. Au basculement (SITE_URL=cfrq.ca), l'index reprend.
+const isPreview = siteOrigin.includes("github.io");
+const robotsFinal = robots ?? (isPreview ? "noindex, follow" : undefined);
 ---
 
 <!doctype html>
@@ -21,12 +41,18 @@ const {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+    {robotsFinal && <meta name="robots" content={robotsFinal} />}
     <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/favicon.svg`} />
 
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
     <meta property="og:locale" content="fr_CA" />
+    {ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
+
+    <slot name="head" />
   </head>
   <body class="font-body text-cfrq-ink">
     <a
