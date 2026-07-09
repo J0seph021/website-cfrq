@@ -18,7 +18,7 @@ const chipsTerritoire = [...site.regions.slice(0, 6), site.regions.slice(6).join
 const ld = {
   "@context": "https://schema.org",
   "@graph": [
-    { "@type": "WebPage", "@id": "https://cfrq.ca/contact/#webpage", url: "https://cfrq.ca/contact/", name: "Contact | CFRQ", description: "Coordonnées de CFRQ et prise de rendez-vous pour une visite gratuite.", inLanguage: "fr-CA", about: { "@id": "https://cfrq.ca/#organization" } },
+    { "@type": "WebPage", "@id": "https://cfrq.ca/contact/#webpage", url: "https://cfrq.ca/contact/", name: "Contact | CFRQ", description: "Coordonnées de CFRQ et prise de rendez-vous pour une visite-conseil.", inLanguage: "fr-CA", about: { "@id": "https://cfrq.ca/#organization" } },
     { "@type": "BreadcrumbList", itemListElement: [
       { "@type": "ListItem", position: 1, name: "Accueil", item: "https://cfrq.ca/" },
       { "@type": "ListItem", position: 2, name: "Contact", item: "https://cfrq.ca/contact/" },
@@ -34,8 +34,8 @@ const miniCarte = "background:radial-gradient(circle at 40% 40%,rgba(90,189,42,.
 ---
 
 <Base
-  title="Contact, réservez une visite gratuite de votre boisé | CFRQ"
-  description="Joignez CFRQ : 367 777-0555, cfrq@cfrq.ca, L'Ancienne-Lorette. Réservez une première visite gratuite de votre boisé par un conseiller forestier."
+  title="Contact, réservez une visite-conseil de votre boisé | CFRQ"
+  description="Joignez CFRQ : 367 777-0555, cfrq@cfrq.ca, L'Ancienne-Lorette. Réservez une visite-conseil de votre boisé par un conseiller forestier."
   canonical="/contact/"
 >
   <script type="application/ld+json" set:html={JSON.stringify(ld)} slot="head" />
@@ -50,7 +50,7 @@ const miniCarte = "background:radial-gradient(circle at 40% 40%,rgba(90,189,42,.
           Parlons de votre boisé
         </h1>
         <p class="mt-5 max-w-[600px] text-[19px] leading-[1.55] text-cfrq-ink/70">
-          La première visite de votre boisé est <strong class="font-semibold text-cfrq-deep">gratuite et sans engagement</strong>. Remplissez le formulaire ou appelez-nous, un technicien se déplace, et on part de là.
+          Une <strong class="font-semibold text-cfrq-deep">visite-conseil</strong> de votre boisé, c'est le meilleur point de départ. Remplissez le formulaire ou appelez-nous, un technicien se déplace, et on part de là.
         </p>
       </div>
     </section>
@@ -60,7 +60,7 @@ const miniCarte = "background:radial-gradient(circle at 40% 40%,rgba(90,189,42,.
       <div class="flex flex-wrap items-start gap-[26px]">
         <!-- Formulaire -->
         <div class="flex-[1.5] basis-[440px] rounded-3xl border border-black/5 bg-white p-[clamp(24px,3vw,36px)]">
-          <h2 class="font-display text-[24px] font-medium text-cfrq-deep">Demander ma visite gratuite</h2>
+          <h2 class="font-display text-[24px] font-medium text-cfrq-deep">Demander une visite-conseil</h2>
           <p class="mt-1 text-[14px] text-cfrq-ink/60">On vous répond en un jour ouvrable.</p>
 
           <form id="contact-form" class="mt-6">
@@ -93,7 +93,7 @@ const miniCarte = "background:radial-gradient(circle at 40% 40%,rgba(90,189,42,.
               </div>
             </div>
             <button type="submit" class="mt-[22px] w-full rounded-xl bg-cfrq-green px-6 py-4 text-[16px] font-bold text-[#123005] transition-colors hover:bg-cfrq-green-hover">
-              Demander ma visite gratuite
+              Demander une visite-conseil
             </button>
             <p class="mt-3 text-center text-[12.5px] text-cfrq-ink/50">Vos renseignements restent confidentiels et ne servent qu'à vous recontacter.</p>
             <p id="contact-ok" class="mt-4 hidden rounded-xl border border-cfrq-green/40 bg-cfrq-tint p-4 text-center text-[15px] text-cfrq-deep" role="status" aria-live="polite">
@@ -166,7 +166,7 @@ const miniCarte = "background:radial-gradient(circle at 40% 40%,rgba(90,189,42,.
       "Message :",
       v("message") || "(aucun)",
     ].join("\n");
-    const sujet = `Demande de visite gratuite, ${v("nom")}`;
+    const sujet = `Demande de visite-conseil, ${v("nom")}`;
     window.location.href = `mailto:cfrq@cfrq.ca?subject=${encodeURIComponent(sujet)}&body=${encodeURIComponent(corps)}`;
     ok?.classList.remove("hidden");
   });

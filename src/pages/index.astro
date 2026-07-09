@@ -20,7 +20,7 @@ const etapes = [
     alt: "Visite terrain",
     titre: "La visite terrain",
     texte: "Nos techniciens se rendent sur votre propriété pour évaluer votre boisé et cerner les possibilités. ",
-    fort: "Gratuit, sans engagement.",
+    fort: "Le point de départ, sans engagement.",
   },
   {
     num: "02",
@@ -69,7 +69,7 @@ const realisations = [
 ];
 
 const faq = [
-  { q: "Combien coûte une première visite ?", parts: ["La première visite-conseil sur votre propriété est ", { fort: "gratuite et sans engagement", vert: true }, ". Un technicien se déplace pour évaluer votre boisé et discuter de vos objectifs."] },
+  { q: "Combien coûte une première visite ?", parts: ["Contactez-nous pour connaître les modalités d'une ", { fort: "visite-conseil", vert: true }, ". Un technicien forestier se déplace sur votre propriété pour évaluer votre boisé et discuter de vos objectifs."] },
   { q: "Ai-je droit à de l'aide financière ?", parts: ["Oui. Avec un plan d'aménagement, vous avez accès au ", { fort: "PAMVFP", vert: false }, ", au Programme de financement forestier et au remboursement des taxes foncières des producteurs forestiers reconnus."] },
   { q: "Qu'est-ce qu'un plan d'aménagement ?", parts: ["Un portrait de votre forêt (peuplements, potentiel, milieux à protéger) préparé par un ingénieur forestier, avec des scénarios adaptés à vos objectifs. C'est aussi la porte d'entrée vers l'aide financière."] },
   { q: "J'ai hérité d'un boisé et je n'y connais rien.", parts: ["Aucun problème. On accompagne les nouveaux propriétaires du début à la fin : visite terrain, plan, travaux et suivi. Aucune connaissance forestière requise de votre part."] },
@@ -135,7 +135,7 @@ const faqLd = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
   mainEntity: [
-    { "@type": "Question", name: "Combien coûte une première visite d'un conseiller forestier?", acceptedAnswer: { "@type": "Answer", text: "La première visite-conseil sur votre propriété est gratuite et sans engagement. Un technicien forestier de CFRQ se déplace pour évaluer votre boisé et discuter de vos objectifs." } },
+    { "@type": "Question", name: "Combien coûte une première visite d'un conseiller forestier?", acceptedAnswer: { "@type": "Answer", text: "Contactez-nous pour connaître les modalités d'une visite-conseil. Un technicien forestier de CFRQ se déplace sur votre propriété pour évaluer votre boisé et discuter de vos objectifs." } },
     { "@type": "Question", name: "Ai-je droit à de l'aide financière pour aménager mon boisé?", acceptedAnswer: { "@type": "Answer", text: "Oui. Avec un plan d'aménagement, vous avez accès au Programme d'aide à la mise en valeur des forêts privées (PAMVFP), au Programme de financement forestier et au remboursement des taxes foncières des producteurs forestiers reconnus." } },
     { "@type": "Question", name: "Qu'est-ce qu'un plan d'aménagement forestier?", acceptedAnswer: { "@type": "Answer", text: "C'est un portrait de votre forêt (composition des peuplements, potentiel de production, milieux à protéger) préparé par un ingénieur forestier, avec des scénarios sylvicoles adaptés à vos objectifs. C'est aussi la porte d'entrée vers l'aide financière." } },
     { "@type": "Question", name: "Je viens d'hériter d'un boisé et je n'y connais rien. Pouvez-vous m'aider?", acceptedAnswer: { "@type": "Answer", text: "Oui. CFRQ accompagne les nouveaux propriétaires du début à la fin : visite terrain, plan, travaux et suivi. Aucune connaissance forestière n'est requise de votre part." } },
@@ -151,7 +151,7 @@ const btnVert = "inline-flex items-center gap-2 rounded-xl bg-cfrq-green font-bo
 
 <Base
   title="CFRQ : Conseillers forestiers accrédités | Aménagement de boisés privés, région de Québec"
-  description="CFRQ (Conseillers Forestiers de la Région de Québec inc.), cabinet d'ingénieurs et de techniciens forestiers accrédité depuis 1996. Plan d'aménagement, travaux sylvicoles, récolte, évaluation, érablière et aide financière (PAMVFP). Première visite gratuite."
+  description="CFRQ (Conseillers Forestiers de la Région de Québec inc.), cabinet d'ingénieurs et de techniciens forestiers accrédité depuis 1996. Plan d'aménagement, travaux sylvicoles, récolte, évaluation, érablière et aide financière (PAMVFP). Réservez une visite-conseil."
   canonical="/"
 >
   <script type="application/ld+json" set:html={JSON.stringify(orgLd)} slot="head" />
@@ -174,7 +174,7 @@ const btnVert = "inline-flex items-center gap-2 rounded-xl bg-cfrq-green font-bo
           </p>
           <div class="mt-8 flex flex-wrap gap-4">
             <a href={withBase("/contact")} class={`${btnVert} px-7 py-[15px] text-[15.5px]`}>
-              Réserver une visite gratuite <span aria-hidden="true">→</span>
+              Réserver une visite-conseil <span aria-hidden="true">→</span>
             </a>
             <a href={withBase("/services")} class="inline-flex items-center rounded-[11px] border-[1.5px] border-[rgba(247,245,239,.42)] bg-[rgba(247,245,239,.08)] px-[26px] py-3.5 text-[15px] font-semibold text-cfrq-cream transition-colors hover:bg-[rgba(247,245,239,.16)] hover:text-white">
               Nos services
@@ -358,10 +358,10 @@ const btnVert = "inline-flex items-center gap-2 rounded-xl bg-cfrq-green font-bo
       <div class="rounded-3xl px-[clamp(34px,5vw,60px)] py-[clamp(34px,5vw,60px)] text-center text-cfrq-cream" style="background:linear-gradient(140deg,#1D4011,#14331A)">
         <h2 class="mx-auto font-display text-[clamp(30px,5vw,50px)] font-medium leading-[1.06] text-balance">Prêt à donner de la valeur à votre boisé ?</h2>
         <p class="mx-auto mt-4 max-w-[540px] text-[18px] leading-relaxed text-cfrq-cream/[.82]">
-          La première visite de votre boisé est gratuite et sans engagement. Un technicien se déplace, et on part de là.
+          Une visite-conseil de votre boisé, c'est le meilleur point de départ. Un technicien se déplace, et on part de là.
         </p>
         <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
-          <a href={withBase("/contact")} class={`${btnVert} px-8 py-4 text-[16.5px]`}>Réserver ma visite gratuite</a>
+          <a href={withBase("/contact")} class={`${btnVert} px-8 py-4 text-[16.5px]`}>Réserver ma visite-conseil</a>
           <p class="text-[16px] text-cfrq-cream/85">ou <a href={site.telHref} class="font-semibold text-cfrq-cream hover:underline">{site.tel}</a></p>
         </div>
       </div>
