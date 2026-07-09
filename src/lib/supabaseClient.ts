@@ -11,7 +11,10 @@ export const supabase = createClient(url, key, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
-    detectSessionInUrl: false, // connexion par code: aucun callback d'URL
+    // Lien magique + réinitialisation de mot de passe: Supabase renvoie les
+    // jetons dans le fragment (#access_token=...) de l'URL de retour et le
+    // client doit les capter automatiquement pour ouvrir la session.
+    detectSessionInUrl: true,
     storageKey: "cfrq-auth",
   },
 });
