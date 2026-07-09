@@ -7,32 +7,66 @@ const cad = new Intl.NumberFormat("fr-CA", {
   maximumFractionDigits: 0,
 });
 
+// Endpoint de capture des leads (Edge Function du projet PlaniLogix). La fonction
+// ecrit dans planilogix.leads_web par connexion Postgres directe cote serveur;
+// aucune cle de la BD forestiere n'est exposee ici.
+const LEADS_ENDPOINT =
+  import.meta.env.PUBLIC_LEADS_ENDPOINT ||
+  "https://bpxzznykbikbqbvraqxj.supabase.co/functions/v1/capter-lead";
+
 export default function TaxCalculator() {
   const [superficie, setSuperficie] = useState(40);
   const [taxes, setTaxes] = useState(1400);
   const [email, setEmail] = useState("");
+  const [website, setWebsite] = useState(""); // honeypot anti-spam (reste vide)
+  const [envoi, setEnvoi] = useState(false);
   const [envoye, setEnvoye] = useState(false);
 
   const annuel = useMemo(() => Math.round(taxes * 0.85), [taxes]);
   const surCinq = annuel * 5;
 
-  function soumettre(e: React.FormEvent) {
-    e.preventDefault();
-    if (!email) return;
-    // Capture du prospect par courriel pre-rempli (CFRQ recoit un lead qualifie).
-    // Evolution possible: capture directe cote Supabase + envoi automatise du detail.
+  // Filet de secours: si la capture echoue (reseau), on ne perd pas le lead,
+  // on bascule sur un courriel pre-rempli vers CFRQ.
+  function fallbackMailto() {
     const corps = [
       `Courriel : ${email}`,
       `Superficie du boise : ${superficie} ha`,
       `Taxes foncieres annuelles : ${cad.format(taxes)}`,
-      `Estimation indicative du rabais : ${cad.format(annuel)} par annee, soit ${cad.format(surCinq)} sur 5 ans`,
+      `Potentiel maximal indicatif : ${cad.format(annuel)} par annee, soit ${cad.format(surCinq)} sur 5 ans (sous reserve de travaux d'amenagement admissibles)`,
       "",
-      "Je souhaite recevoir mon estimation detaillee et valider mon admissibilite.",
+      "Je souhaite recevoir mon estimation detaillee et les prochaines etapes pour valider mon admissibilite.",
     ].join("\n");
     window.location.href = `mailto:${site.courriel}?subject=${encodeURIComponent(
       "Estimation de rabais de taxes"
     )}&body=${encodeURIComponent(corps)}`;
-    setEnvoye(true);
+  }
+
+  async function soumettre(e: React.FormEvent) {
+    e.preventDefault();
+    if (!email || envoi) return;
+    setEnvoi(true);
+    try {
+      const res = await fetch(LEADS_ENDPOINT, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          courriel: email,
+          superficie_ha: superficie,
+          taxes_annuelles: taxes,
+          potentiel_annuel: annuel,
+          potentiel_5ans: surCinq,
+          source: "calculateur-taxes",
+          website, // honeypot
+        }),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      setEnvoye(true);
+    } catch {
+      fallbackMailto();
+      setEnvoye(true);
+    } finally {
+      setEnvoi(false);
+    }
   }
 
   return (
@@ -77,14 +111,20 @@ export default function TaxCalculator() {
         <div className="flex flex-col justify-between gap-5">
           <div className="grid grid-cols-2 gap-3">
             <div className="rounded-xl bg-cfrq-tint p-4">
-              <div className="text-[13px] text-cfrq-leaf">Estimé par année</div>
+              <div className="text-[13px] text-cfrq-leaf">Potentiel maximal par année</div>
               <div className="mt-1 text-3xl font-medium text-cfrq-deep">{cad.format(annuel)}</div>
             </div>
             <div className="rounded-xl bg-cfrq-tint p-4">
-              <div className="text-[13px] text-cfrq-leaf">Sur 5 ans</div>
+              <div className="text-[13px] text-cfrq-leaf">Potentiel sur 5 ans</div>
               <div className="mt-1 text-3xl font-medium text-cfrq-deep">{cad.format(surCinq)}</div>
             </div>
           </div>
+
+          <p className="text-[13px] leading-relaxed text-cfrq-deep/75">
+            Un plafond, pas un dû : ce montant suppose des travaux d'aménagement
+            admissibles. On établit lesquels, sur quelles superficies et pour combien
+            lors d'une visite de votre boisé.
+          </p>
 
           {envoye ? (
             <div className="rounded-xl border border-cfrq-green/40 bg-cfrq-tint p-4 text-[15px] text-cfrq-deep">
@@ -92,7 +132,19 @@ export default function TaxCalculator() {
               détaillée et on vous contacte pour valider votre admissibilité.
             </div>
           ) : (
-            <form onSubmit={soumettre} className="flex flex-col gap-3 sm:flex-row">
+            <form onSubmit={soumettre} className="relative flex flex-col gap-3 sm:flex-row">
+              {/* Honeypot: un robot le remplit, un humain ne le voit pas. */}
+              <input
+                type="text"
+                name="website"
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
+                className="absolute h-0 w-0 opacity-0"
+                style={{ position: "absolute", left: "-9999px" }}
+              />
               <input
                 type="email"
                 required
@@ -104,9 +156,10 @@ export default function TaxCalculator() {
               />
               <button
                 type="submit"
-                className="h-12 rounded-lg bg-cfrq-green px-5 text-[15px] font-medium text-[#123005] transition-colors hover:bg-cfrq-green-hover"
+                disabled={envoi}
+                className="h-12 rounded-lg bg-cfrq-green px-5 text-[15px] font-medium text-[#123005] transition-colors hover:bg-cfrq-green-hover disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Recevoir mon estimation
+                {envoi ? "Envoi..." : "Recevoir mon estimation détaillée"}
               </button>
             </form>
           )}
