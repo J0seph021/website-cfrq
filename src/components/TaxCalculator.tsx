@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { site } from "../data/site";
 
 const cad = new Intl.NumberFormat("fr-CA", {
   style: "currency",
@@ -18,7 +19,19 @@ export default function TaxCalculator() {
   function soumettre(e: React.FormEvent) {
     e.preventDefault();
     if (!email) return;
-    // TODO: brancher sur Supabase (capture du prospect + envoi du PDF detaille).
+    // Capture du prospect par courriel pre-rempli (CFRQ recoit un lead qualifie).
+    // Evolution possible: capture directe cote Supabase + envoi automatise du detail.
+    const corps = [
+      `Courriel : ${email}`,
+      `Superficie du boise : ${superficie} ha`,
+      `Taxes foncieres annuelles : ${cad.format(taxes)}`,
+      `Estimation indicative du rabais : ${cad.format(annuel)} par annee, soit ${cad.format(surCinq)} sur 5 ans`,
+      "",
+      "Je souhaite recevoir mon estimation detaillee et valider mon admissibilite.",
+    ].join("\n");
+    window.location.href = `mailto:${site.courriel}?subject=${encodeURIComponent(
+      "Estimation de rabais de taxes"
+    )}&body=${encodeURIComponent(corps)}`;
     setEnvoye(true);
   }
 

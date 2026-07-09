@@ -5,8 +5,9 @@ import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import { site } from "../data/site";
 import { withBase } from "../lib/url";
+import TaxCalculator from "../components/TaxCalculator.tsx";
 
-import heroRecolte from "../assets/photos/hero-recolte.jpg";
+import boiseSentier from "../assets/photos/boise-sentier.jpg";
 import peuplement from "../assets/photos/peuplement.jpg";
 import inventaire from "../assets/photos/inventaire.jpg";
 import foretTravaux from "../assets/photos/foret-travaux.jpg";
@@ -151,7 +152,7 @@ const btnVert = "inline-flex items-center gap-2 rounded-xl bg-cfrq-green font-bo
 
 <Base
   title="CFRQ : Conseillers forestiers accrédités | Aménagement de boisés privés, région de Québec"
-  description="CFRQ (Conseillers Forestiers de la Région de Québec inc.), cabinet d'ingénieurs et de techniciens forestiers accrédité depuis 1996. Plan d'aménagement, travaux sylvicoles, récolte, évaluation, érablière et aide financière (PAMVFP). Réservez une visite-conseil."
+  description="CFRQ (Conseillers Forestiers de la Région de Québec inc.), cabinet d'ingénieurs et de techniciens forestiers accrédité depuis 1996. Plan d'aménagement, travaux sylvicoles, récolte, évaluation, érablière et aide financière (PAMVFP). Estimez votre rabais de taxes foncières en ligne."
   canonical="/"
 >
   <script type="application/ld+json" set:html={JSON.stringify(orgLd)} slot="head" />
@@ -161,23 +162,23 @@ const btnVert = "inline-flex items-center gap-2 rounded-xl bg-cfrq-green font-bo
   <main id="contenu">
     <!-- 3.1 HERO -->
     <section id="top" class="relative isolate flex min-h-[640px] items-center overflow-hidden bg-[#16200f]">
-      <Image src={heroRecolte} alt="Forêt privée québécoise" widths={[768, 1280, 1920, 2560]} sizes="100vw" loading="eager" fetchpriority="high" class="absolute inset-0 -z-10 h-full w-full object-cover" />
+      <Image src={boiseSentier} alt="Boisé privé aux couleurs d'automne, région de Québec" widths={[768, 1280, 1920, 2560]} sizes="100vw" loading="eager" fetchpriority="high" class="absolute inset-0 -z-10 h-full w-full object-cover" />
       <div class="absolute inset-0 -z-10" style="background:linear-gradient(100deg,rgba(15,22,10,.90) 0%,rgba(15,22,10,.72) 44%,rgba(15,22,10,.32) 80%,rgba(15,22,10,.12) 100%)"></div>
       <div class="mx-auto w-full max-w-[1160px] px-[22px] py-[90px]">
         <div class="max-w-[640px]">
           <p class={`${eyebrow} tracking-[0.2em] text-cfrq-green-light`}>Conseiller forestier accrédité · depuis 1996</p>
           <h1 class="mt-4 font-display font-medium text-cfrq-cream text-[clamp(42px,7.5vw,66px)] leading-[1.02] tracking-[-0.02em] text-balance">
-            Donnez de la valeur à votre boisé.
+            Votre boisé peut valoir plus, et vous coûter moins.
           </h1>
           <p class="mt-5 max-w-[560px] text-[19px] leading-[1.55] text-[#dce2d2]">
-            Nos techniciens évaluent votre forêt sur le terrain, notre ingénieur forestier signe votre plan, et nous réalisons les travaux. Vous n'avez qu'à en profiter.
+            Comme producteur forestier reconnu, vous pourriez récupérer une part de vos taxes foncières et accéder à des programmes d'aide. Estimez votre potentiel en une minute.
           </p>
           <div class="mt-8 flex flex-wrap gap-4">
-            <a href={withBase("/contact")} class={`${btnVert} px-7 py-[15px] text-[15.5px]`}>
-              Réserver une visite-conseil <span aria-hidden="true">→</span>
+            <a href="#calculateur" class={`${btnVert} px-7 py-[15px] text-[15.5px]`}>
+              Calculer mon rabais de taxes <span aria-hidden="true">→</span>
             </a>
-            <a href={withBase("/services")} class="inline-flex items-center rounded-[11px] border-[1.5px] border-[rgba(247,245,239,.42)] bg-[rgba(247,245,239,.08)] px-[26px] py-3.5 text-[15px] font-semibold text-cfrq-cream transition-colors hover:bg-[rgba(247,245,239,.16)] hover:text-white">
-              Nos services
+            <a href={withBase("/contact")} class="inline-flex items-center rounded-[11px] border-[1.5px] border-[rgba(247,245,239,.42)] bg-[rgba(247,245,239,.08)] px-[26px] py-3.5 text-[15px] font-semibold text-cfrq-cream transition-colors hover:bg-[rgba(247,245,239,.16)] hover:text-white">
+              Parler à un ingénieur forestier
             </a>
           </div>
           <p class="mt-7 text-[13.5px] text-[#b7c0a8]">
@@ -196,6 +197,22 @@ const btnVert = "inline-flex items-center gap-2 rounded-xl bg-cfrq-green font-bo
             <p class="mt-1 text-[13px] text-cfrq-cream/65">{s.label}</p>
           </div>
         ))}
+      </div>
+    </section>
+
+    <!-- 3.2b CALCULATEUR (aimant à leads) -->
+    <section id="calculateur" class="scroll-mt-24 bg-[#f4f5f2]">
+      <div class="mx-auto max-w-[1160px] px-[22px] py-[84px]">
+        <div class="max-w-[680px]">
+          <p class={`${eyebrow} text-cfrq-leaf`}>Outil gratuit · estimation</p>
+          <h2 class={`mt-3.5 ${h2}`}>Combien pourriez-vous récupérer en taxes ?</h2>
+          <p class="mt-4 text-[17px] leading-relaxed text-cfrq-ink/65">
+            Un producteur forestier reconnu peut récupérer jusqu'à 85 % des taxes foncières de son boisé grâce à des travaux d'aménagement admissibles. Bougez les curseurs pour estimer, on vous envoie le détail et on valide votre admissibilité.
+          </p>
+        </div>
+        <div class="mt-8">
+          <TaxCalculator client:load />
+        </div>
       </div>
     </section>
 
