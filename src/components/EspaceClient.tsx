@@ -227,9 +227,65 @@ function estProducteurReconnu(prod: Row | null): boolean {
 /* Vue presentationnelle (testable avec des donnees factices).         */
 /* ------------------------------------------------------------------ */
 
+/* Fenêtre « Définir un mot de passe » : la session est déjà valide, donc on
+   pose le mot de passe directement (updateUser), sans courriel de récupération. */
+function DefinirMotDePasse({ onClose }: { onClose: () => void }) {
+  const [mdp, setMdp] = useState("");
+  const [mdp2, setMdp2] = useState("");
+  const [etat, setEtat] = useState<"saisie" | "envoi" | "ok">("saisie");
+  const [err, setErr] = useState("");
+
+  async function enregistrer() {
+    setErr("");
+    if (mdp.length < 8) { setErr("Le mot de passe doit compter au moins 8 caractères."); return; }
+    if (mdp !== mdp2) { setErr("Les deux mots de passe ne correspondent pas."); return; }
+    setEtat("envoi");
+    const { error } = await supabase.auth.updateUser({ password: mdp });
+    if (error) {
+      setErr(/different from the old/i.test(error.message) ? "Choisissez un mot de passe différent de l'actuel." : "Une erreur est survenue. Réessayez.");
+      setEtat("saisie");
+      return;
+    }
+    setEtat("ok");
+  }
+
+  const champ =
+    "h-[46px] w-full rounded-[10px] border border-black/15 px-[14px] text-[15px] outline-none transition-shadow focus:border-cfrq-green focus:shadow-[0_0_0_3px_rgba(90,189,42,.18)]";
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-5" role="dialog" aria-modal="true" onClick={onClose}>
+      <div className="w-full max-w-[400px] rounded-2xl bg-white p-7 shadow-[0_30px_70px_rgba(0,0,0,.35)]" onClick={(e) => e.stopPropagation()}>
+        {etat === "ok" ? (
+          <div className="text-center">
+            <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-cfrq-green text-[22px] font-bold text-[#123005]">✓</div>
+            <h2 className="font-display text-[22px] text-cfrq-deep">Mot de passe enregistré</h2>
+            <p className="mt-2 text-[14.5px] leading-relaxed text-cfrq-ink/70">Vous pouvez maintenant vous connecter avec votre courriel et ce mot de passe, en plus du lien magique.</p>
+            <button onClick={onClose} className="mt-5 w-full rounded-[10px] bg-cfrq-green px-6 py-3 text-[15px] font-bold text-[#123005] transition-colors hover:bg-cfrq-green-hover">Terminé</button>
+          </div>
+        ) : (
+          <form onSubmit={(e) => { e.preventDefault(); enregistrer(); }}>
+            <h2 className="font-display text-[22px] text-cfrq-deep">Définir un mot de passe</h2>
+            <p className="mt-1.5 text-[14px] leading-relaxed text-cfrq-ink/65">Optionnel. Pour vous connecter aussi par mot de passe, sans attendre le lien par courriel.</p>
+            <label htmlFor="mdp-nouv" className="mb-1.5 mt-4 block text-[13.5px] font-semibold text-cfrq-deep">Nouveau mot de passe</label>
+            <input id="mdp-nouv" type="password" value={mdp} onChange={(e) => setMdp(e.target.value)} autoComplete="new-password" minLength={8} placeholder="••••••••" className={champ} />
+            <label htmlFor="mdp-conf" className="mb-1.5 mt-3 block text-[13.5px] font-semibold text-cfrq-deep">Confirmer</label>
+            <input id="mdp-conf" type="password" value={mdp2} onChange={(e) => setMdp2(e.target.value)} autoComplete="new-password" minLength={8} placeholder="••••••••" className={champ} />
+            {err && <p className="mt-2.5 text-[13.5px] text-red-600">{err}</p>}
+            <div className="mt-5 flex gap-2.5">
+              <button type="button" onClick={onClose} className="flex-1 rounded-[10px] border border-black/15 px-4 py-3 text-[14px] text-cfrq-ink/70 transition-colors hover:bg-cfrq-tint">Annuler</button>
+              <button type="submit" disabled={etat === "envoi"} className="flex-1 rounded-[10px] bg-cfrq-green px-4 py-3 text-[14px] font-bold text-[#123005] transition-colors hover:bg-cfrq-green-hover disabled:opacity-60">{etat === "envoi" ? "Enregistrement…" : "Enregistrer"}</button>
+            </div>
+          </form>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export function DashboardView({ d, offre = null, onLogout }: { d: Dossier; offre?: Offre; onLogout?: () => void }) {
   const nom = d.producteur?.nom ?? "Votre dossier";
   const [achatEnCours, setAchatEnCours] = useState<string | null>(null);
+  const [pwdOuvert, setPwdOuvert] = useState(false);
 
   // Statut d'achat par thème (vide tant qu'aucun relevé n'existe: tout est offert à l'achat).
   const acheteParTheme = useMemo(() => {
@@ -425,6 +481,7 @@ export function DashboardView({ d, offre = null, onLogout }: { d: Dossier; offre
 
   return (
     <div className="min-h-screen bg-cfrq-cream">
+      {pwdOuvert && <DefinirMotDePasse onClose={() => setPwdOuvert(false)} />}
       <div className="sticky top-0 z-30">
         <header className="border-b border-black/[.07] bg-white">
           <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-[11px]">
@@ -436,6 +493,9 @@ export function DashboardView({ d, offre = null, onLogout }: { d: Dossier; offre
             </div>
             <div className="flex items-center gap-3">
               <span className="flex h-9 w-9 items-center justify-center rounded-full bg-cfrq-green text-[13px] font-semibold text-[#123005]">{initiales}</span>
+              <button onClick={() => setPwdOuvert(true)} className="rounded-full border border-black/15 px-3.5 py-2 text-[13px] text-cfrq-leaf transition-colors hover:bg-cfrq-tint">
+                Mot de passe
+              </button>
               {onLogout && (
                 <button onClick={onLogout} className="rounded-full border border-black/15 px-3.5 py-2 text-[13px] text-cfrq-leaf transition-colors hover:bg-cfrq-tint">
                   Déconnexion
