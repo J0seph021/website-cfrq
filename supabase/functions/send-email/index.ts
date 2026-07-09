@@ -94,7 +94,7 @@ function btn(url: string, label: string): string {
 }
 
 function lienSecours(url: string): string {
-  return "<p style='" + MUTED + "'>Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur&nbsp;:<br><a href='" + url + "' style='color:#4a8a2c;word-break:break-all;'>" + url + "</a></p>";
+  return "<p style='" + MUTED + "'>Le bouton ne fonctionne pas ? <a href='" + url + "' style='color:#4a8a2c;font-weight:bold;text-decoration:none;'>Cliquez ici</a>.</p>";
 }
 
 const SIGN =
