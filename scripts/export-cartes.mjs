@@ -71,7 +71,12 @@ raw AS (
            'perturbation', pe.perturbation,
            'traitements_rec', pe.traitements_rec,
            'priorite', pe.priorite)),
-         ST_Transform(pe.geom,4326) FROM planilogix.peuplements pe, prop WHERE ST_Intersects(pe.geom,prop.g)
+         ST_Transform(pe.geom,4326) FROM planilogix.peuplements pe, prop
+         WHERE ST_Intersects(pe.geom,prop.g)
+           -- Exiger un recouvrement REEL (>10% de l'aire du peuplement), sinon un
+           -- peuplement d'une propriete VOISINE qui ne fait qu'effleurer la limite
+           -- cadastrale (micro-sliver <0,01 ha) apparaitrait sur la mauvaise carte.
+           AND ST_Area(ST_Intersection(ST_MakeValid(pe.geom),prop.g)) > 0.10*ST_Area(ST_MakeValid(pe.geom))
   UNION ALL
   SELECT 'travaux', jsonb_strip_nulls(jsonb_build_object(
            'no_prescription', left(t.id_travaux,13),
@@ -81,6 +86,7 @@ raw AS (
          ST_Transform(t.geom,4326)
   FROM planilogix.travaux_geo t
   JOIN prop ON ST_Intersects(t.geom, prop.g)
+   AND ST_Area(ST_Intersection(ST_MakeValid(t.geom),prop.g)) > 0.10*ST_Area(ST_MakeValid(t.geom))
   LEFT JOIN trait tr ON tr.no_prescription = left(t.id_travaux,13)
   UNION ALL
   SELECT 'prescription', jsonb_strip_nulls(jsonb_build_object(
@@ -95,13 +101,25 @@ raw AS (
          ST_Transform(pc.geom,4326)
   FROM planilogix.v_prescription_carte pc
   JOIN prop ON ST_Intersects(pc.geom, prop.g)
+   AND ST_Area(ST_Intersection(ST_MakeValid(pc.geom),prop.g)) > 0.10*ST_Area(ST_MakeValid(pc.geom))
   LEFT JOIN trait tr ON tr.no_prescription = pc.no_prescription
 ),
 clean AS (
   SELECT couche, props, ST_CollectionExtract(ST_MakeValid(g),3) AS g FROM raw
+),
+-- Cadrage de la carte: on borne sur les couches AFFICHÉES par défaut (peuplements,
+-- travaux, prescriptions), jamais sur le contour de propriété. Ça évite qu'une
+-- parcelle cadastrale isolée (parfois à des dizaines de km du bloc forestier)
+-- fasse dézoomer toute la carte. Repli sur l'étendue des propriétés au besoin.
+bounds AS (
+  SELECT ST_Extent(g) AS e FROM clean
+  WHERE couche <> 'propriete' AND g IS NOT NULL AND NOT ST_IsEmpty(g)
 )
 SELECT
-  (SELECT '['||round(ST_XMin(g4326)::numeric,5)||','||round(ST_YMin(g4326)::numeric,5)||','||round(ST_XMax(g4326)::numeric,5)||','||round(ST_YMax(g4326)::numeric,5)||']' FROM prop) AS bbox,
+  coalesce(
+    (SELECT '['||round(ST_XMin(e)::numeric,5)||','||round(ST_YMin(e)::numeric,5)||','||round(ST_XMax(e)::numeric,5)||','||round(ST_YMax(e)::numeric,5)||']' FROM bounds WHERE e IS NOT NULL),
+    (SELECT '['||round(ST_XMin(g4326)::numeric,5)||','||round(ST_YMin(g4326)::numeric,5)||','||round(ST_XMax(g4326)::numeric,5)||','||round(ST_YMax(g4326)::numeric,5)||']' FROM prop)
+  ) AS bbox,
   count(*) FILTER (WHERE NOT ST_IsEmpty(g)) AS nb_features,
   jsonb_build_object('type','FeatureCollection','features',
     coalesce(jsonb_agg(jsonb_build_object('type','Feature','properties',props||jsonb_build_object('couche',couche),
