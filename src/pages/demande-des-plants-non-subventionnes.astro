@@ -109,11 +109,12 @@ const champ = "h-12 w-full rounded-[10px] border border-black/15 bg-white px-4 t
             <span>Je comprends et j'accepte que les quantités demandées ne sont pas garanties et que des frais de transport de 22 $ le sac (50 plants) devront être acquittés à la réception.</span>
           </label>
 
-          <button type="submit" class="mt-5 rounded-xl bg-cfrq-green px-7 py-[15px] text-[16px] font-bold text-[#123005] transition-colors hover:bg-cfrq-green-hover">
+          <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" class="hidden" />
+          <button type="submit" class="mt-5 rounded-xl bg-cfrq-green px-7 py-[15px] text-[16px] font-bold text-[#123005] transition-colors hover:bg-cfrq-green-hover disabled:opacity-60">
             Envoyer ma demande
           </button>
           <p id="plants-ok" class="mt-4 hidden rounded-xl border border-cfrq-green/40 bg-cfrq-tint p-4 text-[15px] text-cfrq-deep" role="status" aria-live="polite">
-            Merci ! Votre logiciel de courriel s'ouvre avec votre demande de plants. Pour toute question, appelez-nous au {site.tel}.
+            Merci ! Votre demande de plants est bien envoyée. On vous revient rapidement. Pour toute question, appelez-nous au {site.tel}.
           </p>
         </form>
       </div>
@@ -123,31 +124,69 @@ const champ = "h-12 w-full rounded-[10px] border border-black/15 bg-white px-4 t
 </Base>
 
 <script>
+  const ENDPOINT = "https://bpxzznykbikbqbvraqxj.supabase.co/functions/v1/capter-lead";
   const f = document.getElementById("plants-form") as HTMLFormElement | null;
   const ok = document.getElementById("plants-ok");
-  f?.addEventListener("submit", (e) => {
+  f?.addEventListener("submit", async (e) => {
     e.preventDefault();
     if (!f.reportValidity()) return;
     const d = new FormData(f);
     const v = (k: string) => String(d.get(k) ?? "").trim();
-    const corps = [
-      `Prénom : ${v("prenom")}`,
-      `Nom : ${v("nom")}`,
-      `Municipalité : ${v("muni")}`,
-      `Courriel : ${v("courriel")}`,
-      `Téléphone : ${v("tel")}`,
-      `Téléphone (autre) : ${v("tel2") || "(aucun)"}`,
-      "",
-      "Quantités demandées :",
-      `- Érable à sucre : ${v("q-erable") || "0"}`,
-      `- Chêne rouge : ${v("q-chene-rouge") || "0"}`,
-      `- Chêne à gros fruits : ${v("q-chene-gros") || "0"}`,
-      "",
-      "Message :",
-      v("message") || "(aucun)",
-    ].join("\n");
-    const sujet = `Demande de plants, ${v("prenom")} ${v("nom")}`;
-    window.location.href = `mailto:cfrq@cfrq.ca?subject=${encodeURIComponent(sujet)}&body=${encodeURIComponent(corps)}`;
-    ok?.classList.remove("hidden");
+    const btn = f.querySelector('button[type="submit"]') as HTMLButtonElement | null;
+    if (btn) btn.disabled = true;
+
+    const nom = `${v("prenom")} ${v("nom")}`.trim();
+    const details: Record<string, string> = {};
+    const q = (name: string, label: string) => { const val = v(name); if (val && val !== "0") details[label] = val; };
+    q("q-erable", "Érable à sucre");
+    q("q-chene-rouge", "Chêne rouge");
+    q("q-chene-gros", "Chêne à gros fruits");
+    if (v("tel2")) details["Téléphone (autre)"] = v("tel2");
+
+    // Filet de secours : capture serveur echoue -> courriel pre-rempli vers CFRQ.
+    const fallbackMailto = () => {
+      const corps = [
+        `Prénom : ${v("prenom")}`,
+        `Nom : ${v("nom")}`,
+        `Municipalité : ${v("muni")}`,
+        `Courriel : ${v("courriel")}`,
+        `Téléphone : ${v("tel")}`,
+        `Téléphone (autre) : ${v("tel2") || "(aucun)"}`,
+        "",
+        "Quantités demandées :",
+        `- Érable à sucre : ${v("q-erable") || "0"}`,
+        `- Chêne rouge : ${v("q-chene-rouge") || "0"}`,
+        `- Chêne à gros fruits : ${v("q-chene-gros") || "0"}`,
+        "",
+        "Message :",
+        v("message") || "(aucun)",
+      ].join("\n");
+      const sujet = `Demande de plants, ${nom}`;
+      window.location.href = `mailto:cfrq@cfrq.ca?subject=${encodeURIComponent(sujet)}&body=${encodeURIComponent(corps)}`;
+    };
+
+    try {
+      const res = await fetch(ENDPOINT, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          source: "plants",
+          courriel: v("courriel"),
+          nom,
+          telephone: v("tel"),
+          municipalite: v("muni"),
+          message: v("message"),
+          details,
+          website: v("website"),
+        }),
+      });
+      if (!res.ok) throw new Error(String(res.status));
+      f.reset();
+    } catch {
+      fallbackMailto();
+    } finally {
+      if (btn) btn.disabled = false;
+      ok?.classList.remove("hidden");
+    }
   });
 </script>

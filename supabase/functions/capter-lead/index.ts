@@ -157,6 +157,57 @@ async function envoyerCourriels(l: Lead): Promise<void> {
   await envoyer(access, LEADS_NOTIFY, "Nouveau lead calculateur : " + l.courriel, htmlNotif(l)).catch((e) => console.error("notif:", (e as Error).message));
 }
 
+// --- Prospects des formulaires (visite-conseil, plants) ----------------------
+const esc = (s: unknown) =>
+  String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+type Prospect = { courriel: string; nom: string; telephone: string; municipalite: string; message: string; details: Record<string, unknown> | null };
+
+function htmlConfirmation(source: string, nom: string): string {
+  const para = (t: string) => "<p style='" + P + "'>" + t + "</p>";
+  const bonjour = nom ? "Bonjour " + esc(nom) + "," : "Bonjour,";
+  if (source === "plants") {
+    return coquille("Demande reçue", "Votre demande de plants est enregistrée",
+      para(bonjour) +
+      para("Merci ! On a bien reçu votre demande de plants. On vous revient rapidement pour confirmer les disponibilités et les prochaines étapes.") +
+      para("Rappel : des frais de transport de 22 $ le sac (50 plants) s'appliquent à la réception. Une question ? <strong style='color:#141414;'>367 777-0555</strong>."));
+  }
+  return coquille("Demande reçue", "On a bien reçu votre demande",
+    para(bonjour) +
+    para("Merci pour votre demande de visite-conseil. Un de nos ingénieurs ou techniciens forestiers vous recontacte <strong>sous un jour ouvrable</strong> pour planifier votre visite, sans engagement.") +
+    para("Pour une réponse immédiate, appelez-nous au <strong style='color:#141414;'>367 777-0555</strong>."));
+}
+
+function htmlNotifProspect(source: string, d: Prospect): string {
+  const li = (k: string, v: string) =>
+    "<tr><td style='padding:3px 14px 3px 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#5F655E;vertical-align:top;'>" + k +
+    "</td><td style='padding:3px 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#141414;font-weight:bold;'>" + v + "</td></tr>";
+  const titre = source === "plants" ? "Nouvelle demande de plants" : "Nouvelle demande de visite-conseil";
+  let rows = li("Courriel", esc(d.courriel));
+  if (d.nom) rows += li("Nom", esc(d.nom));
+  if (d.telephone) rows += li("Téléphone", esc(d.telephone));
+  if (d.municipalite) rows += li("Municipalité", esc(d.municipalite));
+  if (d.details) {
+    for (const [k, v] of Object.entries(d.details)) {
+      if (v !== null && v !== undefined && String(v).trim() !== "") rows += li(esc(k), esc(v));
+    }
+  }
+  const table = "<table role='presentation' cellpadding='0' cellspacing='0' border='0' style='margin:6px 0 14px;'>" + rows + "</table>";
+  const msg = d.message ? "<p style='" + P + "'><strong>Message :</strong><br>" + esc(d.message) + "</p>" : "";
+  return coquille("Notification interne", titre,
+    "<p style='" + P + "'>Un nouveau prospect vient d'être capturé depuis le site (" + esc(source) + ").</p>" + table + msg +
+    "<p style='" + FOOT + "'>Visible dans PlaniLogix (planilogix.leads_web).</p>");
+}
+
+async function envoyerProspect(source: string, d: Prospect): Promise<void> {
+  if (!M365_TENANT || !M365_CLIENT_ID || !M365_CLIENT_SECRET) return;
+  const access = await graphToken();
+  const sujet = source === "plants" ? "Votre demande de plants a bien été reçue" : "Votre demande de visite-conseil a bien été reçue";
+  await envoyer(access, d.courriel, sujet, htmlConfirmation(source, d.nom)).catch((e) => console.error("confirmation:", (e as Error).message));
+  const sujetNotif = (source === "plants" ? "Nouveau lead plants : " : "Nouveau lead visite-conseil : ") + d.courriel;
+  await envoyer(access, LEADS_NOTIFY, sujetNotif, htmlNotifProspect(source, d)).catch((e) => console.error("notif:", (e as Error).message));
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   if (req.method !== "POST") return json({ ok: false, error: "Methode non permise" }, 405);
@@ -170,13 +221,6 @@ Deno.serve(async (req) => {
   const emailOk = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(courriel) && courriel.length <= 254;
   if (!emailOk) return json({ ok: false, error: "Courriel invalide" }, 400);
 
-  const superficie = toNum(body.superficie_ha);
-  const taxes = toNum(body.taxes_annuelles);
-  const potAnnuel = toNum(body.potentiel_annuel);
-  const pot5 = toNum(body.potentiel_5ans);
-  if (superficie !== null && (superficie < 0 || superficie > 100000)) return json({ ok: false, error: "Superficie hors bornes" }, 400);
-  if (taxes !== null && (taxes < 0 || taxes > 1000000)) return json({ ok: false, error: "Taxes hors bornes" }, 400);
-
   const source = body.source ? String(body.source).slice(0, 60) : "calculateur-taxes";
   const region = body.region ? String(body.region).slice(0, 120) : null;
   const referrer = req.headers.get("referer")?.slice(0, 500) ?? null;
@@ -188,6 +232,46 @@ Deno.serve(async (req) => {
     const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(ip + "|cfrq-leads-web"));
     ipHash = [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 32);
   }
+
+  // Formulaires visite-conseil / plants -> table de suivi generique (capter_prospect_web).
+  if (source !== "calculateur-taxes") {
+    const nom = String(body.nom ?? "").trim().slice(0, 200);
+    const telephone = String(body.telephone ?? "").trim().slice(0, 60);
+    const municipalite = String(body.municipalite ?? "").trim().slice(0, 160);
+    const message = String(body.message ?? "").trim().slice(0, 4000);
+    const details = (body.details && typeof body.details === "object" && !Array.isArray(body.details))
+      ? (body.details as Record<string, unknown>) : null;
+    const sqlP = postgres(Deno.env.get("SUPABASE_DB_URL")!, { prepare: false, max: 1, idle_timeout: 5 });
+    let idP: string | null = null;
+    try {
+      const rows = await sqlP`
+        select public.capter_prospect_web(
+          ${source}::text, ${courriel}::text, ${nom || null}::text, ${telephone || null}::text,
+          ${municipalite || null}::text, ${message || null}::text,
+          ${details ? JSON.stringify(details) : null}::jsonb,
+          ${region}::text, ${referrer}::text, ${userAgent}::text, ${ipHash}::text
+        ) as id`;
+      idP = rows[0]?.id ?? null;
+    } catch (e) {
+      console.error("db error", e);
+      await sqlP.end({ timeout: 5 }).catch(() => {});
+      return json({ ok: false, error: "Enregistrement impossible" }, 500);
+    }
+    await sqlP.end({ timeout: 5 }).catch(() => {});
+    if (idP) {
+      await envoyerProspect(source, { courriel, nom, telephone, municipalite, message, details })
+        .catch((e) => console.error("email best-effort:", (e as Error).message));
+    }
+    return json({ ok: true });
+  }
+
+  // Calculateur de taxes.
+  const superficie = toNum(body.superficie_ha);
+  const taxes = toNum(body.taxes_annuelles);
+  const potAnnuel = toNum(body.potentiel_annuel);
+  const pot5 = toNum(body.potentiel_5ans);
+  if (superficie !== null && (superficie < 0 || superficie > 100000)) return json({ ok: false, error: "Superficie hors bornes" }, 400);
+  if (taxes !== null && (taxes < 0 || taxes > 1000000)) return json({ ok: false, error: "Taxes hors bornes" }, 400);
 
   const sql = postgres(Deno.env.get("SUPABASE_DB_URL")!, { prepare: false, max: 1, idle_timeout: 5 });
   let id: string | null = null;

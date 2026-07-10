@@ -92,12 +92,13 @@ const miniCarte = "background:radial-gradient(circle at 40% 40%,rgba(90,189,42,.
                 <textarea id="c-msg" name="message" rows="4" placeholder="Parlez-nous de votre boisé, sa superficie approximative, vos objectifs…" class="mt-1.5 w-full rounded-[10px] border border-black/15 bg-white p-4 text-[16px] outline-none transition-shadow focus:border-cfrq-green focus:shadow-[0_0_0_3px_rgba(90,189,42,.18)]"></textarea>
               </div>
             </div>
-            <button type="submit" class="mt-[22px] w-full rounded-xl bg-cfrq-green px-6 py-4 text-[16px] font-bold text-[#123005] transition-colors hover:bg-cfrq-green-hover">
+            <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" class="hidden" />
+            <button type="submit" class="mt-[22px] w-full rounded-xl bg-cfrq-green px-6 py-4 text-[16px] font-bold text-[#123005] transition-colors hover:bg-cfrq-green-hover disabled:opacity-60">
               Demander une visite-conseil
             </button>
             <p class="mt-3 text-center text-[12.5px] text-cfrq-ink/50">Vos renseignements restent confidentiels et ne servent qu'à vous recontacter.</p>
             <p id="contact-ok" class="mt-4 hidden rounded-xl border border-cfrq-green/40 bg-cfrq-tint p-4 text-center text-[15px] text-cfrq-deep" role="status" aria-live="polite">
-              Merci ! Votre logiciel de courriel s'ouvre avec votre demande. Pour une réponse immédiate, appelez-nous au {site.tel}.
+              Merci ! Votre demande est bien envoyée. On vous répond en un jour ouvrable. Pour une réponse immédiate, appelez-nous au {site.tel}.
             </p>
           </form>
         </div>
@@ -149,25 +150,56 @@ const miniCarte = "background:radial-gradient(circle at 40% 40%,rgba(90,189,42,.
 </Base>
 
 <script>
+  const ENDPOINT = "https://bpxzznykbikbqbvraqxj.supabase.co/functions/v1/capter-lead";
   const f = document.getElementById("contact-form") as HTMLFormElement | null;
   const ok = document.getElementById("contact-ok");
-  f?.addEventListener("submit", (e) => {
+  f?.addEventListener("submit", async (e) => {
     e.preventDefault();
     if (!f.reportValidity()) return;
     const d = new FormData(f);
     const v = (k: string) => String(d.get(k) ?? "").trim();
-    const corps = [
-      `Nom : ${v("nom")}`,
-      `Courriel : ${v("courriel")}`,
-      `Téléphone : ${v("tel")}`,
-      `Municipalité du boisé : ${v("muni")}`,
-      `Besoin : ${v("besoin")}`,
-      "",
-      "Message :",
-      v("message") || "(aucun)",
-    ].join("\n");
-    const sujet = `Demande de visite-conseil, ${v("nom")}`;
-    window.location.href = `mailto:cfrq@cfrq.ca?subject=${encodeURIComponent(sujet)}&body=${encodeURIComponent(corps)}`;
-    ok?.classList.remove("hidden");
+    const btn = f.querySelector('button[type="submit"]') as HTMLButtonElement | null;
+    if (btn) btn.disabled = true;
+
+    // Filet de secours : si la capture serveur echoue, on n'oublie pas le lead,
+    // on bascule sur un courriel pre-rempli vers CFRQ.
+    const fallbackMailto = () => {
+      const corps = [
+        `Nom : ${v("nom")}`,
+        `Courriel : ${v("courriel")}`,
+        `Téléphone : ${v("tel")}`,
+        `Municipalité du boisé : ${v("muni")}`,
+        `Besoin : ${v("besoin")}`,
+        "",
+        "Message :",
+        v("message") || "(aucun)",
+      ].join("\n");
+      const sujet = `Demande de visite-conseil, ${v("nom")}`;
+      window.location.href = `mailto:cfrq@cfrq.ca?subject=${encodeURIComponent(sujet)}&body=${encodeURIComponent(corps)}`;
+    };
+
+    try {
+      const res = await fetch(ENDPOINT, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          source: "visite-conseil",
+          courriel: v("courriel"),
+          nom: v("nom"),
+          telephone: v("tel"),
+          municipalite: v("muni"),
+          message: v("message"),
+          details: { "Besoin": v("besoin") },
+          website: v("website"),
+        }),
+      });
+      if (!res.ok) throw new Error(String(res.status));
+      f.reset();
+    } catch {
+      fallbackMailto();
+    } finally {
+      if (btn) btn.disabled = false;
+      ok?.classList.remove("hidden");
+    }
   });
 </script>
