@@ -33,8 +33,11 @@ const PRECISION = 6;
 
 const SQL_FEATURECOLLECTION = `
 WITH prop AS (
+  -- Terres du producteur : détenues en propre (producteur_id) OU dont il est le
+  -- propriétaire légal producteur (dossiers liés — société liée avec compte).
   SELECT ST_Union(geom) AS g, ST_Transform(ST_Union(geom),4326) AS g4326
-  FROM planilogix.v_proprietes WHERE producteur_id = $1 AND geom IS NOT NULL
+  FROM planilogix.v_proprietes
+  WHERE (producteur_id = $1 OR proprietaire_legal_producteur_id = $1) AND geom IS NOT NULL
 ),
 -- Dictionnaire code de traitement -> libellé lisible (une description par code).
 dict AS (
@@ -128,9 +131,13 @@ FROM clean;
 `;
 
 const SQL_IDS = `
-SELECT DISTINCT producteur_id FROM planilogix.v_proprietes
-WHERE producteur_id IS NOT NULL AND geom IS NOT NULL
-ORDER BY producteur_id;
+SELECT producteur_id FROM (
+  SELECT DISTINCT producteur_id FROM planilogix.v_proprietes
+   WHERE producteur_id IS NOT NULL AND geom IS NOT NULL
+  UNION
+  SELECT DISTINCT proprietaire_legal_producteur_id FROM planilogix.v_proprietes
+   WHERE proprietaire_legal_producteur_id IS NOT NULL AND geom IS NOT NULL
+) q ORDER BY producteur_id;
 `;
 
 // On retire un éventuel sslmode de l'URL (sinon pg le traite en verify-full et
