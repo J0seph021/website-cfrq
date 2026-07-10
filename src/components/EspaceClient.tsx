@@ -481,6 +481,22 @@ export function DashboardView({ d, offre = null, onLogout }: { d: Dossier; offre
     }
   }
 
+  // Télécharge un relevé déjà payé, directement depuis la page. On demande au serveur
+  // un token frais rattaché au dossier du client connecté (portrait_token_client, borné
+  // par current_producteur_id()), puis on ouvre la fonction 'telecharger' qui renvoie une
+  // URL signée temporaire du bucket privé. Plus besoin du lien reçu par courriel.
+  async function telecharger(theme: string) {
+    const { data } = await supabase.rpc("portrait_token_client");
+    const token = (data as any)?.token as string | undefined;
+    if (!token) return;
+    const base = import.meta.env.PUBLIC_SUPABASE_URL || "https://sfzcslpbysabsiszcpqm.supabase.co";
+    window.open(
+      `${base}/functions/v1/telecharger?t=${encodeURIComponent(token)}&theme=${encodeURIComponent(theme)}`,
+      "_blank",
+      "noopener"
+    );
+  }
+
   // Sommaire: uniquement les sections réellement affichées (ancrage + retour post-paiement).
   const sommaire = [
     d.carte?.geojson ? { id: "foret", label: "Ma forêt" } : null,
@@ -908,7 +924,12 @@ export function DashboardView({ d, offre = null, onLogout }: { d: Dossier; offre
                 </div>
                 <div className="mt-1 font-display text-3xl font-medium text-cfrq-deep">{cad(PORTRAIT.complet.prix)}</div>
                 <p className="mt-2 text-[14px] leading-relaxed text-black/60">{PORTRAIT.complet.desc}</p>
-                {toutAchete ? (
+                {acheteParTheme.get("complet") ? (
+                  <button onClick={() => telecharger("complet")}
+                    className="mt-4 inline-flex items-center justify-center gap-2 rounded-lg bg-cfrq-green px-5 py-3 text-[15px] font-medium text-[#123005] transition-colors hover:bg-cfrq-green-hover">
+                    Télécharger le relevé complet
+                  </button>
+                ) : toutAchete ? (
                   <span className="mt-4 inline-flex w-fit items-center gap-1.5 rounded-lg bg-cfrq-tint px-4 py-2.5 text-[14px] font-medium text-cfrq-leaf">✓ Déjà à votre dossier</span>
                 ) : (
                   <button onClick={() => acheter("complet")} disabled={!!achatEnCours}
@@ -925,7 +946,11 @@ export function DashboardView({ d, offre = null, onLogout }: { d: Dossier; offre
                     <li key={t.theme} className="flex items-center justify-between gap-2 rounded-xl border border-black/5 bg-white px-4 py-3">
                       <span className="flex items-center gap-2 font-medium text-cfrq-deep"><span aria-hidden>{t.icone}</span>{t.titre}</span>
                       {paye ? (
-                        <span className="shrink-0 rounded-full bg-cfrq-tint px-3 py-1 text-[13px] font-medium text-cfrq-leaf">✓ Payé</span>
+                        <button onClick={() => telecharger(t.theme)}
+                          aria-label={`Télécharger le volet ${t.titre}`}
+                          className="shrink-0 rounded-full bg-cfrq-green/15 px-3.5 py-1.5 text-[13px] font-medium text-cfrq-leaf transition-colors hover:bg-cfrq-tint">
+                          Télécharger
+                        </button>
                       ) : (
                         <button onClick={() => acheter(t.theme)} disabled={!!achatEnCours}
                           aria-label={`Commander le volet ${t.titre} pour ${cad(t.prix)}`}
