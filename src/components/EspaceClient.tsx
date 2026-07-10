@@ -94,7 +94,7 @@ function CountUp({
         io.disconnect();
         const t0 = performance.now();
         const tick = (t: number) => {
-          const p = Math.min(1, (t - t0) / duration);
+          const p = Math.min(1, Math.max(0, (t - t0) / duration));
           setAffiche(value * (1 - Math.pow(1 - p, 3))); // easeOutCubic
           if (p < 1) raf = requestAnimationFrame(tick);
           else setAffiche(value);
@@ -174,11 +174,13 @@ function essencesArbres(peuplements: Row[]): string[] {
   return [...s].sort((a, b) => a.localeCompare(b, "fr"));
 }
 
+// Appellations non forestières / perturbations à exclure des « peuplements les plus présents ».
+const NON_APPELLATION = /anthropique|dénud|denud|coupe totale|gravièr|gravier|chemin|\beau\b|friche|inondé|inonde|résidentiel|residentiel|agricole/i;
 function appellations(peuplements: Row[]): { nb: number; top: string[] } {
   const compte = new Map<string, number>();
   for (const p of peuplements) {
     const a = String(p.appellation ?? "").trim();
-    if (!a) continue;
+    if (!a || NON_APPELLATION.test(a)) continue;
     compte.set(a, (compte.get(a) ?? 0) + 1);
   }
   const top = [...compte.entries()].sort((x, y) => y[1] - x[1]).slice(0, 3).map(([n]) => n);
@@ -221,6 +223,17 @@ const aStatut = (s: any) =>
 function estProducteurReconnu(prod: Row | null): boolean {
   const s = aStatut(prod?.statut);
   return s.includes("prtf") || s.includes("reconn") || s.includes("oui");
+}
+
+// Nom lisible pour la salutation: retire le suffixe légal (INC, ENR, LTÉE…),
+// met en casse de titre, mais préserve les sigles courts (ex. « AA »).
+// Les noms sources sont en majuscules (« GOFOREST INC », « VOYER JACQUES »).
+function nomAffiche(nom: string): string {
+  const sansSuffixe = nom.replace(/\s*\b(inc|enr|ltée|ltee|senc|s\.e\.n\.c\.)\b\.?$/i, "").trim() || nom;
+  return sansSuffixe
+    .split(/\s+/)
+    .map((mot) => (mot.length <= 2 ? mot.toUpperCase() : mot.charAt(0).toUpperCase() + mot.slice(1).toLowerCase()))
+    .join(" ");
 }
 
 /* ------------------------------------------------------------------ */
@@ -321,7 +334,7 @@ export function DashboardView({ d, offre = null, onLogout }: { d: Dossier; offre
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
   const initiales = nom.split(/\s+/).map((m: string) => m[0]).join("").slice(0, 2).toUpperCase();
-  const prenom = d.producteur ? nom.split(/\s+/)[0] : null;
+  const nomJoli = d.producteur ? nomAffiche(nom) : null;
 
   // Agregats reels
   const peuplements = useMemo(() => props(d.carte, "peuplement"), [d.carte]);
@@ -362,7 +375,7 @@ export function DashboardView({ d, offre = null, onLogout }: { d: Dossier; offre
         sous: `Sur ${nf2.format(superficieTotale)} hectares, nos forestiers ont cartographié ${nfEnt.format(nbPeuplements)} peuplements. Une forêt diversifiée, c'est une forêt en santé, que vous protégez.`,
       };
     }
-    if (superficieBoisee > 0) {
+    if (superficieBoisee >= 1) {
       return {
         valeur: superficieBoisee, decimals: 2, mot: "hectares boisés",
         avant: "Sous votre intendance,",
@@ -519,7 +532,7 @@ export function DashboardView({ d, offre = null, onLogout }: { d: Dossier; offre
       <div className="mx-auto max-w-6xl px-5 py-8">
         {/* Salutation */}
         <div className="flex flex-wrap items-center gap-2.5">
-          <h1 className="font-display text-[clamp(24px,6vw,30px)] font-medium text-cfrq-deep">{salutation}{prenom ? `, ${prenom}` : ""}</h1>
+          <h1 className="font-display text-[clamp(24px,6vw,30px)] font-medium text-cfrq-deep">{salutation}{nomJoli ? `, ${nomJoli}` : ""}</h1>
           {d.producteur?.no_prod && (
             <span className="rounded-full bg-cfrq-green/[.18] px-3 py-1 text-[13px] font-medium text-cfrq-leaf">{d.producteur.no_prod}</span>
           )}
@@ -594,7 +607,7 @@ export function DashboardView({ d, offre = null, onLogout }: { d: Dossier; offre
           <Reveal className="mt-8">
             <div className="rounded-2xl bg-cfrq-tint p-6 md:p-8">
               <p className="font-display text-xl leading-relaxed text-cfrq-ink md:text-2xl">
-                {superficieBoisee > 0 ? `Sur vos ${nf.format(superficieBoisee)} hectares boisés, ` : "Sur votre forêt, "}
+                {superficieBoisee >= 1 ? `Sur vos ${nf.format(superficieBoisee)} hectares boisés, ` : "Sur votre forêt, "}
                 nos forestiers ont cartographié {nfEnt.format(nbPeuplements)} peuplements et recensé {nfEnt.format(nbEssences)} essences d'arbres différentes. C'est le signe d'une forêt diversifiée et résiliente, mieux armée face aux insectes, aux maladies et au climat.
               </p>
               {topAppellations.length >= 2 && (
