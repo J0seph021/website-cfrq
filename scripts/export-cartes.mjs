@@ -73,8 +73,32 @@ raw AS (
            'pente', pe.pente,
            'perturbation', pe.perturbation,
            'traitements_rec', pe.traitements_rec,
-           'priorite', pe.priorite)),
-         ST_Transform(pe.geom,4326) FROM planilogix.peuplements pe, prop
+           'priorite', pe.priorite,
+           -- Codes bruts MRNF pour le moteur foret (courbe de maturite E1/E2/E3,
+           -- src/lib/foret). Source: polygone eco_pee au recouvrement DOMINANT
+           -- (les peuplements PAF ont leur propre decoupage, different du tuilage
+           -- ecoforestier -> on prend l'enregistrement qui recouvre le plus).
+           'gr_ess', eco.gr_ess,
+           'type_eco', eco.type_eco,
+           'cl_dens', eco.cl_dens,
+           'cl_age_eco', eco.cl_age,
+           'an_origine', CASE WHEN eco.an_origine ~ '^[0-9]{4}' THEN left(eco.an_origine,4)::int END,
+           'region_eco', eco.region_eco,
+           'vmb_ha_reel', round(den.vmb_ha::numeric,1),
+           'composition', den.composition)),
+         ST_Transform(pe.geom,4326) FROM planilogix.peuplements pe
+         CROSS JOIN prop
+         LEFT JOIN LATERAL (
+           SELECT ep.gr_ess, ep.type_eco, ep.cl_dens, ep.cl_age, ep.an_origine,
+                  ep.region_eco, ep.feuillet, ep.geocode
+           FROM planilogix.eco_pee ep
+           WHERE ep.geom && pe.geom AND ST_Intersects(ep.geom, pe.geom)
+           ORDER BY ST_Area(ST_Intersection(ST_MakeValid(ep.geom), ST_MakeValid(pe.geom))) DESC
+           LIMIT 1
+         ) eco ON true
+         LEFT JOIN planilogix.eco_dendro den
+           ON den.feuillet = eco.feuillet AND den.geocode = eco.geocode
+          AND den.cat_co_cmp = 'TOT'
          WHERE ST_Intersects(pe.geom,prop.g)
            -- Exiger un recouvrement REEL (>10% de l'aire du peuplement), sinon un
            -- peuplement d'une propriete VOISINE qui ne fait qu'effleurer la limite
@@ -106,9 +130,24 @@ raw AS (
   JOIN prop ON ST_Intersects(pc.geom, prop.g)
    AND ST_Area(ST_Intersection(ST_MakeValid(pc.geom),prop.g)) > 0.10*ST_Area(ST_MakeValid(pc.geom))
   LEFT JOIN trait tr ON tr.no_prescription = pc.no_prescription
+  UNION ALL
+  -- Ruisseaux / ecoulements (hydrographie LiDAR fine, demande focus group A5).
+  -- Decoupes a la propriete pour ne rien dessiner hors des limites du client.
+  -- La classe '1. Zone_interm' (zones d'intermittence diffuses) est exclue :
+  -- trop de bruit visuel, ~29% des lignes pour peu d'information.
+  SELECT 'hydro', jsonb_strip_nulls(jsonb_build_object(
+           'classe', h.classe,
+           'type', h.type_element)),
+         ST_Transform(ST_Intersection(ST_MakeValid(h.geom), prop.g),4326)
+  FROM planilogix.hydro_lits_lidar h, prop
+  WHERE h.geom && prop.g AND ST_Intersects(h.geom, prop.g)
+    AND h.classe <> '1. Zone_interm'
 ),
 clean AS (
-  SELECT couche, props, ST_CollectionExtract(ST_MakeValid(g),3) AS g FROM raw
+  -- Dimension a extraire apres ST_MakeValid : 3 = polygones, 2 = lignes (hydro).
+  SELECT couche, props,
+         ST_CollectionExtract(ST_MakeValid(g), CASE WHEN couche = 'hydro' THEN 2 ELSE 3 END) AS g
+  FROM raw
 ),
 -- Cadrage de la carte: on borne sur les couches AFFICHÉES par défaut (peuplements,
 -- travaux, prescriptions), jamais sur le contour de propriété. Ça évite qu'une

@@ -20,6 +20,7 @@ interface Props {
 const COUCHES = [
   { id: "peuplement", label: "Peuplements" },
   { id: "travaux", label: "Travaux réalisés" },
+  { id: "hydro", label: "Ruisseaux et écoulements" },
   { id: "prescription", label: "Prescriptions" },
   { id: "propriete", label: "Limites de propriété" },
 ] as const;
@@ -35,11 +36,13 @@ const COULEUR_TRAVAUX = "#e03131";      // rouge : travaux réalisés (demande f
 const COULEUR_PRESCRIPTION = "#111111"; // noir : prescriptions, pour ne plus les confondre avec les ruisseaux
 const COULEUR_PROPRIETE = "#ffffff";
 const COULEUR_PEUPLEMENT_CONTOUR = "#ffffff"; // contour pointillé blanc entre peuplements
+const COULEUR_HYDRO = "#2b8ae6"; // bleu : ruisseaux LiDAR (le bleu est libre, prescriptions en noir)
 
 // Couches MapLibre rattachées à chaque couche logique (pour un affichage/masquage groupé).
 const LAYERS_PAR_COUCHE: Record<string, string[]> = {
   peuplement: ["peuplement-fill", "peuplement-line"],
   travaux: ["travaux-fill"],
+  hydro: ["hydro-perm", "hydro-int"],
   prescription: ["prescription-hit", "prescription-casing", "prescription-line"],
   propriete: ["propriete-line"],
 };
@@ -66,7 +69,7 @@ export default function CarteForet({ data, bbox, documents = [] }: Props) {
   const enveloppe = useRef<HTMLDivElement>(null);
   const carte = useRef<maplibregl.Map | null>(null);
   const [visibles, setVisibles] = useState<Record<string, boolean>>({
-    peuplement: true, travaux: true, prescription: true, propriete: true,
+    peuplement: true, travaux: true, hydro: true, prescription: true, propriete: true,
   });
   // Sur mobile, les panneaux démarrent repliés pour laisser voir la carte.
   const [couchesOuvert, setCouchesOuvert] = useState(!estPetitEcran());
@@ -177,6 +180,23 @@ export default function CarteForet({ data, bbox, documents = [] }: Props) {
         filter: ["==", ["get", "couche"], "travaux"],
         paint: { "fill-color": COULEUR_TRAVAUX, "fill-opacity": 0.4, "fill-outline-color": COULEUR_TRAVAUX },
       });
+      // Ruisseaux LiDAR (A5 focus group) : permanents en trait plein, plus large
+      // pour les ruisseaux que pour les zones de permanence ; intermittents en
+      // pointillé fin. Par-dessus les remplissages, sous les prescriptions.
+      map.addLayer({
+        id: "hydro-perm", source: "foret", type: "line",
+        filter: ["all", ["==", ["get", "couche"], "hydro"], ["!=", ["get", "classe"], "2. Intermitent"]],
+        paint: {
+          "line-color": COULEUR_HYDRO,
+          "line-width": ["match", ["get", "classe"], "4. Permanent", 2.2, 1.4],
+          "line-opacity": 0.95,
+        },
+      });
+      map.addLayer({
+        id: "hydro-int", source: "foret", type: "line",
+        filter: ["all", ["==", ["get", "couche"], "hydro"], ["==", ["get", "classe"], "2. Intermitent"]],
+        paint: { "line-color": COULEUR_HYDRO, "line-width": 1.1, "line-opacity": 0.8, "line-dasharray": [3, 2] },
+      });
       // Zone cliquable des prescriptions : remplissage invisible sur tout le polygone.
       // Sans lui, la seule cible de clic était la ligne pointillée de 2 px — quasi
       // impossible à viser (retour focus group : « plus capable de sélectionner »).
@@ -256,6 +276,7 @@ export default function CarteForet({ data, bbox, documents = [] }: Props) {
 
   const pastille = (id: string) => {
     if (id === "travaux") return { background: COULEUR_TRAVAUX, border: "none" };
+    if (id === "hydro") return { background: "transparent", border: `2px solid ${COULEUR_HYDRO}` };
     if (id === "prescription") return { background: "transparent", border: `2px dashed ${COULEUR_PRESCRIPTION}` };
     if (id === "propriete") return { background: "transparent", border: "2px solid #b9c2cc" };
     return { background: "#558b2f", border: "none" };
