@@ -51,6 +51,16 @@ const LAYERS_PAR_COUCHE: Record<string, string[]> = {
 
 const estPetitEcran = () => typeof window !== "undefined" && window.innerWidth < 640;
 
+// Ordre canonique des documents d'un même dossier : prescription, puis rapport,
+// puis le reste ; à type égal, par référence. Utilisé partout où on liste les
+// documents (popup carte, liens) pour un ordre identique à la page « Vos documents ».
+const RANG_DOC: Record<string, number> = { prescription: 0, rapport: 1 };
+function ordreDoc(a: Doc, b: Doc): number {
+  const ra = RANG_DOC[a.type_document ?? ""] ?? 2;
+  const rb = RANG_DOC[b.type_document ?? ""] ?? 2;
+  return ra - rb || String(a.reference ?? "").localeCompare(String(b.reference ?? ""));
+}
+
 function couleurAppellations(features: any[]): { expr: any; legende: { nom: string; couleur: string }[] } {
   const noms = Array.from(
     new Set(
@@ -112,6 +122,10 @@ export default function CarteForet({ data, bbox, documents = [] }: Props) {
       const arr = m.get(d.reference);
       if (arr) arr.push(d); else m.set(d.reference, [d]);
     }
+    // Ordre stable et cohérent avec la liste « Vos documents » (prescription avant
+    // rapport) : évite que le même dossier apparaisse dans un ordre différent selon
+    // qu'on le lit sur la carte ou dans la page (retour focus group H2).
+    for (const arr of m.values()) arr.sort(ordreDoc);
     return m;
   }, [documents]);
   const docsRef = useRef(docsParRef);
