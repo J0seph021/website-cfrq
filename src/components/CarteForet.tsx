@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { supabase } from "../lib/supabaseClient";
-import { analyseDepuisProps, sparklineCourbe, COULEUR_STATUT, LEGENDE_CAPITAL } from "../lib/foret/adaptateur";
+import { analyseDepuisProps, sparklineCourbe, COULEUR_STATUT, LEGENDE_CAPITAL, compositionParEssence } from "../lib/foret/adaptateur";
 import PanneauProjection from "./PanneauProjection";
 
 type FeatureCollection = { type: "FeatureCollection"; features: any[] };
@@ -463,6 +463,29 @@ const STATUTS: Record<string, string> = {
   approuve: "Approuvé", refuse: "Refusé", paye: "Payé", complete: "Complété",
 };
 
+// Bloc « volumes par essence » (B1) : ce que le peuplement contient, par essence,
+// en m³/ha. Volontairement SANS valeur $ (garde-fou légal du focus group).
+function blocVolumes(p: Record<string, any>): string {
+  const essences = compositionParEssence(p.composition);
+  if (!essences.length) return "";
+  const total = essences.reduce((s, e) => s + e.vol, 0);
+  const top = essences.slice(0, 6);
+  const reste = essences.length - top.length;
+  const barre = (e: { nom: string; vol: number }) => {
+    const pct = Math.max(3, Math.round((e.vol / (top[0].vol || 1)) * 100));
+    return `<div style="margin-top:3px">`
+      + `<div style="display:flex;justify-content:space-between;gap:8px;font-size:11.5px"><span>${e.nom}</span>`
+      + `<span style="color:#6b7280;font-weight:500">${e.vol.toFixed(1)} m³/ha</span></div>`
+      + `<div style="height:4px;background:#e5e7eb;border-radius:3px;margin-top:1px"><div style="height:4px;width:${pct}%;background:#2f7d32;border-radius:3px"></div></div>`
+      + `</div>`;
+  };
+  return `<div style="margin-top:6px;padding-top:6px;border-top:1px solid #eee">`
+    + `<div style="font-weight:600;color:#1b3a13">Volumes par essence <span style="color:#6b7280;font-weight:400">(total ${total.toFixed(0)} m³/ha)</span></div>`
+    + top.map(barre).join("")
+    + (reste > 0 ? `<div style="margin-top:3px;font-size:11px;color:#9ca3af">+ ${reste} autre${reste > 1 ? "s" : ""} essence${reste > 1 ? "s" : ""}</div>` : "")
+    + `</div>`;
+}
+
 // Bloc « courbe de maturité » (E1) ajouté au popup d'un peuplement.
 function blocMaturite(p: Record<string, any>, anneeCourante: number): string {
   const a = analyseDepuisProps(p, anneeCourante);
@@ -521,6 +544,7 @@ function contenuPopup(p: Record<string, any>, docsParRef?: Map<string, Doc[]>, a
           ? `<div style="margin-top:5px;padding-top:5px;border-top:1px solid #eee"><span style="color:#6b7280">Traitement recommandé</span><div style="font-weight:600;color:#2f7d32">${esc(p.traitements_rec)}</div></div>`
           : "") +
         ligne("Priorité", p.priorite) +
+        blocVolumes(p) +
         blocMaturite(p, anneeCourante)
       );
     case "travaux":

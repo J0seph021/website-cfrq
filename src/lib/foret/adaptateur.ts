@@ -88,5 +88,37 @@ export function sparklineCourbe(a: AnalysePeuplement, largeur = 240, hauteur = 9
     + `</svg>`;
 }
 
+// Noms français des codes d'essence MRNF présents dans eco_dendro.composition
+// (les 39 codes portés jusqu'au portail). Sert l'affichage « volumes par essence »
+// (B1 du focus group : montrer les volumes, pas de valeur $).
+export const NOM_ESSENCE: Record<string, string> = {
+  SAB: "Sapin baumier", EPB: "Épinette blanche", EPN: "Épinette noire", EPR: "Épinette rouge",
+  EPO: "Épinette de Norvège", PIB: "Pin blanc", PIG: "Pin gris", PIR: "Pin rouge", PIS: "Pin sylvestre",
+  MEL: "Mélèze laricin", MEH: "Mélèze hybride", PRU: "Pruche du Canada", THO: "Thuya (cèdre)",
+  BOP: "Bouleau à papier", BOJ: "Bouleau jaune (merisier)", BOG: "Bouleau gris",
+  ERS: "Érable à sucre", ERR: "Érable rouge", ERA: "Érable argenté",
+  PET: "Peuplier faux-tremble", PEG: "Peuplier à grandes dents", PEB: "Peuplier baumier",
+  PED: "Peuplier deltoïde", PEH: "Peuplier hybride",
+  HEG: "Hêtre à grandes feuilles", TIL: "Tilleul d'Amérique", CET: "Cerisier tardif", CAC: "Caryer cordiforme",
+  FRA: "Frêne d'Amérique", FRN: "Frêne noir", FRP: "Frêne rouge",
+  CHR: "Chêne rouge", CHB: "Chêne blanc", CHG: "Chêne à gros fruits",
+  ORA: "Orme d'Amérique", ORR: "Orme rouge", ORT: "Orme liège", OSV: "Ostryer de Virginie", NOC: "Noyer cendré",
+};
+
+// Décode la composition (jsonb {code: vmb_ha}) en liste triée par volume décroissant.
+// La valeur peut arriver comme objet (source directe) ou comme chaîne JSON
+// (les propriétés de features MapLibre sont sérialisées).
+export function compositionParEssence(
+  composition: any,
+): { code: string; nom: string; vol: number }[] {
+  let obj = composition;
+  if (typeof obj === "string") { try { obj = JSON.parse(obj); } catch { return []; } }
+  if (!obj || typeof obj !== "object") return [];
+  return Object.entries(obj)
+    .map(([code, v]) => ({ code, nom: NOM_ESSENCE[code] ?? code, vol: Number(v) || 0 }))
+    .filter((e) => e.vol > 0)
+    .sort((a, b) => b.vol - a.vol);
+}
+
 export { projeterScenarios };
 export type { AnalysePeuplement };
