@@ -132,7 +132,12 @@ function Reveal({
     <div
       ref={ref}
       style={{ transitionDelay: vu ? `${delay}ms` : "0ms" }}
-      className={`transition-all duration-700 ease-out ${vu ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"} ${className}`}
+      // Apparition par OPACITÉ SEULEMENT. Aucun utilitaire translate ici, dans aucun
+      // état : Tailwind v4 émet la propriété CSS `translate`, et toute valeur non-none
+      // (même l'identité 0px) fait de cet ancêtre le référentiel des descendants
+      // position:fixed — le plein écran de la carte s'ancrait sur la section au lieu
+      // du viewport. L'opacité n'a pas cet effet.
+      className={`transition-opacity duration-700 ease-out ${vu ? "opacity-100" : "opacity-0"} ${className}`}
     >
       {children}
     </div>

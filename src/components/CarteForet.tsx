@@ -241,10 +241,23 @@ export default function CarteForet({ data, bbox, documents = [] }: Props) {
   return (
     <div
       ref={enveloppe}
-      className={`relative overflow-hidden bg-cfrq-deep ${pleinEcran ? "fixed inset-0 z-[60] rounded-none" : "h-[68vh] min-h-[460px] rounded-2xl border border-black/5 sm:h-[560px]"}`}
+      // JAMAIS `relative` et `fixed` ensemble : même spécificité CSS, l'ordre de la
+      // feuille Tailwind décidait et `relative` gagnait -> le plein écran ne se
+      // positionnait jamais (carte effondrée à 0 px, page verrouillée).
+      className={`overflow-hidden bg-cfrq-deep ${pleinEcran ? "fixed inset-0 z-[60] h-dvh w-screen rounded-none" : "relative h-[68vh] min-h-[460px] rounded-2xl border border-black/5 sm:h-[560px]"}`}
     >
       {/* className statique : MapLibre ajoute ses propres classes ici, un re-render React ne doit pas les écraser. */}
       <div ref={conteneur} className="h-full w-full" />
+
+      {/* Sortie de plein écran toujours visible (pas d'Échap sur mobile). */}
+      {pleinEcran && (
+        <button
+          onClick={() => setPleinEcran(false)}
+          className="absolute left-1/2 top-2 z-10 -translate-x-1/2 rounded-full bg-white/95 px-4 py-2 text-[13.5px] font-medium text-cfrq-deep shadow-lg backdrop-blur"
+        >
+          ✕ Quitter le plein écran
+        </button>
+      )}
 
       {/* Couches (repliable) */}
       <div className="absolute left-2 top-2 sm:left-3 sm:top-3">
