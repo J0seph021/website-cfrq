@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { supabase } from "../lib/supabaseClient";
+import { analyseDepuisProps, sparklineCourbe, COULEUR_STATUT, LEGENDE_CAPITAL } from "../lib/foret/adaptateur";
+import PanneauProjection from "./PanneauProjection";
 
 type FeatureCollection = { type: "FeatureCollection"; features: any[] };
 type Bbox = [number, number, number, number];
@@ -76,11 +78,31 @@ export default function CarteForet({ data, bbox, documents = [] }: Props) {
   const [legendeOuverte, setLegendeOuverte] = useState(!estPetitEcran());
   const [pleinEcran, setPleinEcran] = useState(false);
   const [astuce, setAstuce] = useState(true);
+  // E2 : mode « capital forestier » (colore les peuplements par statut de maturité).
+  const [capital, setCapital] = useState(false);
+  // E3 : peuplement sélectionné pour le panneau de projection avec/sans intervention.
+  const [selPeup, setSelPeup] = useState<Record<string, any> | null>(null);
 
   const { expr: couleurPeuplement, legende } = useMemo(
     () => couleurAppellations(data?.features ?? []),
     [data]
   );
+
+  const anneeCourante = useMemo(() => new Date().getFullYear(), []);
+
+  // Enrichit chaque feature de peuplement d'une couleur de capital (_capital),
+  // calculée une fois par le moteur, pour la couche colorée E2. Ne mute jamais
+  // la donnée d'origine (clone superficiel des features de peuplement).
+  const dataCapital = useMemo<FeatureCollection>(() => {
+    const feats = (data?.features ?? []).map((f) => {
+      if (f?.properties?.couche !== "peuplement") return f;
+      const a = analyseDepuisProps(f.properties, anneeCourante);
+      return { ...f, properties: { ...f.properties, _capital: COULEUR_STATUT[a.couleur] } };
+    });
+    return { type: "FeatureCollection", features: feats };
+  }, [data, anneeCourante]);
+  const dataCapitalRef = useRef(dataCapital);
+  dataCapitalRef.current = dataCapital;
 
   // Index des documents par numéro de prescription (pour le clic sur un polygone).
   const docsParRef = useMemo(() => {
@@ -94,6 +116,10 @@ export default function CarteForet({ data, bbox, documents = [] }: Props) {
   }, [documents]);
   const docsRef = useRef(docsParRef);
   docsRef.current = docsParRef;
+  const anneeRef = useRef(anneeCourante);
+  anneeRef.current = anneeCourante;
+  // Dernier peuplement cliqué : le bouton « projection » du popup le relit (E3).
+  const dernierPeup = useRef<Record<string, any> | null>(null);
 
   // Ouvre un PDF via une URL signée temporaire (RLS: le client n'accède qu'à ses propres documents).
   useEffect(() => {
@@ -101,7 +127,25 @@ export default function CarteForet({ data, bbox, documents = [] }: Props) {
       const { data: s } = await supabase.storage.from("documents").createSignedUrl(path, 300);
       if (s?.signedUrl) window.open(s.signedUrl, "_blank", "noopener");
     };
+    // Pont popup (HTML injecté) -> React : ouvre le panneau de projection E3.
+    (window as any).__cfrqProjeter = () => { if (dernierPeup.current) setSelPeup(dernierPeup.current); };
+    if ((window as any).__carteDebugOn) {
+      (window as any).__contenuPopup = (p: any) => contenuPopup(p, docsRef.current, anneeRef.current);
+      (window as any).__ouvrirProjection = (p: any) => setSelPeup(p);
+    }
   }, []);
+
+  // E2 : bascule le remplissage des peuplements entre couleur d'appellation et
+  // couleur de capital (croissance/maturité/décroissance) calculée par le moteur.
+  useEffect(() => {
+    const map = carte.current;
+    if (!map || !map.getLayer("peuplement-fill")) return;
+    map.setPaintProperty(
+      "peuplement-fill", "fill-color",
+      capital ? ["coalesce", ["get", "_capital"], COULEUR_STATUT.gris] : couleurPeuplement,
+    );
+    map.setPaintProperty("peuplement-fill", "fill-opacity", capital ? 0.68 : 0.55);
+  }, [capital, couleurPeuplement]);
 
   useEffect(() => {
     if (!conteneur.current || carte.current) return;
@@ -163,7 +207,7 @@ export default function CarteForet({ data, bbox, documents = [] }: Props) {
     if (!estPetitEcran()) map.scrollZoom.disable();
 
     map.on("load", () => {
-      map.addSource("foret", { type: "geojson", data });
+      map.addSource("foret", { type: "geojson", data: dataCapitalRef.current });
       map.addLayer({
         id: "peuplement-fill", source: "foret", type: "fill",
         filter: ["==", ["get", "couche"], "peuplement"],
@@ -235,7 +279,8 @@ export default function CarteForet({ data, bbox, documents = [] }: Props) {
         map.on("click", couche, (e) => {
           const p = e.features?.[0]?.properties as Record<string, any> | undefined;
           if (!p) return;
-          popup.setLngLat(e.lngLat).setHTML(contenuPopup(p, docsRef.current)).addTo(map);
+          if (p.couche === "peuplement") dernierPeup.current = p; // pour le bouton « projection »
+          popup.setLngLat(e.lngLat).setHTML(contenuPopup(p, docsRef.current, anneeRef.current)).addTo(map);
         });
       }
       // Masque l'astuce dès la première interaction avec la carte.
@@ -283,6 +328,7 @@ export default function CarteForet({ data, bbox, documents = [] }: Props) {
   };
 
   return (
+    <>
     <div
       ref={enveloppe}
       // JAMAIS `relative` et `fixed` ensemble : même spécificité CSS, l'ordre de la
@@ -322,6 +368,21 @@ export default function CarteForet({ data, bbox, documents = [] }: Props) {
                 </label>
               ))}
             </div>
+            {/* E2 : vue « capital forestier » — recolore les peuplements par statut. */}
+            <label className="mt-2 flex cursor-pointer items-start gap-2 border-t border-black/10 pt-2 text-black/70">
+              <input type="checkbox" checked={capital} onChange={() => setCapital((v) => !v)} className="mt-0.5 accent-cfrq-green" />
+              <span>
+                <span className="inline-flex items-center gap-1.5 font-medium text-cfrq-deep">
+                  <span className="inline-flex">
+                    <span className="inline-block h-3 w-2 rounded-l-sm" style={{ background: COULEUR_STATUT.vert }} />
+                    <span className="inline-block h-3 w-2" style={{ background: COULEUR_STATUT.jaune }} />
+                    <span className="inline-block h-3 w-2 rounded-r-sm" style={{ background: COULEUR_STATUT.rouge }} />
+                  </span>
+                  Capital forestier
+                </span>
+                <span className="block text-[11.5px] leading-tight text-black/50">Croissance / mûr / décroissance</span>
+              </span>
+            </label>
           </div>
         ) : (
           <button onClick={() => setCouchesOuvert(true)}
@@ -331,23 +392,28 @@ export default function CarteForet({ data, bbox, documents = [] }: Props) {
         )}
       </div>
 
-      {/* Légende des peuplements (repliable) */}
-      {legende.length > 0 && visibles.peuplement && (
+      {/* Légende (repliable) : capital forestier en mode E2, sinon types de peuplement. */}
+      {((capital ? true : legende.length > 0)) && visibles.peuplement && (
         <div className="absolute bottom-8 right-2 sm:bottom-3 sm:right-3">
           {legendeOuverte ? (
             <div className="max-h-[42vh] max-w-[230px] overflow-auto rounded-xl bg-white/95 p-3 text-[12px] shadow-lg backdrop-blur sm:max-h-[200px]">
               <button onClick={() => setLegendeOuverte(false)}
                 className="mb-1.5 flex w-full items-center justify-between gap-4 font-medium text-cfrq-deep">
-                Types de peuplement <span aria-hidden className="text-black/40">✕</span>
+                {capital ? "Capital forestier" : "Types de peuplement"} <span aria-hidden className="text-black/40">✕</span>
               </button>
               <ul className="space-y-1">
-                {legende.map((l) => (
+                {(capital ? LEGENDE_CAPITAL : legende).map((l) => (
                   <li key={l.nom} className="flex items-center gap-2 text-black/70">
                     <span className="inline-block h-3 w-3 shrink-0 rounded-sm" style={{ background: l.couleur }} />
                     <span className="leading-tight">{l.nom}</span>
                   </li>
                 ))}
               </ul>
+              {capital && (
+                <p className="mt-2 border-t border-black/10 pt-1.5 text-[10.5px] leading-tight text-black/45">
+                  Estimation indicative (courbes Pothier-Savard). Cliquez un peuplement pour la projection.
+                </p>
+              )}
             </div>
           ) : (
             <button onClick={() => setLegendeOuverte(true)}
@@ -370,6 +436,11 @@ export default function CarteForet({ data, bbox, documents = [] }: Props) {
         </div>
       )}
     </div>
+    {/* E3 : projection avec / sans intervention du peuplement sélectionné. */}
+    {selPeup && (
+      <PanneauProjection props={selPeup} anneeCourante={anneeCourante} onClose={() => setSelPeup(null)} />
+    )}
+    </>
   );
 }
 
@@ -378,7 +449,24 @@ const STATUTS: Record<string, string> = {
   approuve: "Approuvé", refuse: "Refusé", paye: "Payé", complete: "Complété",
 };
 
-function contenuPopup(p: Record<string, any>, docsParRef?: Map<string, Doc[]>): string {
+// Bloc « courbe de maturité » (E1) ajouté au popup d'un peuplement.
+function blocMaturite(p: Record<string, any>, anneeCourante: number): string {
+  const a = analyseDepuisProps(p, anneeCourante);
+  if (!a.courbe) return ""; // essence/type éco absent : pas de courbe, on n'affiche rien.
+  const dot = { vert: "#2f9e44", jaune: "#f59f00", rouge: "#e03131", gris: "#adb5bd" }[a.couleur];
+  const svg = sparklineCourbe(a, 244, 92);
+  const fiab = a.fiabilite === "bonne" ? "" : ` · fiabilité ${a.fiabilite}`;
+  return `<div style="margin-top:6px;padding-top:6px;border-top:1px solid #eee">`
+    + `<div style="display:flex;align-items:center;gap:6px;font-weight:600;color:#1b3a13">`
+    + `<span style="width:9px;height:9px;border-radius:50%;background:${dot};display:inline-block"></span>`
+    + `Capital forestier${fiab}</div>`
+    + `<div style="color:#374151;margin:2px 0 2px;font-size:11.5px;line-height:1.35">${a.message.replace(/[<>]/g, "")}</div>`
+    + svg
+    + `<button onclick="window.__cfrqProjeter();return false;" style="margin-top:6px;width:100%;padding:6px 8px;border:0;border-radius:6px;background:#1b3a13;color:#fff;font-weight:600;font-size:12px;cursor:pointer">Projection sur 50 ans (avec / sans intervention) →</button>`
+    + `</div>`;
+}
+
+function contenuPopup(p: Record<string, any>, docsParRef?: Map<string, Doc[]>, anneeCourante = new Date().getFullYear()): string {
   const esc = (s: any) => String(s ?? "").replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]!));
   const ligne = (label: string, val: any, unite = "") =>
     val == null || val === ""
@@ -418,7 +506,8 @@ function contenuPopup(p: Record<string, any>, docsParRef?: Map<string, Doc[]>): 
         (p.traitements_rec
           ? `<div style="margin-top:5px;padding-top:5px;border-top:1px solid #eee"><span style="color:#6b7280">Traitement recommandé</span><div style="font-weight:600;color:#2f7d32">${esc(p.traitements_rec)}</div></div>`
           : "") +
-        ligne("Priorité", p.priorite)
+        ligne("Priorité", p.priorite) +
+        blocMaturite(p, anneeCourante)
       );
     case "travaux":
       return wrap(
