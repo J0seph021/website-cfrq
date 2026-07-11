@@ -13,6 +13,7 @@ export interface Dossier {
   travaux: Row[];
   documents: Row[];
   carte: Row | null;
+  bilan: Row | null; // E5 : bilan des investissements (null si aucun travail récent)
 }
 
 const nf = new Intl.NumberFormat("fr-CA", { maximumFractionDigits: 1 });
@@ -913,15 +914,22 @@ export function DashboardView({ d, offre = null, onLogout }: { d: Dossier; offre
           </section>
         </Reveal>
 
+        {/* E5 : bilan des investissements de l'agence (rendre visible ce qui a été investi). */}
+        {d.bilan && Number(d.bilan.total_valeur) > 0 && (
+          <Reveal className="mt-10">
+            <BilanInvestissements bilan={d.bilan} />
+          </Reveal>
+        )}
+
         {/* Leviers et programmes (en second temps) */}
         <Reveal className="mt-10">
           <section className="rounded-2xl bg-cfrq-tint p-6 md:p-8">
             <h2 className="font-display text-xl font-medium text-cfrq-deep">Saviez-vous que...</h2>
             <p className="mt-2 max-w-2xl text-[15.5px] leading-relaxed text-cfrq-ink/75">
               {reconnu
-                ? "Votre statut de producteur forestier reconnu peut vous donner accès à un allègement de vos taxes foncières et à des programmes d'aide pour vos travaux."
-                : "Des programmes d'aide et un allègement de taxes foncières existent pour les propriétaires forestiers."}{" "}
-              La plupart des propriétaires ignorent ces mesures. Votre ingénieur peut vérifier votre admissibilité.
+                ? "Comme producteur forestier reconnu, vous pouvez récupérer une large part de vos taxes foncières — jusqu'à 85 % — et faire financer une partie de vos travaux par des programmes qui se combinent."
+                : "Un propriétaire forestier reconnu peut récupérer jusqu'à 85 % de ses taxes foncières et faire financer une partie de ses travaux d'aménagement."}{" "}
+              La plupart des propriétaires ignorent ces mesures. La reconnaissance, les demandes de subvention et la paperasse, c'est nous qui nous en occupons — votre ingénieur valide votre admissibilité.
             </p>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               <details className="group rounded-xl bg-white/70 p-4">
@@ -1025,6 +1033,49 @@ export function DashboardView({ d, offre = null, onLogout }: { d: Dossier; offre
   );
 }
 
+// E5 : bilan des investissements — rend visible ce que la société a investi chez le
+// producteur (les gens croient souvent que tout est gratuit). Chiffres tirés du
+// dossier réel (suivi_travaux), poussés par scripts/export-bilans.mjs.
+export function BilanInvestissements({ bilan }: { bilan: Row }) {
+  const valeur = Number(bilan.total_valeur) || 0;
+  const aide = Number(bilan.total_aide) || 0;
+  const part = Number(bilan.total_part) || 0;
+  const anMin = Number(bilan.annee_min), anMax = Number(bilan.annee_max);
+  const nbAns = anMin && anMax ? anMax - anMin + 1 : null;
+  const periode = nbAns && nbAns > 1 ? `depuis ${nbAns} ans` : anMax ? `en ${anMax}` : "récemment";
+  const superficie = Number(bilan.superficie_ha) || 0;
+  return (
+    <section className="overflow-hidden rounded-2xl border border-cfrq-green/20 bg-gradient-to-br from-cfrq-green/10 to-white p-6 md:p-8">
+      <p className="text-[12px] font-medium uppercase tracking-wide text-cfrq-leaf">Les investissements dans votre forêt</p>
+      <h2 className="mt-1 font-display text-xl font-medium text-cfrq-deep">
+        {periode.charAt(0).toUpperCase() + periode.slice(1)}, {cad(valeur)} de travaux ont été réalisés chez vous
+      </h2>
+      <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-cfrq-ink/75">
+        Aménager une forêt a un coût — et une grande part est financée par les programmes que nous mobilisons pour vous.
+        Voici ce qui a été investi{superficie > 0 ? ` sur ${nf.format(superficie)} ha de vos boisés` : ""}.
+      </p>
+      <div className="mt-5 grid gap-3 sm:grid-cols-3">
+        <div className="rounded-xl bg-white/80 p-4 text-center shadow-sm">
+          <div className="font-display text-2xl font-semibold text-cfrq-deep">{cad(valeur)}</div>
+          <div className="mt-0.5 text-[13px] text-cfrq-ink/65">Valeur totale des travaux</div>
+        </div>
+        <div className="rounded-xl bg-white/80 p-4 text-center shadow-sm">
+          <div className="font-display text-2xl font-semibold text-cfrq-green">{cad(aide)}</div>
+          <div className="mt-0.5 text-[13px] text-cfrq-ink/65">Financé par les programmes d'aide</div>
+        </div>
+        <div className="rounded-xl bg-white/80 p-4 text-center shadow-sm">
+          <div className="font-display text-2xl font-semibold text-cfrq-deep">{cad(part)}</div>
+          <div className="mt-0.5 text-[13px] text-cfrq-ink/65">Votre contribution</div>
+        </div>
+      </div>
+      <p className="mt-3 text-[13px] text-cfrq-ink/55">
+        Montants tirés de votre dossier (travaux déclarés{anMin ? `, ${anMin}–${anMax}` : ""}). La part des programmes dépend
+        des travaux et de votre admissibilité.
+      </p>
+    </section>
+  );
+}
+
 // Barre de progression: remplit jusqu'a pourcentage (timer, robuste meme onglet cache).
 function ParcoursBar({ pourcentage }: { pourcentage: number }) {
   const reduit = useReducedMotion();
@@ -1051,7 +1102,7 @@ export default function EspaceClient() {
     (async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) { window.location.replace(withBase("/espace-client")); return; }
-      const [prod, proprietes, lots, paf, travaux, docs, carte, offreRes] = await Promise.all([
+      const [prod, proprietes, lots, paf, travaux, docs, carte, bilan, offreRes] = await Promise.all([
         supabase.from("producteurs").select("*").maybeSingle(),
         supabase.from("proprietes").select("*").order("no_propriete"),
         supabase.from("lots").select("*"),
@@ -1059,6 +1110,8 @@ export default function EspaceClient() {
         supabase.from("travaux").select("*"),
         supabase.from("documents").select("*"),
         supabase.from("cartes").select("geojson,bbox").maybeSingle(),
+        // E5 : bilan des investissements. Table absente/aucune ligne -> bilan = null.
+        supabase.from("bilan_investissement").select("*").maybeSingle(),
         // Offre du Portrait (statut d'achat). RPC absente -> erreur silencieuse, offre = null.
         supabase.rpc("portrait_offre_client"),
       ]);
@@ -1071,6 +1124,7 @@ export default function EspaceClient() {
         travaux: travaux.data ?? [],
         documents: docs.data ?? [],
         carte: carte.data ?? null,
+        bilan: bilan.data ?? null,
       });
       setOffre((offreRes?.data as Offre) ?? null);
       setLoading(false);

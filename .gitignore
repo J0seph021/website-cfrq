@@ -24,3 +24,6 @@ scripts/.copy-watermark
 # harnais de test local de la carte (contient des donnees reelles de client - JAMAIS committer)
 src/pages/dev-carte-test.astro
 src/pages/_dev_carte_644.json
+
+# harnais de test E5 (donnees reelles client - ne pas committer)
+src/pages/dev-bilan-test.astro
