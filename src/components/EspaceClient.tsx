@@ -3,6 +3,7 @@ import { supabase } from "../lib/supabaseClient";
 import { withBase } from "../lib/url";
 import { site } from "../data/site";
 import CarteForet from "./CarteForet";
+import FormulaireDemande, { DEMANDES, type ConfigDemande } from "./FormulaireDemande";
 
 type Row = Record<string, any>;
 export interface Dossier {
@@ -313,10 +314,11 @@ function DefinirMotDePasse({ onClose }: { onClose: () => void }) {
   );
 }
 
-export function DashboardView({ d, offre = null, onLogout }: { d: Dossier; offre?: Offre; onLogout?: () => void }) {
+export function DashboardView({ d, offre = null, onLogout, courriel = null }: { d: Dossier; offre?: Offre; onLogout?: () => void; courriel?: string | null }) {
   const nom = d.producteur?.nom ?? "Votre dossier";
   const [achatEnCours, setAchatEnCours] = useState<string | null>(null);
   const [pwdOuvert, setPwdOuvert] = useState(false);
+  const [demande, setDemande] = useState<ConfigDemande | null>(null); // F2/F3/F4/F6
 
   // Statut d'achat par thème (vide tant qu'aucun relevé n'existe: tout est offert à l'achat).
   const acheteParTheme = useMemo(() => {
@@ -1028,7 +1030,45 @@ export function DashboardView({ d, offre = null, onLogout }: { d: Dossier; offre
             </section>
           </Reveal>
         )}
+
+        {/* Demandes à CFRQ (F2/F6 ajouter une terre, F3 terre convoitée, F4 inviter un tiers) */}
+        <Reveal className="mt-10">
+          <section className="rounded-2xl border border-black/5 bg-white p-6 md:p-8">
+            <h2 className="font-display text-xl font-medium text-cfrq-deep">Une demande à nous faire ?</h2>
+            <p className="mt-2 max-w-2xl text-[15.5px] leading-relaxed text-cfrq-ink/75">
+              Notre équipe s'occupe du reste. Choisissez ce dont vous avez besoin et nous ferons le suivi avec vous.
+            </p>
+            <div className="mt-5 grid gap-3 sm:grid-cols-3">
+              {[
+                { cfg: DEMANDES.ajouterTerre, icone: "➕", titre: "Ajouter une terre", desc: "Une terre absente de votre espace ? On l'ajoute à votre dossier." },
+                { cfg: DEMANDES.terreConvoitee, icone: "🔍", titre: "Portrait d'une terre convoitée", desc: "Un lot que vous songez à acheter ? On en prépare le portrait." },
+                { cfg: DEMANDES.inviterTiers, icone: "👥", titre: "Donner accès à un tiers", desc: "Co-propriétaire, banque… on organise l'accès." },
+              ].map((b) => (
+                <button key={b.cfg.source} onClick={() => setDemande(b.cfg)}
+                  className="flex flex-col items-start rounded-xl border border-black/5 bg-cfrq-tint/50 p-4 text-left transition-colors hover:border-cfrq-green/40 hover:bg-cfrq-tint">
+                  <span aria-hidden className="text-2xl">{b.icone}</span>
+                  <span className="mt-2 font-medium text-cfrq-deep">{b.titre}</span>
+                  <span className="mt-1 text-[13px] leading-snug text-cfrq-ink/65">{b.desc}</span>
+                </button>
+              ))}
+            </div>
+          </section>
+        </Reveal>
       </div>
+
+      {/* Modal de demande (F2/F3/F4/F6) */}
+      {demande && (
+        <FormulaireDemande
+          config={demande}
+          courriel={courriel}
+          identite={{
+            Producteur: d.producteur?.nom,
+            "No prod": d.producteur?.no_prod,
+            producteur_id: d.producteur?.id,
+          }}
+          onClose={() => setDemande(null)}
+        />
+      )}
     </div>
   );
 }
@@ -1096,12 +1136,14 @@ export default function EspaceClient() {
   const [loading, setLoading] = useState(true);
   const [d, setD] = useState<Dossier | null>(null);
   const [offre, setOffre] = useState<Offre>(null);
+  const [courriel, setCourriel] = useState<string | null>(null);
 
   useEffect(() => {
     let alive = true;
     (async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) { window.location.replace(withBase("/espace-client")); return; }
+      setCourriel(session.user?.email ?? null);
       const [prod, proprietes, lots, paf, travaux, docs, carte, bilan, offreRes] = await Promise.all([
         supabase.from("producteurs").select("*").maybeSingle(),
         supabase.from("proprietes").select("*").order("no_propriete"),
@@ -1164,5 +1206,5 @@ export default function EspaceClient() {
     );
   }
 
-  return <DashboardView d={d} offre={offre} onLogout={logout} />;
+  return <DashboardView d={d} offre={offre} onLogout={logout} courriel={courriel} />;
 }

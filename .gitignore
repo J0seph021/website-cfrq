@@ -27,3 +27,5 @@ src/pages/_dev_carte_644.json
 
 # harnais de test E5 (donnees reelles client - ne pas committer)
 src/pages/dev-bilan-test.astro
+src/pages/dev-form-test.astro
+src/components/FormTestHarness.tsx
