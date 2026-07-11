@@ -1,0 +1,4481 @@
+{
+ "_source": "Lafleche, V., S. Bernier, J.-P. Saucier et C. Gagne (2013). Indices de qualite de station des principales essences commerciales en fonction des types ecologiques du Quebec meridional. MRNF, Direction des inventaires forestiers, 115 p. Tableau 9 / Annexe 2. Domaine public.",
+ "_note": "IQS_station = hauteur dominante potentielle (m) a l'age de reference. resume = IQS moyen par (essence, type ecologique), moyenne sur les regions. records = detail par (essence, region ecologique, type ecologique).",
+ "_essences": {
+  "BOP": "bouleau a papier",
+  "EPB": "epinette blanche",
+  "EPN": "epinette noire",
+  "EPR": "epinette rouge",
+  "PEG": "peuplier a grandes dents",
+  "PET": "peuplier faux-tremble",
+  "PIG": "pin gris",
+  "SAB": "sapin baumier",
+  "THO": "thuya de l'Est"
+ },
+ "resume": {
+  "EPB": {
+   "MJ11": {
+    "iqs_moyen": 19.64,
+    "iqs_min": 19.64,
+    "iqs_max": 19.64,
+    "ans_0a1m": 2.6,
+    "n_stations": 2
+   },
+   "MJ14": {
+    "iqs_moyen": 19.51,
+    "iqs_min": 19.51,
+    "iqs_max": 19.51,
+    "ans_0a1m": 2.5,
+    "n_stations": 1
+   },
+   "MJ24": {
+    "iqs_moyen": 19.51,
+    "iqs_min": 19.51,
+    "iqs_max": 19.51,
+    "ans_0a1m": 2.5,
+    "n_stations": 1
+   },
+   "MJ15": {
+    "iqs_moyen": 18.31,
+    "iqs_min": 17.58,
+    "iqs_max": 19.04,
+    "ans_0a1m": 3.0,
+    "n_stations": 2
+   },
+   "MJ16": {
+    "iqs_moyen": 17.58,
+    "iqs_min": 17.58,
+    "iqs_max": 17.58,
+    "ans_0a1m": 3.1,
+    "n_stations": 1
+   },
+   "MJ25": {
+    "iqs_moyen": 17.7,
+    "iqs_min": 16.48,
+    "iqs_max": 19.05,
+    "ans_0a1m": 3.1,
+    "n_stations": 3
+   },
+   "MJ26": {
+    "iqs_moyen": 17.58,
+    "iqs_min": 17.58,
+    "iqs_max": 17.58,
+    "ans_0a1m": 3.1,
+    "n_stations": 1
+   },
+   "MJ12": {
+    "iqs_moyen": 19.32,
+    "iqs_min": 15.78,
+    "iqs_max": 21.56,
+    "ans_0a1m": 2.9,
+    "n_stations": 4
+   },
+   "MJ21": {
+    "iqs_moyen": 19.84,
+    "iqs_min": 19.72,
+    "iqs_max": 19.95,
+    "ans_0a1m": 2.7,
+    "n_stations": 2
+   },
+   "MJ22": {
+    "iqs_moyen": 19.47,
+    "iqs_min": 17.41,
+    "iqs_max": 21.4,
+    "ans_0a1m": 2.5,
+    "n_stations": 7
+   },
+   "MS22": {
+    "iqs_moyen": 15.35,
+    "iqs_min": 13.0,
+    "iqs_max": 19.68,
+    "ans_0a1m": 3.0,
+    "n_stations": 15
+   },
+   "MS25": {
+    "iqs_moyen": 16.58,
+    "iqs_min": 16.58,
+    "iqs_max": 16.58,
+    "ans_0a1m": 1.3,
+    "n_stations": 1
+   },
+   "RS22": {
+    "iqs_moyen": 18.09,
+    "iqs_min": 18.09,
+    "iqs_max": 18.09,
+    "ans_0a1m": 1.2,
+    "n_stations": 1
+   },
+   "MS12": {
+    "iqs_moyen": 18.23,
+    "iqs_min": 15.04,
+    "iqs_max": 19.97,
+    "ans_0a1m": 2.2,
+    "n_stations": 6
+   },
+   "MS15": {
+    "iqs_moyen": 19.57,
+    "iqs_min": 19.57,
+    "iqs_max": 19.57,
+    "ans_0a1m": 2.7,
+    "n_stations": 1
+   },
+   "RS15": {
+    "iqs_moyen": 15.22,
+    "iqs_min": 15.22,
+    "iqs_max": 15.22,
+    "ans_0a1m": 3.6,
+    "n_stations": 1
+   },
+   "RS52": {
+    "iqs_moyen": 17.87,
+    "iqs_min": 17.87,
+    "iqs_max": 17.87,
+    "ans_0a1m": 2.9,
+    "n_stations": 1
+   },
+   "MS13": {
+    "iqs_moyen": 19.05,
+    "iqs_min": 18.46,
+    "iqs_max": 19.52,
+    "ans_0a1m": 1.5,
+    "n_stations": 3
+   },
+   "MS23": {
+    "iqs_moyen": 15.94,
+    "iqs_min": 13.57,
+    "iqs_max": 17.96,
+    "ans_0a1m": 3.0,
+    "n_stations": 3
+   },
+   "MS20": {
+    "iqs_moyen": 13.0,
+    "iqs_min": 13.0,
+    "iqs_max": 13.0,
+    "ans_0a1m": 4.0,
+    "n_stations": 2
+   },
+   "MS43": {
+    "iqs_moyen": 8.67,
+    "iqs_min": 8.67,
+    "iqs_max": 8.67,
+    "ans_0a1m": 6.7,
+    "n_stations": 1
+   },
+   "RB52": {
+    "iqs_moyen": 11.4,
+    "iqs_min": 11.4,
+    "iqs_max": 11.4,
+    "ans_0a1m": 4.6,
+    "n_stations": 1
+   },
+   "RB53": {
+    "iqs_moyen": 12.5,
+    "iqs_min": 12.5,
+    "iqs_max": 12.5,
+    "ans_0a1m": 4.4,
+    "n_stations": 1
+   }
+  },
+  "EPR": {
+   "RS54": {
+    "iqs_moyen": 15.28,
+    "iqs_min": 15.28,
+    "iqs_max": 15.28,
+    "ans_0a1m": 3.5,
+    "n_stations": 1
+   },
+   "RS52": {
+    "iqs_moyen": 16.36,
+    "iqs_min": 15.0,
+    "iqs_max": 17.72,
+    "ans_0a1m": 3.0,
+    "n_stations": 2
+   },
+   "RS55": {
+    "iqs_moyen": 19.86,
+    "iqs_min": 19.86,
+    "iqs_max": 19.86,
+    "ans_0a1m": 1.1,
+    "n_stations": 1
+   },
+   "RS55P": {
+    "iqs_moyen": 19.86,
+    "iqs_min": 19.86,
+    "iqs_max": 19.86,
+    "ans_0a1m": 1.1,
+    "n_stations": 1
+   }
+  },
+  "PEG": {
+   "FE22": {
+    "iqs_moyen": 23.5,
+    "iqs_min": 18.95,
+    "iqs_max": 26.18,
+    "ans_0a1m": 1.3,
+    "n_stations": 4
+   },
+   "MJ11": {
+    "iqs_moyen": 22.22,
+    "iqs_min": 22.22,
+    "iqs_max": 22.22,
+    "ans_0a1m": 1.0,
+    "n_stations": 2
+   },
+   "MJ12": {
+    "iqs_moyen": 21.78,
+    "iqs_min": 17.52,
+    "iqs_max": 25.14,
+    "ans_0a1m": 1.4,
+    "n_stations": 5
+   },
+   "FE32": {
+    "iqs_moyen": 18.23,
+    "iqs_min": 17.52,
+    "iqs_max": 18.95,
+    "ans_0a1m": 2.1,
+    "n_stations": 2
+   },
+   "MJ22": {
+    "iqs_moyen": 16.98,
+    "iqs_min": 16.98,
+    "iqs_max": 16.98,
+    "ans_0a1m": 1.3,
+    "n_stations": 1
+   },
+   "MS63": {
+    "iqs_moyen": 19.17,
+    "iqs_min": 19.17,
+    "iqs_max": 19.17,
+    "ans_0a1m": 1.6,
+    "n_stations": 1
+   }
+  },
+  "PET": {
+   "FE22": {
+    "iqs_moyen": 23.5,
+    "iqs_min": 18.95,
+    "iqs_max": 26.18,
+    "ans_0a1m": 1.3,
+    "n_stations": 4
+   },
+   "MJ11": {
+    "iqs_moyen": 22.22,
+    "iqs_min": 22.22,
+    "iqs_max": 22.22,
+    "ans_0a1m": 1.0,
+    "n_stations": 1
+   },
+   "MJ12": {
+    "iqs_moyen": 20.37,
+    "iqs_min": 17.52,
+    "iqs_max": 25.14,
+    "ans_0a1m": 1.5,
+    "n_stations": 4
+   },
+   "FE32": {
+    "iqs_moyen": 20.59,
+    "iqs_min": 17.52,
+    "iqs_max": 25.31,
+    "ans_0a1m": 1.7,
+    "n_stations": 3
+   },
+   "MJ22": {
+    "iqs_moyen": 19.66,
+    "iqs_min": 16.98,
+    "iqs_max": 23.05,
+    "ans_0a1m": 1.4,
+    "n_stations": 4
+   },
+   "MJ25": {
+    "iqs_moyen": 18.23,
+    "iqs_min": 18.23,
+    "iqs_max": 18.23,
+    "ans_0a1m": 2.9,
+    "n_stations": 1
+   },
+   "MJ26": {
+    "iqs_moyen": 18.23,
+    "iqs_min": 18.23,
+    "iqs_max": 18.23,
+    "ans_0a1m": 2.9,
+    "n_stations": 1
+   },
+   "MS22": {
+    "iqs_moyen": 19.01,
+    "iqs_min": 16.98,
+    "iqs_max": 21.57,
+    "ans_0a1m": 1.5,
+    "n_stations": 9
+   },
+   "MS21": {
+    "iqs_moyen": 21.68,
+    "iqs_min": 21.68,
+    "iqs_max": 21.68,
+    "ans_0a1m": 2.1,
+    "n_stations": 1
+   },
+   "MS12": {
+    "iqs_moyen": 19.5,
+    "iqs_min": 18.49,
+    "iqs_max": 21.0,
+    "ans_0a1m": 1.5,
+    "n_stations": 3
+   },
+   "MS23": {
+    "iqs_moyen": 19.85,
+    "iqs_min": 18.15,
+    "iqs_max": 21.59,
+    "ans_0a1m": 2.1,
+    "n_stations": 4
+   },
+   "MS62": {
+    "iqs_moyen": 18.15,
+    "iqs_min": 18.15,
+    "iqs_max": 18.15,
+    "ans_0a1m": 2.8,
+    "n_stations": 1
+   },
+   "MS63": {
+    "iqs_moyen": 18.66,
+    "iqs_min": 18.15,
+    "iqs_max": 19.17,
+    "ans_0a1m": 2.2,
+    "n_stations": 2
+   },
+   "ME13": {
+    "iqs_moyen": 18.25,
+    "iqs_min": 17.0,
+    "iqs_max": 19.5,
+    "ans_0a1m": 2.7,
+    "n_stations": 2
+   },
+   "MS26": {
+    "iqs_moyen": 21.94,
+    "iqs_min": 21.94,
+    "iqs_max": 21.94,
+    "ans_0a1m": 2.1,
+    "n_stations": 1
+   },
+   "RS22": {
+    "iqs_moyen": 17.2,
+    "iqs_min": 16.82,
+    "iqs_max": 17.58,
+    "ans_0a1m": 2.1,
+    "n_stations": 2
+   },
+   "RS23": {
+    "iqs_moyen": 18.62,
+    "iqs_min": 18.62,
+    "iqs_max": 18.62,
+    "ans_0a1m": 1.0,
+    "n_stations": 1
+   },
+   "ME16": {
+    "iqs_moyen": 17.65,
+    "iqs_min": 17.65,
+    "iqs_max": 17.65,
+    "ans_0a1m": 2.4,
+    "n_stations": 1
+   }
+  },
+  "SAB": {
+   "MJ11": {
+    "iqs_moyen": 20.01,
+    "iqs_min": 20.01,
+    "iqs_max": 20.01,
+    "ans_0a1m": 2.6,
+    "n_stations": 2
+   },
+   "MJ24": {
+    "iqs_moyen": 18.1,
+    "iqs_min": 18.1,
+    "iqs_max": 18.1,
+    "ans_0a1m": 2.8,
+    "n_stations": 1
+   },
+   "MJ25": {
+    "iqs_moyen": 17.52,
+    "iqs_min": 15.27,
+    "iqs_max": 18.68,
+    "ans_0a1m": 2.5,
+    "n_stations": 4
+   },
+   "RS54": {
+    "iqs_moyen": 17.03,
+    "iqs_min": 17.03,
+    "iqs_max": 17.03,
+    "ans_0a1m": 3.2,
+    "n_stations": 1
+   },
+   "MJ12": {
+    "iqs_moyen": 18.8,
+    "iqs_min": 17.52,
+    "iqs_max": 20.54,
+    "ans_0a1m": 2.1,
+    "n_stations": 5
+   },
+   "MJ22": {
+    "iqs_moyen": 17.34,
+    "iqs_min": 15.36,
+    "iqs_max": 19.48,
+    "ans_0a1m": 2.7,
+    "n_stations": 8
+   },
+   "MJ21": {
+    "iqs_moyen": 19.09,
+    "iqs_min": 18.69,
+    "iqs_max": 19.48,
+    "ans_0a1m": 2.1,
+    "n_stations": 2
+   },
+   "RP11": {
+    "iqs_moyen": 17.01,
+    "iqs_min": 17.01,
+    "iqs_max": 17.01,
+    "ans_0a1m": 3.0,
+    "n_stations": 1
+   },
+   "RS10": {
+    "iqs_moyen": 14.86,
+    "iqs_min": 14.86,
+    "iqs_max": 14.86,
+    "ans_0a1m": 3.6,
+    "n_stations": 1
+   },
+   "RS12": {
+    "iqs_moyen": 15.29,
+    "iqs_min": 14.12,
+    "iqs_max": 16.39,
+    "ans_0a1m": 3.6,
+    "n_stations": 3
+   },
+   "RS52": {
+    "iqs_moyen": 15.05,
+    "iqs_min": 14.86,
+    "iqs_max": 15.25,
+    "ans_0a1m": 2.8,
+    "n_stations": 2
+   },
+   "MJ15": {
+    "iqs_moyen": 18.75,
+    "iqs_min": 18.75,
+    "iqs_max": 18.75,
+    "ans_0a1m": 2.7,
+    "n_stations": 1
+   },
+   "MJ16": {
+    "iqs_moyen": 19.61,
+    "iqs_min": 19.61,
+    "iqs_max": 19.61,
+    "ans_0a1m": 2.5,
+    "n_stations": 1
+   },
+   "MJ26": {
+    "iqs_moyen": 16.49,
+    "iqs_min": 16.49,
+    "iqs_max": 16.49,
+    "ans_0a1m": 3.2,
+    "n_stations": 1
+   },
+   "RS55": {
+    "iqs_moyen": 16.46,
+    "iqs_min": 16.03,
+    "iqs_max": 16.9,
+    "ans_0a1m": 2.4,
+    "n_stations": 2
+   },
+   "RS55P": {
+    "iqs_moyen": 16.9,
+    "iqs_min": 16.9,
+    "iqs_max": 16.9,
+    "ans_0a1m": 1.5,
+    "n_stations": 1
+   },
+   "MS22": {
+    "iqs_moyen": 14.68,
+    "iqs_min": 9.3,
+    "iqs_max": 18.2,
+    "ans_0a1m": 3.7,
+    "n_stations": 17
+   },
+   "MS25": {
+    "iqs_moyen": 16.82,
+    "iqs_min": 15.36,
+    "iqs_max": 18.28,
+    "ans_0a1m": 3.2,
+    "n_stations": 2
+   },
+   "MS26": {
+    "iqs_moyen": 15.31,
+    "iqs_min": 13.68,
+    "iqs_max": 18.27,
+    "ans_0a1m": 3.3,
+    "n_stations": 7
+   },
+   "RS21": {
+    "iqs_moyen": 13.73,
+    "iqs_min": 12.38,
+    "iqs_max": 15.09,
+    "ans_0a1m": 3.8,
+    "n_stations": 2
+   },
+   "RS22": {
+    "iqs_moyen": 13.52,
+    "iqs_min": 6.5,
+    "iqs_max": 18.18,
+    "ans_0a1m": 3.7,
+    "n_stations": 20
+   },
+   "RS25": {
+    "iqs_moyen": 13.41,
+    "iqs_min": 9.71,
+    "iqs_max": 16.05,
+    "ans_0a1m": 3.0,
+    "n_stations": 7
+   },
+   "MS12": {
+    "iqs_moyen": 17.24,
+    "iqs_min": 15.37,
+    "iqs_max": 18.16,
+    "ans_0a1m": 3.0,
+    "n_stations": 5
+   },
+   "FE32": {
+    "iqs_moyen": 18.15,
+    "iqs_min": 18.15,
+    "iqs_max": 18.15,
+    "ans_0a1m": 2.8,
+    "n_stations": 1
+   },
+   "FE42": {
+    "iqs_moyen": 18.15,
+    "iqs_min": 18.15,
+    "iqs_max": 18.15,
+    "ans_0a1m": 2.8,
+    "n_stations": 1
+   },
+   "MS15": {
+    "iqs_moyen": 18.85,
+    "iqs_min": 18.85,
+    "iqs_max": 18.85,
+    "ans_0a1m": 2.8,
+    "n_stations": 1
+   },
+   "RS15": {
+    "iqs_moyen": 15.86,
+    "iqs_min": 15.86,
+    "iqs_max": 15.86,
+    "ans_0a1m": 3.4,
+    "n_stations": 1
+   },
+   "MS13": {
+    "iqs_moyen": 16.67,
+    "iqs_min": 16.4,
+    "iqs_max": 16.88,
+    "ans_0a1m": 3.0,
+    "n_stations": 3
+   },
+   "MS23": {
+    "iqs_moyen": 15.28,
+    "iqs_min": 13.26,
+    "iqs_max": 19.25,
+    "ans_0a1m": 3.2,
+    "n_stations": 5
+   },
+   "RS16": {
+    "iqs_moyen": 14.23,
+    "iqs_min": 14.23,
+    "iqs_max": 14.23,
+    "ans_0a1m": 3.9,
+    "n_stations": 1
+   },
+   "MS20": {
+    "iqs_moyen": 11.27,
+    "iqs_min": 11.27,
+    "iqs_max": 11.27,
+    "ans_0a1m": 4.3,
+    "n_stations": 2
+   },
+   "RS20": {
+    "iqs_moyen": 12.15,
+    "iqs_min": 10.38,
+    "iqs_max": 13.4,
+    "ans_0a1m": 4.2,
+    "n_stations": 6
+   },
+   "RS22M": {
+    "iqs_moyen": 12.47,
+    "iqs_min": 9.9,
+    "iqs_max": 14.26,
+    "ans_0a1m": 4.2,
+    "n_stations": 5
+   },
+   "RS13": {
+    "iqs_moyen": 13.66,
+    "iqs_min": 13.66,
+    "iqs_max": 13.66,
+    "ans_0a1m": 4.0,
+    "n_stations": 1
+   },
+   "RS23": {
+    "iqs_moyen": 11.37,
+    "iqs_min": 9.66,
+    "iqs_max": 12.64,
+    "ans_0a1m": 4.8,
+    "n_stations": 3
+   },
+   "MS43": {
+    "iqs_moyen": 8.43,
+    "iqs_min": 8.43,
+    "iqs_max": 8.43,
+    "ans_0a1m": 6.8,
+    "n_stations": 1
+   },
+   "RB52": {
+    "iqs_moyen": 9.04,
+    "iqs_min": 9.04,
+    "iqs_max": 9.04,
+    "ans_0a1m": 6.4,
+    "n_stations": 1
+   }
+  },
+  "BOP": {
+   "FE22": {
+    "iqs_moyen": 19.78,
+    "iqs_min": 19.78,
+    "iqs_max": 19.78,
+    "ans_0a1m": 0.9,
+    "n_stations": 1
+   },
+   "MJ12": {
+    "iqs_moyen": 17.06,
+    "iqs_min": 16.2,
+    "iqs_max": 17.9,
+    "ans_0a1m": 1.4,
+    "n_stations": 3
+   },
+   "MJ21": {
+    "iqs_moyen": 19.11,
+    "iqs_min": 19.11,
+    "iqs_max": 19.11,
+    "ans_0a1m": 1.1,
+    "n_stations": 1
+   },
+   "MJ22": {
+    "iqs_moyen": 16.61,
+    "iqs_min": 16.05,
+    "iqs_max": 16.9,
+    "ans_0a1m": 1.5,
+    "n_stations": 3
+   },
+   "MS22": {
+    "iqs_moyen": 15.72,
+    "iqs_min": 11.83,
+    "iqs_max": 19.31,
+    "ans_0a1m": 2.0,
+    "n_stations": 10
+   },
+   "RS22": {
+    "iqs_moyen": 14.5,
+    "iqs_min": 13.9,
+    "iqs_max": 15.32,
+    "ans_0a1m": 2.5,
+    "n_stations": 4
+   },
+   "MS12": {
+    "iqs_moyen": 15.66,
+    "iqs_min": 15.09,
+    "iqs_max": 16.18,
+    "ans_0a1m": 2.5,
+    "n_stations": 3
+   },
+   "MS13": {
+    "iqs_moyen": 15.61,
+    "iqs_min": 15.12,
+    "iqs_max": 16.24,
+    "ans_0a1m": 2.2,
+    "n_stations": 3
+   },
+   "MS23": {
+    "iqs_moyen": 15.03,
+    "iqs_min": 12.36,
+    "iqs_max": 19.31,
+    "ans_0a1m": 2.7,
+    "n_stations": 3
+   },
+   "MS62": {
+    "iqs_moyen": 19.31,
+    "iqs_min": 19.31,
+    "iqs_max": 19.31,
+    "ans_0a1m": 2.7,
+    "n_stations": 1
+   },
+   "MS63": {
+    "iqs_moyen": 19.31,
+    "iqs_min": 19.31,
+    "iqs_max": 19.31,
+    "ans_0a1m": 2.7,
+    "n_stations": 1
+   }
+  },
+  "PIB": {
+   "RP12": {
+    "iqs_moyen": 15.73,
+    "iqs_min": 15.73,
+    "iqs_max": 15.73,
+    "ans_0a1m": 2.4,
+    "n_stations": 1
+   },
+   "RP11": {
+    "iqs_moyen": 18.95,
+    "iqs_min": 18.95,
+    "iqs_max": 18.95,
+    "ans_0a1m": 2.9,
+    "n_stations": 1
+   }
+  },
+  "THO": {
+   "RS10": {
+    "iqs_moyen": 16.2,
+    "iqs_min": 16.2,
+    "iqs_max": 16.2,
+    "ans_0a1m": 1.8,
+    "n_stations": 1
+   },
+   "RS12": {
+    "iqs_moyen": 15.84,
+    "iqs_min": 15.48,
+    "iqs_max": 16.2,
+    "ans_0a1m": 2.1,
+    "n_stations": 2
+   },
+   "RS15": {
+    "iqs_moyen": 15.48,
+    "iqs_min": 15.48,
+    "iqs_max": 15.48,
+    "ans_0a1m": 2.5,
+    "n_stations": 1
+   },
+   "RS16": {
+    "iqs_moyen": 11.09,
+    "iqs_min": 11.09,
+    "iqs_max": 11.09,
+    "ans_0a1m": 4.8,
+    "n_stations": 1
+   }
+  },
+  "EPN": {
+   "RE21": {
+    "iqs_moyen": 12.96,
+    "iqs_min": 9.85,
+    "iqs_max": 16.7,
+    "ans_0a1m": 2.8,
+    "n_stations": 17
+   },
+   "RS21": {
+    "iqs_moyen": 14.53,
+    "iqs_min": 13.72,
+    "iqs_max": 15.34,
+    "ans_0a1m": 2.7,
+    "n_stations": 2
+   },
+   "RS22": {
+    "iqs_moyen": 13.24,
+    "iqs_min": 8.07,
+    "iqs_max": 16.11,
+    "ans_0a1m": 3.0,
+    "n_stations": 22
+   },
+   "RS25": {
+    "iqs_moyen": 13.65,
+    "iqs_min": 9.15,
+    "iqs_max": 18.04,
+    "ans_0a1m": 3.1,
+    "n_stations": 8
+   },
+   "RE22": {
+    "iqs_moyen": 12.56,
+    "iqs_min": 9.5,
+    "iqs_max": 15.34,
+    "ans_0a1m": 3.0,
+    "n_stations": 14
+   },
+   "ME13": {
+    "iqs_moyen": 14.6,
+    "iqs_min": 14.3,
+    "iqs_max": 14.89,
+    "ans_0a1m": 2.0,
+    "n_stations": 2
+   },
+   "ME16": {
+    "iqs_moyen": 13.28,
+    "iqs_min": 12.13,
+    "iqs_max": 14.43,
+    "ans_0a1m": 2.1,
+    "n_stations": 2
+   },
+   "RE39": {
+    "iqs_moyen": 10.36,
+    "iqs_min": 7.98,
+    "iqs_max": 11.91,
+    "ans_0a1m": 4.4,
+    "n_stations": 4
+   },
+   "RE25": {
+    "iqs_moyen": 11.0,
+    "iqs_min": 7.3,
+    "iqs_max": 14.49,
+    "ans_0a1m": 4.3,
+    "n_stations": 8
+   },
+   "MS22": {
+    "iqs_moyen": 15.47,
+    "iqs_min": 15.47,
+    "iqs_max": 15.47,
+    "ans_0a1m": 3.4,
+    "n_stations": 1
+   },
+   "RE20": {
+    "iqs_moyen": 12.41,
+    "iqs_min": 9.11,
+    "iqs_max": 15.09,
+    "ans_0a1m": 3.5,
+    "n_stations": 3
+   },
+   "RS20": {
+    "iqs_moyen": 12.28,
+    "iqs_min": 11.26,
+    "iqs_max": 12.84,
+    "ans_0a1m": 3.3,
+    "n_stations": 6
+   },
+   "RS22M": {
+    "iqs_moyen": 12.18,
+    "iqs_min": 10.53,
+    "iqs_max": 14.35,
+    "ans_0a1m": 3.6,
+    "n_stations": 6
+   },
+   "RE23": {
+    "iqs_moyen": 14.37,
+    "iqs_min": 14.37,
+    "iqs_max": 14.37,
+    "ans_0a1m": 3.5,
+    "n_stations": 1
+   },
+   "RS23": {
+    "iqs_moyen": 12.79,
+    "iqs_min": 11.41,
+    "iqs_max": 14.04,
+    "ans_0a1m": 4.2,
+    "n_stations": 3
+   },
+   "RE38": {
+    "iqs_moyen": 7.51,
+    "iqs_min": 7.51,
+    "iqs_max": 7.51,
+    "ans_0a1m": 7.5,
+    "n_stations": 1
+   },
+   "RE37": {
+    "iqs_moyen": 11.52,
+    "iqs_min": 10.02,
+    "iqs_max": 13.01,
+    "ans_0a1m": 2.9,
+    "n_stations": 2
+   },
+   "RS26": {
+    "iqs_moyen": 13.38,
+    "iqs_min": 13.38,
+    "iqs_max": 13.38,
+    "ans_0a1m": 2.2,
+    "n_stations": 1
+   },
+   "RE24": {
+    "iqs_moyen": 13.49,
+    "iqs_min": 13.49,
+    "iqs_max": 13.49,
+    "ans_0a1m": 2.1,
+    "n_stations": 1
+   },
+   "RE11": {
+    "iqs_moyen": 10.28,
+    "iqs_min": 9.14,
+    "iqs_max": 11.41,
+    "ans_0a1m": 2.8,
+    "n_stations": 2
+   },
+   "RE12": {
+    "iqs_moyen": 10.7,
+    "iqs_min": 9.6,
+    "iqs_max": 11.79,
+    "ans_0a1m": 2.3,
+    "n_stations": 2
+   }
+  },
+  "PIG": {
+   "RE21": {
+    "iqs_moyen": 14.24,
+    "iqs_min": 10.08,
+    "iqs_max": 17.52,
+    "ans_0a1m": 2.6,
+    "n_stations": 16
+   },
+   "RE22": {
+    "iqs_moyen": 13.79,
+    "iqs_min": 10.25,
+    "iqs_max": 16.65,
+    "ans_0a1m": 2.9,
+    "n_stations": 10
+   },
+   "RE25": {
+    "iqs_moyen": 14.16,
+    "iqs_min": 14.16,
+    "iqs_max": 14.16,
+    "ans_0a1m": 3.1,
+    "n_stations": 1
+   },
+   "RS22": {
+    "iqs_moyen": 16.18,
+    "iqs_min": 15.03,
+    "iqs_max": 17.32,
+    "ans_0a1m": 2.9,
+    "n_stations": 2
+   },
+   "RE20": {
+    "iqs_moyen": 14.15,
+    "iqs_min": 13.2,
+    "iqs_max": 15.1,
+    "ans_0a1m": 2.8,
+    "n_stations": 2
+   },
+   "RE24": {
+    "iqs_moyen": 13.55,
+    "iqs_min": 13.55,
+    "iqs_max": 13.55,
+    "ans_0a1m": 3.8,
+    "n_stations": 1
+   },
+   "RE11": {
+    "iqs_moyen": 11.08,
+    "iqs_min": 10.53,
+    "iqs_max": 11.63,
+    "ans_0a1m": 3.5,
+    "n_stations": 2
+   },
+   "RE12": {
+    "iqs_moyen": 11.27,
+    "iqs_min": 10.55,
+    "iqs_max": 11.98,
+    "ans_0a1m": 3.3,
+    "n_stations": 2
+   }
+  }
+ },
+ "records": [
+  {
+   "essence": "EPB",
+   "region": "2a",
+   "type_eco": "MJ11",
+   "n_tiges": 16,
+   "iqs_moyen": 19.64,
+   "ans_0a1m": 2.6
+  },
+  {
+   "essence": "EPB",
+   "region": "2b",
+   "type_eco": "MJ11",
+   "n_tiges": 16,
+   "iqs_moyen": 19.64,
+   "ans_0a1m": 2.6
+  },
+  {
+   "essence": "EPB",
+   "region": "2b",
+   "type_eco": "MJ14",
+   "n_tiges": 19,
+   "iqs_moyen": 19.51,
+   "ans_0a1m": 2.51
+  },
+  {
+   "essence": "EPB",
+   "region": "2b",
+   "type_eco": "MJ24",
+   "n_tiges": 19,
+   "iqs_moyen": 19.51,
+   "ans_0a1m": 2.51
+  },
+  {
+   "essence": "EPB",
+   "region": "2b",
+   "type_eco": "MJ15",
+   "n_tiges": 17,
+   "iqs_moyen": 17.58,
+   "ans_0a1m": 3.08
+  },
+  {
+   "essence": "EPB",
+   "region": "2b",
+   "type_eco": "MJ16",
+   "n_tiges": 17,
+   "iqs_moyen": 17.58,
+   "ans_0a1m": 3.08
+  },
+  {
+   "essence": "EPB",
+   "region": "2b",
+   "type_eco": "MJ25",
+   "n_tiges": 17,
+   "iqs_moyen": 17.58,
+   "ans_0a1m": 3.08
+  },
+  {
+   "essence": "EPB",
+   "region": "2b",
+   "type_eco": "MJ26",
+   "n_tiges": 17,
+   "iqs_moyen": 17.58,
+   "ans_0a1m": 3.08
+  },
+  {
+   "essence": "EPR",
+   "region": "2b",
+   "type_eco": "RS54",
+   "n_tiges": 15,
+   "iqs_moyen": 15.28,
+   "ans_0a1m": 3.52
+  },
+  {
+   "essence": "PEG",
+   "region": "2a",
+   "type_eco": "FE22",
+   "n_tiges": 25,
+   "iqs_moyen": 26.06,
+   "ans_0a1m": 1.05
+  },
+  {
+   "essence": "PET",
+   "region": "2a",
+   "type_eco": "FE22",
+   "n_tiges": 25,
+   "iqs_moyen": 26.06,
+   "ans_0a1m": 1.05
+  },
+  {
+   "essence": "PEG",
+   "region": "2b",
+   "type_eco": "FE22",
+   "n_tiges": 27,
+   "iqs_moyen": 22.81,
+   "ans_0a1m": 0.75
+  },
+  {
+   "essence": "PET",
+   "region": "2b",
+   "type_eco": "FE22",
+   "n_tiges": 27,
+   "iqs_moyen": 22.81,
+   "ans_0a1m": 0.75
+  },
+  {
+   "essence": "PEG",
+   "region": "2a",
+   "type_eco": "MJ11",
+   "n_tiges": 18,
+   "iqs_moyen": 22.22,
+   "ans_0a1m": 1.0
+  },
+  {
+   "essence": "PET",
+   "region": "2a",
+   "type_eco": "MJ11",
+   "n_tiges": 18,
+   "iqs_moyen": 22.22,
+   "ans_0a1m": 1.0
+  },
+  {
+   "essence": "PEG",
+   "region": "2b",
+   "type_eco": "MJ11",
+   "n_tiges": 18,
+   "iqs_moyen": 22.22,
+   "ans_0a1m": 1.0
+  },
+  {
+   "essence": "PEG",
+   "region": "2a",
+   "type_eco": "MJ12",
+   "n_tiges": 26,
+   "iqs_moyen": 25.14,
+   "ans_0a1m": 0.82
+  },
+  {
+   "essence": "PET",
+   "region": "2a",
+   "type_eco": "MJ12",
+   "n_tiges": 26,
+   "iqs_moyen": 25.14,
+   "ans_0a1m": 0.82
+  },
+  {
+   "essence": "PEG",
+   "region": "2b",
+   "type_eco": "MJ12",
+   "n_tiges": 26,
+   "iqs_moyen": 25.14,
+   "ans_0a1m": 0.82
+  },
+  {
+   "essence": "SAB",
+   "region": "2a",
+   "type_eco": "MJ11",
+   "n_tiges": 22,
+   "iqs_moyen": 20.01,
+   "ans_0a1m": 2.57
+  },
+  {
+   "essence": "SAB",
+   "region": "2b",
+   "type_eco": "MJ11",
+   "n_tiges": 22,
+   "iqs_moyen": 20.01,
+   "ans_0a1m": 2.57
+  },
+  {
+   "essence": "SAB",
+   "region": "2b",
+   "type_eco": "MJ24",
+   "n_tiges": 26,
+   "iqs_moyen": 18.1,
+   "ans_0a1m": 2.81
+  },
+  {
+   "essence": "SAB",
+   "region": "2b",
+   "type_eco": "MJ25",
+   "n_tiges": 28,
+   "iqs_moyen": 18.29,
+   "ans_0a1m": 2.94
+  },
+  {
+   "essence": "SAB",
+   "region": "2b",
+   "type_eco": "RS54",
+   "n_tiges": 20,
+   "iqs_moyen": 17.03,
+   "ans_0a1m": 3.2
+  },
+  {
+   "essence": "BOP",
+   "region": "2c",
+   "type_eco": "FE22",
+   "n_tiges": 25,
+   "iqs_moyen": 19.78,
+   "ans_0a1m": 0.9
+  },
+  {
+   "essence": "PEG",
+   "region": "2c",
+   "type_eco": "FE22",
+   "n_tiges": 23,
+   "iqs_moyen": 26.18,
+   "ans_0a1m": 0.6
+  },
+  {
+   "essence": "PET",
+   "region": "2c",
+   "type_eco": "FE22",
+   "n_tiges": 23,
+   "iqs_moyen": 26.18,
+   "ans_0a1m": 0.6
+  },
+  {
+   "essence": "SAB",
+   "region": "2c",
+   "type_eco": "MJ12",
+   "n_tiges": 25,
+   "iqs_moyen": 20.54,
+   "ans_0a1m": 2.4
+  },
+  {
+   "essence": "SAB",
+   "region": "2c",
+   "type_eco": "MJ22",
+   "n_tiges": 20,
+   "iqs_moyen": 19.48,
+   "ans_0a1m": 2.68
+  },
+  {
+   "essence": "BOP",
+   "region": "3a",
+   "type_eco": "MJ12",
+   "n_tiges": 19,
+   "iqs_moyen": 17.08,
+   "ans_0a1m": 1.28
+  },
+  {
+   "essence": "BOP",
+   "region": "3a",
+   "type_eco": "MJ21",
+   "n_tiges": 28,
+   "iqs_moyen": 19.11,
+   "ans_0a1m": 1.11
+  },
+  {
+   "essence": "BOP",
+   "region": "3a",
+   "type_eco": "MJ22",
+   "n_tiges": 25,
+   "iqs_moyen": 16.89,
+   "ans_0a1m": 1.37
+  },
+  {
+   "essence": "EPB",
+   "region": "3a",
+   "type_eco": "MJ12",
+   "n_tiges": 17,
+   "iqs_moyen": 21.56,
+   "ans_0a1m": 2.56
+  },
+  {
+   "essence": "EPB",
+   "region": "3a",
+   "type_eco": "MJ21",
+   "n_tiges": 22,
+   "iqs_moyen": 19.72,
+   "ans_0a1m": 2.74
+  },
+  {
+   "essence": "EPB",
+   "region": "3a",
+   "type_eco": "MJ22",
+   "n_tiges": 28,
+   "iqs_moyen": 19.47,
+   "ans_0a1m": 2.89
+  },
+  {
+   "essence": "PEG",
+   "region": "3a",
+   "type_eco": "MJ12",
+   "n_tiges": 19,
+   "iqs_moyen": 22.13,
+   "ans_0a1m": 1.04
+  },
+  {
+   "essence": "PET",
+   "region": "3a",
+   "type_eco": "FE32",
+   "n_tiges": 15,
+   "iqs_moyen": 25.31,
+   "ans_0a1m": 0.7
+  },
+  {
+   "essence": "PET",
+   "region": "3a",
+   "type_eco": "MJ22",
+   "n_tiges": 26,
+   "iqs_moyen": 23.05,
+   "ans_0a1m": 0.82
+  },
+  {
+   "essence": "PIB",
+   "region": "3a",
+   "type_eco": "RP12",
+   "n_tiges": 18,
+   "iqs_moyen": 15.73,
+   "ans_0a1m": 2.35
+  },
+  {
+   "essence": "SAB",
+   "region": "3a",
+   "type_eco": "MJ12",
+   "n_tiges": 21,
+   "iqs_moyen": 18.76,
+   "ans_0a1m": 1.15
+  },
+  {
+   "essence": "SAB",
+   "region": "3a",
+   "type_eco": "MJ21",
+   "n_tiges": 23,
+   "iqs_moyen": 19.48,
+   "ans_0a1m": 1.25
+  },
+  {
+   "essence": "SAB",
+   "region": "3a",
+   "type_eco": "MJ22",
+   "n_tiges": 29,
+   "iqs_moyen": 17.86,
+   "ans_0a1m": 1.32
+  },
+  {
+   "essence": "EPB",
+   "region": "3b",
+   "type_eco": "MJ12",
+   "n_tiges": 25,
+   "iqs_moyen": 21.52,
+   "ans_0a1m": 2.56
+  },
+  {
+   "essence": "EPB",
+   "region": "3b",
+   "type_eco": "MJ21",
+   "n_tiges": 25,
+   "iqs_moyen": 19.95,
+   "ans_0a1m": 2.57
+  },
+  {
+   "essence": "EPB",
+   "region": "3b",
+   "type_eco": "MJ22",
+   "n_tiges": 30,
+   "iqs_moyen": 21.4,
+   "ans_0a1m": 2.39
+  },
+  {
+   "essence": "PEG",
+   "region": "3b",
+   "type_eco": "FE22",
+   "n_tiges": 28,
+   "iqs_moyen": 18.95,
+   "ans_0a1m": 2.88
+  },
+  {
+   "essence": "PET",
+   "region": "3b",
+   "type_eco": "FE22",
+   "n_tiges": 28,
+   "iqs_moyen": 18.95,
+   "ans_0a1m": 2.88
+  },
+  {
+   "essence": "PEG",
+   "region": "3b",
+   "type_eco": "FE32",
+   "n_tiges": 28,
+   "iqs_moyen": 18.95,
+   "ans_0a1m": 2.88
+  },
+  {
+   "essence": "PET",
+   "region": "3b",
+   "type_eco": "FE32",
+   "n_tiges": 28,
+   "iqs_moyen": 18.95,
+   "ans_0a1m": 2.88
+  },
+  {
+   "essence": "PEG",
+   "region": "3b",
+   "type_eco": "MJ12",
+   "n_tiges": 28,
+   "iqs_moyen": 18.95,
+   "ans_0a1m": 2.88
+  },
+  {
+   "essence": "PET",
+   "region": "3b",
+   "type_eco": "MJ12",
+   "n_tiges": 28,
+   "iqs_moyen": 18.95,
+   "ans_0a1m": 2.88
+  },
+  {
+   "essence": "PIB",
+   "region": "3b",
+   "type_eco": "RP11",
+   "n_tiges": 28,
+   "iqs_moyen": 18.95,
+   "ans_0a1m": 2.88
+  },
+  {
+   "essence": "SAB",
+   "region": "3b",
+   "type_eco": "MJ12",
+   "n_tiges": 28,
+   "iqs_moyen": 18.95,
+   "ans_0a1m": 2.88
+  },
+  {
+   "essence": "SAB",
+   "region": "3b",
+   "type_eco": "MJ21",
+   "n_tiges": 29,
+   "iqs_moyen": 18.69,
+   "ans_0a1m": 2.88
+  },
+  {
+   "essence": "SAB",
+   "region": "3b",
+   "type_eco": "MJ22",
+   "n_tiges": 28,
+   "iqs_moyen": 19.36,
+   "ans_0a1m": 2.62
+  },
+  {
+   "essence": "SAB",
+   "region": "3b",
+   "type_eco": "RP11",
+   "n_tiges": 16,
+   "iqs_moyen": 17.01,
+   "ans_0a1m": 2.97
+  },
+  {
+   "essence": "SAB",
+   "region": "3b",
+   "type_eco": "RS10",
+   "n_tiges": 22,
+   "iqs_moyen": 14.86,
+   "ans_0a1m": 3.62
+  },
+  {
+   "essence": "SAB",
+   "region": "3b",
+   "type_eco": "RS12",
+   "n_tiges": 27,
+   "iqs_moyen": 16.39,
+   "ans_0a1m": 3.31
+  },
+  {
+   "essence": "THO",
+   "region": "3b",
+   "type_eco": "RS10",
+   "n_tiges": 18,
+   "iqs_moyen": 16.2,
+   "ans_0a1m": 1.75
+  },
+  {
+   "essence": "THO",
+   "region": "3b",
+   "type_eco": "RS12",
+   "n_tiges": 18,
+   "iqs_moyen": 16.2,
+   "ans_0a1m": 1.75
+  },
+  {
+   "essence": "BOP",
+   "region": "3c",
+   "type_eco": "MJ12",
+   "n_tiges": 18,
+   "iqs_moyen": 16.2,
+   "ans_0a1m": 1.75
+  },
+  {
+   "essence": "EPB",
+   "region": "3c",
+   "type_eco": "MJ12",
+   "n_tiges": 29,
+   "iqs_moyen": 15.78,
+   "ans_0a1m": 3.54
+  },
+  {
+   "essence": "EPB",
+   "region": "3c",
+   "type_eco": "MJ22",
+   "n_tiges": 15,
+   "iqs_moyen": 17.41,
+   "ans_0a1m": 3.18
+  },
+  {
+   "essence": "EPB",
+   "region": "3c",
+   "type_eco": "MJ25",
+   "n_tiges": 16,
+   "iqs_moyen": 16.48,
+   "ans_0a1m": 3.38
+  },
+  {
+   "essence": "EPR",
+   "region": "3c",
+   "type_eco": "RS52",
+   "n_tiges": 26,
+   "iqs_moyen": 15.0,
+   "ans_0a1m": 3.56
+  },
+  {
+   "essence": "PEG",
+   "region": "3c",
+   "type_eco": "FE32",
+   "n_tiges": 27,
+   "iqs_moyen": 17.52,
+   "ans_0a1m": 1.39
+  },
+  {
+   "essence": "PET",
+   "region": "3c",
+   "type_eco": "FE32",
+   "n_tiges": 27,
+   "iqs_moyen": 17.52,
+   "ans_0a1m": 1.39
+  },
+  {
+   "essence": "PEG",
+   "region": "3c",
+   "type_eco": "MJ12",
+   "n_tiges": 27,
+   "iqs_moyen": 17.52,
+   "ans_0a1m": 1.39
+  },
+  {
+   "essence": "PET",
+   "region": "3c",
+   "type_eco": "MJ12",
+   "n_tiges": 27,
+   "iqs_moyen": 17.52,
+   "ans_0a1m": 1.39
+  },
+  {
+   "essence": "SAB",
+   "region": "3c",
+   "type_eco": "MJ12",
+   "n_tiges": 27,
+   "iqs_moyen": 17.52,
+   "ans_0a1m": 1.39
+  },
+  {
+   "essence": "SAB",
+   "region": "3c",
+   "type_eco": "MJ22",
+   "n_tiges": 38,
+   "iqs_moyen": 17.62,
+   "ans_0a1m": 1.49
+  },
+  {
+   "essence": "SAB",
+   "region": "3c",
+   "type_eco": "MJ25",
+   "n_tiges": 26,
+   "iqs_moyen": 17.85,
+   "ans_0a1m": 1.39
+  },
+  {
+   "essence": "SAB",
+   "region": "3c",
+   "type_eco": "RS52",
+   "n_tiges": 29,
+   "iqs_moyen": 14.86,
+   "ans_0a1m": 2.06
+  },
+  {
+   "essence": "BOP",
+   "region": "3d",
+   "type_eco": "MJ12",
+   "n_tiges": 23,
+   "iqs_moyen": 17.9,
+   "ans_0a1m": 1.31
+  },
+  {
+   "essence": "EPB",
+   "region": "3d",
+   "type_eco": "MJ12",
+   "n_tiges": 13,
+   "iqs_moyen": 18.42,
+   "ans_0a1m": 2.85
+  },
+  {
+   "essence": "EPB",
+   "region": "3d",
+   "type_eco": "MJ15",
+   "n_tiges": 24,
+   "iqs_moyen": 19.04,
+   "ans_0a1m": 2.84
+  },
+  {
+   "essence": "EPB",
+   "region": "3d",
+   "type_eco": "MJ22",
+   "n_tiges": 30,
+   "iqs_moyen": 19.32,
+   "ans_0a1m": 2.68
+  },
+  {
+   "essence": "EPB",
+   "region": "3d",
+   "type_eco": "MJ25",
+   "n_tiges": 31,
+   "iqs_moyen": 19.05,
+   "ans_0a1m": 2.8
+  },
+  {
+   "essence": "EPR",
+   "region": "3d",
+   "type_eco": "RS55",
+   "n_tiges": 13,
+   "iqs_moyen": 19.86,
+   "ans_0a1m": 1.05
+  },
+  {
+   "essence": "EPR",
+   "region": "3d",
+   "type_eco": "RS55P",
+   "n_tiges": 13,
+   "iqs_moyen": 19.86,
+   "ans_0a1m": 1.05
+  },
+  {
+   "essence": "PET",
+   "region": "3d",
+   "type_eco": "MJ12",
+   "n_tiges": 13,
+   "iqs_moyen": 19.86,
+   "ans_0a1m": 1.05
+  },
+  {
+   "essence": "PET",
+   "region": "3d",
+   "type_eco": "MJ22",
+   "n_tiges": 19,
+   "iqs_moyen": 19.62,
+   "ans_0a1m": 1.46
+  },
+  {
+   "essence": "PET",
+   "region": "3d",
+   "type_eco": "MJ25",
+   "n_tiges": 32,
+   "iqs_moyen": 18.23,
+   "ans_0a1m": 2.88
+  },
+  {
+   "essence": "PET",
+   "region": "3d",
+   "type_eco": "MJ26",
+   "n_tiges": 32,
+   "iqs_moyen": 18.23,
+   "ans_0a1m": 2.88
+  },
+  {
+   "essence": "SAB",
+   "region": "3d",
+   "type_eco": "MJ12",
+   "n_tiges": 32,
+   "iqs_moyen": 18.23,
+   "ans_0a1m": 2.88
+  },
+  {
+   "essence": "SAB",
+   "region": "3d",
+   "type_eco": "MJ15",
+   "n_tiges": 21,
+   "iqs_moyen": 18.75,
+   "ans_0a1m": 2.73
+  },
+  {
+   "essence": "SAB",
+   "region": "3d",
+   "type_eco": "MJ16",
+   "n_tiges": 16,
+   "iqs_moyen": 19.61,
+   "ans_0a1m": 2.55
+  },
+  {
+   "essence": "SAB",
+   "region": "3d",
+   "type_eco": "MJ26",
+   "n_tiges": 31,
+   "iqs_moyen": 16.49,
+   "ans_0a1m": 3.2
+  },
+  {
+   "essence": "SAB",
+   "region": "3d",
+   "type_eco": "MJ22",
+   "n_tiges": 31,
+   "iqs_moyen": 16.49,
+   "ans_0a1m": 3.2
+  },
+  {
+   "essence": "SAB",
+   "region": "3d",
+   "type_eco": "MJ25",
+   "n_tiges": 29,
+   "iqs_moyen": 18.68,
+   "ans_0a1m": 2.54
+  },
+  {
+   "essence": "SAB",
+   "region": "3d",
+   "type_eco": "RS55",
+   "n_tiges": 32,
+   "iqs_moyen": 16.9,
+   "ans_0a1m": 1.53
+  },
+  {
+   "essence": "SAB",
+   "region": "3d",
+   "type_eco": "RS55P",
+   "n_tiges": 32,
+   "iqs_moyen": 16.9,
+   "ans_0a1m": 1.53
+  },
+  {
+   "essence": "BOP",
+   "region": "4b",
+   "type_eco": "MJ22",
+   "n_tiges": 32,
+   "iqs_moyen": 16.9,
+   "ans_0a1m": 1.53
+  },
+  {
+   "essence": "BOP",
+   "region": "4b",
+   "type_eco": "MS22",
+   "n_tiges": 30,
+   "iqs_moyen": 16.52,
+   "ans_0a1m": 1.61
+  },
+  {
+   "essence": "BOP",
+   "region": "4b",
+   "type_eco": "RS22",
+   "n_tiges": 30,
+   "iqs_moyen": 14.57,
+   "ans_0a1m": 2.4
+  },
+  {
+   "essence": "EPB",
+   "region": "4a",
+   "type_eco": "MJ22",
+   "n_tiges": 25,
+   "iqs_moyen": 19.68,
+   "ans_0a1m": 2.54
+  },
+  {
+   "essence": "EPB",
+   "region": "4b",
+   "type_eco": "MJ22",
+   "n_tiges": 25,
+   "iqs_moyen": 19.68,
+   "ans_0a1m": 2.54
+  },
+  {
+   "essence": "EPB",
+   "region": "4b",
+   "type_eco": "MS22",
+   "n_tiges": 25,
+   "iqs_moyen": 19.68,
+   "ans_0a1m": 2.54
+  },
+  {
+   "essence": "EPN",
+   "region": "4b",
+   "type_eco": "RE21",
+   "n_tiges": 30,
+   "iqs_moyen": 15.01,
+   "ans_0a1m": 1.66
+  },
+  {
+   "essence": "EPN",
+   "region": "4b",
+   "type_eco": "RS21",
+   "n_tiges": 29,
+   "iqs_moyen": 15.34,
+   "ans_0a1m": 1.6
+  },
+  {
+   "essence": "EPN",
+   "region": "4b",
+   "type_eco": "RS22",
+   "n_tiges": 27,
+   "iqs_moyen": 15.02,
+   "ans_0a1m": 1.86
+  },
+  {
+   "essence": "EPN",
+   "region": "4a",
+   "type_eco": "RS25",
+   "n_tiges": 30,
+   "iqs_moyen": 16.98,
+   "ans_0a1m": 1.27
+  },
+  {
+   "essence": "EPN",
+   "region": "4b",
+   "type_eco": "RS25",
+   "n_tiges": 30,
+   "iqs_moyen": 16.98,
+   "ans_0a1m": 1.27
+  },
+  {
+   "essence": "PEG",
+   "region": "4b",
+   "type_eco": "MJ22",
+   "n_tiges": 30,
+   "iqs_moyen": 16.98,
+   "ans_0a1m": 1.27
+  },
+  {
+   "essence": "PET",
+   "region": "4b",
+   "type_eco": "MJ22",
+   "n_tiges": 30,
+   "iqs_moyen": 16.98,
+   "ans_0a1m": 1.27
+  },
+  {
+   "essence": "PET",
+   "region": "4a",
+   "type_eco": "MS22",
+   "n_tiges": 30,
+   "iqs_moyen": 16.98,
+   "ans_0a1m": 1.27
+  },
+  {
+   "essence": "PET",
+   "region": "4b",
+   "type_eco": "MS22",
+   "n_tiges": 30,
+   "iqs_moyen": 16.98,
+   "ans_0a1m": 1.27
+  },
+  {
+   "essence": "PIG",
+   "region": "4b",
+   "type_eco": "RE21",
+   "n_tiges": 30,
+   "iqs_moyen": 16.98,
+   "ans_0a1m": 1.27
+  },
+  {
+   "essence": "SAB",
+   "region": "4a",
+   "type_eco": "MJ22",
+   "n_tiges": 25,
+   "iqs_moyen": 15.36,
+   "ans_0a1m": 3.65
+  },
+  {
+   "essence": "SAB",
+   "region": "4b",
+   "type_eco": "MJ22",
+   "n_tiges": 25,
+   "iqs_moyen": 15.36,
+   "ans_0a1m": 3.65
+  },
+  {
+   "essence": "SAB",
+   "region": "4a",
+   "type_eco": "MS22",
+   "n_tiges": 25,
+   "iqs_moyen": 15.36,
+   "ans_0a1m": 3.65
+  },
+  {
+   "essence": "SAB",
+   "region": "4b",
+   "type_eco": "MS22",
+   "n_tiges": 25,
+   "iqs_moyen": 15.36,
+   "ans_0a1m": 3.65
+  },
+  {
+   "essence": "SAB",
+   "region": "4b",
+   "type_eco": "MS25",
+   "n_tiges": 25,
+   "iqs_moyen": 15.36,
+   "ans_0a1m": 3.65
+  },
+  {
+   "essence": "SAB",
+   "region": "4a",
+   "type_eco": "MS26",
+   "n_tiges": 25,
+   "iqs_moyen": 15.36,
+   "ans_0a1m": 3.65
+  },
+  {
+   "essence": "SAB",
+   "region": "4b",
+   "type_eco": "MS26",
+   "n_tiges": 25,
+   "iqs_moyen": 15.36,
+   "ans_0a1m": 3.65
+  },
+  {
+   "essence": "SAB",
+   "region": "4b",
+   "type_eco": "RS12",
+   "n_tiges": 25,
+   "iqs_moyen": 15.36,
+   "ans_0a1m": 3.65
+  },
+  {
+   "essence": "SAB",
+   "region": "4b",
+   "type_eco": "RS21",
+   "n_tiges": 30,
+   "iqs_moyen": 15.09,
+   "ans_0a1m": 3.32
+  },
+  {
+   "essence": "SAB",
+   "region": "4a",
+   "type_eco": "RS22",
+   "n_tiges": 20,
+   "iqs_moyen": 16.83,
+   "ans_0a1m": 3.14
+  },
+  {
+   "essence": "SAB",
+   "region": "4b",
+   "type_eco": "RS22",
+   "n_tiges": 25,
+   "iqs_moyen": 16.05,
+   "ans_0a1m": 1.59
+  },
+  {
+   "essence": "SAB",
+   "region": "4a",
+   "type_eco": "RS25",
+   "n_tiges": 25,
+   "iqs_moyen": 16.05,
+   "ans_0a1m": 1.59
+  },
+  {
+   "essence": "SAB",
+   "region": "4b",
+   "type_eco": "RS25",
+   "n_tiges": 25,
+   "iqs_moyen": 16.05,
+   "ans_0a1m": 1.59
+  },
+  {
+   "essence": "BOP",
+   "region": "4c",
+   "type_eco": "MJ22",
+   "n_tiges": 25,
+   "iqs_moyen": 16.05,
+   "ans_0a1m": 1.59
+  },
+  {
+   "essence": "BOP",
+   "region": "4c",
+   "type_eco": "MS22",
+   "n_tiges": 25,
+   "iqs_moyen": 16.61,
+   "ans_0a1m": 1.53
+  },
+  {
+   "essence": "EPB",
+   "region": "4c",
+   "type_eco": "MJ22",
+   "n_tiges": 24,
+   "iqs_moyen": 19.31,
+   "ans_0a1m": 0.99
+  },
+  {
+   "essence": "EPB",
+   "region": "4c",
+   "type_eco": "MS22",
+   "n_tiges": 29,
+   "iqs_moyen": 18.39,
+   "ans_0a1m": 1.28
+  },
+  {
+   "essence": "EPB",
+   "region": "4c",
+   "type_eco": "MS25",
+   "n_tiges": 16,
+   "iqs_moyen": 16.58,
+   "ans_0a1m": 1.28
+  },
+  {
+   "essence": "EPB",
+   "region": "4c",
+   "type_eco": "RS22",
+   "n_tiges": 21,
+   "iqs_moyen": 18.09,
+   "ans_0a1m": 1.16
+  },
+  {
+   "essence": "EPN",
+   "region": "4c",
+   "type_eco": "RE21",
+   "n_tiges": 30,
+   "iqs_moyen": 15.91,
+   "ans_0a1m": 3.2
+  },
+  {
+   "essence": "EPN",
+   "region": "4c",
+   "type_eco": "RE22",
+   "n_tiges": 35,
+   "iqs_moyen": 15.34,
+   "ans_0a1m": 3.17
+  },
+  {
+   "essence": "EPN",
+   "region": "4c",
+   "type_eco": "RS22",
+   "n_tiges": 39,
+   "iqs_moyen": 16.11,
+   "ans_0a1m": 3.13
+  },
+  {
+   "essence": "PET",
+   "region": "4c",
+   "type_eco": "MJ22",
+   "n_tiges": 25,
+   "iqs_moyen": 18.99,
+   "ans_0a1m": 2.1
+  },
+  {
+   "essence": "PET",
+   "region": "4c",
+   "type_eco": "MS22",
+   "n_tiges": 25,
+   "iqs_moyen": 19.96,
+   "ans_0a1m": 1.46
+  },
+  {
+   "essence": "PIG",
+   "region": "4c",
+   "type_eco": "RE21",
+   "n_tiges": 30,
+   "iqs_moyen": 17.52,
+   "ans_0a1m": 1.5
+  },
+  {
+   "essence": "PIG",
+   "region": "4c",
+   "type_eco": "RE22",
+   "n_tiges": 25,
+   "iqs_moyen": 16.65,
+   "ans_0a1m": 1.44
+  },
+  {
+   "essence": "SAB",
+   "region": "4c",
+   "type_eco": "MJ22",
+   "n_tiges": 33,
+   "iqs_moyen": 17.23,
+   "ans_0a1m": 3.01
+  },
+  {
+   "essence": "SAB",
+   "region": "4c",
+   "type_eco": "MJ25",
+   "n_tiges": 24,
+   "iqs_moyen": 15.27,
+   "ans_0a1m": 3.32
+  },
+  {
+   "essence": "SAB",
+   "region": "4c",
+   "type_eco": "MS22",
+   "n_tiges": 40,
+   "iqs_moyen": 18.2,
+   "ans_0a1m": 2.82
+  },
+  {
+   "essence": "SAB",
+   "region": "4c",
+   "type_eco": "MS25",
+   "n_tiges": 25,
+   "iqs_moyen": 18.28,
+   "ans_0a1m": 2.8
+  },
+  {
+   "essence": "SAB",
+   "region": "4c",
+   "type_eco": "RS22",
+   "n_tiges": 18,
+   "iqs_moyen": 15.55,
+   "ans_0a1m": 3.3
+  },
+  {
+   "essence": "BOP",
+   "region": "4d",
+   "type_eco": "MS12",
+   "n_tiges": 24,
+   "iqs_moyen": 16.18,
+   "ans_0a1m": 2.37
+  },
+  {
+   "essence": "EPB",
+   "region": "4d",
+   "type_eco": "MS12",
+   "n_tiges": 14,
+   "iqs_moyen": 18.51,
+   "ans_0a1m": 1.41
+  },
+  {
+   "essence": "EPB",
+   "region": "4d",
+   "type_eco": "MS22",
+   "n_tiges": 23,
+   "iqs_moyen": 16.43,
+   "ans_0a1m": 1.62
+  },
+  {
+   "essence": "EPN",
+   "region": "4d",
+   "type_eco": "RS22",
+   "n_tiges": 18,
+   "iqs_moyen": 14.31,
+   "ans_0a1m": 3.21
+  },
+  {
+   "essence": "SAB",
+   "region": "4d",
+   "type_eco": "MS12",
+   "n_tiges": 32,
+   "iqs_moyen": 16.48,
+   "ans_0a1m": 3.37
+  },
+  {
+   "essence": "SAB",
+   "region": "4d",
+   "type_eco": "MS22",
+   "n_tiges": 31,
+   "iqs_moyen": 16.1,
+   "ans_0a1m": 2.8
+  },
+  {
+   "essence": "EPN",
+   "region": "4e",
+   "type_eco": "RE21",
+   "n_tiges": 30,
+   "iqs_moyen": 16.7,
+   "ans_0a1m": 3.04
+  },
+  {
+   "essence": "PET",
+   "region": "4e",
+   "type_eco": "MS21",
+   "n_tiges": 21,
+   "iqs_moyen": 21.68,
+   "ans_0a1m": 2.06
+  },
+  {
+   "essence": "PIG",
+   "region": "4e",
+   "type_eco": "RE21",
+   "n_tiges": 30,
+   "iqs_moyen": 17.48,
+   "ans_0a1m": 1.28
+  },
+  {
+   "essence": "BOP",
+   "region": "4f",
+   "type_eco": "MS12",
+   "n_tiges": 25,
+   "iqs_moyen": 15.71,
+   "ans_0a1m": 2.69
+  },
+  {
+   "essence": "BOP",
+   "region": "4f",
+   "type_eco": "MS13",
+   "n_tiges": 25,
+   "iqs_moyen": 15.12,
+   "ans_0a1m": 2.83
+  },
+  {
+   "essence": "BOP",
+   "region": "4f",
+   "type_eco": "MS22",
+   "n_tiges": 34,
+   "iqs_moyen": 19.31,
+   "ans_0a1m": 2.74
+  },
+  {
+   "essence": "BOP",
+   "region": "4f",
+   "type_eco": "MS23",
+   "n_tiges": 34,
+   "iqs_moyen": 19.31,
+   "ans_0a1m": 2.74
+  },
+  {
+   "essence": "BOP",
+   "region": "4f",
+   "type_eco": "MS62",
+   "n_tiges": 34,
+   "iqs_moyen": 19.31,
+   "ans_0a1m": 2.74
+  },
+  {
+   "essence": "BOP",
+   "region": "4f",
+   "type_eco": "MS63",
+   "n_tiges": 34,
+   "iqs_moyen": 19.31,
+   "ans_0a1m": 2.74
+  },
+  {
+   "essence": "EPB",
+   "region": "4f",
+   "type_eco": "MS12",
+   "n_tiges": 34,
+   "iqs_moyen": 19.31,
+   "ans_0a1m": 2.74
+  },
+  {
+   "essence": "EPB",
+   "region": "4f",
+   "type_eco": "MS15",
+   "n_tiges": 25,
+   "iqs_moyen": 19.57,
+   "ans_0a1m": 2.74
+  },
+  {
+   "essence": "EPB",
+   "region": "4f",
+   "type_eco": "MS22",
+   "n_tiges": 40,
+   "iqs_moyen": 17.83,
+   "ans_0a1m": 2.88
+  },
+  {
+   "essence": "EPB",
+   "region": "4f",
+   "type_eco": "RS15",
+   "n_tiges": 13,
+   "iqs_moyen": 15.22,
+   "ans_0a1m": 3.6
+  },
+  {
+   "essence": "EPB",
+   "region": "4f",
+   "type_eco": "RS52",
+   "n_tiges": 23,
+   "iqs_moyen": 17.87,
+   "ans_0a1m": 2.88
+  },
+  {
+   "essence": "EPR",
+   "region": "4f",
+   "type_eco": "RS52",
+   "n_tiges": 30,
+   "iqs_moyen": 17.72,
+   "ans_0a1m": 2.54
+  },
+  {
+   "essence": "PET",
+   "region": "4f",
+   "type_eco": "MS12",
+   "n_tiges": 24,
+   "iqs_moyen": 21.0,
+   "ans_0a1m": 1.01
+  },
+  {
+   "essence": "PET",
+   "region": "4f",
+   "type_eco": "MS22",
+   "n_tiges": 84,
+   "iqs_moyen": 18.15,
+   "ans_0a1m": 2.82
+  },
+  {
+   "essence": "PET",
+   "region": "4f",
+   "type_eco": "MS23",
+   "n_tiges": 84,
+   "iqs_moyen": 18.15,
+   "ans_0a1m": 2.82
+  },
+  {
+   "essence": "PET",
+   "region": "4f",
+   "type_eco": "MS62",
+   "n_tiges": 84,
+   "iqs_moyen": 18.15,
+   "ans_0a1m": 2.82
+  },
+  {
+   "essence": "PET",
+   "region": "4f",
+   "type_eco": "MS63",
+   "n_tiges": 84,
+   "iqs_moyen": 18.15,
+   "ans_0a1m": 2.82
+  },
+  {
+   "essence": "SAB",
+   "region": "4f",
+   "type_eco": "FE32",
+   "n_tiges": 84,
+   "iqs_moyen": 18.15,
+   "ans_0a1m": 2.82
+  },
+  {
+   "essence": "SAB",
+   "region": "4f",
+   "type_eco": "FE42",
+   "n_tiges": 84,
+   "iqs_moyen": 18.15,
+   "ans_0a1m": 2.82
+  },
+  {
+   "essence": "SAB",
+   "region": "4f",
+   "type_eco": "MS12",
+   "n_tiges": 84,
+   "iqs_moyen": 18.15,
+   "ans_0a1m": 2.82
+  },
+  {
+   "essence": "SAB",
+   "region": "4f",
+   "type_eco": "MS15",
+   "n_tiges": 43,
+   "iqs_moyen": 18.85,
+   "ans_0a1m": 2.78
+  },
+  {
+   "essence": "SAB",
+   "region": "4f",
+   "type_eco": "MS22",
+   "n_tiges": 27,
+   "iqs_moyen": 16.66,
+   "ans_0a1m": 3.15
+  },
+  {
+   "essence": "SAB",
+   "region": "4f",
+   "type_eco": "RS12",
+   "n_tiges": 27,
+   "iqs_moyen": 14.12,
+   "ans_0a1m": 3.81
+  },
+  {
+   "essence": "SAB",
+   "region": "4f",
+   "type_eco": "RS15",
+   "n_tiges": 18,
+   "iqs_moyen": 15.86,
+   "ans_0a1m": 3.42
+  },
+  {
+   "essence": "SAB",
+   "region": "4f",
+   "type_eco": "RS52",
+   "n_tiges": 26,
+   "iqs_moyen": 15.25,
+   "ans_0a1m": 3.47
+  },
+  {
+   "essence": "SAB",
+   "region": "4f",
+   "type_eco": "RS55",
+   "n_tiges": 17,
+   "iqs_moyen": 16.03,
+   "ans_0a1m": 3.31
+  },
+  {
+   "essence": "THO",
+   "region": "4f",
+   "type_eco": "RS12",
+   "n_tiges": 26,
+   "iqs_moyen": 15.48,
+   "ans_0a1m": 2.47
+  },
+  {
+   "essence": "THO",
+   "region": "4f",
+   "type_eco": "RS15",
+   "n_tiges": 26,
+   "iqs_moyen": 15.48,
+   "ans_0a1m": 2.47
+  },
+  {
+   "essence": "BOP",
+   "region": "4g",
+   "type_eco": "MS13",
+   "n_tiges": 26,
+   "iqs_moyen": 15.48,
+   "ans_0a1m": 2.47
+  },
+  {
+   "essence": "EPB",
+   "region": "4g",
+   "type_eco": "MS12",
+   "n_tiges": 16,
+   "iqs_moyen": 19.97,
+   "ans_0a1m": 1.37
+  },
+  {
+   "essence": "EPB",
+   "region": "4g",
+   "type_eco": "MS13",
+   "n_tiges": 27,
+   "iqs_moyen": 19.17,
+   "ans_0a1m": 1.55
+  },
+  {
+   "essence": "PEG",
+   "region": "4g",
+   "type_eco": "MS63",
+   "n_tiges": 27,
+   "iqs_moyen": 19.17,
+   "ans_0a1m": 1.55
+  },
+  {
+   "essence": "PET",
+   "region": "4g",
+   "type_eco": "MS63",
+   "n_tiges": 27,
+   "iqs_moyen": 19.17,
+   "ans_0a1m": 1.55
+  },
+  {
+   "essence": "SAB",
+   "region": "4g",
+   "type_eco": "MS13",
+   "n_tiges": 24,
+   "iqs_moyen": 16.4,
+   "ans_0a1m": 3.26
+  },
+  {
+   "essence": "SAB",
+   "region": "4g",
+   "type_eco": "MS23",
+   "n_tiges": 19,
+   "iqs_moyen": 15.32,
+   "ans_0a1m": 3.39
+  },
+  {
+   "essence": "SAB",
+   "region": "4g",
+   "type_eco": "MS26",
+   "n_tiges": 19,
+   "iqs_moyen": 15.32,
+   "ans_0a1m": 3.39
+  },
+  {
+   "essence": "SAB",
+   "region": "4g",
+   "type_eco": "RS16",
+   "n_tiges": 27,
+   "iqs_moyen": 14.23,
+   "ans_0a1m": 3.92
+  },
+  {
+   "essence": "THO",
+   "region": "4g",
+   "type_eco": "RS16",
+   "n_tiges": 19,
+   "iqs_moyen": 11.09,
+   "ans_0a1m": 4.83
+  },
+  {
+   "essence": "BOP",
+   "region": "4h",
+   "type_eco": "MS13",
+   "n_tiges": 25,
+   "iqs_moyen": 16.24,
+   "ans_0a1m": 1.39
+  },
+  {
+   "essence": "EPB",
+   "region": "4h",
+   "type_eco": "MS13",
+   "n_tiges": 20,
+   "iqs_moyen": 19.52,
+   "ans_0a1m": 1.45
+  },
+  {
+   "essence": "PET",
+   "region": "4h",
+   "type_eco": "MS23",
+   "n_tiges": 24,
+   "iqs_moyen": 21.59,
+   "ans_0a1m": 1.76
+  },
+  {
+   "essence": "SAB",
+   "region": "4h",
+   "type_eco": "MS13",
+   "n_tiges": 27,
+   "iqs_moyen": 16.88,
+   "ans_0a1m": 2.83
+  },
+  {
+   "essence": "SAB",
+   "region": "4h",
+   "type_eco": "MS23",
+   "n_tiges": 18,
+   "iqs_moyen": 14.17,
+   "ans_0a1m": 3.88
+  },
+  {
+   "essence": "SAB",
+   "region": "4h",
+   "type_eco": "MS26",
+   "n_tiges": 22,
+   "iqs_moyen": 13.68,
+   "ans_0a1m": 4.05
+  },
+  {
+   "essence": "EPB",
+   "region": "5a",
+   "type_eco": "MS23",
+   "n_tiges": 21,
+   "iqs_moyen": 17.96,
+   "ans_0a1m": 3.09
+  },
+  {
+   "essence": "EPN",
+   "region": "5a",
+   "type_eco": "ME13",
+   "n_tiges": 25,
+   "iqs_moyen": 14.89,
+   "ans_0a1m": 1.96
+  },
+  {
+   "essence": "EPN",
+   "region": "5a",
+   "type_eco": "ME16",
+   "n_tiges": 23,
+   "iqs_moyen": 12.13,
+   "ans_0a1m": 2.12
+  },
+  {
+   "essence": "EPN",
+   "region": "5a",
+   "type_eco": "RE39",
+   "n_tiges": 21,
+   "iqs_moyen": 11.91,
+   "ans_0a1m": 2.2
+  },
+  {
+   "essence": "PET",
+   "region": "5a",
+   "type_eco": "ME13",
+   "n_tiges": 25,
+   "iqs_moyen": 19.5,
+   "ans_0a1m": 2.7
+  },
+  {
+   "essence": "PET",
+   "region": "5a",
+   "type_eco": "MS23",
+   "n_tiges": 29,
+   "iqs_moyen": 20.45,
+   "ans_0a1m": 2.2
+  },
+  {
+   "essence": "PET",
+   "region": "5a",
+   "type_eco": "MS26",
+   "n_tiges": 25,
+   "iqs_moyen": 21.94,
+   "ans_0a1m": 2.09
+  },
+  {
+   "essence": "SAB",
+   "region": "5a",
+   "type_eco": "MS23",
+   "n_tiges": 31,
+   "iqs_moyen": 19.25,
+   "ans_0a1m": 1.25
+  },
+  {
+   "essence": "SAB",
+   "region": "5a",
+   "type_eco": "MS26",
+   "n_tiges": 25,
+   "iqs_moyen": 18.27,
+   "ans_0a1m": 1.33
+  },
+  {
+   "essence": "BOP",
+   "region": "5b",
+   "type_eco": "MS22",
+   "n_tiges": 25,
+   "iqs_moyen": 17.18,
+   "ans_0a1m": 1.15
+  },
+  {
+   "essence": "EPB",
+   "region": "5b",
+   "type_eco": "MS22",
+   "n_tiges": 19,
+   "iqs_moyen": 13.06,
+   "ans_0a1m": 4.41
+  },
+  {
+   "essence": "EPN",
+   "region": "5b",
+   "type_eco": "RE21",
+   "n_tiges": 38,
+   "iqs_moyen": 13.88,
+   "ans_0a1m": 3.72
+  },
+  {
+   "essence": "EPN",
+   "region": "5b",
+   "type_eco": "RE22",
+   "n_tiges": 40,
+   "iqs_moyen": 14.55,
+   "ans_0a1m": 3.59
+  },
+  {
+   "essence": "EPN",
+   "region": "5b",
+   "type_eco": "RE25",
+   "n_tiges": 30,
+   "iqs_moyen": 14.49,
+   "ans_0a1m": 3.64
+  },
+  {
+   "essence": "EPN",
+   "region": "5b",
+   "type_eco": "RS22",
+   "n_tiges": 42,
+   "iqs_moyen": 16.07,
+   "ans_0a1m": 3.14
+  },
+  {
+   "essence": "PET",
+   "region": "5b",
+   "type_eco": "MS22",
+   "n_tiges": 25,
+   "iqs_moyen": 19.87,
+   "ans_0a1m": 1.02
+  },
+  {
+   "essence": "PIG",
+   "region": "5b",
+   "type_eco": "RE21",
+   "n_tiges": 56,
+   "iqs_moyen": 15.78,
+   "ans_0a1m": 2.81
+  },
+  {
+   "essence": "PIG",
+   "region": "5b",
+   "type_eco": "RE22",
+   "n_tiges": 40,
+   "iqs_moyen": 16.11,
+   "ans_0a1m": 2.84
+  },
+  {
+   "essence": "PIG",
+   "region": "5b",
+   "type_eco": "RE25",
+   "n_tiges": 15,
+   "iqs_moyen": 14.16,
+   "ans_0a1m": 3.13
+  },
+  {
+   "essence": "PIG",
+   "region": "5b",
+   "type_eco": "RS22",
+   "n_tiges": 19,
+   "iqs_moyen": 17.32,
+   "ans_0a1m": 2.67
+  },
+  {
+   "essence": "SAB",
+   "region": "5b",
+   "type_eco": "MS22",
+   "n_tiges": 48,
+   "iqs_moyen": 18.08,
+   "ans_0a1m": 2.55
+  },
+  {
+   "essence": "SAB",
+   "region": "5b",
+   "type_eco": "RS22",
+   "n_tiges": 29,
+   "iqs_moyen": 15.29,
+   "ans_0a1m": 3.25
+  },
+  {
+   "essence": "BOP",
+   "region": "5c",
+   "type_eco": "MS22",
+   "n_tiges": 27,
+   "iqs_moyen": 15.89,
+   "ans_0a1m": 1.58
+  },
+  {
+   "essence": "BOP",
+   "region": "5c",
+   "type_eco": "RS22",
+   "n_tiges": 25,
+   "iqs_moyen": 13.9,
+   "ans_0a1m": 1.98
+  },
+  {
+   "essence": "EPB",
+   "region": "5c",
+   "type_eco": "MS22",
+   "n_tiges": 26,
+   "iqs_moyen": 16.52,
+   "ans_0a1m": 1.48
+  },
+  {
+   "essence": "EPN",
+   "region": "5c",
+   "type_eco": "MS22",
+   "n_tiges": 15,
+   "iqs_moyen": 15.47,
+   "ans_0a1m": 3.42
+  },
+  {
+   "essence": "EPN",
+   "region": "5c",
+   "type_eco": "RE20",
+   "n_tiges": 33,
+   "iqs_moyen": 13.04,
+   "ans_0a1m": 3.81
+  },
+  {
+   "essence": "EPN",
+   "region": "5c",
+   "type_eco": "RE21",
+   "n_tiges": 35,
+   "iqs_moyen": 14.18,
+   "ans_0a1m": 3.79
+  },
+  {
+   "essence": "EPN",
+   "region": "5c",
+   "type_eco": "RE22",
+   "n_tiges": 50,
+   "iqs_moyen": 14.17,
+   "ans_0a1m": 3.59
+  },
+  {
+   "essence": "EPN",
+   "region": "5c",
+   "type_eco": "RE25",
+   "n_tiges": 23,
+   "iqs_moyen": 13.04,
+   "ans_0a1m": 4.17
+  },
+  {
+   "essence": "EPN",
+   "region": "5c",
+   "type_eco": "RE39",
+   "n_tiges": 30,
+   "iqs_moyen": 11.87,
+   "ans_0a1m": 4.69
+  },
+  {
+   "essence": "EPN",
+   "region": "5c",
+   "type_eco": "RS22",
+   "n_tiges": 32,
+   "iqs_moyen": 14.76,
+   "ans_0a1m": 3.48
+  },
+  {
+   "essence": "PET",
+   "region": "5c",
+   "type_eco": "MS12",
+   "n_tiges": 25,
+   "iqs_moyen": 18.49,
+   "ans_0a1m": 1.4
+  },
+  {
+   "essence": "PET",
+   "region": "5c",
+   "type_eco": "MS22",
+   "n_tiges": 35,
+   "iqs_moyen": 19.29,
+   "ans_0a1m": 1.34
+  },
+  {
+   "essence": "PIG",
+   "region": "5c",
+   "type_eco": "RE20",
+   "n_tiges": 28,
+   "iqs_moyen": 13.2,
+   "ans_0a1m": 3.88
+  },
+  {
+   "essence": "PIG",
+   "region": "5c",
+   "type_eco": "RE21",
+   "n_tiges": 30,
+   "iqs_moyen": 16.12,
+   "ans_0a1m": 2.81
+  },
+  {
+   "essence": "PIG",
+   "region": "5c",
+   "type_eco": "RE22",
+   "n_tiges": 38,
+   "iqs_moyen": 15.46,
+   "ans_0a1m": 2.91
+  },
+  {
+   "essence": "PIG",
+   "region": "5c",
+   "type_eco": "RS22",
+   "n_tiges": 22,
+   "iqs_moyen": 15.03,
+   "ans_0a1m": 3.2
+  },
+  {
+   "essence": "SAB",
+   "region": "5c",
+   "type_eco": "MS22",
+   "n_tiges": 29,
+   "iqs_moyen": 16.75,
+   "ans_0a1m": 3.23
+  },
+  {
+   "essence": "SAB",
+   "region": "5c",
+   "type_eco": "RS22",
+   "n_tiges": 26,
+   "iqs_moyen": 13.17,
+   "ans_0a1m": 3.73
+  },
+  {
+   "essence": "BOP",
+   "region": "5d",
+   "type_eco": "MS12",
+   "n_tiges": 23,
+   "iqs_moyen": 15.09,
+   "ans_0a1m": 2.45
+  },
+  {
+   "essence": "BOP",
+   "region": "5d",
+   "type_eco": "MS22",
+   "n_tiges": 31,
+   "iqs_moyen": 16.79,
+   "ans_0a1m": 2.53
+  },
+  {
+   "essence": "BOP",
+   "region": "5d",
+   "type_eco": "RS22",
+   "n_tiges": 29,
+   "iqs_moyen": 15.32,
+   "ans_0a1m": 2.8
+  },
+  {
+   "essence": "EPB",
+   "region": "5d",
+   "type_eco": "MS12",
+   "n_tiges": 34,
+   "iqs_moyen": 17.53,
+   "ans_0a1m": 1.38
+  },
+  {
+   "essence": "EPB",
+   "region": "5d",
+   "type_eco": "MS22",
+   "n_tiges": 26,
+   "iqs_moyen": 16.88,
+   "ans_0a1m": 1.51
+  },
+  {
+   "essence": "EPN",
+   "region": "5d",
+   "type_eco": "RE20",
+   "n_tiges": 32,
+   "iqs_moyen": 15.09,
+   "ans_0a1m": 3.4
+  },
+  {
+   "essence": "EPN",
+   "region": "5d",
+   "type_eco": "RE21",
+   "n_tiges": 25,
+   "iqs_moyen": 15.4,
+   "ans_0a1m": 3.47
+  },
+  {
+   "essence": "EPN",
+   "region": "5d",
+   "type_eco": "RE22",
+   "n_tiges": 26,
+   "iqs_moyen": 14.8,
+   "ans_0a1m": 3.5
+  },
+  {
+   "essence": "EPN",
+   "region": "5d",
+   "type_eco": "RS22",
+   "n_tiges": 34,
+   "iqs_moyen": 15.73,
+   "ans_0a1m": 3.26
+  },
+  {
+   "essence": "PET",
+   "region": "5d",
+   "type_eco": "MS12",
+   "n_tiges": 25,
+   "iqs_moyen": 19.01,
+   "ans_0a1m": 2.12
+  },
+  {
+   "essence": "PET",
+   "region": "5d",
+   "type_eco": "MS22",
+   "n_tiges": 30,
+   "iqs_moyen": 19.58,
+   "ans_0a1m": 2.19
+  },
+  {
+   "essence": "PET",
+   "region": "5d",
+   "type_eco": "RS22",
+   "n_tiges": 25,
+   "iqs_moyen": 17.58,
+   "ans_0a1m": 2.64
+  },
+  {
+   "essence": "PIG",
+   "region": "5d",
+   "type_eco": "RE20",
+   "n_tiges": 29,
+   "iqs_moyen": 15.1,
+   "ans_0a1m": 1.74
+  },
+  {
+   "essence": "PIG",
+   "region": "5d",
+   "type_eco": "RE21",
+   "n_tiges": 25,
+   "iqs_moyen": 15.98,
+   "ans_0a1m": 1.28
+  },
+  {
+   "essence": "PIG",
+   "region": "5d",
+   "type_eco": "RE22",
+   "n_tiges": 24,
+   "iqs_moyen": 14.07,
+   "ans_0a1m": 2.07
+  },
+  {
+   "essence": "SAB",
+   "region": "5d",
+   "type_eco": "MS12",
+   "n_tiges": 35,
+   "iqs_moyen": 18.16,
+   "ans_0a1m": 2.78
+  },
+  {
+   "essence": "SAB",
+   "region": "5d",
+   "type_eco": "MS22",
+   "n_tiges": 36,
+   "iqs_moyen": 17.62,
+   "ans_0a1m": 2.78
+  },
+  {
+   "essence": "SAB",
+   "region": "5d",
+   "type_eco": "RS22",
+   "n_tiges": 29,
+   "iqs_moyen": 15.39,
+   "ans_0a1m": 3.27
+  },
+  {
+   "essence": "BOP",
+   "region": "5e",
+   "type_eco": "MS22",
+   "n_tiges": 25,
+   "iqs_moyen": 13.27,
+   "ans_0a1m": 2.02
+  },
+  {
+   "essence": "BOP",
+   "region": "5f",
+   "type_eco": "MS22",
+   "n_tiges": 25,
+   "iqs_moyen": 11.83,
+   "ans_0a1m": 2.27
+  },
+  {
+   "essence": "EPB",
+   "region": "5e",
+   "type_eco": "MS12",
+   "n_tiges": 25,
+   "iqs_moyen": 19.03,
+   "ans_0a1m": 2.72
+  },
+  {
+   "essence": "EPB",
+   "region": "5f",
+   "type_eco": "MS12",
+   "n_tiges": 16,
+   "iqs_moyen": 15.04,
+   "ans_0a1m": 3.6
+  },
+  {
+   "essence": "EPB",
+   "region": "5e",
+   "type_eco": "MS20",
+   "n_tiges": 20,
+   "iqs_moyen": 13.0,
+   "ans_0a1m": 4.05
+  },
+  {
+   "essence": "EPB",
+   "region": "5f",
+   "type_eco": "MS20",
+   "n_tiges": 20,
+   "iqs_moyen": 13.0,
+   "ans_0a1m": 4.05
+  },
+  {
+   "essence": "EPB",
+   "region": "5e",
+   "type_eco": "MS22",
+   "n_tiges": 20,
+   "iqs_moyen": 13.0,
+   "ans_0a1m": 4.05
+  },
+  {
+   "essence": "EPB",
+   "region": "5e",
+   "type_eco": "MS22",
+   "n_tiges": 23,
+   "iqs_moyen": 13.49,
+   "ans_0a1m": 4.01
+  },
+  {
+   "essence": "EPB",
+   "region": "5f",
+   "type_eco": "MS22",
+   "n_tiges": 23,
+   "iqs_moyen": 13.49,
+   "ans_0a1m": 4.01
+  },
+  {
+   "essence": "EPB",
+   "region": "5f",
+   "type_eco": "MS22",
+   "n_tiges": 23,
+   "iqs_moyen": 13.49,
+   "ans_0a1m": 4.01
+  },
+  {
+   "essence": "EPN",
+   "region": "5e",
+   "type_eco": "RS20",
+   "n_tiges": 27,
+   "iqs_moyen": 12.43,
+   "ans_0a1m": 3.02
+  },
+  {
+   "essence": "EPN",
+   "region": "5f",
+   "type_eco": "RS20",
+   "n_tiges": 27,
+   "iqs_moyen": 12.43,
+   "ans_0a1m": 3.02
+  },
+  {
+   "essence": "EPN",
+   "region": "5e",
+   "type_eco": "RS22",
+   "n_tiges": 27,
+   "iqs_moyen": 12.43,
+   "ans_0a1m": 3.02
+  },
+  {
+   "essence": "EPN",
+   "region": "5f",
+   "type_eco": "RS22",
+   "n_tiges": 27,
+   "iqs_moyen": 12.43,
+   "ans_0a1m": 3.02
+  },
+  {
+   "essence": "EPN",
+   "region": "5e",
+   "type_eco": "RS22",
+   "n_tiges": 27,
+   "iqs_moyen": 12.43,
+   "ans_0a1m": 3.02
+  },
+  {
+   "essence": "EPN",
+   "region": "5f",
+   "type_eco": "RS22",
+   "n_tiges": 27,
+   "iqs_moyen": 12.43,
+   "ans_0a1m": 3.02
+  },
+  {
+   "essence": "EPN",
+   "region": "5f",
+   "type_eco": "RS22M",
+   "n_tiges": 27,
+   "iqs_moyen": 12.43,
+   "ans_0a1m": 3.02
+  },
+  {
+   "essence": "EPN",
+   "region": "5e",
+   "type_eco": "RS25",
+   "n_tiges": 29,
+   "iqs_moyen": 13.35,
+   "ans_0a1m": 3.82
+  },
+  {
+   "essence": "EPN",
+   "region": "5f",
+   "type_eco": "RS25",
+   "n_tiges": 24,
+   "iqs_moyen": 18.04,
+   "ans_0a1m": 2.65
+  },
+  {
+   "essence": "SAB",
+   "region": "5e",
+   "type_eco": "MS12",
+   "n_tiges": 24,
+   "iqs_moyen": 18.04,
+   "ans_0a1m": 2.65
+  },
+  {
+   "essence": "SAB",
+   "region": "5f",
+   "type_eco": "MS12",
+   "n_tiges": 13,
+   "iqs_moyen": 15.37,
+   "ans_0a1m": 3.59
+  },
+  {
+   "essence": "SAB",
+   "region": "5e",
+   "type_eco": "MS20",
+   "n_tiges": 19,
+   "iqs_moyen": 11.27,
+   "ans_0a1m": 4.29
+  },
+  {
+   "essence": "SAB",
+   "region": "5f",
+   "type_eco": "MS20",
+   "n_tiges": 19,
+   "iqs_moyen": 11.27,
+   "ans_0a1m": 4.29
+  },
+  {
+   "essence": "SAB",
+   "region": "5e",
+   "type_eco": "MS22",
+   "n_tiges": 19,
+   "iqs_moyen": 11.27,
+   "ans_0a1m": 4.29
+  },
+  {
+   "essence": "SAB",
+   "region": "5e",
+   "type_eco": "MS22",
+   "n_tiges": 80,
+   "iqs_moyen": 14.37,
+   "ans_0a1m": 3.67
+  },
+  {
+   "essence": "SAB",
+   "region": "5f",
+   "type_eco": "MS22",
+   "n_tiges": 30,
+   "iqs_moyen": 11.19,
+   "ans_0a1m": 5.04
+  },
+  {
+   "essence": "SAB",
+   "region": "5e",
+   "type_eco": "RS20",
+   "n_tiges": 15,
+   "iqs_moyen": 13.4,
+   "ans_0a1m": 2.99
+  },
+  {
+   "essence": "SAB",
+   "region": "5f",
+   "type_eco": "RS20",
+   "n_tiges": 15,
+   "iqs_moyen": 13.4,
+   "ans_0a1m": 2.99
+  },
+  {
+   "essence": "SAB",
+   "region": "5e",
+   "type_eco": "RS22",
+   "n_tiges": 15,
+   "iqs_moyen": 13.4,
+   "ans_0a1m": 2.99
+  },
+  {
+   "essence": "SAB",
+   "region": "5f",
+   "type_eco": "RS22",
+   "n_tiges": 15,
+   "iqs_moyen": 13.4,
+   "ans_0a1m": 2.99
+  },
+  {
+   "essence": "SAB",
+   "region": "5e",
+   "type_eco": "RS22",
+   "n_tiges": 15,
+   "iqs_moyen": 13.4,
+   "ans_0a1m": 2.99
+  },
+  {
+   "essence": "SAB",
+   "region": "5f",
+   "type_eco": "RS22",
+   "n_tiges": 15,
+   "iqs_moyen": 13.4,
+   "ans_0a1m": 2.99
+  },
+  {
+   "essence": "SAB",
+   "region": "5f",
+   "type_eco": "RS22M",
+   "n_tiges": 15,
+   "iqs_moyen": 13.4,
+   "ans_0a1m": 2.99
+  },
+  {
+   "essence": "SAB",
+   "region": "5e",
+   "type_eco": "RS25",
+   "n_tiges": 25,
+   "iqs_moyen": 14.72,
+   "ans_0a1m": 1.57
+  },
+  {
+   "essence": "SAB",
+   "region": "5f",
+   "type_eco": "RS25",
+   "n_tiges": 25,
+   "iqs_moyen": 14.72,
+   "ans_0a1m": 1.57
+  },
+  {
+   "essence": "BOP",
+   "region": "5g",
+   "type_eco": "MS22",
+   "n_tiges": 25,
+   "iqs_moyen": 14.72,
+   "ans_0a1m": 1.57
+  },
+  {
+   "essence": "EPB",
+   "region": "5g",
+   "type_eco": "MS22",
+   "n_tiges": 29,
+   "iqs_moyen": 15.24,
+   "ans_0a1m": 3.58
+  },
+  {
+   "essence": "EPN",
+   "region": "5g",
+   "type_eco": "RE21",
+   "n_tiges": 23,
+   "iqs_moyen": 12.42,
+   "ans_0a1m": 4.26
+  },
+  {
+   "essence": "EPN",
+   "region": "5g",
+   "type_eco": "RS20",
+   "n_tiges": 17,
+   "iqs_moyen": 12.3,
+   "ans_0a1m": 4.33
+  },
+  {
+   "essence": "EPN",
+   "region": "5g",
+   "type_eco": "RS21",
+   "n_tiges": 23,
+   "iqs_moyen": 13.72,
+   "ans_0a1m": 3.82
+  },
+  {
+   "essence": "EPN",
+   "region": "5g",
+   "type_eco": "RS22",
+   "n_tiges": 39,
+   "iqs_moyen": 13.98,
+   "ans_0a1m": 3.81
+  },
+  {
+   "essence": "PET",
+   "region": "5g",
+   "type_eco": "MS22",
+   "n_tiges": 25,
+   "iqs_moyen": 21.57,
+   "ans_0a1m": 0.84
+  },
+  {
+   "essence": "PIG",
+   "region": "5g",
+   "type_eco": "RE21",
+   "n_tiges": 36,
+   "iqs_moyen": 14.4,
+   "ans_0a1m": 3.17
+  },
+  {
+   "essence": "SAB",
+   "region": "5g",
+   "type_eco": "MS22",
+   "n_tiges": 40,
+   "iqs_moyen": 15.52,
+   "ans_0a1m": 3.39
+  },
+  {
+   "essence": "SAB",
+   "region": "5g",
+   "type_eco": "RS20",
+   "n_tiges": 19,
+   "iqs_moyen": 12.51,
+   "ans_0a1m": 4.35
+  },
+  {
+   "essence": "SAB",
+   "region": "5g",
+   "type_eco": "RS21",
+   "n_tiges": 15,
+   "iqs_moyen": 12.38,
+   "ans_0a1m": 4.31
+  },
+  {
+   "essence": "SAB",
+   "region": "5g",
+   "type_eco": "RS22",
+   "n_tiges": 37,
+   "iqs_moyen": 11.94,
+   "ans_0a1m": 4.76
+  },
+  {
+   "essence": "BOP",
+   "region": "5h",
+   "type_eco": "MS23",
+   "n_tiges": 23,
+   "iqs_moyen": 12.36,
+   "ans_0a1m": 3.77
+  },
+  {
+   "essence": "EPB",
+   "region": "5h",
+   "type_eco": "MS13",
+   "n_tiges": 30,
+   "iqs_moyen": 18.46,
+   "ans_0a1m": 1.44
+  },
+  {
+   "essence": "EPB",
+   "region": "5h",
+   "type_eco": "MS23",
+   "n_tiges": 35,
+   "iqs_moyen": 16.3,
+   "ans_0a1m": 1.86
+  },
+  {
+   "essence": "EPN",
+   "region": "5h",
+   "type_eco": "RE23",
+   "n_tiges": 23,
+   "iqs_moyen": 14.37,
+   "ans_0a1m": 3.54
+  },
+  {
+   "essence": "EPN",
+   "region": "5h",
+   "type_eco": "RS23",
+   "n_tiges": 21,
+   "iqs_moyen": 14.04,
+   "ans_0a1m": 3.73
+  },
+  {
+   "essence": "PET",
+   "region": "5h",
+   "type_eco": "MS23",
+   "n_tiges": 29,
+   "iqs_moyen": 19.2,
+   "ans_0a1m": 1.44
+  },
+  {
+   "essence": "SAB",
+   "region": "5h",
+   "type_eco": "MS13",
+   "n_tiges": 35,
+   "iqs_moyen": 16.72,
+   "ans_0a1m": 2.97
+  },
+  {
+   "essence": "SAB",
+   "region": "5h",
+   "type_eco": "MS23",
+   "n_tiges": 39,
+   "iqs_moyen": 14.38,
+   "ans_0a1m": 3.69
+  },
+  {
+   "essence": "SAB",
+   "region": "5h",
+   "type_eco": "MS26",
+   "n_tiges": 22,
+   "iqs_moyen": 15.38,
+   "ans_0a1m": 3.5
+  },
+  {
+   "essence": "SAB",
+   "region": "5h",
+   "type_eco": "RS13",
+   "n_tiges": 22,
+   "iqs_moyen": 13.66,
+   "ans_0a1m": 4.05
+  },
+  {
+   "essence": "SAB",
+   "region": "5h",
+   "type_eco": "RS23",
+   "n_tiges": 20,
+   "iqs_moyen": 12.64,
+   "ans_0a1m": 4.17
+  },
+  {
+   "essence": "BOP",
+   "region": "5i",
+   "type_eco": "MS23",
+   "n_tiges": 23,
+   "iqs_moyen": 13.42,
+   "ans_0a1m": 1.64
+  },
+  {
+   "essence": "EPB",
+   "region": "5i",
+   "type_eco": "MS23",
+   "n_tiges": 22,
+   "iqs_moyen": 13.57,
+   "ans_0a1m": 3.95
+  },
+  {
+   "essence": "EPB",
+   "region": "5i",
+   "type_eco": "MS43",
+   "n_tiges": 15,
+   "iqs_moyen": 8.67,
+   "ans_0a1m": 6.68
+  },
+  {
+   "essence": "EPN",
+   "region": "5i",
+   "type_eco": "RS23",
+   "n_tiges": 22,
+   "iqs_moyen": 12.92,
+   "ans_0a1m": 4.18
+  },
+  {
+   "essence": "PET",
+   "region": "5i",
+   "type_eco": "RS23",
+   "n_tiges": 25,
+   "iqs_moyen": 18.62,
+   "ans_0a1m": 0.99
+  },
+  {
+   "essence": "SAB",
+   "region": "5i",
+   "type_eco": "MS23",
+   "n_tiges": 29,
+   "iqs_moyen": 13.26,
+   "ans_0a1m": 3.89
+  },
+  {
+   "essence": "SAB",
+   "region": "5i",
+   "type_eco": "MS26",
+   "n_tiges": 26,
+   "iqs_moyen": 13.83,
+   "ans_0a1m": 3.76
+  },
+  {
+   "essence": "SAB",
+   "region": "5i",
+   "type_eco": "MS43",
+   "n_tiges": 23,
+   "iqs_moyen": 8.43,
+   "ans_0a1m": 6.8
+  },
+  {
+   "essence": "SAB",
+   "region": "5i",
+   "type_eco": "RS23",
+   "n_tiges": 15,
+   "iqs_moyen": 11.8,
+   "ans_0a1m": 4.71
+  },
+  {
+   "essence": "EPB",
+   "region": "5j",
+   "type_eco": "RB52",
+   "n_tiges": 22,
+   "iqs_moyen": 11.4,
+   "ans_0a1m": 4.64
+  },
+  {
+   "essence": "EPB",
+   "region": "5j",
+   "type_eco": "RB53",
+   "n_tiges": 39,
+   "iqs_moyen": 12.5,
+   "ans_0a1m": 4.41
+  },
+  {
+   "essence": "EPN",
+   "region": "5j",
+   "type_eco": "RE38",
+   "n_tiges": 20,
+   "iqs_moyen": 7.51,
+   "ans_0a1m": 7.53
+  },
+  {
+   "essence": "EPN",
+   "region": "5j",
+   "type_eco": "RS23",
+   "n_tiges": 20,
+   "iqs_moyen": 11.41,
+   "ans_0a1m": 4.79
+  },
+  {
+   "essence": "SAB",
+   "region": "5j",
+   "type_eco": "RB52",
+   "n_tiges": 24,
+   "iqs_moyen": 9.04,
+   "ans_0a1m": 6.42
+  },
+  {
+   "essence": "SAB",
+   "region": "5j",
+   "type_eco": "RS23",
+   "n_tiges": 23,
+   "iqs_moyen": 9.66,
+   "ans_0a1m": 5.56
+  },
+  {
+   "essence": "EPN",
+   "region": "6a",
+   "type_eco": "ME13",
+   "n_tiges": 28,
+   "iqs_moyen": 14.3,
+   "ans_0a1m": 2.12
+  },
+  {
+   "essence": "EPN",
+   "region": "6a",
+   "type_eco": "ME16",
+   "n_tiges": 25,
+   "iqs_moyen": 14.43,
+   "ans_0a1m": 2.14
+  },
+  {
+   "essence": "EPN",
+   "region": "6a",
+   "type_eco": "RE21",
+   "n_tiges": 25,
+   "iqs_moyen": 13.94,
+   "ans_0a1m": 1.75
+  },
+  {
+   "essence": "EPN",
+   "region": "6a",
+   "type_eco": "RE22",
+   "n_tiges": 25,
+   "iqs_moyen": 11.49,
+   "ans_0a1m": 2.23
+  },
+  {
+   "essence": "EPN",
+   "region": "6a",
+   "type_eco": "RE37",
+   "n_tiges": 16,
+   "iqs_moyen": 13.01,
+   "ans_0a1m": 2.16
+  },
+  {
+   "essence": "EPN",
+   "region": "6a",
+   "type_eco": "RS22",
+   "n_tiges": 24,
+   "iqs_moyen": 15.31,
+   "ans_0a1m": 1.94
+  },
+  {
+   "essence": "EPN",
+   "region": "6a",
+   "type_eco": "RS26",
+   "n_tiges": 18,
+   "iqs_moyen": 13.38,
+   "ans_0a1m": 2.18
+  },
+  {
+   "essence": "PET",
+   "region": "6a",
+   "type_eco": "ME13",
+   "n_tiges": 28,
+   "iqs_moyen": 17.0,
+   "ans_0a1m": 2.79
+  },
+  {
+   "essence": "PET",
+   "region": "6a",
+   "type_eco": "ME16",
+   "n_tiges": 21,
+   "iqs_moyen": 17.65,
+   "ans_0a1m": 2.42
+  },
+  {
+   "essence": "PIG",
+   "region": "6a",
+   "type_eco": "RE21",
+   "n_tiges": 28,
+   "iqs_moyen": 15.13,
+   "ans_0a1m": 2.78
+  },
+  {
+   "essence": "PIG",
+   "region": "6a",
+   "type_eco": "RE22",
+   "n_tiges": 25,
+   "iqs_moyen": 13.33,
+   "ans_0a1m": 3.23
+  },
+  {
+   "essence": "SAB",
+   "region": "6a",
+   "type_eco": "RS22",
+   "n_tiges": 15,
+   "iqs_moyen": 18.18,
+   "ans_0a1m": 2.89
+  },
+  {
+   "essence": "EPN",
+   "region": "6c",
+   "type_eco": "RE21",
+   "n_tiges": 25,
+   "iqs_moyen": 13.22,
+   "ans_0a1m": 1.94
+  },
+  {
+   "essence": "EPN",
+   "region": "6c",
+   "type_eco": "RE22",
+   "n_tiges": 19,
+   "iqs_moyen": 14.58,
+   "ans_0a1m": 1.7
+  },
+  {
+   "essence": "EPN",
+   "region": "6c",
+   "type_eco": "RE24",
+   "n_tiges": 25,
+   "iqs_moyen": 13.49,
+   "ans_0a1m": 2.06
+  },
+  {
+   "essence": "EPN",
+   "region": "6c",
+   "type_eco": "RE25",
+   "n_tiges": 29,
+   "iqs_moyen": 13.42,
+   "ans_0a1m": 3.92
+  },
+  {
+   "essence": "EPN",
+   "region": "6c",
+   "type_eco": "RS22",
+   "n_tiges": 25,
+   "iqs_moyen": 15.21,
+   "ans_0a1m": 1.81
+  },
+  {
+   "essence": "PIG",
+   "region": "6c",
+   "type_eco": "RE21",
+   "n_tiges": 31,
+   "iqs_moyen": 13.37,
+   "ans_0a1m": 3.65
+  },
+  {
+   "essence": "PIG",
+   "region": "6c",
+   "type_eco": "RE22",
+   "n_tiges": 19,
+   "iqs_moyen": 14.74,
+   "ans_0a1m": 3.38
+  },
+  {
+   "essence": "PIG",
+   "region": "6c",
+   "type_eco": "RE24",
+   "n_tiges": 25,
+   "iqs_moyen": 13.55,
+   "ans_0a1m": 3.81
+  },
+  {
+   "essence": "SAB",
+   "region": "6c",
+   "type_eco": "RS22",
+   "n_tiges": 18,
+   "iqs_moyen": 13.89,
+   "ans_0a1m": 3.65
+  },
+  {
+   "essence": "EPN",
+   "region": "6d",
+   "type_eco": "RE11",
+   "n_tiges": 25,
+   "iqs_moyen": 11.41,
+   "ans_0a1m": 2.32
+  },
+  {
+   "essence": "EPN",
+   "region": "6d",
+   "type_eco": "RE12",
+   "n_tiges": 25,
+   "iqs_moyen": 11.79,
+   "ans_0a1m": 2.33
+  },
+  {
+   "essence": "EPN",
+   "region": "6d",
+   "type_eco": "RE21",
+   "n_tiges": 25,
+   "iqs_moyen": 13.01,
+   "ans_0a1m": 1.95
+  },
+  {
+   "essence": "EPN",
+   "region": "6d",
+   "type_eco": "RE22",
+   "n_tiges": 25,
+   "iqs_moyen": 13.1,
+   "ans_0a1m": 2.03
+  },
+  {
+   "essence": "EPN",
+   "region": "6d",
+   "type_eco": "RE25",
+   "n_tiges": 25,
+   "iqs_moyen": 11.18,
+   "ans_0a1m": 2.68
+  },
+  {
+   "essence": "PIG",
+   "region": "6d",
+   "type_eco": "RE11",
+   "n_tiges": 25,
+   "iqs_moyen": 11.63,
+   "ans_0a1m": 1.78
+  },
+  {
+   "essence": "PIG",
+   "region": "6d",
+   "type_eco": "RE12",
+   "n_tiges": 25,
+   "iqs_moyen": 11.98,
+   "ans_0a1m": 1.84
+  },
+  {
+   "essence": "PIG",
+   "region": "6d",
+   "type_eco": "RE21",
+   "n_tiges": 25,
+   "iqs_moyen": 12.62,
+   "ans_0a1m": 1.63
+  },
+  {
+   "essence": "PIG",
+   "region": "6d",
+   "type_eco": "RE22",
+   "n_tiges": 25,
+   "iqs_moyen": 12.64,
+   "ans_0a1m": 1.87
+  },
+  {
+   "essence": "BOP",
+   "region": "6e",
+   "type_eco": "MS22",
+   "n_tiges": 24,
+   "iqs_moyen": 15.04,
+   "ans_0a1m": 2.77
+  },
+  {
+   "essence": "BOP",
+   "region": "6e",
+   "type_eco": "RS22",
+   "n_tiges": 30,
+   "iqs_moyen": 14.19,
+   "ans_0a1m": 2.95
+  },
+  {
+   "essence": "EPB",
+   "region": "6e",
+   "type_eco": "MS22",
+   "n_tiges": 32,
+   "iqs_moyen": 15.5,
+   "ans_0a1m": 1.7
+  },
+  {
+   "essence": "EPN",
+   "region": "6e",
+   "type_eco": "RE21",
+   "n_tiges": 35,
+   "iqs_moyen": 12.08,
+   "ans_0a1m": 2.33
+  },
+  {
+   "essence": "EPN",
+   "region": "6e",
+   "type_eco": "RE22",
+   "n_tiges": 29,
+   "iqs_moyen": 12.82,
+   "ans_0a1m": 2.19
+  },
+  {
+   "essence": "EPN",
+   "region": "6e",
+   "type_eco": "RE25",
+   "n_tiges": 20,
+   "iqs_moyen": 11.15,
+   "ans_0a1m": 3.08
+  },
+  {
+   "essence": "EPN",
+   "region": "6e",
+   "type_eco": "RE37",
+   "n_tiges": 24,
+   "iqs_moyen": 10.02,
+   "ans_0a1m": 3.61
+  },
+  {
+   "essence": "EPN",
+   "region": "6e",
+   "type_eco": "RE39",
+   "n_tiges": 15,
+   "iqs_moyen": 9.68,
+   "ans_0a1m": 3.98
+  },
+  {
+   "essence": "EPN",
+   "region": "6e",
+   "type_eco": "RS22",
+   "n_tiges": 19,
+   "iqs_moyen": 15.66,
+   "ans_0a1m": 1.83
+  },
+  {
+   "essence": "PET",
+   "region": "6e",
+   "type_eco": "MS22",
+   "n_tiges": 25,
+   "iqs_moyen": 18.75,
+   "ans_0a1m": 1.36
+  },
+  {
+   "essence": "PET",
+   "region": "6e",
+   "type_eco": "RS22",
+   "n_tiges": 23,
+   "iqs_moyen": 16.82,
+   "ans_0a1m": 1.51
+  },
+  {
+   "essence": "PIG",
+   "region": "6e",
+   "type_eco": "RE21",
+   "n_tiges": 34,
+   "iqs_moyen": 13.57,
+   "ans_0a1m": 1.54
+  },
+  {
+   "essence": "PIG",
+   "region": "6e",
+   "type_eco": "RE22",
+   "n_tiges": 34,
+   "iqs_moyen": 14.22,
+   "ans_0a1m": 1.57
+  },
+  {
+   "essence": "SAB",
+   "region": "6e",
+   "type_eco": "MS22",
+   "n_tiges": 26,
+   "iqs_moyen": 15.39,
+   "ans_0a1m": 3.55
+  },
+  {
+   "essence": "SAB",
+   "region": "6e",
+   "type_eco": "RS22",
+   "n_tiges": 28,
+   "iqs_moyen": 16.0,
+   "ans_0a1m": 3.11
+  },
+  {
+   "essence": "EPN",
+   "region": "6f",
+   "type_eco": "RE21",
+   "n_tiges": 25,
+   "iqs_moyen": 11.12,
+   "ans_0a1m": 2.21
+  },
+  {
+   "essence": "EPN",
+   "region": "6f",
+   "type_eco": "RE22",
+   "n_tiges": 32,
+   "iqs_moyen": 11.2,
+   "ans_0a1m": 2.49
+  },
+  {
+   "essence": "EPN",
+   "region": "6f",
+   "type_eco": "RE25",
+   "n_tiges": 23,
+   "iqs_moyen": 9.23,
+   "ans_0a1m": 3.66
+  },
+  {
+   "essence": "EPN",
+   "region": "6f",
+   "type_eco": "RE39",
+   "n_tiges": 22,
+   "iqs_moyen": 7.98,
+   "ans_0a1m": 6.78
+  },
+  {
+   "essence": "EPN",
+   "region": "6f",
+   "type_eco": "RS22",
+   "n_tiges": 25,
+   "iqs_moyen": 13.09,
+   "ans_0a1m": 2.37
+  },
+  {
+   "essence": "PIG",
+   "region": "6f",
+   "type_eco": "RE21",
+   "n_tiges": 24,
+   "iqs_moyen": 11.39,
+   "ans_0a1m": 2.3
+  },
+  {
+   "essence": "SAB",
+   "region": "6f",
+   "type_eco": "RS22",
+   "n_tiges": 21,
+   "iqs_moyen": 12.52,
+   "ans_0a1m": 2.46
+  },
+  {
+   "essence": "EPN",
+   "region": "6g",
+   "type_eco": "RE11",
+   "n_tiges": 29,
+   "iqs_moyen": 9.14,
+   "ans_0a1m": 3.29
+  },
+  {
+   "essence": "EPN",
+   "region": "6g",
+   "type_eco": "RE12",
+   "n_tiges": 25,
+   "iqs_moyen": 9.6,
+   "ans_0a1m": 2.33
+  },
+  {
+   "essence": "EPN",
+   "region": "6g",
+   "type_eco": "RE21",
+   "n_tiges": 24,
+   "iqs_moyen": 11.04,
+   "ans_0a1m": 2.21
+  },
+  {
+   "essence": "EPN",
+   "region": "6g",
+   "type_eco": "RE22",
+   "n_tiges": 34,
+   "iqs_moyen": 9.99,
+   "ans_0a1m": 2.91
+  },
+  {
+   "essence": "EPN",
+   "region": "6g",
+   "type_eco": "RS22",
+   "n_tiges": 30,
+   "iqs_moyen": 10.53,
+   "ans_0a1m": 5.13
+  },
+  {
+   "essence": "EPN",
+   "region": "6g",
+   "type_eco": "RS22M",
+   "n_tiges": 30,
+   "iqs_moyen": 10.53,
+   "ans_0a1m": 5.13
+  },
+  {
+   "essence": "PIG",
+   "region": "6g",
+   "type_eco": "RE11",
+   "n_tiges": 30,
+   "iqs_moyen": 10.53,
+   "ans_0a1m": 5.13
+  },
+  {
+   "essence": "PIG",
+   "region": "6g",
+   "type_eco": "RE12",
+   "n_tiges": 25,
+   "iqs_moyen": 10.55,
+   "ans_0a1m": 4.85
+  },
+  {
+   "essence": "PIG",
+   "region": "6g",
+   "type_eco": "RE21",
+   "n_tiges": 25,
+   "iqs_moyen": 11.75,
+   "ans_0a1m": 4.47
+  },
+  {
+   "essence": "PIG",
+   "region": "6g",
+   "type_eco": "RE22",
+   "n_tiges": 30,
+   "iqs_moyen": 10.41,
+   "ans_0a1m": 4.8
+  },
+  {
+   "essence": "EPN",
+   "region": "6h",
+   "type_eco": "RE21",
+   "n_tiges": 25,
+   "iqs_moyen": 10.71,
+   "ans_0a1m": 4.74
+  },
+  {
+   "essence": "EPN",
+   "region": "6h",
+   "type_eco": "RE22",
+   "n_tiges": 28,
+   "iqs_moyen": 10.84,
+   "ans_0a1m": 4.5
+  },
+  {
+   "essence": "EPN",
+   "region": "6h",
+   "type_eco": "RS20",
+   "n_tiges": 24,
+   "iqs_moyen": 12.84,
+   "ans_0a1m": 4.45
+  },
+  {
+   "essence": "EPN",
+   "region": "6h",
+   "type_eco": "RS22",
+   "n_tiges": 26,
+   "iqs_moyen": 11.67,
+   "ans_0a1m": 4.74
+  },
+  {
+   "essence": "EPN",
+   "region": "6h",
+   "type_eco": "RS22M",
+   "n_tiges": 25,
+   "iqs_moyen": 14.35,
+   "ans_0a1m": 3.47
+  },
+  {
+   "essence": "EPN",
+   "region": "6h",
+   "type_eco": "RS25",
+   "n_tiges": 24,
+   "iqs_moyen": 12.09,
+   "ans_0a1m": 4.47
+  },
+  {
+   "essence": "PIG",
+   "region": "6h",
+   "type_eco": "RE21",
+   "n_tiges": 25,
+   "iqs_moyen": 12.26,
+   "ans_0a1m": 3.81
+  },
+  {
+   "essence": "SAB",
+   "region": "6h",
+   "type_eco": "MS22",
+   "n_tiges": 23,
+   "iqs_moyen": 12.08,
+   "ans_0a1m": 4.46
+  },
+  {
+   "essence": "SAB",
+   "region": "6h",
+   "type_eco": "RS20",
+   "n_tiges": 25,
+   "iqs_moyen": 10.38,
+   "ans_0a1m": 5.14
+  },
+  {
+   "essence": "SAB",
+   "region": "6h",
+   "type_eco": "RS22",
+   "n_tiges": 24,
+   "iqs_moyen": 11.76,
+   "ans_0a1m": 4.43
+  },
+  {
+   "essence": "SAB",
+   "region": "6h",
+   "type_eco": "RS22M",
+   "n_tiges": 25,
+   "iqs_moyen": 14.26,
+   "ans_0a1m": 3.61
+  },
+  {
+   "essence": "SAB",
+   "region": "6h",
+   "type_eco": "RS25",
+   "n_tiges": 29,
+   "iqs_moyen": 11.23,
+   "ans_0a1m": 4.81
+  },
+  {
+   "essence": "EPB",
+   "region": "6i",
+   "type_eco": "MS22",
+   "n_tiges": 25,
+   "iqs_moyen": 13.11,
+   "ans_0a1m": 4.17
+  },
+  {
+   "essence": "EPN",
+   "region": "6i",
+   "type_eco": "RE21",
+   "n_tiges": 27,
+   "iqs_moyen": 11.92,
+   "ans_0a1m": 2.17
+  },
+  {
+   "essence": "EPN",
+   "region": "6i",
+   "type_eco": "RE22",
+   "n_tiges": 30,
+   "iqs_moyen": 11.13,
+   "ans_0a1m": 2.58
+  },
+  {
+   "essence": "EPN",
+   "region": "6i",
+   "type_eco": "RS20",
+   "n_tiges": 25,
+   "iqs_moyen": 12.42,
+   "ans_0a1m": 2.31
+  },
+  {
+   "essence": "EPN",
+   "region": "6i",
+   "type_eco": "RS22",
+   "n_tiges": 23,
+   "iqs_moyen": 11.26,
+   "ans_0a1m": 2.62
+  },
+  {
+   "essence": "EPN",
+   "region": "6i",
+   "type_eco": "RS22M",
+   "n_tiges": 27,
+   "iqs_moyen": 11.86,
+   "ans_0a1m": 2.38
+  },
+  {
+   "essence": "EPN",
+   "region": "6i",
+   "type_eco": "RS25",
+   "n_tiges": 25,
+   "iqs_moyen": 12.0,
+   "ans_0a1m": 2.41
+  },
+  {
+   "essence": "PIG",
+   "region": "6i",
+   "type_eco": "RE21",
+   "n_tiges": 25,
+   "iqs_moyen": 13.37,
+   "ans_0a1m": 3.21
+  },
+  {
+   "essence": "SAB",
+   "region": "6i",
+   "type_eco": "MS22",
+   "n_tiges": 22,
+   "iqs_moyen": 13.68,
+   "ans_0a1m": 3.63
+  },
+  {
+   "essence": "SAB",
+   "region": "6i",
+   "type_eco": "RS20",
+   "n_tiges": 18,
+   "iqs_moyen": 11.87,
+   "ans_0a1m": 4.73
+  },
+  {
+   "essence": "SAB",
+   "region": "6i",
+   "type_eco": "RS22M",
+   "n_tiges": 23,
+   "iqs_moyen": 9.9,
+   "ans_0a1m": 5.82
+  },
+  {
+   "essence": "SAB",
+   "region": "6i",
+   "type_eco": "RS25",
+   "n_tiges": 26,
+   "iqs_moyen": 11.42,
+   "ans_0a1m": 4.77
+  },
+  {
+   "essence": "EPB",
+   "region": "6j",
+   "type_eco": "MS22",
+   "n_tiges": 31,
+   "iqs_moyen": 14.08,
+   "ans_0a1m": 3.81
+  },
+  {
+   "essence": "EPN",
+   "region": "6j",
+   "type_eco": "RE20",
+   "n_tiges": 27,
+   "iqs_moyen": 9.11,
+   "ans_0a1m": 3.37
+  },
+  {
+   "essence": "EPN",
+   "region": "6j",
+   "type_eco": "RE21",
+   "n_tiges": 25,
+   "iqs_moyen": 9.85,
+   "ans_0a1m": 3.28
+  },
+  {
+   "essence": "EPN",
+   "region": "6j",
+   "type_eco": "RS20",
+   "n_tiges": 32,
+   "iqs_moyen": 11.26,
+   "ans_0a1m": 2.72
+  },
+  {
+   "essence": "EPN",
+   "region": "6j",
+   "type_eco": "RS22",
+   "n_tiges": 26,
+   "iqs_moyen": 11.48,
+   "ans_0a1m": 3.13
+  },
+  {
+   "essence": "EPN",
+   "region": "6j",
+   "type_eco": "RS22M",
+   "n_tiges": 30,
+   "iqs_moyen": 11.93,
+   "ans_0a1m": 3.0
+  },
+  {
+   "essence": "EPN",
+   "region": "6j",
+   "type_eco": "RS25",
+   "n_tiges": 24,
+   "iqs_moyen": 10.59,
+   "ans_0a1m": 3.09
+  },
+  {
+   "essence": "SAB",
+   "region": "6j",
+   "type_eco": "MS22",
+   "n_tiges": 20,
+   "iqs_moyen": 12.66,
+   "ans_0a1m": 4.45
+  },
+  {
+   "essence": "SAB",
+   "region": "6j",
+   "type_eco": "RS20",
+   "n_tiges": 28,
+   "iqs_moyen": 11.34,
+   "ans_0a1m": 5.07
+  },
+  {
+   "essence": "SAB",
+   "region": "6j",
+   "type_eco": "RS22",
+   "n_tiges": 26,
+   "iqs_moyen": 11.8,
+   "ans_0a1m": 4.03
+  },
+  {
+   "essence": "SAB",
+   "region": "6j",
+   "type_eco": "RS22M",
+   "n_tiges": 21,
+   "iqs_moyen": 12.31,
+   "ans_0a1m": 4.54
+  },
+  {
+   "essence": "EPN",
+   "region": "6k",
+   "type_eco": "RE21",
+   "n_tiges": 25,
+   "iqs_moyen": 9.87,
+   "ans_0a1m": 2.67
+  },
+  {
+   "essence": "EPN",
+   "region": "6k",
+   "type_eco": "RE22",
+   "n_tiges": 28,
+   "iqs_moyen": 9.5,
+   "ans_0a1m": 2.95
+  },
+  {
+   "essence": "EPN",
+   "region": "6k",
+   "type_eco": "RE25",
+   "n_tiges": 28,
+   "iqs_moyen": 8.17,
+   "ans_0a1m": 4.58
+  },
+  {
+   "essence": "EPN",
+   "region": "6k",
+   "type_eco": "RS22",
+   "n_tiges": 28,
+   "iqs_moyen": 11.56,
+   "ans_0a1m": 2.46
+  },
+  {
+   "essence": "PIG",
+   "region": "6k",
+   "type_eco": "RE21",
+   "n_tiges": 24,
+   "iqs_moyen": 10.08,
+   "ans_0a1m": 4.73
+  },
+  {
+   "essence": "PIG",
+   "region": "6k",
+   "type_eco": "RE22",
+   "n_tiges": 28,
+   "iqs_moyen": 10.25,
+   "ans_0a1m": 4.83
+  },
+  {
+   "essence": "SAB",
+   "region": "6k",
+   "type_eco": "RS22",
+   "n_tiges": 22,
+   "iqs_moyen": 10.92,
+   "ans_0a1m": 4.86
+  },
+  {
+   "essence": "EPN",
+   "region": "6l",
+   "type_eco": "RE22",
+   "n_tiges": 24,
+   "iqs_moyen": 12.31,
+   "ans_0a1m": 4.14
+  },
+  {
+   "essence": "EPN",
+   "region": "6l",
+   "type_eco": "RE25",
+   "n_tiges": 23,
+   "iqs_moyen": 7.3,
+   "ans_0a1m": 8.48
+  },
+  {
+   "essence": "EPN",
+   "region": "6l",
+   "type_eco": "RS22",
+   "n_tiges": 23,
+   "iqs_moyen": 11.66,
+   "ans_0a1m": 4.69
+  },
+  {
+   "essence": "EPN",
+   "region": "6l",
+   "type_eco": "RS22M",
+   "n_tiges": 25,
+   "iqs_moyen": 11.97,
+   "ans_0a1m": 4.52
+  },
+  {
+   "essence": "EPN",
+   "region": "6l",
+   "type_eco": "RS25",
+   "n_tiges": 23,
+   "iqs_moyen": 9.15,
+   "ans_0a1m": 6.02
+  },
+  {
+   "essence": "SAB",
+   "region": "6l",
+   "type_eco": "RS22",
+   "n_tiges": 24,
+   "iqs_moyen": 11.04,
+   "ans_0a1m": 4.97
+  },
+  {
+   "essence": "SAB",
+   "region": "6l",
+   "type_eco": "RS22M",
+   "n_tiges": 24,
+   "iqs_moyen": 12.46,
+   "ans_0a1m": 4.2
+  },
+  {
+   "essence": "SAB",
+   "region": "6l",
+   "type_eco": "RS25",
+   "n_tiges": 23,
+   "iqs_moyen": 9.71,
+   "ans_0a1m": 5.1
+  },
+  {
+   "essence": "EPN",
+   "region": "6n",
+   "type_eco": "RS22",
+   "n_tiges": 16,
+   "iqs_moyen": 8.07,
+   "ans_0a1m": 1.17
+  },
+  {
+   "essence": "SAB",
+   "region": "6n",
+   "type_eco": "MS22",
+   "n_tiges": 20,
+   "iqs_moyen": 9.3,
+   "ans_0a1m": 6.12
+  },
+  {
+   "essence": "SAB",
+   "region": "6n",
+   "type_eco": "RS22",
+   "n_tiges": 14,
+   "iqs_moyen": 6.5,
+   "ans_0a1m": 9.17
+  }
+ ]
+}
