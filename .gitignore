@@ -20,3 +20,7 @@ scripts/.copy-watermark
 
 # archives de transfert de design (gros binaires, hors depot)
 *.zip
+
+# harnais de test local de la carte (contient des donnees reelles de client - JAMAIS committer)
+src/pages/dev-carte-test.astro
+src/pages/_dev_carte_644.json

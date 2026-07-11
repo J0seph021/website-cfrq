@@ -40,7 +40,7 @@ const COULEUR_PEUPLEMENT_CONTOUR = "#ffffff"; // contour pointillé blanc entre 
 const LAYERS_PAR_COUCHE: Record<string, string[]> = {
   peuplement: ["peuplement-fill", "peuplement-line"],
   travaux: ["travaux-fill"],
-  prescription: ["prescription-casing", "prescription-line"],
+  prescription: ["prescription-hit", "prescription-casing", "prescription-line"],
   propriete: ["propriete-line"],
 };
 
@@ -123,6 +123,20 @@ export default function CarteForet({ data, bbox, documents = [] }: Props) {
       cooperativeGestures: estPetitEcran(), // un doigt fait défiler la page, deux doigts déplacent la carte
     });
     carte.current = map;
+    // Poignée de diagnostic, activée seulement si une page de test pose le drapeau.
+    if ((window as any).__carteDebugOn) ((window as any).__cartesDebug ??= []).push(map);
+    // Les erreurs MapLibre (style, source, WebGL) sont silencieuses par défaut :
+    // les journaliser permet de diagnostiquer à distance un incident chez un client.
+    map.on("error", (e: any) => console.error("[carte] erreur MapLibre:", e?.error?.message ?? e));
+    const canvas = map.getCanvas();
+    canvas.addEventListener("webglcontextlost", (ev) => {
+      console.error("[carte] contexte WebGL perdu — récupération en attente");
+      ev.preventDefault(); // requis pour que le navigateur autorise la restauration
+    });
+    canvas.addEventListener("webglcontextrestored", () => {
+      console.warn("[carte] contexte WebGL restauré — repeinture");
+      map.triggerRepaint();
+    });
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
     // Bouton « plein écran » maison (superposition CSS) : fonctionne aussi sur iPhone,
     // contrairement à l'API Fullscreen native que Safari iOS n'expose pas.
@@ -163,6 +177,14 @@ export default function CarteForet({ data, bbox, documents = [] }: Props) {
         filter: ["==", ["get", "couche"], "travaux"],
         paint: { "fill-color": COULEUR_TRAVAUX, "fill-opacity": 0.4, "fill-outline-color": COULEUR_TRAVAUX },
       });
+      // Zone cliquable des prescriptions : remplissage invisible sur tout le polygone.
+      // Sans lui, la seule cible de clic était la ligne pointillée de 2 px — quasi
+      // impossible à viser (retour focus group : « plus capable de sélectionner »).
+      map.addLayer({
+        id: "prescription-hit", source: "foret", type: "fill",
+        filter: ["==", ["get", "couche"], "prescription"],
+        paint: { "fill-color": "#000000", "fill-opacity": 0 },
+      });
       // Prescriptions en noir, avec un liseré blanc dessous pour rester lisibles sur l'imagerie.
       map.addLayer({
         id: "prescription-casing", source: "foret", type: "line",
@@ -185,7 +207,8 @@ export default function CarteForet({ data, bbox, documents = [] }: Props) {
       }
 
       const popup = new maplibregl.Popup({ closeButton: true, maxWidth: "290px" });
-      const cibles = ["peuplement-fill", "travaux-fill", "prescription-line", "propriete-line"];
+      // Ordre = priorité de popup quand les polygones se superposent (le dernier gagne).
+      const cibles = ["peuplement-fill", "travaux-fill", "prescription-hit", "propriete-line"];
       for (const couche of cibles) {
         map.on("mouseenter", couche, () => (map.getCanvas().style.cursor = "pointer"));
         map.on("mouseleave", couche, () => { map.getCanvas().style.cursor = ""; });
