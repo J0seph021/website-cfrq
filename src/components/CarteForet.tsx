@@ -31,9 +31,18 @@ const PALETTE = [
   "#26a69a", "#9ccc65", "#827717", "#5d8a3a", "#4e6a2f",
 ];
 
-const COULEUR_TRAVAUX = "#e8a13a";
-const COULEUR_PRESCRIPTION = "#1f6feb";
+const COULEUR_TRAVAUX = "#e03131";      // rouge : travaux réalisés (demande focus group)
+const COULEUR_PRESCRIPTION = "#111111"; // noir : prescriptions, pour ne plus les confondre avec les ruisseaux
 const COULEUR_PROPRIETE = "#ffffff";
+const COULEUR_PEUPLEMENT_CONTOUR = "#ffffff"; // contour pointillé blanc entre peuplements
+
+// Couches MapLibre rattachées à chaque couche logique (pour un affichage/masquage groupé).
+const LAYERS_PAR_COUCHE: Record<string, string[]> = {
+  peuplement: ["peuplement-fill", "peuplement-line"],
+  travaux: ["travaux-fill"],
+  prescription: ["prescription-casing", "prescription-line"],
+  propriete: ["propriete-line"],
+};
 
 const estPetitEcran = () => typeof window !== "undefined" && window.innerWidth < 640;
 
@@ -54,6 +63,7 @@ function couleurAppellations(features: any[]): { expr: any; legende: { nom: stri
 
 export default function CarteForet({ data, bbox, documents = [] }: Props) {
   const conteneur = useRef<HTMLDivElement>(null);
+  const enveloppe = useRef<HTMLDivElement>(null);
   const carte = useRef<maplibregl.Map | null>(null);
   const [visibles, setVisibles] = useState<Record<string, boolean>>({
     peuplement: true, travaux: true, prescription: true, propriete: true,
@@ -61,6 +71,8 @@ export default function CarteForet({ data, bbox, documents = [] }: Props) {
   // Sur mobile, les panneaux démarrent repliés pour laisser voir la carte.
   const [couchesOuvert, setCouchesOuvert] = useState(!estPetitEcran());
   const [legendeOuverte, setLegendeOuverte] = useState(!estPetitEcran());
+  const [pleinEcran, setPleinEcran] = useState(false);
+  const [astuce, setAstuce] = useState(true);
 
   const { expr: couleurPeuplement, legende } = useMemo(
     () => couleurAppellations(data?.features ?? []),
@@ -112,6 +124,25 @@ export default function CarteForet({ data, bbox, documents = [] }: Props) {
     });
     carte.current = map;
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
+    // Bouton « plein écran » maison (superposition CSS) : fonctionne aussi sur iPhone,
+    // contrairement à l'API Fullscreen native que Safari iOS n'expose pas.
+    const ctrlPleinEcran: any = {
+      onAdd() {
+        const wrap = document.createElement("div");
+        wrap.className = "maplibregl-ctrl maplibregl-ctrl-group";
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.title = "Plein écran";
+        btn.setAttribute("aria-label", "Afficher la carte en plein écran");
+        btn.style.fontSize = "15px";
+        btn.textContent = "⛶";
+        btn.addEventListener("click", () => setPleinEcran((p) => !p));
+        wrap.appendChild(btn);
+        return wrap;
+      },
+      onRemove() {},
+    };
+    map.addControl(ctrlPleinEcran, "top-right");
     if (!estPetitEcran()) map.scrollZoom.disable();
 
     map.on("load", () => {
@@ -119,12 +150,24 @@ export default function CarteForet({ data, bbox, documents = [] }: Props) {
       map.addLayer({
         id: "peuplement-fill", source: "foret", type: "fill",
         filter: ["==", ["get", "couche"], "peuplement"],
-        paint: { "fill-color": couleurPeuplement, "fill-opacity": 0.55, "fill-outline-color": "#1b5e20" },
+        paint: { "fill-color": couleurPeuplement, "fill-opacity": 0.55 },
+      });
+      // Contour pointillé blanc : sépare nettement des peuplements tous en nuances de vert.
+      map.addLayer({
+        id: "peuplement-line", source: "foret", type: "line",
+        filter: ["==", ["get", "couche"], "peuplement"],
+        paint: { "line-color": COULEUR_PEUPLEMENT_CONTOUR, "line-width": 1.3, "line-opacity": 0.85, "line-dasharray": [2.5, 1.5] },
       });
       map.addLayer({
         id: "travaux-fill", source: "foret", type: "fill",
         filter: ["==", ["get", "couche"], "travaux"],
-        paint: { "fill-color": COULEUR_TRAVAUX, "fill-opacity": 0.45 },
+        paint: { "fill-color": COULEUR_TRAVAUX, "fill-opacity": 0.4, "fill-outline-color": COULEUR_TRAVAUX },
+      });
+      // Prescriptions en noir, avec un liseré blanc dessous pour rester lisibles sur l'imagerie.
+      map.addLayer({
+        id: "prescription-casing", source: "foret", type: "line",
+        filter: ["==", ["get", "couche"], "prescription"],
+        paint: { "line-color": "#ffffff", "line-width": 4, "line-opacity": 0.55 },
       });
       map.addLayer({
         id: "prescription-line", source: "foret", type: "line",
@@ -152,6 +195,8 @@ export default function CarteForet({ data, bbox, documents = [] }: Props) {
           popup.setLngLat(e.lngLat).setHTML(contenuPopup(p, docsRef.current)).addTo(map);
         });
       }
+      // Masque l'astuce dès la première interaction avec la carte.
+      map.on("click", () => setAstuce(false));
     });
 
     const onResize = () => map.resize();
@@ -164,12 +209,27 @@ export default function CarteForet({ data, bbox, documents = [] }: Props) {
       const nv = { ...v, [id]: !v[id] };
       const map = carte.current;
       if (map) {
-        const l = id === "prescription" ? "prescription-line" : id === "propriete" ? "propriete-line" : `${id}-fill`;
-        if (map.getLayer(l)) map.setLayoutProperty(l, "visibility", nv[id] ? "visible" : "none");
+        for (const l of LAYERS_PAR_COUCHE[id] ?? []) {
+          if (map.getLayer(l)) map.setLayoutProperty(l, "visibility", nv[id] ? "visible" : "none");
+        }
       }
       return nv;
     });
   }
+
+  // Plein écran (superposition CSS) : redimensionne la carte, verrouille le défilement
+  // de la page, active la molette pour zoomer, et laisse Échap pour en sortir.
+  useEffect(() => {
+    const map = carte.current;
+    if (!map) return;
+    const t = setTimeout(() => map.resize(), 60);
+    document.body.style.overflow = pleinEcran ? "hidden" : "";
+    if (pleinEcran) map.scrollZoom.enable();
+    else if (!estPetitEcran()) map.scrollZoom.disable();
+    const onEchap = (e: KeyboardEvent) => { if (e.key === "Escape") setPleinEcran(false); };
+    if (pleinEcran) window.addEventListener("keydown", onEchap);
+    return () => { clearTimeout(t); document.body.style.overflow = ""; window.removeEventListener("keydown", onEchap); };
+  }, [pleinEcran]);
 
   const pastille = (id: string) => {
     if (id === "travaux") return { background: COULEUR_TRAVAUX, border: "none" };
@@ -179,8 +239,12 @@ export default function CarteForet({ data, bbox, documents = [] }: Props) {
   };
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-black/5 bg-cfrq-deep">
-      <div ref={conteneur} className="h-[68vh] min-h-[460px] w-full sm:h-[560px]" />
+    <div
+      ref={enveloppe}
+      className={`relative overflow-hidden bg-cfrq-deep ${pleinEcran ? "fixed inset-0 z-[60] rounded-none" : "h-[68vh] min-h-[460px] rounded-2xl border border-black/5 sm:h-[560px]"}`}
+    >
+      {/* className statique : MapLibre ajoute ses propres classes ici, un re-render React ne doit pas les écraser. */}
+      <div ref={conteneur} className="h-full w-full" />
 
       {/* Couches (repliable) */}
       <div className="absolute left-2 top-2 sm:left-3 sm:top-3">
@@ -234,6 +298,18 @@ export default function CarteForet({ data, bbox, documents = [] }: Props) {
               <span aria-hidden>🎨</span> Légende
             </button>
           )}
+        </div>
+      )}
+
+      {/* Astuce de découverte : cliquer un peuplement n'est pas évident (focus group). */}
+      {astuce && (
+        <div className="absolute bottom-8 left-2 max-w-[240px] sm:bottom-3 sm:left-3">
+          <div className="flex items-start gap-2 rounded-xl bg-cfrq-deep/90 px-3 py-2 text-[12.5px] leading-snug text-white shadow-lg backdrop-blur">
+            <span aria-hidden className="mt-px">👆</span>
+            <span>Cliquez un peuplement pour voir son détail : essences, volume, traitement recommandé.</span>
+            <button onClick={() => setAstuce(false)} aria-label="Fermer l'astuce"
+              className="ml-0.5 shrink-0 leading-none text-white/60 hover:text-white">✕</button>
+          </div>
         </div>
       )}
     </div>

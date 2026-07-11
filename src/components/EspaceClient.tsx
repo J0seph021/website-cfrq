@@ -236,6 +236,18 @@ function nomAffiche(nom: string): string {
     .join(" ");
 }
 
+// Année d'un document : date_document est déjà un millésime (« 2018 ») ; repli sur le nom.
+function anneeDoc(doc: Row): string | null {
+  const d = String(doc.date_document ?? "").match(/\b(19|20)\d{2}\b/)?.[0];
+  return d ?? String(doc.nom_document ?? "").match(/\b(19|20)\d{2}\b/)?.[0] ?? null;
+}
+// Titre lisible : prescriptions et rapports sont nommés par un numéro cryptique en base.
+function titreDoc(doc: Row): string {
+  if (doc.type_document === "prescription") return "Prescription sylvicole";
+  if (doc.type_document === "rapport") return "Rapport d'exécution";
+  return String(doc.nom_document ?? "Document");
+}
+
 /* ------------------------------------------------------------------ */
 /* Vue presentationnelle (testable avec des donnees factices).         */
 /* ------------------------------------------------------------------ */
@@ -451,7 +463,19 @@ export function DashboardView({ d, offre = null, onLogout }: { d: Dossier; offre
         d.documents.find((x) => x.reference === no && x.type_document === "rapport")
       : undefined;
 
-  const docsHorsPaf = d.documents.filter((x) => x.type_document !== "paf");
+  // Documents hors PAF, du plus récent au plus ancien : l'année, réclamée au focus group,
+  // est la clé pour s'y retrouver parmi les prescriptions.
+  const docsHorsPaf = useMemo(
+    () =>
+      d.documents
+        .filter((x) => x.type_document !== "paf")
+        .sort(
+          (a, b) =>
+            (anneeDoc(b) ?? "").localeCompare(anneeDoc(a) ?? "") ||
+            String(a.reference ?? "").localeCompare(String(b.reference ?? ""))
+        ),
+    [d.documents]
+  );
 
   // Commande du Portrait (interim: courriel pre-rempli; voir TODO Stripe pour l'achat en ligne).
   const lienCommande = `mailto:${site.courriel}?subject=${encodeURIComponent(
@@ -681,7 +705,9 @@ export function DashboardView({ d, offre = null, onLogout }: { d: Dossier; offre
               ))}
               <li className="flex items-center gap-3 text-[15px]">
                 <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 border-dashed border-cfrq-green/50" aria-hidden></span>
-                <span className="font-medium text-cfrq-leaf">Prochaine étape : {action.cta.toLowerCase()}</span>
+                <a href={action.href} className="font-medium text-cfrq-leaf underline-offset-2 hover:underline">
+                  Prochaine étape : {action.cta.toLowerCase()} <span aria-hidden>→</span>
+                </a>
               </li>
             </ul>
           </section>
@@ -777,7 +803,7 @@ export function DashboardView({ d, offre = null, onLogout }: { d: Dossier; offre
                   </div>
                   <ul className="mt-5 grid gap-2 sm:grid-cols-2">
                     {pafDocs.map((doc) => {
-                      const annee = String(doc.nom_document ?? "").match(/\b(19|20)\d{2}\b/)?.[0];
+                      const annee = anneeDoc(doc);
                       return (
                         <li key={doc.id}>
                           <button onClick={() => ouvrirDoc(doc.storage_path)} disabled={!doc.storage_path}
@@ -852,18 +878,28 @@ export function DashboardView({ d, offre = null, onLogout }: { d: Dossier; offre
             <div className="mt-4 rounded-2xl border border-black/5 bg-white p-6">
               {docsHorsPaf.length > 0 ? (
                 <ul className="divide-y divide-black/5">
-                  {docsHorsPaf.map((doc) => (
-                    <li key={doc.id}>
-                      <button onClick={() => ouvrirDoc(doc.storage_path)} disabled={!doc.storage_path}
-                        className="flex w-full items-center justify-between gap-3 py-3 text-left text-[15px] disabled:cursor-default">
-                        <span className="flex items-center gap-2 font-medium text-cfrq-deep">
-                          {doc.storage_path && <span aria-hidden>📄</span>}
-                          <span className={doc.storage_path ? "hover:underline" : ""}>{doc.nom_document}</span>
-                        </span>
-                        <span className="shrink-0 text-[13px] text-black/50">{doc.taille ?? doc.date_document}</span>
-                      </button>
-                    </li>
-                  ))}
+                  {docsHorsPaf.map((doc) => {
+                    const annee = anneeDoc(doc);
+                    return (
+                      <li key={doc.id}>
+                        <button onClick={() => ouvrirDoc(doc.storage_path)} disabled={!doc.storage_path}
+                          className="flex w-full items-center justify-between gap-3 py-3 text-left text-[15px] disabled:cursor-default">
+                          <span className="flex items-center gap-2">
+                            {doc.storage_path && <span aria-hidden>📄</span>}
+                            <span className="flex flex-col">
+                              <span className={`font-medium text-cfrq-deep ${doc.storage_path ? "hover:underline" : ""}`}>{titreDoc(doc)}</span>
+                              {doc.reference && <span className="text-[12.5px] text-black/45">nº {doc.reference}</span>}
+                            </span>
+                          </span>
+                          {annee ? (
+                            <span className="shrink-0 rounded-full bg-cfrq-tint px-3 py-1 text-[13px] font-medium text-cfrq-leaf">{annee}</span>
+                          ) : (
+                            <span className="shrink-0 text-[13px] text-black/50">{doc.taille ?? doc.date_document}</span>
+                          )}
+                        </button>
+                      </li>
+                    );
+                  })}
                 </ul>
               ) : (
                 <p className="text-[15px] text-black/60">Vos plans et rapports apparaîtront ici.</p>
