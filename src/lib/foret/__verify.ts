@@ -3,6 +3,7 @@
 // 2) peuplements RÉELS tirés de PlaniLogix (eco_pee + eco_dendro.vmb_ha).
 import { analyserPeuplement } from "./index.ts";
 import { volumeAAge, construireCourbe } from "./courbe.ts";
+import { iqsDepuisTypeEco } from "./iqs.ts";
 
 let ok = 0, ko = 0;
 const check = (nom: string, cond: boolean, detail = "") => {
@@ -63,6 +64,20 @@ for (const f of fixtures) {
 }
 check(`${fixtures.length}/${fixtures.length} peuplements résolus (essence+IQS+courbe)`, resolus === fixtures.length, `${resolus} résolus`);
 check("volume prédit dans un facteur 3 du réel pour la majorité", ancrables >= Math.ceil(fixtures.length * 0.7), `${ancrables}/${fixtures.length}`);
+
+console.log("\n== 3. Raffinement par région écologique (SAB RS22 : 6a riche, 6n pauvre) ==");
+const sansRegion = iqsDepuisTypeEco("SAB", "RS22")!;
+const r6a = iqsDepuisTypeEco("SAB", "RS22", "6a")!;
+const r6n = iqsDepuisTypeEco("SAB", "RS22", "6n")!;
+console.log(`  sans région : IQS=${sansRegion.iqs} [${sansRegion.niveau}]`);
+console.log(`  région 6a   : IQS=${r6a.iqs} [${r6a.niveau}]`);
+console.log(`  région 6n   : IQS=${r6n.iqs} [${r6n.niveau}]`);
+check("sans région = moyenne inter-régions (niveau exact, rétrocompatible)", sansRegion.niveau === "exact" && sansRegion.region === null);
+check("région fournie => IQS régional précis (niveau exact_region)", r6a.niveau === "exact_region" && r6n.niveau === "exact_region");
+check("région change réellement l'IQS (6a nettement > 6n)", r6a.iqs - r6n.iqs > 6, `écart ${(r6a.iqs - r6n.iqs).toFixed(1)} m`);
+const v6a = analyserPeuplement({ grEss: "SBSB", typeEco: "RS22", clDens: "B", age: 60, regionEco: "6a" }).pointActuel?.volumePredit ?? 0;
+const v6n = analyserPeuplement({ grEss: "SBSB", typeEco: "RS22", clDens: "B", age: 60, regionEco: "6n" }).pointActuel?.volumePredit ?? 0;
+check("la région propage jusqu'au volume prédit", v6a > v6n + 20, `V(6a)=${v6a} vs V(6n)=${v6n} m³/ha à 60 ans`);
 
 console.log(`\n== Bilan : ${ok} OK, ${ko} KO ==`);
 if (ko > 0) throw new Error(`${ko} vérification(s) en échec`);

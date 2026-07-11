@@ -1,26 +1,45 @@
 // Indice de qualite de station (IQS) a partir du type ecologique.
 // Source : Laflèche et al. (2013), MRNF — IQS par essence et type écologique
-// du Québec méridional. On lit le résumé (IQS moyen par essence x type_eco,
-// moyenné sur les régions écologiques).
+// du Québec méridional.
 //
-// Le rapport n'échantillonne pas tous les couples (essence, type écologique).
-// On applique donc une cascade : exact -> même essence sur le même groupe de
-// végétation (2 premières lettres, ex. MS**) -> autre essence sur le même type
-// -> autre essence sur le même groupe. Le niveau de repli est retourné.
+// L'IQS varie de façon notable d'une région écologique à l'autre (écart médian
+// ≈ 2,8 m, jusqu'à ~12 m, pour un même couple essence/type). Quand la région
+// écologique du peuplement est connue, on lit l'IQS régional (records) ; sinon
+// on retombe sur la moyenne inter-régions (resume).
+//
+// Cascade sans région : exact -> même essence sur le même groupe de végétation
+// (2 lettres, ex. MS**) -> autre essence sur le même type -> autre essence sur
+// le même groupe. Le niveau de repli est retourné.
 import iqsData from "./data/iqs-type-eco.json" with { type: "json" };
 import type { CodePS } from "./especes.ts";
 
 type Rec = { iqs_moyen: number; iqs_min: number; iqs_max: number; ans_0a1m: number; n_stations: number };
 type Resume = Record<string, Record<string, Rec>>;
+type RecordRow = { essence: string; region?: string | null; type_eco: string; iqs_moyen: number; ans_0a1m: number };
 
-const RESUME = (iqsData as { resume: Resume }).resume;
+const DATA = iqsData as { resume: Resume; records: RecordRow[] };
+const RESUME = DATA.resume;
 
-export type NiveauIqs = "exact" | "groupe_vegetation" | "type_autre_essence" | "groupe_autre_essence";
+// Index régional : REGIONAL[essence][type_eco][region] = {iqs, ans}
+const REGIONAL: Record<string, Record<string, Record<string, { iqs: number; ans: number }>>> = {};
+for (const r of DATA.records) {
+  if (!r.region) continue;
+  (REGIONAL[r.essence] ??= {})[r.type_eco] ??= {};
+  REGIONAL[r.essence][r.type_eco][r.region] = { iqs: r.iqs_moyen, ans: r.ans_0a1m };
+}
+
+export type NiveauIqs =
+  | "exact_region"           // essence exacte, type exact, région exacte (meilleur)
+  | "exact"                  // essence exacte, type exact, moyenne inter-régions
+  | "groupe_vegetation"      // même essence, moyenne du groupe de végétation
+  | "type_autre_essence"     // essence voisine, type exact
+  | "groupe_autre_essence";  // essence voisine, groupe de végétation
 
 export type IqsResolu = {
   iqs: number;
   ans0a1m: number;
   niveau: NiveauIqs;
+  region: string | null;
   detail: string;
 };
 
@@ -55,20 +74,38 @@ function moyenneGroupe(essence: string, groupe2: string): Rec | null {
            iqs_max: Math.max(...recs.map((r) => r.iqs_moyen)), ans_0a1m: ans, n_stations: recs.length };
 }
 
-export function iqsDepuisTypeEco(espece: CodePS, typeEco?: string | null): IqsResolu | null {
+export function iqsDepuisTypeEco(
+  espece: CodePS,
+  typeEco?: string | null,
+  regionEco?: string | null,
+): IqsResolu | null {
   if (!typeEco) return null;
   const cands = typesCandidats(typeEco);
   const essences = IQS_PROXY[espece] ?? [espece];
   const groupe2 = cands[cands.length - 1].slice(0, 2);
+  const reg = regionEco?.trim().toLowerCase() || null;
 
-  // 1) exact (essence exacte ou proxy), sur le type précis
+  // 0) région connue : IQS régional précis (essence exacte ou proxy)
+  if (reg) {
+    for (const ess of essences) {
+      for (const ty of cands) {
+        const hit = REGIONAL[ess]?.[ty]?.[reg];
+        if (hit) {
+          return { iqs: round2(hit.iqs), ans0a1m: round1(hit.ans),
+                   niveau: ess === essences[0] ? "exact_region" : "type_autre_essence",
+                   region: reg, detail: `${ess} ${ty} (région ${reg})` };
+        }
+      }
+    }
+  }
+  // 1) exact (essence exacte ou proxy), sur le type précis, moyenne inter-régions
   for (const ess of essences) {
     for (const ty of cands) {
       const r = RESUME[ess]?.[ty];
       if (r) {
         return { iqs: round2(r.iqs_moyen), ans0a1m: round1(r.ans_0a1m),
                  niveau: ess === essences[0] ? "exact" : "type_autre_essence",
-                 detail: `${ess} ${ty}` };
+                 region: null, detail: `${ess} ${ty} (moyenne inter-régions)` };
       }
     }
   }
@@ -78,7 +115,7 @@ export function iqsDepuisTypeEco(espece: CodePS, typeEco?: string | null): IqsRe
     if (g) {
       return { iqs: round2(g.iqs_moyen), ans0a1m: round1(g.ans_0a1m),
                niveau: ess === essences[0] ? "groupe_vegetation" : "groupe_autre_essence",
-               detail: `${ess} ${groupe2}** (moyenne de ${g.n_stations} types)` };
+               region: null, detail: `${ess} ${groupe2}** (moyenne de ${g.n_stations} types)` };
     }
   }
   // 3) toute essence, moyenne du groupe de végétation
@@ -86,7 +123,7 @@ export function iqsDepuisTypeEco(espece: CodePS, typeEco?: string | null): IqsRe
     const g = moyenneGroupe(ess, groupe2);
     if (g) {
       return { iqs: round2(g.iqs_moyen), ans0a1m: round1(g.ans_0a1m),
-               niveau: "groupe_autre_essence", detail: `${ess} ${groupe2}**` };
+               niveau: "groupe_autre_essence", region: null, detail: `${ess} ${groupe2}**` };
     }
   }
   return null;

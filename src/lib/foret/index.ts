@@ -22,6 +22,7 @@ export type EntreePeuplement = {
   clAge?: string | null;      // classe d'âge (ex. "50")
   age?: number | null;        // âge courant explicite (prioritaire s'il est fourni)
   vmbHaReel?: number | null;  // volume marchand réel eco_dendro.vmb_ha (ancrage)
+  regionEco?: string | null;  // région écologique (ex. "4f") — IQS régional précis si fournie
   anneeCourante?: number;     // défaut : année en cours
 };
 
@@ -51,7 +52,7 @@ export type AnalysePeuplement = {
 // Fiabilité globale = combinaison de la correspondance d'essence et du niveau
 // de repli utilisé pour lire l'IQS.
 function fiabilite(conf: Confiance, niveau: NiveauIqs): "bonne" | "moyenne" | "faible" {
-  const iqsBon = niveau === "exact";
+  const iqsBon = niveau === "exact_region" || niveau === "exact";
   const iqsMoyen = niveau === "groupe_vegetation" || niveau === "type_autre_essence";
   if (conf === "direct" && iqsBon) return "bonne";
   if (conf === "direct" && iqsMoyen) return "moyenne";
@@ -89,7 +90,7 @@ export function analyserPeuplement(e: EntreePeuplement): AnalysePeuplement {
     base.message = "Essence non reconnue : impossible d'établir la courbe de croissance.";
     return base;
   }
-  const iqsRes = iqsDepuisTypeEco(espece.ps, e.typeEco);
+  const iqsRes = iqsDepuisTypeEco(espece.ps, e.typeEco, e.regionEco);
   if (!iqsRes) {
     base.message = "Type écologique absent du référentiel IQS : courbe non établie.";
     return base;
