@@ -144,4 +144,6 @@ export function analyserPeuplement(e: EntreePeuplement): AnalysePeuplement {
   return base;
 }
 
+export { projeterScenarios } from "./projection.ts";
+export type { Scenario, Trajectoire, ProjectionScenarios } from "./projection.ts";
 export type { CodePS, Densite, Courbe };

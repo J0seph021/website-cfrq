@@ -1,7 +1,7 @@
 // Harnais de validation Phase 0 (exécuter : node src/lib/foret/__verify.ts).
 // 1) points publiés Pothier-Savard (identité d'interpolation à IQS exact) ;
 // 2) peuplements RÉELS tirés de PlaniLogix (eco_pee + eco_dendro.vmb_ha).
-import { analyserPeuplement } from "./index.ts";
+import { analyserPeuplement, projeterScenarios } from "./index.ts";
 import { volumeAAge, construireCourbe } from "./courbe.ts";
 import { iqsDepuisTypeEco } from "./iqs.ts";
 
@@ -78,6 +78,23 @@ check("région change réellement l'IQS (6a nettement > 6n)", r6a.iqs - r6n.iqs 
 const v6a = analyserPeuplement({ grEss: "SBSB", typeEco: "RS22", clDens: "B", age: 60, regionEco: "6a" }).pointActuel?.volumePredit ?? 0;
 const v6n = analyserPeuplement({ grEss: "SBSB", typeEco: "RS22", clDens: "B", age: 60, regionEco: "6n" }).pointActuel?.volumePredit ?? 0;
 check("la région propage jusqu'au volume prédit", v6a > v6n + 20, `V(6a)=${v6a} vs V(6n)=${v6n} m³/ha à 60 ans`);
+
+console.log("\n== 4. Projection avec/sans intervention (E3) ==");
+// Peuplement d'épinette noire au-delà du sommet de volume : sans intervention,
+// le capital se dégrade ; récolter maintenant le mobilise.
+const projMur = projeterScenarios({ grEss: "ENEN", typeEco: "RS20", clDens: "B", age: 150 }, 50)!;
+const vDepartMur = projMur.sansIntervention.points[0].volume;
+console.log(`  ${projMur.espece}, ${projMur.ageDepart} ans (maturité=${projMur.maturiteBio}, pic=${projMur.picVolumeAge}), horizon ${projMur.horizonAns} ans`);
+console.log(`  sans : ${vDepartMur} → ${projMur.sansIntervention.volumeFinal} m³/ha sur pied`);
+console.log(`  avec : récolte ${projMur.avecIntervention.volumeRecolte} m³/ha à ${projMur.avecIntervention.ageRecolte} ans, puis ${projMur.avecIntervention.volumeFinal} m³/ha`);
+console.log(`  → ${projMur.synthese}`);
+check("projection : 2 trajectoires échantillonnées sur l'horizon", projMur.sansIntervention.points.length > 5 && projMur.avecIntervention.points.length > 5);
+check("stand au-delà du pic : sans intervention décroît sur l'horizon", projMur.sansIntervention.volumeFinal < vDepartMur, `${vDepartMur} → ${projMur.sansIntervention.volumeFinal}`);
+check("stand mûr : récolte maintenant (âge récolte = âge actuel)", projMur.avecIntervention.ageRecolte === 150 && projMur.avecIntervention.volumeRecolte > 0);
+// Peuplement jeune en croissance : récolte repoussée à la maturité.
+const projJeune = projeterScenarios({ grEss: "SBSB", typeEco: "MS12", clDens: "A", age: 30 }, 60)!;
+check("stand jeune : récolte repoussée à la maturité (> âge actuel)", (projJeune.avecIntervention.ageRecolte ?? 0) > 30, `récolte à ${projJeune.avecIntervention.ageRecolte} ans`);
+check("avec intervention : le peuplement régénéré repousse (volume final > 0)", projJeune.avecIntervention.volumeFinal > 0);
 
 console.log(`\n== Bilan : ${ok} OK, ${ko} KO ==`);
 if (ko > 0) throw new Error(`${ko} vérification(s) en échec`);

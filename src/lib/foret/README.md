@@ -38,6 +38,27 @@ const a = analyserPeuplement({
 // a.fiabilite / a.iqsNiveau -> qualité de la correspondance
 ```
 
+`regionEco` (optionnel) : si la région écologique est fournie, l'IQS régional
+précis est utilisé (l'IQS varie beaucoup selon la région) ; sinon moyenne
+inter-régions. La résolution peuplement → région n'est pas branchée (voir Limites).
+
+### Projection avec / sans intervention (E3)
+
+```ts
+import { projeterScenarios } from "@/lib/foret";
+
+const p = projeterScenarios({ grEss: "ENEN", typeEco: "RS20", clDens: "B", age: 150 }, 50);
+// p.sansIntervention.points / p.avecIntervention.points -> trajectoires sur l'horizon
+// p.avecIntervention.{ageRecolte, volumeRecolte, volumeFinal}
+// p.synthese -> phrase « voici la décision »
+```
+
+Premier incrément d'E3 bâti sur les courbes Pothier-Savard : « sans intervention »
+= trajectoire naturelle (croissance puis sénescence) ; « avec intervention » =
+récolte à maturité (ou maintenant si déjà mûr) puis régénération. **Peuplements
+équiennes seulement.** Les coupes partielles / éclaircies et peuplements
+irréguliers relèvent de Natura-2014 (à tabuler depuis Capsis plus tard).
+
 ## Branchement PlaniLogix
 
 Tout provient de `planilogix.eco_pee` (attributs carte écoforestière) et
@@ -72,8 +93,10 @@ node src/lib/foret/__verify.ts
 ```
 Contrôle les points publiés (SAB IQS12) et 13 peuplements réels de PlaniLogix.
 
-## Suite (hors Phase 0)
+## Suite
 
 Phase 1 : couche valeur $ (migration de produit pâte→sciage→déroulage par diamètre).
-Phase 2 : projections « avec/sans intervention » via Natura-2014 (E3).
+Phase 2 : **premier incrément d'E3 livré** (`projection.ts`, base Pothier-Savard) ;
+  reste à intégrer Natura-2014 (coupes partielles, peuplements irréguliers) en
+  tabulant des simulations Capsis, même patron que Pothier-Savard.
 Phase 3 : indice biodiversité ordinal (E1 courbe rouge).
