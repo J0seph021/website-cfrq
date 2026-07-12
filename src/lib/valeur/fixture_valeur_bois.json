@@ -1,0 +1,299 @@
+[
+  {
+    "name": "melange res+feu, net %recolte + transport",
+    "peuplements": [
+      {
+        "composition": {
+          "SAB": 31.47,
+          "EPB": 73.8,
+          "ERR": 1.88,
+          "BOP": 1.36
+        },
+        "superficie_ha": 3.53
+      }
+    ],
+    "prix_resolu": {
+      "SAB": {
+        "sciage": 95,
+        "pate": 45
+      },
+      "EPB": {
+        "sciage": 100,
+        "pate": 48
+      },
+      "ERR": {
+        "sciage": null,
+        "pate": 55
+      },
+      "BOP": {
+        "sciage": null,
+        "pate": 50
+      }
+    },
+    "params": {
+      "transport_m3": 15,
+      "cout_recolte_pct": 0.5
+    },
+    "expected": {
+      "volumes": {
+        "total_m3": 383.0,
+        "sciage_m3": 260.1,
+        "pate_m3": 122.9,
+        "par_essence": [
+          {
+            "code": "EPB",
+            "nom": "Épinette blanche",
+            "classe": "resineux",
+            "m3": 260.5,
+            "sciage_m3": 182.4,
+            "pate_m3": 78.2
+          },
+          {
+            "code": "SAB",
+            "nom": "Sapin baumier",
+            "classe": "resineux",
+            "m3": 111.1,
+            "sciage_m3": 77.8,
+            "pate_m3": 33.3
+          },
+          {
+            "code": "ERR",
+            "nom": "Érable rouge",
+            "classe": "feuillu",
+            "m3": 6.6,
+            "sciage_m3": 0.0,
+            "pate_m3": 6.6
+          },
+          {
+            "code": "BOP",
+            "nom": "Bouleau à papier",
+            "classe": "feuillu",
+            "m3": 4.8,
+            "sciage_m3": 0.0,
+            "pate_m3": 4.8
+          }
+        ]
+      },
+      "valeur": {
+        "brut": 31480.0,
+        "transport": 5746.0,
+        "recolte": 15740.0,
+        "net": 9994.0,
+        "prix_manquants": [],
+        "par_essence": [
+          {
+            "code": "BOP",
+            "brut": 240.0
+          },
+          {
+            "code": "EPB",
+            "brut": 21987.0
+          },
+          {
+            "code": "ERR",
+            "brut": 365.0
+          },
+          {
+            "code": "SAB",
+            "brut": 8887.0
+          }
+        ]
+      },
+      "params": {
+        "ratio_resineux_sciage": 0.7,
+        "ratio_feuillu_sciage": 0.0,
+        "transport_m3": 15,
+        "cout_recolte_m3": 0.0,
+        "cout_recolte_pct": 0.5
+      }
+    }
+  },
+  {
+    "name": "agregation multi-peuplements meme essence + prix manquant",
+    "peuplements": [
+      {
+        "composition": {
+          "EPN": 40.0,
+          "THO": 10.0
+        },
+        "superficie_ha": 2.0
+      },
+      {
+        "composition": {
+          "EPN": 20.0,
+          "CET": 5.0
+        },
+        "superficie_ha": 4.0
+      }
+    ],
+    "prix_resolu": {
+      "EPN": {
+        "sciage": 90,
+        "pate": 44
+      },
+      "THO": {
+        "sciage": 70,
+        "pate": 40
+      }
+    },
+    "params": {
+      "cout_recolte_m3": 28,
+      "transport_m3": 15
+    },
+    "expected": {
+      "volumes": {
+        "total_m3": 200.0,
+        "sciage_m3": 126.0,
+        "pate_m3": 74.0,
+        "par_essence": [
+          {
+            "code": "EPN",
+            "nom": "Épinette noire",
+            "classe": "resineux",
+            "m3": 160.0,
+            "sciage_m3": 112.0,
+            "pate_m3": 48.0
+          },
+          {
+            "code": "CET",
+            "nom": "Cerisier tardif",
+            "classe": "feuillu",
+            "m3": 20.0,
+            "sciage_m3": 0.0,
+            "pate_m3": 20.0
+          },
+          {
+            "code": "THO",
+            "nom": "Thuya (cèdre)",
+            "classe": "resineux",
+            "m3": 20.0,
+            "sciage_m3": 14.0,
+            "pate_m3": 6.0
+          }
+        ]
+      },
+      "valeur": {
+        "brut": 13412.0,
+        "transport": 3000.0,
+        "recolte": 5600.0,
+        "net": 4812.0,
+        "prix_manquants": [
+          "CET"
+        ],
+        "par_essence": [
+          {
+            "code": "CET",
+            "brut": 0.0
+          },
+          {
+            "code": "EPN",
+            "brut": 12192.0
+          },
+          {
+            "code": "THO",
+            "brut": 1220.0
+          }
+        ]
+      },
+      "params": {
+        "ratio_resineux_sciage": 0.7,
+        "ratio_feuillu_sciage": 0.0,
+        "transport_m3": 15,
+        "cout_recolte_m3": 28,
+        "cout_recolte_pct": null
+      }
+    }
+  },
+  {
+    "name": "net negatif (couts > brut)",
+    "peuplements": [
+      {
+        "composition": {
+          "PET": 50.0
+        },
+        "superficie_ha": 1.0
+      }
+    ],
+    "prix_resolu": {
+      "PET": {
+        "sciage": null,
+        "pate": 30
+      }
+    },
+    "params": {
+      "cout_recolte_pct": 0.5,
+      "transport_m3": 25
+    },
+    "expected": {
+      "volumes": {
+        "total_m3": 50.0,
+        "sciage_m3": 0.0,
+        "pate_m3": 50.0,
+        "par_essence": [
+          {
+            "code": "PET",
+            "nom": "Peuplier faux-tremble",
+            "classe": "feuillu",
+            "m3": 50.0,
+            "sciage_m3": 0.0,
+            "pate_m3": 50.0
+          }
+        ]
+      },
+      "valeur": {
+        "brut": 1500.0,
+        "transport": 1250.0,
+        "recolte": 750.0,
+        "net": -500.0,
+        "prix_manquants": [],
+        "par_essence": [
+          {
+            "code": "PET",
+            "brut": 1500.0
+          }
+        ]
+      },
+      "params": {
+        "ratio_resineux_sciage": 0.7,
+        "ratio_feuillu_sciage": 0.0,
+        "transport_m3": 25,
+        "cout_recolte_m3": 0.0,
+        "cout_recolte_pct": 0.5
+      }
+    }
+  },
+  {
+    "name": "vide (aucune composition)",
+    "peuplements": [
+      {
+        "composition": {},
+        "superficie_ha": 5.0
+      }
+    ],
+    "prix_resolu": {},
+    "params": {},
+    "expected": {
+      "volumes": {
+        "total_m3": 0.0,
+        "sciage_m3": 0.0,
+        "pate_m3": 0.0,
+        "par_essence": []
+      },
+      "valeur": {
+        "brut": 0.0,
+        "transport": 0.0,
+        "recolte": 0.0,
+        "net": 0.0,
+        "prix_manquants": [],
+        "par_essence": []
+      },
+      "params": {
+        "ratio_resineux_sciage": 0.7,
+        "ratio_feuillu_sciage": 0.0,
+        "transport_m3": 0.0,
+        "cout_recolte_m3": 0.0,
+        "cout_recolte_pct": null
+      }
+    }
+  }
+]
