@@ -1,0 +1,1773 @@
+{
+"00000000-0000-0000-0000-000000000000": {
+"syndicat": "(PROVINCIAL)",
+"prix": {
+"ERA": {
+"sciage": 81.73,
+"pate": 38.46
+},
+"PEB": {
+"sciage": 29.55,
+"pate": 29.55
+},
+"PIG": {
+"sciage": 89.13,
+"pate": 55.5
+},
+"FRA": {
+"sciage": 115.38,
+"pate": 48.08
+},
+"BOP": {
+"sciage": 81.73,
+"pate": 130.0
+},
+"ORT": {
+"sciage": 43.27,
+"pate": 38.46
+},
+"THO": {
+"sciage": 113.21,
+"pate": 104.97
+},
+"BOJ": {
+"sciage": 105.77,
+"pate": 130.0
+},
+"PIB": {
+"sciage": 108.49,
+"pate": 55.5
+},
+"PET": {
+"sciage": 76.92,
+"pate": 95.0
+},
+"SAB": {
+"sciage": 118.75,
+"pate": 55.5
+},
+"EPO": {
+"sciage": 208.7,
+"pate": 55.5
+},
+"PED": {
+"sciage": 76.92,
+"pate": 95.0
+},
+"MEH": {
+"sciage": 113.04,
+"pate": 110.44
+},
+"CAC": {
+"sciage": 67.31,
+"pate": 45.45
+},
+"EPB": {
+"sciage": 117.92,
+"pate": 55.5
+},
+"EPR": {
+"sciage": 117.92,
+"pate": 55.5
+},
+"HEG": {
+"sciage": 48.08,
+"pate": 33.66
+},
+"PEG": {
+"sciage": 76.92,
+"pate": 95.0
+},
+"PIR": {
+"sciage": 75.47,
+"pate": 55.5
+},
+"MEL": {
+"sciage": 113.04,
+"pate": 110.44
+},
+"ORR": {
+"sciage": 43.27,
+"pate": 38.46
+},
+"CET": {
+"sciage": 96.15,
+"pate": 45.45
+},
+"CHR": {
+"sciage": 134.62,
+"pate": 52.88
+},
+"CHG": {
+"sciage": 134.62,
+"pate": 130.0
+},
+"ERR": {
+"sciage": 81.73,
+"pate": 38.46
+},
+"ERS": {
+"sciage": 134.62,
+"pate": 43.27
+},
+"BOG": {
+"sciage": 81.73,
+"pate": 130.0
+},
+"PEH": {
+"sciage": 76.92,
+"pate": 95.0
+},
+"EPN": {
+"sciage": 117.92,
+"pate": 55.5
+},
+"FRN": {
+"sciage": 52.88,
+"pate": 52.88
+},
+"PIS": {
+"sciage": 83.37,
+"pate": 26.96
+},
+"CHB": {
+"sciage": 134.62,
+"pate": 130.0
+},
+"ORA": {
+"sciage": 43.27,
+"pate": 38.46
+},
+"PRU": {
+"sciage": 96.23,
+"pate": 39.13
+},
+"NOC": {
+"sciage": 88.94,
+"pate": 45.45
+},
+"OSV": {
+"sciage": 45.45,
+"pate": 45.45
+},
+"FRP": {
+"sciage": 115.38,
+"pate": 48.08
+},
+"TIL": {
+"sciage": 57.69,
+"pate": 33.66
+}
+}
+},
+"b81d45a2-2166-4df6-b2f3-9f518986ac55": {
+"syndicat": "Beauce",
+"prix": {
+"ERA": {
+"sciage": 91.34,
+"pate": 38.46
+},
+"PEB": {
+"sciage": 29.55,
+"pate": 29.55
+},
+"PIG": {
+"sciage": 141.31,
+"pate": 55.5
+},
+"FRA": {
+"sciage": 100.96,
+"pate": 48.08
+},
+"BOP": {
+"sciage": 86.54,
+"pate": 130.0
+},
+"ORT": {
+"sciage": 38.46,
+"pate": 38.46
+},
+"THO": {
+"sciage": 109.72,
+"pate": 102.83
+},
+"BOJ": {
+"sciage": 105.77,
+"pate": 130.0
+},
+"PIB": {
+"sciage": 108.49,
+"pate": 55.5
+},
+"PET": {
+"sciage": 137.5,
+"pate": 142.0
+},
+"SAB": {
+"sciage": 119.57,
+"pate": 55.5
+},
+"EPO": {
+"sciage": 163.04,
+"pate": 55.5
+},
+"PED": {
+"sciage": 137.5,
+"pate": 142.0
+},
+"MEH": {
+"sciage": 173.91,
+"pate": 112.17
+},
+"CAC": {
+"sciage": 67.31,
+"pate": 45.45
+},
+"EPB": {
+"sciage": 132.61,
+"pate": 55.5
+},
+"EPR": {
+"sciage": 132.61,
+"pate": 55.5
+},
+"HEG": {
+"sciage": 33.66,
+"pate": 33.66
+},
+"PEG": {
+"sciage": 137.5,
+"pate": 142.0
+},
+"PIR": {
+"sciage": 73.58,
+"pate": 55.5
+},
+"MEL": {
+"sciage": 173.91,
+"pate": 112.17
+},
+"ORR": {
+"sciage": 38.46,
+"pate": 38.46
+},
+"CET": {
+"sciage": 211.53,
+"pate": 45.45
+},
+"CHR": {
+"sciage": 134.62,
+"pate": 52.88
+},
+"CHG": {
+"sciage": 134.62,
+"pate": 134.62
+},
+"ERR": {
+"sciage": 91.34,
+"pate": 38.46
+},
+"ERS": {
+"sciage": 125.0,
+"pate": 43.27
+},
+"BOG": {
+"sciage": 86.54,
+"pate": 130.0
+},
+"PEH": {
+"sciage": 137.5,
+"pate": 142.0
+},
+"EPN": {
+"sciage": 132.61,
+"pate": 55.5
+},
+"FRN": {
+"sciage": 52.88,
+"pate": 52.88
+},
+"PIS": {
+"sciage": 47.17,
+"pate": 26.96
+},
+"CHB": {
+"sciage": 134.62,
+"pate": 134.62
+},
+"ORA": {
+"sciage": 38.46,
+"pate": 38.46
+},
+"PRU": {
+"sciage": 106.23,
+"pate": 39.13
+},
+"NOC": {
+"sciage": 88.94,
+"pate": 45.45
+},
+"OSV": {
+"sciage": 45.45,
+"pate": 45.45
+},
+"FRP": {
+"sciage": 100.96,
+"pate": 48.08
+},
+"TIL": {
+"sciage": 33.66,
+"pate": 33.66
+}
+}
+},
+"b54bed2c-9ef9-43e2-820b-f9bfee057449": {
+"syndicat": "Pontiac",
+"prix": {
+"ERA": {
+"sciage": 90.39,
+"pate": 38.46
+},
+"PEB": {
+"sciage": 29.55,
+"pate": 29.55
+},
+"PIG": {
+"sciage": 75.47,
+"pate": 55.5
+},
+"FRA": {
+"sciage": 80.77,
+"pate": 48.08
+},
+"BOP": {
+"sciage": 76.92,
+"pate": 130.0
+},
+"ORT": {
+"sciage": 43.27,
+"pate": 38.46
+},
+"THO": {
+"sciage": 91.89,
+"pate": 104.97
+},
+"BOJ": {
+"sciage": 103.85,
+"pate": 130.0
+},
+"PIB": {
+"sciage": 102.36,
+"pate": 55.5
+},
+"PET": {
+"sciage": 76.92,
+"pate": 95.0
+},
+"SAB": {
+"sciage": 50.94,
+"pate": 55.5
+},
+"EPO": {
+"sciage": 208.7,
+"pate": 55.5
+},
+"PED": {
+"sciage": 76.92,
+"pate": 95.0
+},
+"MEH": {
+"sciage": 113.04,
+"pate": 110.44
+},
+"CAC": {
+"sciage": 67.31,
+"pate": 45.45
+},
+"EPB": {
+"sciage": 50.94,
+"pate": 55.5
+},
+"EPR": {
+"sciage": 50.94,
+"pate": 55.5
+},
+"HEG": {
+"sciage": 48.08,
+"pate": 33.66
+},
+"PEG": {
+"sciage": 76.92,
+"pate": 95.0
+},
+"PIR": {
+"sciage": 67.83,
+"pate": 55.5
+},
+"MEL": {
+"sciage": 113.04,
+"pate": 110.44
+},
+"ORR": {
+"sciage": 43.27,
+"pate": 38.46
+},
+"CET": {
+"sciage": 94.23,
+"pate": 45.45
+},
+"CHR": {
+"sciage": 115.38,
+"pate": 52.88
+},
+"CHG": {
+"sciage": 141.82,
+"pate": 130.0
+},
+"ERR": {
+"sciage": 90.39,
+"pate": 38.46
+},
+"ERS": {
+"sciage": 153.85,
+"pate": 43.27
+},
+"BOG": {
+"sciage": 76.92,
+"pate": 130.0
+},
+"PEH": {
+"sciage": 76.92,
+"pate": 95.0
+},
+"EPN": {
+"sciage": 50.94,
+"pate": 55.5
+},
+"FRN": {
+"sciage": 52.88,
+"pate": 52.88
+},
+"PIS": {
+"sciage": 83.37,
+"pate": 26.96
+},
+"CHB": {
+"sciage": 141.82,
+"pate": 130.0
+},
+"ORA": {
+"sciage": 43.27,
+"pate": 38.46
+},
+"PRU": {
+"sciage": 61.32,
+"pate": 39.13
+},
+"NOC": {
+"sciage": 88.94,
+"pate": 45.45
+},
+"OSV": {
+"sciage": 45.45,
+"pate": 45.45
+},
+"FRP": {
+"sciage": 80.77,
+"pate": 48.08
+},
+"TIL": {
+"sciage": 59.38,
+"pate": 33.66
+}
+}
+},
+"faec178b-9775-4fe1-b6ac-2228b613f8e5": {
+"syndicat": "Abitibi-Temiscamingue",
+"prix": {
+"ERA": {
+"sciage": 81.73,
+"pate": 38.46
+},
+"PEB": {
+"sciage": 29.55,
+"pate": 29.55
+},
+"PIG": {
+"sciage": 89.13,
+"pate": 55.5
+},
+"FRA": {
+"sciage": 115.38,
+"pate": 48.08
+},
+"BOP": {
+"sciage": 81.73,
+"pate": 130.0
+},
+"ORT": {
+"sciage": 43.27,
+"pate": 38.46
+},
+"THO": {
+"sciage": 113.21,
+"pate": 104.97
+},
+"BOJ": {
+"sciage": 105.77,
+"pate": 130.0
+},
+"PIB": {
+"sciage": 108.49,
+"pate": 55.5
+},
+"PET": {
+"sciage": 76.92,
+"pate": 95.0
+},
+"SAB": {
+"sciage": 118.75,
+"pate": 55.5
+},
+"EPO": {
+"sciage": 208.7,
+"pate": 55.5
+},
+"PED": {
+"sciage": 76.92,
+"pate": 95.0
+},
+"MEH": {
+"sciage": 113.04,
+"pate": 110.44
+},
+"CAC": {
+"sciage": 67.31,
+"pate": 45.45
+},
+"EPB": {
+"sciage": 117.92,
+"pate": 55.5
+},
+"EPR": {
+"sciage": 117.92,
+"pate": 55.5
+},
+"HEG": {
+"sciage": 48.08,
+"pate": 33.66
+},
+"PEG": {
+"sciage": 76.92,
+"pate": 95.0
+},
+"PIR": {
+"sciage": 75.47,
+"pate": 55.5
+},
+"MEL": {
+"sciage": 113.04,
+"pate": 110.44
+},
+"ORR": {
+"sciage": 43.27,
+"pate": 38.46
+},
+"CET": {
+"sciage": 96.15,
+"pate": 45.45
+},
+"CHR": {
+"sciage": 134.62,
+"pate": 52.88
+},
+"CHG": {
+"sciage": 134.62,
+"pate": 130.0
+},
+"ERR": {
+"sciage": 81.73,
+"pate": 38.46
+},
+"ERS": {
+"sciage": 134.62,
+"pate": 43.27
+},
+"BOG": {
+"sciage": 81.73,
+"pate": 130.0
+},
+"PEH": {
+"sciage": 76.92,
+"pate": 95.0
+},
+"EPN": {
+"sciage": 117.92,
+"pate": 55.5
+},
+"FRN": {
+"sciage": 52.88,
+"pate": 52.88
+},
+"PIS": {
+"sciage": 83.37,
+"pate": 26.96
+},
+"CHB": {
+"sciage": 134.62,
+"pate": 130.0
+},
+"ORA": {
+"sciage": 43.27,
+"pate": 38.46
+},
+"PRU": {
+"sciage": 96.23,
+"pate": 39.13
+},
+"NOC": {
+"sciage": 88.94,
+"pate": 45.45
+},
+"OSV": {
+"sciage": 45.45,
+"pate": 45.45
+},
+"FRP": {
+"sciage": 115.38,
+"pate": 48.08
+},
+"TIL": {
+"sciage": 57.69,
+"pate": 33.66
+}
+}
+},
+"589c63d3-002a-4df4-a089-a177c9e3ac6c": {
+"syndicat": "Cote-du-Sud",
+"prix": {
+"ERA": {
+"sciage": 125.0,
+"pate": 38.46
+},
+"PEB": {
+"sciage": 29.55,
+"pate": 29.55
+},
+"PIG": {
+"sciage": 89.13,
+"pate": 55.5
+},
+"FRA": {
+"sciage": 211.54,
+"pate": 48.08
+},
+"BOP": {
+"sciage": 81.73,
+"pate": 130.0
+},
+"ORT": {
+"sciage": 43.27,
+"pate": 38.46
+},
+"THO": {
+"sciage": 103.77,
+"pate": 122.06
+},
+"BOJ": {
+"sciage": 108.65,
+"pate": 130.0
+},
+"PIB": {
+"sciage": 115.57,
+"pate": 55.5
+},
+"PET": {
+"sciage": 145.0,
+"pate": 54.95
+},
+"SAB": {
+"sciage": 121.74,
+"pate": 55.5
+},
+"EPO": {
+"sciage": 158.7,
+"pate": 55.5
+},
+"PED": {
+"sciage": 145.0,
+"pate": 54.95
+},
+"MEH": {
+"sciage": 108.7,
+"pate": 110.44
+},
+"CAC": {
+"sciage": 67.31,
+"pate": 45.45
+},
+"EPB": {
+"sciage": 121.74,
+"pate": 55.5
+},
+"EPR": {
+"sciage": 121.74,
+"pate": 55.5
+},
+"HEG": {
+"sciage": 59.0,
+"pate": 33.66
+},
+"PEG": {
+"sciage": 145.0,
+"pate": 54.95
+},
+"PIR": {
+"sciage": 75.47,
+"pate": 55.5
+},
+"MEL": {
+"sciage": 108.7,
+"pate": 110.44
+},
+"ORR": {
+"sciage": 43.27,
+"pate": 38.46
+},
+"CET": {
+"sciage": 96.15,
+"pate": 45.45
+},
+"CHR": {
+"sciage": 134.62,
+"pate": 52.88
+},
+"CHG": {
+"sciage": 134.62,
+"pate": 54.95
+},
+"ERR": {
+"sciage": 125.0,
+"pate": 38.46
+},
+"ERS": {
+"sciage": 147.5,
+"pate": 43.27
+},
+"BOG": {
+"sciage": 81.73,
+"pate": 130.0
+},
+"PEH": {
+"sciage": 145.0,
+"pate": 54.95
+},
+"EPN": {
+"sciage": 121.74,
+"pate": 55.5
+},
+"FRN": {
+"sciage": 52.88,
+"pate": 52.88
+},
+"PIS": {
+"sciage": 83.37,
+"pate": 26.96
+},
+"CHB": {
+"sciage": 134.62,
+"pate": 54.95
+},
+"ORA": {
+"sciage": 43.27,
+"pate": 38.46
+},
+"PRU": {
+"sciage": 94.34,
+"pate": 39.13
+},
+"NOC": {
+"sciage": 88.94,
+"pate": 45.45
+},
+"OSV": {
+"sciage": 45.45,
+"pate": 45.45
+},
+"FRP": {
+"sciage": 211.54,
+"pate": 48.08
+},
+"TIL": {
+"sciage": 57.69,
+"pate": 33.66
+}
+}
+},
+"dd177b4e-23c8-4204-af69-25d3bb6c8775": {
+"syndicat": "Mauricie",
+"prix": {
+"ERA": {
+"sciage": 76.92,
+"pate": 38.46
+},
+"PEB": {
+"sciage": 29.55,
+"pate": 29.55
+},
+"PIG": {
+"sciage": 83.96,
+"pate": 55.5
+},
+"FRA": {
+"sciage": 100.96,
+"pate": 48.08
+},
+"BOP": {
+"sciage": 81.73,
+"pate": 130.0
+},
+"ORT": {
+"sciage": 43.27,
+"pate": 38.46
+},
+"THO": {
+"sciage": 70.75,
+"pate": 93.4
+},
+"BOJ": {
+"sciage": 105.77,
+"pate": 130.0
+},
+"PIB": {
+"sciage": 108.49,
+"pate": 55.5
+},
+"PET": {
+"sciage": 67.31,
+"pate": 95.0
+},
+"SAB": {
+"sciage": 117.92,
+"pate": 55.5
+},
+"EPO": {
+"sciage": 208.7,
+"pate": 55.5
+},
+"PED": {
+"sciage": 67.31,
+"pate": 95.0
+},
+"MEH": {
+"sciage": 152.17,
+"pate": 110.44
+},
+"CAC": {
+"sciage": 76.93,
+"pate": 45.45
+},
+"EPB": {
+"sciage": 117.92,
+"pate": 55.5
+},
+"EPR": {
+"sciage": 117.92,
+"pate": 55.5
+},
+"HEG": {
+"sciage": 48.08,
+"pate": 33.66
+},
+"PEG": {
+"sciage": 67.31,
+"pate": 95.0
+},
+"PIR": {
+"sciage": 130.43,
+"pate": 55.5
+},
+"MEL": {
+"sciage": 152.17,
+"pate": 110.44
+},
+"ORR": {
+"sciage": 43.27,
+"pate": 38.46
+},
+"CET": {
+"sciage": 86.54,
+"pate": 45.45
+},
+"CHR": {
+"sciage": 134.62,
+"pate": 52.88
+},
+"CHG": {
+"sciage": 134.62,
+"pate": 130.0
+},
+"ERR": {
+"sciage": 76.92,
+"pate": 38.46
+},
+"ERS": {
+"sciage": 139.42,
+"pate": 43.27
+},
+"BOG": {
+"sciage": 81.73,
+"pate": 130.0
+},
+"PEH": {
+"sciage": 67.31,
+"pate": 95.0
+},
+"EPN": {
+"sciage": 117.92,
+"pate": 55.5
+},
+"FRN": {
+"sciage": 52.88,
+"pate": 52.88
+},
+"PIS": {
+"sciage": 119.57,
+"pate": 26.96
+},
+"CHB": {
+"sciage": 134.62,
+"pate": 130.0
+},
+"ORA": {
+"sciage": 43.27,
+"pate": 38.46
+},
+"PRU": {
+"sciage": 96.7,
+"pate": 39.13
+},
+"NOC": {
+"sciage": 91.35,
+"pate": 45.45
+},
+"OSV": {
+"sciage": 45.45,
+"pate": 45.45
+},
+"FRP": {
+"sciage": 100.96,
+"pate": 48.08
+},
+"TIL": {
+"sciage": 57.69,
+"pate": 33.66
+}
+}
+},
+"fb4ad168-e123-4695-abb4-dbd030d04c29": {
+"syndicat": "Centre-du-Quebec",
+"prix": {
+"ERA": {
+"sciage": 76.92,
+"pate": 38.46
+},
+"PEB": {
+"sciage": 29.55,
+"pate": 29.55
+},
+"PIG": {
+"sciage": 83.96,
+"pate": 55.5
+},
+"FRA": {
+"sciage": 100.96,
+"pate": 48.08
+},
+"BOP": {
+"sciage": 81.73,
+"pate": 130.0
+},
+"ORT": {
+"sciage": 43.27,
+"pate": 38.46
+},
+"THO": {
+"sciage": 70.75,
+"pate": 93.4
+},
+"BOJ": {
+"sciage": 105.77,
+"pate": 130.0
+},
+"PIB": {
+"sciage": 108.49,
+"pate": 55.5
+},
+"PET": {
+"sciage": 67.31,
+"pate": 95.0
+},
+"SAB": {
+"sciage": 117.92,
+"pate": 55.5
+},
+"EPO": {
+"sciage": 208.7,
+"pate": 55.5
+},
+"PED": {
+"sciage": 67.31,
+"pate": 95.0
+},
+"MEH": {
+"sciage": 152.17,
+"pate": 110.44
+},
+"CAC": {
+"sciage": 76.93,
+"pate": 45.45
+},
+"EPB": {
+"sciage": 117.92,
+"pate": 55.5
+},
+"EPR": {
+"sciage": 117.92,
+"pate": 55.5
+},
+"HEG": {
+"sciage": 48.08,
+"pate": 33.66
+},
+"PEG": {
+"sciage": 67.31,
+"pate": 95.0
+},
+"PIR": {
+"sciage": 130.43,
+"pate": 55.5
+},
+"MEL": {
+"sciage": 152.17,
+"pate": 110.44
+},
+"ORR": {
+"sciage": 43.27,
+"pate": 38.46
+},
+"CET": {
+"sciage": 86.54,
+"pate": 45.45
+},
+"CHR": {
+"sciage": 134.62,
+"pate": 52.88
+},
+"CHG": {
+"sciage": 134.62,
+"pate": 130.0
+},
+"ERR": {
+"sciage": 76.92,
+"pate": 38.46
+},
+"ERS": {
+"sciage": 139.42,
+"pate": 43.27
+},
+"BOG": {
+"sciage": 81.73,
+"pate": 130.0
+},
+"PEH": {
+"sciage": 67.31,
+"pate": 95.0
+},
+"EPN": {
+"sciage": 117.92,
+"pate": 55.5
+},
+"FRN": {
+"sciage": 52.88,
+"pate": 52.88
+},
+"PIS": {
+"sciage": 119.57,
+"pate": 26.96
+},
+"CHB": {
+"sciage": 134.62,
+"pate": 130.0
+},
+"ORA": {
+"sciage": 43.27,
+"pate": 38.46
+},
+"PRU": {
+"sciage": 96.7,
+"pate": 39.13
+},
+"NOC": {
+"sciage": 91.35,
+"pate": 45.45
+},
+"OSV": {
+"sciage": 45.45,
+"pate": 45.45
+},
+"FRP": {
+"sciage": 100.96,
+"pate": 48.08
+},
+"TIL": {
+"sciage": 57.69,
+"pate": 33.66
+}
+}
+},
+"efb709a4-34c8-4a44-a8a9-b1fdc0340a5b": {
+"syndicat": "Saguenay-Lac-St-Jean",
+"prix": {
+"ERA": {
+"sciage": 81.73,
+"pate": 38.46
+},
+"PEB": {
+"sciage": 29.55,
+"pate": 29.55
+},
+"PIG": {
+"sciage": 89.13,
+"pate": 55.5
+},
+"FRA": {
+"sciage": 115.38,
+"pate": 48.08
+},
+"BOP": {
+"sciage": 81.73,
+"pate": 130.0
+},
+"ORT": {
+"sciage": 43.27,
+"pate": 38.46
+},
+"THO": {
+"sciage": 113.21,
+"pate": 104.97
+},
+"BOJ": {
+"sciage": 105.77,
+"pate": 130.0
+},
+"PIB": {
+"sciage": 108.49,
+"pate": 55.5
+},
+"PET": {
+"sciage": 76.92,
+"pate": 95.0
+},
+"SAB": {
+"sciage": 118.75,
+"pate": 55.5
+},
+"EPO": {
+"sciage": 208.7,
+"pate": 55.5
+},
+"PED": {
+"sciage": 76.92,
+"pate": 95.0
+},
+"MEH": {
+"sciage": 113.04,
+"pate": 110.44
+},
+"CAC": {
+"sciage": 67.31,
+"pate": 45.45
+},
+"EPB": {
+"sciage": 117.92,
+"pate": 55.5
+},
+"EPR": {
+"sciage": 117.92,
+"pate": 55.5
+},
+"HEG": {
+"sciage": 48.08,
+"pate": 33.66
+},
+"PEG": {
+"sciage": 76.92,
+"pate": 95.0
+},
+"PIR": {
+"sciage": 75.47,
+"pate": 55.5
+},
+"MEL": {
+"sciage": 113.04,
+"pate": 110.44
+},
+"ORR": {
+"sciage": 43.27,
+"pate": 38.46
+},
+"CET": {
+"sciage": 96.15,
+"pate": 45.45
+},
+"CHR": {
+"sciage": 134.62,
+"pate": 52.88
+},
+"CHG": {
+"sciage": 134.62,
+"pate": 130.0
+},
+"ERR": {
+"sciage": 81.73,
+"pate": 38.46
+},
+"ERS": {
+"sciage": 134.62,
+"pate": 43.27
+},
+"BOG": {
+"sciage": 81.73,
+"pate": 130.0
+},
+"PEH": {
+"sciage": 76.92,
+"pate": 95.0
+},
+"EPN": {
+"sciage": 117.92,
+"pate": 55.5
+},
+"FRN": {
+"sciage": 52.88,
+"pate": 52.88
+},
+"PIS": {
+"sciage": 83.37,
+"pate": 26.96
+},
+"CHB": {
+"sciage": 134.62,
+"pate": 130.0
+},
+"ORA": {
+"sciage": 43.27,
+"pate": 38.46
+},
+"PRU": {
+"sciage": 96.23,
+"pate": 39.13
+},
+"NOC": {
+"sciage": 88.94,
+"pate": 45.45
+},
+"OSV": {
+"sciage": 45.45,
+"pate": 45.45
+},
+"FRP": {
+"sciage": 115.38,
+"pate": 48.08
+},
+"TIL": {
+"sciage": 57.69,
+"pate": 33.66
+}
+}
+},
+"b5924967-053f-4343-b47d-4e6d7c980e40": {
+"syndicat": "Bas-Saint-Laurent",
+"prix": {
+"ERA": {
+"sciage": 67.31,
+"pate": 38.46
+},
+"PEB": {
+"sciage": 29.55,
+"pate": 29.55
+},
+"PIG": {
+"sciage": 108.7,
+"pate": 55.5
+},
+"FRA": {
+"sciage": 115.38,
+"pate": 48.08
+},
+"BOP": {
+"sciage": 101.54,
+"pate": 130.0
+},
+"ORT": {
+"sciage": 43.27,
+"pate": 38.46
+},
+"THO": {
+"sciage": 173.91,
+"pate": 173.91
+},
+"BOJ": {
+"sciage": 83.08,
+"pate": 130.0
+},
+"PIB": {
+"sciage": 108.49,
+"pate": 55.5
+},
+"PET": {
+"sciage": 135.0,
+"pate": 65.0
+},
+"SAB": {
+"sciage": 117.92,
+"pate": 55.5
+},
+"EPO": {
+"sciage": 195.65,
+"pate": 55.5
+},
+"PED": {
+"sciage": 135.0,
+"pate": 65.0
+},
+"MEH": {
+"sciage": 71.0,
+"pate": 110.44
+},
+"CAC": {
+"sciage": 67.31,
+"pate": 45.45
+},
+"EPB": {
+"sciage": 117.92,
+"pate": 55.5
+},
+"EPR": {
+"sciage": 117.92,
+"pate": 55.5
+},
+"HEG": {
+"sciage": 51.54,
+"pate": 33.66
+},
+"PEG": {
+"sciage": 135.0,
+"pate": 65.0
+},
+"PIR": {
+"sciage": 71.0,
+"pate": 55.5
+},
+"MEL": {
+"sciage": 71.0,
+"pate": 110.44
+},
+"ORR": {
+"sciage": 43.27,
+"pate": 38.46
+},
+"CET": {
+"sciage": 96.15,
+"pate": 45.45
+},
+"CHR": {
+"sciage": 134.62,
+"pate": 52.88
+},
+"CHG": {
+"sciage": 134.62,
+"pate": 65.0
+},
+"ERR": {
+"sciage": 67.31,
+"pate": 38.46
+},
+"ERS": {
+"sciage": 83.08,
+"pate": 43.27
+},
+"BOG": {
+"sciage": 101.54,
+"pate": 130.0
+},
+"PEH": {
+"sciage": 135.0,
+"pate": 65.0
+},
+"EPN": {
+"sciage": 117.92,
+"pate": 55.5
+},
+"FRN": {
+"sciage": 52.88,
+"pate": 52.88
+},
+"PIS": {
+"sciage": 83.37,
+"pate": 26.96
+},
+"CHB": {
+"sciage": 134.62,
+"pate": 65.0
+},
+"ORA": {
+"sciage": 43.27,
+"pate": 38.46
+},
+"PRU": {
+"sciage": 98.12,
+"pate": 39.13
+},
+"NOC": {
+"sciage": 88.94,
+"pate": 45.45
+},
+"OSV": {
+"sciage": 45.45,
+"pate": 45.45
+},
+"FRP": {
+"sciage": 115.38,
+"pate": 48.08
+},
+"TIL": {
+"sciage": 57.69,
+"pate": 33.66
+}
+}
+},
+"5c5cf934-7148-42cb-aaf0-fef7f8176118": {
+"syndicat": "Sud du Quebec",
+"prix": {
+"ERA": {
+"sciage": 103.36,
+"pate": 38.46
+},
+"PEB": {
+"sciage": 29.55,
+"pate": 29.55
+},
+"PIG": {
+"sciage": 190.21,
+"pate": 55.5
+},
+"FRA": {
+"sciage": 129.81,
+"pate": 48.08
+},
+"BOP": {
+"sciage": 96.15,
+"pate": 130.0
+},
+"ORT": {
+"sciage": 57.69,
+"pate": 38.46
+},
+"THO": {
+"sciage": 114.15,
+"pate": 102.83
+},
+"BOJ": {
+"sciage": 115.38,
+"pate": 130.0
+},
+"PIB": {
+"sciage": 108.49,
+"pate": 55.5
+},
+"PET": {
+"sciage": 67.31,
+"pate": 95.0
+},
+"SAB": {
+"sciage": 126.42,
+"pate": 55.5
+},
+"EPO": {
+"sciage": 239.13,
+"pate": 55.5
+},
+"PED": {
+"sciage": 67.31,
+"pate": 95.0
+},
+"MEH": {
+"sciage": 141.31,
+"pate": 55.5
+},
+"CAC": {
+"sciage": 67.31,
+"pate": 45.45
+},
+"EPB": {
+"sciage": 130.43,
+"pate": 55.5
+},
+"EPR": {
+"sciage": 130.43,
+"pate": 55.5
+},
+"HEG": {
+"sciage": 57.69,
+"pate": 33.66
+},
+"PEG": {
+"sciage": 67.31,
+"pate": 95.0
+},
+"PIR": {
+"sciage": 55.66,
+"pate": 55.5
+},
+"MEL": {
+"sciage": 141.31,
+"pate": 55.5
+},
+"ORR": {
+"sciage": 57.69,
+"pate": 38.46
+},
+"CET": {
+"sciage": 100.96,
+"pate": 45.45
+},
+"CHR": {
+"sciage": 134.62,
+"pate": 52.88
+},
+"CHG": {
+"sciage": 134.62,
+"pate": 130.0
+},
+"ERR": {
+"sciage": 103.36,
+"pate": 38.46
+},
+"ERS": {
+"sciage": 144.23,
+"pate": 43.27
+},
+"BOG": {
+"sciage": 96.15,
+"pate": 130.0
+},
+"PEH": {
+"sciage": 67.31,
+"pate": 95.0
+},
+"EPN": {
+"sciage": 130.43,
+"pate": 55.5
+},
+"FRN": {
+"sciage": 52.88,
+"pate": 52.88
+},
+"PIS": {
+"sciage": 47.17,
+"pate": 26.96
+},
+"CHB": {
+"sciage": 134.62,
+"pate": 130.0
+},
+"ORA": {
+"sciage": 57.69,
+"pate": 38.46
+},
+"PRU": {
+"sciage": 98.12,
+"pate": 39.13
+},
+"NOC": {
+"sciage": 88.94,
+"pate": 45.45
+},
+"OSV": {
+"sciage": 45.45,
+"pate": 45.45
+},
+"FRP": {
+"sciage": 129.81,
+"pate": 48.08
+},
+"TIL": {
+"sciage": 52.88,
+"pate": 33.66
+}
+}
+},
+"72de7ada-3148-4af7-b688-9f741a0859fe": {
+"syndicat": "Region de Quebec",
+"prix": {
+"ERA": {
+"sciage": 81.73,
+"pate": 38.46
+},
+"PEB": {
+"sciage": 29.55,
+"pate": 29.55
+},
+"PIG": {
+"sciage": 78.3,
+"pate": 55.5
+},
+"FRA": {
+"sciage": 139.42,
+"pate": 48.08
+},
+"BOP": {
+"sciage": 81.73,
+"pate": 130.0
+},
+"ORT": {
+"sciage": 43.27,
+"pate": 38.46
+},
+"THO": {
+"sciage": 115.09,
+"pate": 107.11
+},
+"BOJ": {
+"sciage": 105.77,
+"pate": 130.0
+},
+"PIB": {
+"sciage": 108.49,
+"pate": 55.5
+},
+"PET": {
+"sciage": 125.0,
+"pate": 95.0
+},
+"SAB": {
+"sciage": 108.49,
+"pate": 55.5
+},
+"EPO": {
+"sciage": 208.7,
+"pate": 55.5
+},
+"PED": {
+"sciage": 125.0,
+"pate": 95.0
+},
+"MEH": {
+"sciage": 61.32,
+"pate": 110.44
+},
+"CAC": {
+"sciage": 62.5,
+"pate": 45.45
+},
+"EPB": {
+"sciage": 109.91,
+"pate": 55.5
+},
+"EPR": {
+"sciage": 109.91,
+"pate": 55.5
+},
+"HEG": {
+"sciage": 40.87,
+"pate": 33.66
+},
+"PEG": {
+"sciage": 125.0,
+"pate": 95.0
+},
+"PIR": {
+"sciage": 157.6,
+"pate": 55.5
+},
+"MEL": {
+"sciage": 61.32,
+"pate": 110.44
+},
+"ORR": {
+"sciage": 43.27,
+"pate": 38.46
+},
+"CET": {
+"sciage": 105.77,
+"pate": 45.45
+},
+"CHR": {
+"sciage": 144.23,
+"pate": 52.88
+},
+"CHG": {
+"sciage": 149.04,
+"pate": 130.0
+},
+"ERR": {
+"sciage": 81.73,
+"pate": 38.46
+},
+"ERS": {
+"sciage": 134.62,
+"pate": 43.27
+},
+"BOG": {
+"sciage": 81.73,
+"pate": 130.0
+},
+"PEH": {
+"sciage": 125.0,
+"pate": 95.0
+},
+"EPN": {
+"sciage": 109.91,
+"pate": 55.5
+},
+"FRN": {
+"sciage": 52.88,
+"pate": 52.88
+},
+"PIS": {
+"sciage": 83.37,
+"pate": 26.96
+},
+"CHB": {
+"sciage": 149.04,
+"pate": 130.0
+},
+"ORA": {
+"sciage": 43.27,
+"pate": 38.46
+},
+"PRU": {
+"sciage": 75.47,
+"pate": 39.13
+},
+"NOC": {
+"sciage": 84.14,
+"pate": 45.45
+},
+"OSV": {
+"sciage": 45.45,
+"pate": 45.45
+},
+"FRP": {
+"sciage": 139.42,
+"pate": 48.08
+},
+"TIL": {
+"sciage": 43.27,
+"pate": 33.66
+}
+}
+}
+}

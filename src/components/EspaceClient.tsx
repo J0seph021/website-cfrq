@@ -3,6 +3,7 @@ import { supabase } from "../lib/supabaseClient";
 import { withBase } from "../lib/url";
 import { site } from "../data/site";
 import CarteForet from "./CarteForet";
+import CalculateurValeurBois from "./CalculateurValeurBois";
 import FormulaireDemande, { DEMANDES, type ConfigDemande } from "./FormulaireDemande";
 
 type Row = Record<string, any>;
@@ -922,6 +923,13 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null }: { 
             <BilanInvestissements bilan={d.bilan} />
           </Reveal>
         )}
+
+        {/* B3 : calculateur de valeur du bois — le CLIENT remplit ses hypothèses.
+            Placé entre le bilan et les programmes : un net marginal/négatif enchaîne
+            naturellement sur « Saviez-vous que » (les programmes font la différence). */}
+        <Reveal className="mt-10">
+          <CalculateurValeurBois peuplements={peuplements} syndicatGuid={d.producteur?.syndicat_guid ?? null} />
+        </Reveal>
 
         {/* Leviers et programmes (en second temps) */}
         <Reveal className="mt-10">
