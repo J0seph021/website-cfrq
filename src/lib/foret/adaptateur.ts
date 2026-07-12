@@ -120,5 +120,62 @@ export function compositionParEssence(
     .sort((a, b) => b.vol - a.vol);
 }
 
+// Bbox [minLng, minLat, maxLng, maxLat] d'une géométrie GeoJSON (Polygon/MultiPolygon).
+export function bboxGeom(geom: any): [number, number, number, number] | null {
+  if (!geom?.coordinates) return null;
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  const walk = (a: any) => {
+    if (typeof a[0] === "number") {
+      if (a[0] < minX) minX = a[0];
+      if (a[0] > maxX) maxX = a[0];
+      if (a[1] < minY) minY = a[1];
+      if (a[1] > maxY) maxY = a[1];
+    } else for (const b of a) walk(b);
+  };
+  walk(geom.coordinates);
+  return Number.isFinite(minX) ? [minX, minY, maxX, maxY] : null;
+}
+
+export type Secteur = { bbox: [number, number, number, number]; n: number };
+
+// Regroupe les peuplements en SECTEURS (regroupement par proximité, single-linkage).
+// Sert à cadrer la carte sur la forêt du client même quand ses lots sont très
+// dispersés (ex. GoForest : 2 secteurs à ~65 km ; à l'échelle de tout, les
+// peuplements deviennent invisibles). Retour trié par nombre de peuplements.
+export function secteursPeuplements(features: any[], seuilM = 6000): Secteur[] {
+  const items = (features ?? [])
+    .filter((f) => f?.properties?.couche === "peuplement")
+    .map((f) => bboxGeom(f.geometry))
+    .filter(Boolean) as [number, number, number, number][];
+  if (!items.length) return [];
+  const centre = (b: number[]) => [(b[0] + b[2]) / 2, (b[1] + b[3]) / 2];
+  const distM = (a: number[], b: number[]) => {
+    const dx = (a[0] - b[0]) * Math.cos((a[1] * Math.PI) / 180) * 111320;
+    const dy = (a[1] - b[1]) * 110540;
+    return Math.hypot(dx, dy);
+  };
+  const parent = items.map((_, i) => i);
+  const find = (i: number): number => (parent[i] === i ? i : (parent[i] = find(parent[i])));
+  const cx = items.map(centre);
+  for (let i = 0; i < items.length; i++)
+    for (let j = i + 1; j < items.length; j++)
+      if (distM(cx[i], cx[j]) < seuilM) parent[find(i)] = find(j);
+  const groupes = new Map<number, [number, number, number, number]>();
+  const compte = new Map<number, number>();
+  items.forEach((it, i) => {
+    const r = find(i);
+    const b = groupes.get(r);
+    if (!b) groupes.set(r, [...it] as [number, number, number, number]);
+    else {
+      b[0] = Math.min(b[0], it[0]); b[1] = Math.min(b[1], it[1]);
+      b[2] = Math.max(b[2], it[2]); b[3] = Math.max(b[3], it[3]);
+    }
+    compte.set(r, (compte.get(r) ?? 0) + 1);
+  });
+  return [...groupes.entries()]
+    .map(([r, bbox]) => ({ bbox, n: compte.get(r)! }))
+    .sort((a, b) => b.n - a.n);
+}
+
 export { projeterScenarios };
 export type { AnalysePeuplement };

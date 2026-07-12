@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { supabase } from "../lib/supabaseClient";
-import { analyseDepuisProps, sparklineCourbe, COULEUR_STATUT, LEGENDE_CAPITAL, compositionParEssence } from "../lib/foret/adaptateur";
+import { analyseDepuisProps, sparklineCourbe, COULEUR_STATUT, LEGENDE_CAPITAL, compositionParEssence, secteursPeuplements, type Secteur } from "../lib/foret/adaptateur";
 import PanneauProjection from "./PanneauProjection";
 
 type FeatureCollection = { type: "FeatureCollection"; features: any[] };
@@ -92,6 +92,13 @@ export default function CarteForet({ data, bbox, documents = [] }: Props) {
   const [capital, setCapital] = useState(false);
   // E3 : peuplement sélectionné pour le panneau de projection avec/sans intervention.
   const [selPeup, setSelPeup] = useState<Record<string, any> | null>(null);
+
+  // Secteurs de forêt (regroupement des peuplements par proximité) : sert à cadrer
+  // la carte sur la forêt et à naviguer quand les lots sont dispersés (« lot par lot »).
+  const secteurs = useMemo<Secteur[]>(() => secteursPeuplements(data?.features ?? []), [data]);
+  const secteursRef = useRef(secteurs);
+  secteursRef.current = secteurs;
+  const [secteurActif, setSecteurActif] = useState(0);
 
   const { expr: couleurPeuplement, legende } = useMemo(
     () => couleurAppellations(data?.features ?? []),
@@ -280,8 +287,13 @@ export default function CarteForet({ data, bbox, documents = [] }: Props) {
         paint: { "line-color": COULEUR_PROPRIETE, "line-width": 2.5 },
       });
 
-      if (bbox && bbox.length === 4) {
-        map.fitBounds([[bbox[0], bbox[1]], [bbox[2], bbox[3]]], { padding: 30, animate: false });
+      // Cadrage initial : sur le secteur de forêt le plus dense (pas sur tout
+      // l'étalement). Sinon, pour un producteur aux lots dispersés (ex. GoForest,
+      // 2 secteurs à ~65 km), la carte s'ouvre si dézoomée que les peuplements
+      // deviennent invisibles. maxZoom borne le cas d'un secteur minuscule.
+      const cadre = secteursRef.current[0]?.bbox ?? bbox;
+      if (cadre && cadre.length === 4) {
+        map.fitBounds([[cadre[0], cadre[1]], [cadre[2], cadre[3]]], { padding: 40, maxZoom: 15, animate: false });
       }
 
       const popup = new maplibregl.Popup({ closeButton: true, maxWidth: "290px" });
@@ -305,6 +317,18 @@ export default function CarteForet({ data, bbox, documents = [] }: Props) {
     window.addEventListener("resize", onResize);
     return () => { window.removeEventListener("resize", onResize); map.remove(); carte.current = null; };
   }, [data, bbox, couleurPeuplement]);
+
+  // Recadre la carte sur un secteur de forêt (navigation « lot par lot »).
+  function cadrerSecteur(i: number) {
+    const s = secteurs[i];
+    const map = carte.current;
+    if (!s || !map) return;
+    setSecteurActif(i);
+    setAstuce(false);
+    // Saut direct (pas de survol animé) : les secteurs peuvent être à des dizaines
+    // de km, un « fly » traverserait longuement du vide.
+    map.fitBounds([[s.bbox[0], s.bbox[1]], [s.bbox[2], s.bbox[3]]], { padding: 40, maxZoom: 15, animate: false });
+  }
 
   function basculer(id: string) {
     setVisibles((v) => {
@@ -450,6 +474,28 @@ export default function CarteForet({ data, bbox, documents = [] }: Props) {
             <span>Cliquez un peuplement pour voir son détail : essences, volume, traitement recommandé.</span>
             <button onClick={() => setAstuce(false)} aria-label="Fermer l'astuce"
               className="ml-0.5 shrink-0 leading-none text-white/60 hover:text-white">✕</button>
+          </div>
+        </div>
+      )}
+
+      {/* Navigation « lot par lot » : quand la forêt est en plusieurs secteurs
+          éloignés (ex. GoForest), on cadre sur un secteur à la fois, sinon tout
+          est trop dézoomé pour voir les peuplements. Masqué si un seul secteur. */}
+      {secteurs.length > 1 && (
+        <div className={`absolute left-1/2 z-20 -translate-x-1/2 ${pleinEcran ? "bottom-16" : "bottom-3"}`}>
+          <div className="flex items-center gap-1 rounded-full bg-white/95 p-1 text-[12px] font-medium shadow-lg backdrop-blur">
+            <span className="pl-2 pr-1 text-cfrq-deep/55">Secteurs</span>
+            {secteurs.map((s, i) => (
+              <button
+                key={i}
+                onClick={() => cadrerSecteur(i)}
+                aria-pressed={i === secteurActif}
+                title={`${s.n} peuplement${s.n > 1 ? "s" : ""}`}
+                className={`min-w-[26px] rounded-full px-2 py-1 transition-colors ${i === secteurActif ? "bg-cfrq-green text-[#123005]" : "text-cfrq-deep/70 hover:bg-black/5"}`}
+              >
+                {i + 1}
+              </button>
+            ))}
           </div>
         </div>
       )}
