@@ -353,11 +353,30 @@ export default function CarteForet({ data, bbox, documents = [] }: Props) {
       {/* className statique : MapLibre ajoute ses propres classes ici, un re-render React ne doit pas les écraser. */}
       <div ref={conteneur} className="h-full w-full" />
 
-      {/* Sortie de plein écran toujours visible (pas d'Échap sur mobile). */}
+      {/* Bascule « Capital forestier » (E2) : TOUJOURS visible, en haut au centre.
+          C'est l'accroche commerciale du focus group — elle ne doit jamais être
+          enfouie dans un panneau repliable (personne ne la trouvait). Pastille
+          unique et compacte pour ne pas chevaucher les contrôles de coin sur mobile. */}
+      <button
+        onClick={() => setCapital((v) => !v)}
+        aria-pressed={capital}
+        title={capital ? "Revenir aux types de peuplement" : "Voir le capital forestier (croissance / mûr / décroissance)"}
+        className={`absolute left-1/2 top-14 z-20 flex -translate-x-1/2 items-center gap-2 rounded-full px-3.5 py-2 text-[12.5px] font-medium shadow-lg backdrop-blur transition-colors sm:top-3 ${capital ? "bg-cfrq-deep text-white" : "bg-white/95 text-cfrq-deep"}`}
+      >
+        <span className="inline-flex overflow-hidden rounded-[3px]" aria-hidden>
+          <span className="inline-block h-3 w-2" style={{ background: COULEUR_STATUT.vert }} />
+          <span className="inline-block h-3 w-2" style={{ background: COULEUR_STATUT.jaune }} />
+          <span className="inline-block h-3 w-2" style={{ background: COULEUR_STATUT.rouge }} />
+        </span>
+        Capital forestier
+        {capital && <span aria-hidden className="text-cfrq-green">✓</span>}
+      </button>
+
+      {/* Sortie de plein écran (bas-centre en plein écran : ne masque pas la bascule de vue). */}
       {pleinEcran && (
         <button
           onClick={() => setPleinEcran(false)}
-          className="absolute left-1/2 top-2 z-10 -translate-x-1/2 rounded-full bg-white/95 px-4 py-2 text-[13.5px] font-medium text-cfrq-deep shadow-lg backdrop-blur"
+          className="absolute bottom-3 left-1/2 z-20 -translate-x-1/2 rounded-full bg-white/95 px-4 py-2 text-[13.5px] font-medium text-cfrq-deep shadow-lg backdrop-blur"
         >
           ✕ Quitter le plein écran
         </button>
@@ -382,21 +401,6 @@ export default function CarteForet({ data, bbox, documents = [] }: Props) {
                 </label>
               ))}
             </div>
-            {/* E2 : vue « capital forestier » — recolore les peuplements par statut. */}
-            <label className="mt-2 flex cursor-pointer items-start gap-2 border-t border-black/10 pt-2 text-black/70">
-              <input type="checkbox" checked={capital} onChange={() => setCapital((v) => !v)} className="mt-0.5 accent-cfrq-green" />
-              <span>
-                <span className="inline-flex items-center gap-1.5 font-medium text-cfrq-deep">
-                  <span className="inline-flex">
-                    <span className="inline-block h-3 w-2 rounded-l-sm" style={{ background: COULEUR_STATUT.vert }} />
-                    <span className="inline-block h-3 w-2" style={{ background: COULEUR_STATUT.jaune }} />
-                    <span className="inline-block h-3 w-2 rounded-r-sm" style={{ background: COULEUR_STATUT.rouge }} />
-                  </span>
-                  Capital forestier
-                </span>
-                <span className="block text-[11.5px] leading-tight text-black/50">Croissance / mûr / décroissance</span>
-              </span>
-            </label>
           </div>
         ) : (
           <button onClick={() => setCouchesOuvert(true)}
