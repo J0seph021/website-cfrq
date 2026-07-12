@@ -1,0 +1,27 @@
+---
+import Base from "../layouts/Base.astro";
+import WoodValueCalculator from "../components/WoodValueCalculator.tsx";
+---
+
+<Base
+  title="Calculateur de valeur du bois | CFRQ"
+  description="Estimez la valeur nette du bois de votre forêt : la valeur marchande, moins le transport et la récolte. Ajustez vos hypothèses et voyez ce qui vous revient vraiment."
+>
+  <section class="bg-[#f4f5f2]">
+    <div class="mx-auto max-w-[1160px] px-[22px] py-[72px]">
+      <div class="max-w-[720px]">
+        <p class="text-[13px] font-semibold uppercase tracking-[0.14em] text-cfrq-leaf">Outil gratuit · estimation</p>
+        <h1 class="mt-3.5 font-display text-[clamp(28px,5vw,42px)] font-medium leading-[1.08] text-cfrq-deep">
+          Combien vaut vraiment le bois de votre forêt ?
+        </h1>
+        <p class="mt-4 text-[17px] leading-relaxed text-cfrq-ink/65">
+          Le prix affiché à l'usine n'est pas ce qui reste dans vos poches : il faut en retirer le transport et la récolte.
+          Entrez vos volumes, ajustez le coût de récolte selon votre type de coupe, et voyez la valeur nette, celle qui vous revient.
+        </p>
+      </div>
+      <div class="mt-8">
+        <WoodValueCalculator client:load />
+      </div>
+    </div>
+  </section>
+</Base>
