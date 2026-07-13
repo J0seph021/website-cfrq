@@ -43,8 +43,9 @@ const site = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, { auth: { per
 const plani = createClient(PLANI_URL, PLANI_STORAGE_KEY, { auth: { persistSession: false } });
 
 // Types de documents montrés au client (deliverables). On exclut les contrats (ctr)
-// par prudence (à activer si souhaité).
-const TYPES = ["prs", "rap", "paf"];
+// par prudence (à activer si souhaité). rtf = rapport de remboursement de taxes
+// foncières (décision JM 2026-07-13).
+const TYPES = ["prs", "rap", "paf", "rtf"];
 
 // Documents signés d'un producteur, depuis le mapping centre_doc_fichier.
 const SQL_DOCS = `
@@ -57,11 +58,13 @@ const META = {
   prs: { type: "prescription", dossier: "prescriptions" },
   rap: { type: "rapport", dossier: "rapports" },
   paf: { type: "paf", dossier: "plans" },
+  rtf: { type: "rtf", dossier: "taxes" },
 };
 
 function nomLisible(tcode, no, annee) {
   if (tcode === "prs") return `Prescription ${no ?? ""}`.trim();
   if (tcode === "rap") return `Rapport d'exécution ${no ?? ""}`.trim();
+  if (tcode === "rtf") return `Rapport de taxes foncières${annee ? " " + String(annee).replace(/\.0$/, "") : ""}`;
   return `Plan d'aménagement forestier${annee ? " " + String(annee).replace(/\.0$/, "") : ""}`;
 }
 
@@ -79,7 +82,7 @@ async function traiterProducteur(id) {
   const { rows: docs } = await pgc.query(SQL_DOCS, [id, TYPES]);
   // Idempotence: on repart propre pour ce producteur (types gérés ici).
   await site.from("documents").delete()
-    .eq("producteur_id", id).in("type_document", ["prescription", "rapport", "paf"]);
+    .eq("producteur_id", id).in("type_document", ["prescription", "rapport", "paf", "rtf"]);
 
   let copies = 0, erreurs = 0;
   for (const r of docs) {

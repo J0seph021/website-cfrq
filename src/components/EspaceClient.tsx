@@ -253,6 +253,7 @@ function anneeDoc(doc: Row): string | null {
 function titreDoc(doc: Row): string {
   if (doc.type_document === "prescription") return "Prescription sylvicole";
   if (doc.type_document === "rapport") return "Rapport d'exécution";
+  if (doc.type_document === "rtf") return "Rapport de taxes foncières";
   return String(doc.nom_document ?? "Document");
 }
 
@@ -368,6 +369,8 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null }: { 
   const LIMITE_TRAVAUX = 5;
   const [docsOuvert, setDocsOuvert] = useState(false);
   const LIMITE_DOCS = 6;
+  const [rtfOuvert, setRtfOuvert] = useState(false);
+  const LIMITE_RTF = 6;
   const travauxTries = useMemo(
     () => [...travauxCarte].sort((a, b) => String(b.annee ?? "").localeCompare(String(a.annee ?? ""))),
     [travauxCarte]
@@ -475,16 +478,26 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null }: { 
       : undefined;
 
   // Documents hors PAF, du plus récent au plus ancien : l'année, réclamée au focus group,
-  // est la clé pour s'y retrouver parmi les prescriptions.
+  // est la clé pour s'y retrouver parmi les prescriptions. Les rapports de taxes (rtf)
+  // ont leur propre catégorie plus bas.
   const docsHorsPaf = useMemo(
     () =>
       d.documents
-        .filter((x) => x.type_document !== "paf")
+        .filter((x) => x.type_document !== "paf" && x.type_document !== "rtf")
         .sort(
           (a, b) =>
             (anneeDoc(b) ?? "").localeCompare(anneeDoc(a) ?? "") ||
             String(a.reference ?? "").localeCompare(String(b.reference ?? ""))
         ),
+    [d.documents]
+  );
+
+  // Rapports de remboursement de taxes foncières (rtf) : catégorie à part, par année.
+  const rtfDocs = useMemo(
+    () =>
+      d.documents
+        .filter((x) => x.type_document === "rtf")
+        .sort((a, b) => (anneeDoc(b) ?? "").localeCompare(anneeDoc(a) ?? "")),
     [d.documents]
   );
 
@@ -925,6 +938,51 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null }: { 
                 {docsOuvert ? "Voir moins" : `Voir les ${docsHorsPaf.length - LIMITE_DOCS} autres documents`}
                 <span aria-hidden className={`transition-transform ${docsOuvert ? "rotate-180" : ""}`}>⌄</span>
               </button>
+            )}
+
+            {/* Rapports de remboursement de taxes foncières : catégorie à part (un
+                rapport couvre une année, pas une prescription), même présentation. */}
+            {rtfDocs.length > 0 && (
+              <>
+                <div className="mt-8 flex flex-wrap items-end justify-between gap-2">
+                  <h3 className="font-display text-lg font-medium text-cfrq-deep">Vos rapports de taxes foncières</h3>
+                  <span className="text-[13px] text-black/50">{rtfDocs.length} au total</span>
+                </div>
+                <p className="mt-1 text-[14.5px] text-black/55">Le rapport annuel préparé par nos ingénieurs pour votre remboursement de taxes foncières : la pièce à remettre à votre comptable.</p>
+                <div className="mt-4 rounded-2xl border border-black/5 bg-white p-6">
+                  <ul className="divide-y divide-black/5">
+                    {(rtfOuvert ? rtfDocs : rtfDocs.slice(0, LIMITE_RTF)).map((doc) => {
+                      const annee = anneeDoc(doc);
+                      return (
+                        <li key={doc.id}>
+                          <button onClick={() => ouvrirDoc(doc.storage_path)} disabled={!doc.storage_path}
+                            className="flex w-full items-center justify-between gap-3 py-3 text-left text-[15px] disabled:cursor-default">
+                            <span className="flex items-center gap-2">
+                              {doc.storage_path && <span aria-hidden>📄</span>}
+                              <span className="flex flex-col">
+                                <span className={`font-medium text-cfrq-deep ${doc.storage_path ? "hover:underline" : ""}`}>{titreDoc(doc)}</span>
+                                {doc.reference && <span className="text-[12.5px] text-black/45">nº {doc.reference}</span>}
+                              </span>
+                            </span>
+                            {annee ? (
+                              <span className="shrink-0 rounded-full bg-cfrq-tint px-3 py-1 text-[13px] font-medium text-cfrq-leaf">{annee}</span>
+                            ) : (
+                              <span className="shrink-0 text-[13px] text-black/50">{doc.taille ?? doc.date_document}</span>
+                            )}
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+                {rtfDocs.length > LIMITE_RTF && (
+                  <button onClick={() => setRtfOuvert((o) => !o)}
+                    className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-cfrq-green/30 px-4 py-2.5 text-[14px] font-medium text-cfrq-leaf transition-colors hover:bg-cfrq-tint">
+                    {rtfOuvert ? "Voir moins" : `Voir les ${rtfDocs.length - LIMITE_RTF} autres rapports`}
+                    <span aria-hidden className={`transition-transform ${rtfOuvert ? "rotate-180" : ""}`}>⌄</span>
+                  </button>
+                )}
+              </>
             )}
           </section>
         </Reveal>

@@ -28,12 +28,13 @@ const {
   TIME_BUDGET_MS = "25000",
 } = Deno.env.toObject();
 
-const TYPES = ["prs", "rap", "paf"];
+const TYPES = ["prs", "rap", "paf", "rtf"];
 
 const META: Record<string, { type: string; dossier: string }> = {
   prs: { type: "prescription", dossier: "prescriptions" },
   rap: { type: "rapport", dossier: "rapports" },
   paf: { type: "paf", dossier: "plans" },
+  rtf: { type: "rtf", dossier: "taxes" },
 };
 
 const SQL_DOCS = `
@@ -56,6 +57,7 @@ LIMIT $4`;
 function nomLisible(tcode: string, no: string | null, annee: unknown) {
   if (tcode === "prs") return `Prescription ${no ?? ""}`.trim();
   if (tcode === "rap") return `Rapport d'exécution ${no ?? ""}`.trim();
+  if (tcode === "rtf") return `Rapport de taxes foncières${annee ? " " + String(annee).replace(/\.0$/, "") : ""}`;
   return `Plan d'aménagement forestier${annee ? " " + String(annee).replace(/\.0$/, "") : ""}`;
 }
 
@@ -116,7 +118,7 @@ Deno.serve(async (req) => {
       const { rows: docs } = await pgc.query(SQL_DOCS, [id, TYPES]);
 
       await site.from("documents").delete()
-        .eq("producteur_id", id).in("type_document", ["prescription", "rapport", "paf"]);
+        .eq("producteur_id", id).in("type_document", ["prescription", "rapport", "paf", "rtf"]);
 
       for (const r of docs) {
         const meta = META[r.sp_type_code];
