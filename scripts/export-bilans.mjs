@@ -12,6 +12,13 @@
  *   part   = valeur − aide (contribution du propriétaire)
  * Filtre RTF obligatoire (programmes année civile), miroir de taux_queries.py.
  *
+ * Rattachement travaux -> producteur en DEUX temps : prescription.propriete_id
+ * (lien fort, mais présent sur ~5 % des travaux seulement), puis repli sur le
+ * mapping du centre documentaire (centre_doc_fichier, metadata SharePoint
+ * « N° producteur ») — la MÊME clé que les documents montrés au client. Sans ce
+ * repli, un client voyait ses prescriptions dans « Documents » mais un bilan
+ * quasi vide (cas GoForest : 5 218 $ affichés vs ~39 000 $ réels).
+ *
  * Usage :
  *   node --env-file=scripts/.env scripts/export-bilans.mjs           # tous
  *   node --env-file=scripts/.env scripts/export-bilans.mjs 644 2546  # ciblés
@@ -29,17 +36,33 @@ if (!PLANILOGIX_DB_URL || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
 const ANNEE_MIN = new Date().getFullYear() - 2;
 
 const SQL = `
-WITH src AS (
-  SELECT pc.producteur_id,
+WITH prop_map AS (
+  -- Lien fort : prescription rattachée à une propriété du producteur.
+  SELECT DISTINCT p.no_prescription, pc.producteur_id
+  FROM planilogix.prescription     p
+  JOIN planilogix.propriete_client pc ON pc.id = p.propriete_id
+  WHERE pc.producteur_id IS NOT NULL
+),
+doc_map AS (
+  -- Repli : mapping du centre documentaire (même clé que les documents du portail).
+  -- Une prescription mappée à plusieurs producteurs est ambiguë -> exclue.
+  SELECT no_prescription, min(producteur_id) AS producteur_id
+  FROM planilogix.centre_doc_fichier
+  WHERE producteur_id IS NOT NULL AND no_prescription IS NOT NULL
+  GROUP BY no_prescription
+  HAVING count(DISTINCT producteur_id) = 1
+),
+src AS (
+  SELECT COALESCE(pm.producteur_id, dm.producteur_id) AS producteur_id,
          st.subvention AS aide,
          st.subvention / CASE WHEN st.code_pr IN
            ('7751','7752','7753','7761','7762','7763') THEN 0.95 ELSE 0.85 END AS valeur,
          st.superficie,
          st.annee_execution::int AS annee
   FROM planilogix.suivi_travaux st
-  JOIN planilogix.prescription     p  ON p.no_prescription = st.no_prescription
-  JOIN planilogix.propriete_client pc ON pc.id = p.propriete_id
-  WHERE pc.producteur_id IS NOT NULL
+  LEFT JOIN prop_map pm ON pm.no_prescription = st.no_prescription
+  LEFT JOIN doc_map  dm ON dm.no_prescription = st.no_prescription
+  WHERE COALESCE(pm.producteur_id, dm.producteur_id) IS NOT NULL
     AND st.subvention IS NOT NULL
     AND st.annee_execution ~ '^[0-9]{4}$'
     AND st.annee_execution::int >= $1
@@ -72,6 +95,15 @@ async function main() {
   const { rows } = await pgClient.query(SQL, [ANNEE_MIN]);
   const filtres = cibles.length ? rows.filter((r) => cibles.includes(r.producteur_id)) : rows;
   console.log(`${filtres.length} producteur(s) avec des travaux depuis ${ANNEE_MIN}.`);
+
+  // Couverture : les travaux sans lien propriété NI centre doc restent hors bilan.
+  const rattaches = rows.reduce((s, r) => s + Number(r.nb_traitements), 0);
+  const { rows: [tot] } = await pgClient.query(
+    `SELECT COUNT(*)::int AS n FROM planilogix.suivi_travaux st
+     WHERE st.subvention IS NOT NULL AND st.annee_execution ~ '^[0-9]{4}$'
+       AND st.annee_execution::int >= $1
+       AND COALESCE(btrim(st.programme),'') NOT IN ('$$','PRTF','RTF')`, [ANNEE_MIN]);
+  console.log(`Couverture : ${rattaches}/${tot.n} travaux rattachés à un producteur (${tot.n - rattaches} orphelins hors bilan).`);
 
   let ok = 0, erreurs = 0;
   for (const r of filtres) {
