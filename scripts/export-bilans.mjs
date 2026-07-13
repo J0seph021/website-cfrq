@@ -13,11 +13,11 @@
  * Filtre RTF obligatoire (programmes année civile), miroir de taux_queries.py.
  *
  * Rattachement travaux -> producteur en DEUX temps : prescription.propriete_id
- * (lien fort, mais présent sur ~5 % des travaux seulement), puis repli sur le
- * mapping du centre documentaire (centre_doc_fichier, metadata SharePoint
- * « N° producteur ») — la MÊME clé que les documents montrés au client. Sans ce
- * repli, un client voyait ses prescriptions dans « Documents » mais un bilan
- * quasi vide (cas GoForest : 5 218 $ affichés vs ~39 000 $ réels).
+ * (lien fort, mais présent sur une petite fraction des travaux seulement), puis
+ * repli sur le mapping du centre documentaire (centre_doc_fichier, metadata
+ * SharePoint « N° producteur ») — la MÊME clé que les documents montrés au
+ * client. Sans ce repli, un client voyait ses prescriptions dans « Documents »
+ * mais un bilan quasi vide.
  *
  * Usage :
  *   node --env-file=scripts/.env scripts/export-bilans.mjs           # tous
