@@ -172,6 +172,12 @@ function htmlConfirmation(source: string, nom: string): string {
       para("Merci ! On a bien reçu votre demande de plants. On vous revient rapidement pour confirmer les disponibilités et les prochaines étapes.") +
       para("Rappel : des frais de transport de 22 $ le sac (50 plants) s'appliquent à la réception. Une question ? <strong style='color:#141414;'>367 777-0555</strong>."));
   }
+  if (source === "calculateur-valeur-bois") {
+    return coquille("Demande reçue", "On a bien reçu votre demande",
+      para(bonjour) +
+      para("Merci ! Vous avez demandé une caractérisation de votre forêt suite à votre estimation de la valeur du bois. Un de nos ingénieurs ou techniciens forestiers vous recontacte <strong>sous un jour ouvrable</strong> pour valider vos vrais chiffres sur le terrain, sans engagement.") +
+      para("Pour une réponse immédiate, appelez-nous au <strong style='color:#141414;'>367 777-0555</strong>."));
+  }
   return coquille("Demande reçue", "On a bien reçu votre demande",
     para(bonjour) +
     para("Merci pour votre demande de visite-conseil. Un de nos ingénieurs ou techniciens forestiers vous recontacte <strong>sous un jour ouvrable</strong> pour planifier votre visite, sans engagement.") +
@@ -182,7 +188,9 @@ function htmlNotifProspect(source: string, d: Prospect): string {
   const li = (k: string, v: string) =>
     "<tr><td style='padding:3px 14px 3px 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#5F655E;vertical-align:top;'>" + k +
     "</td><td style='padding:3px 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#141414;font-weight:bold;'>" + v + "</td></tr>";
-  const titre = source === "plants" ? "Nouvelle demande de plants" : "Nouvelle demande de visite-conseil";
+  const titre = source === "plants" ? "Nouvelle demande de plants"
+    : source === "calculateur-valeur-bois" ? "Nouveau lead au calculateur de valeur du bois"
+    : "Nouvelle demande de visite-conseil";
   let rows = li("Courriel", esc(d.courriel));
   if (d.nom) rows += li("Nom", esc(d.nom));
   if (d.telephone) rows += li("Téléphone", esc(d.telephone));
@@ -202,9 +210,13 @@ function htmlNotifProspect(source: string, d: Prospect): string {
 async function envoyerProspect(source: string, d: Prospect): Promise<void> {
   if (!M365_TENANT || !M365_CLIENT_ID || !M365_CLIENT_SECRET) return;
   const access = await graphToken();
-  const sujet = source === "plants" ? "Votre demande de plants a bien été reçue" : "Votre demande de visite-conseil a bien été reçue";
+  const sujet = source === "plants" ? "Votre demande de plants a bien été reçue"
+    : source === "calculateur-valeur-bois" ? "Votre demande de caractérisation a bien été reçue"
+    : "Votre demande de visite-conseil a bien été reçue";
   await envoyer(access, d.courriel, sujet, htmlConfirmation(source, d.nom)).catch((e) => console.error("confirmation:", (e as Error).message));
-  const sujetNotif = (source === "plants" ? "Nouveau lead plants : " : "Nouveau lead visite-conseil : ") + d.courriel;
+  const sujetNotif = (source === "plants" ? "Nouveau lead plants : "
+    : source === "calculateur-valeur-bois" ? "Nouveau lead valeur du bois : "
+    : "Nouveau lead visite-conseil : ") + d.courriel;
   await envoyer(access, LEADS_NOTIFY, sujetNotif, htmlNotifProspect(source, d)).catch((e) => console.error("notif:", (e as Error).message));
 }
 

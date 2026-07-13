@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { site } from "../data/site";
+import { MUNICIPALITES_TERRITOIRE } from "../data/municipalites";
 
 const cad = new Intl.NumberFormat("fr-CA", { style: "currency", currency: "CAD", maximumFractionDigits: 0 });
 const nf = new Intl.NumberFormat("fr-CA", { maximumFractionDigits: 0 });
@@ -50,6 +51,8 @@ export default function WoodValueCalculator() {
   const [hypOuvert, setHypOuvert] = useState(false);
 
   const [email, setEmail] = useState("");
+  const [municipalite, setMunicipalite] = useState("");
+  const [lots, setLots] = useState("");
   const [website, setWebsite] = useState(""); // honeypot anti-spam (reste vide)
   const [envoi, setEnvoi] = useState(false);
   const [envoye, setEnvoye] = useState(false);
@@ -68,6 +71,8 @@ export default function WoodValueCalculator() {
   function fallbackMailto() {
     const corps = [
       `Courriel : ${email}`,
+      ...(municipalite ? [`Municipalité : ${municipalite}`] : []),
+      ...(lots ? [`Numéro(s) de lot : ${lots}`] : []),
       `Volume résineux : ${nf.format(volRes)} m³ (${pctSciage} % sciage)`,
       `Volume feuillu : ${nf.format(volFeu)} m³`,
       `Valeur marchande (usine) : ${cad.format(calc.marchande)}`,
@@ -91,13 +96,19 @@ export default function WoodValueCalculator() {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
           courriel: email,
-          volume_resineux_m3: volRes,
-          volume_feuillu_m3: volFeu,
-          pct_sciage: pctSciage,
-          cout_recolte_m3: coutRecolte,
-          transport_m3: transport,
-          valeur_marchande: Math.round(calc.marchande),
-          valeur_nette: Math.round(calc.net),
+          municipalite: municipalite || undefined,
+          // Les champs de calcul passent dans `details` : c'est ce que la branche
+          // générique de capter-lead persiste (jsonb) et affiche dans la notification.
+          details: {
+            ...(lots ? { "Numéro(s) de lot": lots } : {}),
+            "Volume résineux (m³)": volRes,
+            "Volume feuillu (m³)": volFeu,
+            "Part sciage résineux (%)": pctSciage,
+            "Coût récolte ($/m³)": coutRecolte,
+            "Transport ($/m³)": transport,
+            "Valeur marchande estimée": cad.format(calc.marchande),
+            "Valeur nette estimée": cad.format(calc.net),
+          },
           source: "calculateur-valeur-bois",
           website, // honeypot
         }),
@@ -219,18 +230,36 @@ export default function WoodValueCalculator() {
               <strong className="font-medium">Merci.</strong> On vous recontacte pour caractériser votre forêt et affiner cette estimation avec vos vrais chiffres.
             </div>
           ) : (
-            <form onSubmit={soumettre} className="relative flex flex-col gap-3 sm:flex-row">
+            <form onSubmit={soumettre} className="relative flex flex-col gap-3">
               <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true"
                 value={website} onChange={(e) => setWebsite(e.target.value)}
                 className="absolute h-0 w-0 opacity-0" style={{ position: "absolute", left: "-9999px" }} />
-              <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
-                placeholder="votre@courriel.ca"
-                className="h-12 flex-1 rounded-lg border border-black/15 bg-white px-4 text-[16px] outline-none focus:border-cfrq-green"
-                aria-label="Votre adresse courriel" />
-              <button type="submit" disabled={envoi}
-                className="h-12 rounded-lg bg-cfrq-green px-5 text-[15px] font-medium text-[#123005] transition-colors hover:bg-cfrq-green-hover disabled:cursor-not-allowed disabled:opacity-60">
-                {envoi ? "Envoi..." : "Faire caractériser ma forêt"}
-              </button>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <span>
+                  <input list="municipalites-territoire" value={municipalite}
+                    onChange={(e) => setMunicipalite(e.target.value)}
+                    placeholder="Municipalité (optionnel)"
+                    className="h-12 w-full rounded-lg border border-black/15 bg-white px-4 text-[16px] outline-none focus:border-cfrq-green"
+                    aria-label="Municipalité de votre boisé (optionnel)" />
+                  <datalist id="municipalites-territoire">
+                    {MUNICIPALITES_TERRITOIRE.map((m) => <option key={m} value={m} />)}
+                  </datalist>
+                </span>
+                <input type="text" value={lots} onChange={(e) => setLots(e.target.value)}
+                  placeholder="Numéro(s) de lot (optionnel)"
+                  className="h-12 w-full rounded-lg border border-black/15 bg-white px-4 text-[16px] outline-none focus:border-cfrq-green"
+                  aria-label="Numéro ou numéros de lot (optionnel)" />
+              </div>
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
+                  placeholder="votre@courriel.ca"
+                  className="h-12 flex-1 rounded-lg border border-black/15 bg-white px-4 text-[16px] outline-none focus:border-cfrq-green"
+                  aria-label="Votre adresse courriel" />
+                <button type="submit" disabled={envoi}
+                  className="h-12 rounded-lg bg-cfrq-green px-5 text-[15px] font-medium text-[#123005] transition-colors hover:bg-cfrq-green-hover disabled:cursor-not-allowed disabled:opacity-60">
+                  {envoi ? "Envoi..." : "Faire caractériser ma forêt"}
+                </button>
+              </div>
             </form>
           )}
 
