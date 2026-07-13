@@ -366,6 +366,8 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null }: { 
   const travauxCarte = useMemo(() => travauxDepuisCarte(d.carte), [d.carte]);
   const [travauxOuvert, setTravauxOuvert] = useState(false);
   const LIMITE_TRAVAUX = 5;
+  const [docsOuvert, setDocsOuvert] = useState(false);
+  const LIMITE_DOCS = 6;
   const travauxTries = useMemo(
     () => [...travauxCarte].sort((a, b) => String(b.annee ?? "").localeCompare(String(a.annee ?? ""))),
     [travauxCarte]
@@ -882,12 +884,15 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null }: { 
         {/* Documents */}
         <Reveal className="mt-10">
           <section id="documents" className="scroll-mt-28">
-            <h2 className="font-display text-xl font-medium text-cfrq-deep">Vos documents</h2>
+            <div className="flex flex-wrap items-end justify-between gap-2">
+              <h2 className="font-display text-xl font-medium text-cfrq-deep">Vos documents</h2>
+              {docsHorsPaf.length > 0 && <span className="text-[13px] text-black/50">{docsHorsPaf.length} au total</span>}
+            </div>
             <p className="mt-1 text-[14.5px] text-black/55">Vos plans, prescriptions et rapports signés, conservés au même endroit : un boisé documenté, plus facile à entretenir et à transmettre.</p>
             <div className="mt-4 rounded-2xl border border-black/5 bg-white p-6">
               {docsHorsPaf.length > 0 ? (
                 <ul className="divide-y divide-black/5">
-                  {docsHorsPaf.map((doc) => {
+                  {(docsOuvert ? docsHorsPaf : docsHorsPaf.slice(0, LIMITE_DOCS)).map((doc) => {
                     const annee = anneeDoc(doc);
                     return (
                       <li key={doc.id}>
@@ -914,6 +919,13 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null }: { 
                 <p className="text-[15px] text-black/60">Vos plans et rapports apparaîtront ici.</p>
               )}
             </div>
+            {docsHorsPaf.length > LIMITE_DOCS && (
+              <button onClick={() => setDocsOuvert((o) => !o)}
+                className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-cfrq-green/30 px-4 py-2.5 text-[14px] font-medium text-cfrq-leaf transition-colors hover:bg-cfrq-tint">
+                {docsOuvert ? "Voir moins" : `Voir les ${docsHorsPaf.length - LIMITE_DOCS} autres documents`}
+                <span aria-hidden className={`transition-transform ${docsOuvert ? "rotate-180" : ""}`}>⌄</span>
+              </button>
+            )}
           </section>
         </Reveal>
 
