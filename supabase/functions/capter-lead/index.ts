@@ -88,7 +88,16 @@ function coquille(eyebrow: string, titre: string, corps: string): string {
     "</table></td></tr></table>";
 }
 
-type Lead = { courriel: string; superficie: number | null; taxes: number | null; potAnnuel: number | null; pot5: number | null };
+type Lead = {
+  courriel: string;
+  superficie: number | null;
+  taxes: number | null;
+  potAnnuel: number | null;
+  pot5: number | null;
+  nom: string;
+  municipalite: string;
+  details: Record<string, unknown> | null;
+};
 
 function geste(nom: string, desc: string): string {
   return "<tr>" +
@@ -124,7 +133,7 @@ function htmlRelance(l: Lead): string {
     "<p style='font-family:Arial,Helvetica,sans-serif;font-size:13.5px;color:#5F655E;margin:12px 0 0;text-align:center;'>ou parlez directement à un ingénieur forestier : <strong style='color:#141414;'>367 777-0555</strong></p>";
 
   return coquille("Suite à votre estimation", "Votre boisé peut valoir plus, et se porter mieux",
-    para("Bonjour,") +
+    para(l.nom ? "Bonjour " + esc(l.nom) + "," : "Bonjour,") +
     para("Si vous avez un boisé, c'est sans doute qu'il compte pour vous : un coin de nature bien à vous, hérité ou choisi, que vous aimez parcourir et que vous voulez transmettre en santé.") +
     para("On entend souvent qu'aménager un boisé, c'est le raser. C'est le contraire. Aménager, c'est choisir quels arbres aider à grandir : dégager les plus beaux, retirer les malades, laisser entrer la lumière pour la relève. Votre forêt devient plus vigoureuse, plus diversifiée, plus résistante aux tempêtes et aux ravageurs. Et franchement, plus belle à parcourir.") +
     para("Concrètement, voici le genre de gestes qu'on pose, tous admissibles aux programmes :") +
@@ -139,13 +148,21 @@ function htmlRelance(l: Lead): string {
 
 function htmlNotif(l: Lead): string {
   const li = (k: string, v: string) => "<tr><td style='padding:3px 14px 3px 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#5F655E;'>" + k + "</td><td style='padding:3px 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#141414;font-weight:bold;'>" + v + "</td></tr>";
+  let rows = li("Courriel", esc(l.courriel));
+  if (l.nom) rows += li("Nom", esc(l.nom));
+  if (l.municipalite) rows += li("Municipalité", esc(l.municipalite));
+  rows += li("Superficie", (l.superficie ?? "-") + " ha") +
+    li("Taxes foncières", cad(l.taxes)) +
+    li("Potentiel max", cad(l.potAnnuel) + " / an, " + cad(l.pot5) + " / 5 ans");
+  if (l.details) {
+    for (const [k, v] of Object.entries(l.details)) {
+      if (v !== null && v !== undefined && String(v).trim() !== "") rows += li(esc(k), esc(v));
+    }
+  }
   return coquille("Notification interne", "Nouveau lead au calculateur de taxes",
     "<p style='" + P + "'>Un nouveau lead vient d'être capturé depuis le calculateur du site.</p>" +
     "<table role='presentation' cellpadding='0' cellspacing='0' border='0' style='margin:6px 0 14px;'>" +
-    li("Courriel", l.courriel) +
-    li("Superficie", (l.superficie ?? "-") + " ha") +
-    li("Taxes foncières", cad(l.taxes)) +
-    li("Potentiel max", cad(l.potAnnuel) + " / an, " + cad(l.pot5) + " / 5 ans") +
+    rows +
     "</table>" +
     "<p style='" + FOOT + "'>Visible dans PlaniLogix (planilogix.leads_web).</p>");
 }
@@ -285,6 +302,11 @@ Deno.serve(async (req) => {
   if (superficie !== null && (superficie < 0 || superficie > 100000)) return json({ ok: false, error: "Superficie hors bornes" }, 400);
   if (taxes !== null && (taxes < 0 || taxes > 1000000)) return json({ ok: false, error: "Taxes hors bornes" }, 400);
 
+  const nom = String(body.nom ?? "").trim().slice(0, 200);
+  const municipalite = String(body.municipalite ?? "").trim().slice(0, 160);
+  const details = (body.details && typeof body.details === "object" && !Array.isArray(body.details))
+    ? (body.details as Record<string, unknown>) : null;
+
   const sql = postgres(Deno.env.get("SUPABASE_DB_URL")!, { prepare: false, max: 1, idle_timeout: 5 });
   let id: string | null = null;
   try {
@@ -292,7 +314,9 @@ Deno.serve(async (req) => {
       select public.capter_lead_web(
         ${courriel}::text, ${superficie}::numeric, ${taxes}::numeric,
         ${potAnnuel}::numeric, ${pot5}::numeric, ${source}::text,
-        ${region}::text, ${referrer}::text, ${userAgent}::text, ${ipHash}::text
+        ${region}::text, ${referrer}::text, ${userAgent}::text, ${ipHash}::text,
+        ${nom || null}::text, ${municipalite || null}::text,
+        ${details ? JSON.stringify(details) : null}::jsonb
       ) as id`;
     id = rows[0]?.id ?? null;
   } catch (e) {
@@ -303,7 +327,7 @@ Deno.serve(async (req) => {
   await sql.end({ timeout: 5 }).catch(() => {});
 
   if (id) {
-    await envoyerCourriels({ courriel, superficie, taxes, potAnnuel, pot5 }).catch((e) => console.error("email best-effort:", (e as Error).message));
+    await envoyerCourriels({ courriel, superficie, taxes, potAnnuel, pot5, nom, municipalite, details }).catch((e) => console.error("email best-effort:", (e as Error).message));
   }
   return json({ ok: true });
 });

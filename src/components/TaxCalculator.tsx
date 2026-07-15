@@ -17,6 +17,9 @@ const LEADS_ENDPOINT =
 export default function TaxCalculator() {
   const [superficie, setSuperficie] = useState(40);
   const [taxes, setTaxes] = useState(1400);
+  const [nom, setNom] = useState("");
+  const [municipalite, setMunicipalite] = useState("");
+  const [lots, setLots] = useState("");
   const [email, setEmail] = useState("");
   const [website, setWebsite] = useState(""); // honeypot anti-spam (reste vide)
   const [envoi, setEnvoi] = useState(false);
@@ -29,7 +32,10 @@ export default function TaxCalculator() {
   // on bascule sur un courriel pre-rempli vers CFRQ.
   function fallbackMailto() {
     const corps = [
+      ...(nom ? [`Nom : ${nom}`] : []),
       `Courriel : ${email}`,
+      ...(municipalite ? [`Municipalité du boisé : ${municipalite}`] : []),
+      ...(lots ? [`Numéro(s) de lot : ${lots}`] : []),
       `Superficie du boise : ${superficie} ha`,
       `Taxes foncieres annuelles : ${cad.format(taxes)}`,
       `Potentiel maximal indicatif : ${cad.format(annuel)} par annee, soit ${cad.format(surCinq)} sur 5 ans (sous reserve de travaux d'amenagement admissibles)`,
@@ -51,6 +57,9 @@ export default function TaxCalculator() {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
           courriel: email,
+          nom: nom || undefined,
+          municipalite: municipalite || undefined,
+          details: lots ? { "Numéro(s) de lot": lots } : undefined,
           superficie_ha: superficie,
           taxes_annuelles: taxes,
           potentiel_annuel: annuel,
@@ -132,7 +141,7 @@ export default function TaxCalculator() {
               détaillée et on vous contacte pour valider votre admissibilité.
             </div>
           ) : (
-            <form onSubmit={soumettre} className="relative flex flex-col gap-3 sm:flex-row">
+            <form onSubmit={soumettre} className="relative flex flex-col gap-3">
               {/* Honeypot: un robot le remplit, un humain ne le voit pas. */}
               <input
                 type="text"
@@ -145,15 +154,47 @@ export default function TaxCalculator() {
                 className="absolute h-0 w-0 opacity-0"
                 style={{ position: "absolute", left: "-9999px" }}
               />
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="votre@courriel.ca"
-                className="h-12 flex-1 rounded-lg border border-black/15 bg-white px-4 text-[16px] outline-none focus:border-cfrq-green"
-                aria-label="Votre adresse courriel"
-              />
+              <div className="grid gap-3 sm:grid-cols-2">
+                <input
+                  type="text"
+                  required
+                  value={nom}
+                  onChange={(e) => setNom(e.target.value)}
+                  placeholder="Votre nom"
+                  autoComplete="name"
+                  className="h-12 rounded-lg border border-black/15 bg-white px-4 text-[16px] outline-none focus:border-cfrq-green"
+                  aria-label="Votre nom"
+                />
+                <input
+                  type="text"
+                  required
+                  value={municipalite}
+                  onChange={(e) => setMunicipalite(e.target.value)}
+                  placeholder="Municipalité du boisé"
+                  className="h-12 rounded-lg border border-black/15 bg-white px-4 text-[16px] outline-none focus:border-cfrq-green"
+                  aria-label="Municipalité du boisé"
+                />
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <input
+                  type="text"
+                  value={lots}
+                  onChange={(e) => setLots(e.target.value)}
+                  placeholder="Numéro(s) de lot (optionnel)"
+                  className="h-12 rounded-lg border border-black/15 bg-white px-4 text-[16px] outline-none focus:border-cfrq-green"
+                  aria-label="Numéros de lot (optionnel)"
+                />
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="votre@courriel.ca"
+                  autoComplete="email"
+                  className="h-12 rounded-lg border border-black/15 bg-white px-4 text-[16px] outline-none focus:border-cfrq-green"
+                  aria-label="Votre adresse courriel"
+                />
+              </div>
               <button
                 type="submit"
                 disabled={envoi}
