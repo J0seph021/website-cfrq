@@ -6,6 +6,17 @@ import Footer from "../components/Footer.astro";
 import { site } from "../data/site";
 import { withBase } from "../lib/url";
 import boiseMature from "../assets/photos/boise-mature.jpg";
+import photoEquipe from "../assets/photos/equipe.jpg";
+
+// Numéros de poste tirés de l'annuaire téléphonique interne (2026-07).
+const equipe = [
+  { nom: "Alexandra Fortier", titre: "Réception", poste: "750", ing: false },
+  { nom: "Camay Boisvert", titre: "Ingénieure forestière", poste: "752", ing: true },
+  { nom: "Cédric Maheu", titre: "Ingénieur forestier", poste: "766", ing: true },
+  { nom: "Joseph Moffet", titre: "Ingénieur forestier", poste: "751", ing: true },
+  { nom: "Sébastien Rioux", titre: "Ingénieur forestier", poste: "753", ing: true },
+  { nom: "Simon Proulx", titre: "Ingénieur forestier", poste: "754", ing: true },
+];
 
 const valeurs = [
   { titre: "Un conseil indépendant", texte: "On recommande ce qui est bon pour votre forêt, pas pour un tiers. Vos objectifs passent avant tout." },
@@ -31,7 +42,7 @@ const ld = {
       { "@type": "ListItem", position: 1, name: "Accueil", item: "https://cfrq.ca/" },
       { "@type": "ListItem", position: 2, name: "À propos", item: "https://cfrq.ca/a-propos-de-nous/" },
     ] },
-    { "@type": "Organization", "@id": "https://cfrq.ca/#organization", name: "Conseillers Forestiers de la Région de Québec inc.", alternateName: "CFRQ", foundingDate: "1996" },
+    { "@type": "Organization", "@id": "https://cfrq.ca/#organization", name: "Conseillers Forestiers de la Région de Québec inc.", alternateName: "CFRQ", foundingDate: "1996", employee: equipe.map((m) => ({ "@type": "Person", name: m.nom, jobTitle: m.titre })) },
   ],
 };
 
@@ -111,14 +122,28 @@ const hatch = "background:repeating-linear-gradient(135deg,#E7EEDA,#E7EEDA 8px,#
           première visite jusqu'aux travaux.
         </p>
       </div>
-      <!-- Remplacer ce bloc par <Image src={photoEquipe} alt="L'équipe de CFRQ" ... /> quand la photo d'équipe sera fournie. -->
-      <div
-        class="mt-[38px] flex aspect-[21/9] w-full items-center justify-center rounded-[22px] border border-black/5"
-        style={hatch}
-        role="img"
-        aria-label="Photo de l'équipe de CFRQ, à venir"
-      >
-        <span class="font-mono text-[11px] uppercase tracking-[0.08em] text-[#8aa06e]">Photo d'équipe</span>
+      <Image
+        src={photoEquipe}
+        alt="L'équipe de CFRQ réunie en plein air"
+        widths={[768, 1195]}
+        sizes="(min-width: 1204px) 1116px, 100vw"
+        class="mt-[38px] aspect-[16/9] w-full rounded-[22px] border border-black/5 object-cover"
+      />
+      <div class="mt-[26px] grid gap-[14px] sm:grid-cols-2 lg:grid-cols-3">
+        {equipe.map((m) => (
+          <div class="rounded-[18px] border border-black/5 bg-white px-[22px] py-[18px]">
+            <p class="font-display text-[18px] text-cfrq-deep">
+              {m.nom}{m.ing && <span class="text-cfrq-leaf">, ing.f.</span>}
+            </p>
+            <p class="mt-0.5 text-[13.5px] text-cfrq-ink/65">{m.titre}</p>
+            <a
+              class="mt-2 inline-block text-[14.5px] font-medium text-cfrq-leaf underline-offset-2 hover:underline"
+              href={`tel:+13677770555,${m.poste}`}
+            >
+              {site.tel}, poste {m.poste}
+            </a>
+          </div>
+        ))}
       </div>
     </section>
 
