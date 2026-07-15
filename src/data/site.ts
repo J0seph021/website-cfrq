@@ -24,6 +24,6 @@ export const site = {
     { valeur: "Depuis 1996", label: "Conseiller forestier accrédité" },
     { valeur: "3 000+", label: "Clients accompagnés" },
     { valeur: "35 000 m³", label: "Bois récolté supervisé / an" },
-    { valeur: "1,6 M$", label: "Budget PAMVFP géré / an" },
+    { valeur: "2 M$", label: "Budget PAMVFP géré / an" },
   ],
 };
