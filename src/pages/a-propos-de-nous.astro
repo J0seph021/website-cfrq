@@ -14,14 +14,6 @@ const valeurs = [
   { titre: "On maximise vos aides", texte: "On connaît les programmes et on monte les demandes avec vous, pour réduire vos coûts." },
 ];
 
-const equipe = [
-  "Joseph Moffet",
-  "Sébastien Rioux",
-  "Simon Proulx",
-  "Cédric Maheu",
-  "Victor Haccoun-Desgagné",
-];
-
 const accreditations = [
   "Accrédité auprès des 6 agences régionales de mise en valeur des forêts privées, depuis 1996",
   "Plans et rapports signés par des ingénieurs forestiers",
@@ -39,7 +31,7 @@ const ld = {
       { "@type": "ListItem", position: 1, name: "Accueil", item: "https://cfrq.ca/" },
       { "@type": "ListItem", position: 2, name: "À propos", item: "https://cfrq.ca/a-propos-de-nous/" },
     ] },
-    { "@type": "Organization", "@id": "https://cfrq.ca/#organization", name: "Conseillers Forestiers de la Région de Québec inc.", alternateName: "CFRQ", foundingDate: "1996", employee: equipe.map((name) => ({ "@type": "Person", name, jobTitle: "Ingénieur forestier" })) },
+    { "@type": "Organization", "@id": "https://cfrq.ca/#organization", name: "Conseillers Forestiers de la Région de Québec inc.", alternateName: "CFRQ", foundingDate: "1996" },
   ],
 };
 
@@ -114,23 +106,20 @@ const hatch = "background:repeating-linear-gradient(135deg,#E7EEDA,#E7EEDA 8px,#
         <p class={`${eyebrow} text-cfrq-leaf`}>Notre équipe</p>
         <h2 class="mt-3.5 font-display font-medium text-cfrq-deep text-[clamp(30px,4.5vw,42px)] leading-[1.05] tracking-[-0.015em] text-balance">Des gens de forêt, près de chez vous</h2>
         <p class="mt-4 text-[16px] leading-relaxed text-cfrq-ink/65">
-          Trouver un conseiller de confiance est le principal frein des propriétaires. Mettez des visages sur votre équipe.
+          Des ingénieurs forestiers qui signent vos plans et rapports, appuyés par des techniciens
+          présents dans chaque secteur. Ce sont eux qui se déplacent sur votre propriété, de la
+          première visite jusqu'aux travaux.
         </p>
       </div>
-      <div class="mt-[38px] grid gap-[18px] sm:grid-cols-3 lg:grid-cols-5">
-        {equipe.map((nom) => (
-          <div class="rounded-[18px] border border-black/5 bg-white p-[22px] text-center">
-            <div class="mx-auto flex h-24 w-24 items-center justify-center rounded-full border border-black/5" style={hatch}>
-              <span class="font-mono text-[10px] uppercase tracking-[0.08em] text-[#8aa06e]">photo</span>
-            </div>
-            <p class="mt-3.5 font-display text-[18px] text-cfrq-deep">{nom}</p>
-            <p class="mt-0.5 text-[13.5px] font-medium text-cfrq-leaf">Ingénieur forestier</p>
-          </div>
-        ))}
+      <!-- Remplacer ce bloc par <Image src={photoEquipe} alt="L'équipe de CFRQ" ... /> quand la photo d'équipe sera fournie. -->
+      <div
+        class="mt-[38px] flex aspect-[21/9] w-full items-center justify-center rounded-[22px] border border-black/5"
+        style={hatch}
+        role="img"
+        aria-label="Photo de l'équipe de CFRQ, à venir"
+      >
+        <span class="font-mono text-[11px] uppercase tracking-[0.08em] text-[#8aa06e]">Photo d'équipe</span>
       </div>
-      <p class="mt-[18px] text-[12.5px] text-cfrq-ink/45">
-        Nos ingénieurs forestiers, appuyés par une équipe de techniciens qualifiés présents dans chaque secteur. Photos et titres exacts à ajouter.
-      </p>
     </section>
 
     <!-- ACCREDITATIONS + TERRITOIRE -->
@@ -146,7 +135,6 @@ const hatch = "background:repeating-linear-gradient(135deg,#E7EEDA,#E7EEDA 8px,#
               </li>
             ))}
           </ul>
-          <p class="mt-4 text-[12px] text-cfrq-ink/45">Précisez ici vos accréditations et affiliations exactes.</p>
         </div>
         <div class="flex-1 basis-[300px] rounded-[22px] border border-black/5 bg-white p-[30px]">
           <p class="text-[12px] font-bold uppercase tracking-[0.14em] text-cfrq-leaf">Territoire desservi</p>

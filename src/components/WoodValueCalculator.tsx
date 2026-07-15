@@ -211,8 +211,8 @@ export default function WoodValueCalculator() {
 
             <div className="mt-3 rounded-xl border border-black/5 bg-white p-4">
               {ligne("Valeur marchande (prix usine)", calc.marchande)}
-              {ligne("Transport vers l'usine", -calc.coutTransport, "− ")}
-              {ligne("Récolte (abattage, débardage)", -calc.coutRec, "− ")}
+              {ligne("Transport vers l'usine", calc.coutTransport, "− ")}
+              {ligne("Récolte (abattage, débardage)", calc.coutRec, "− ")}
               <div className="mt-1 flex items-center justify-between border-t border-black/10 pt-2 text-[15px]">
                 <span className="font-medium text-cfrq-deep">Valeur nette</span>
                 <span className="font-semibold text-cfrq-leaf">{cad.format(calc.net)}</span>
