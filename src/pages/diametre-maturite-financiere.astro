@@ -1,0 +1,108 @@
+---
+import Base from "../layouts/Base.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import CTASection from "../components/CTASection.astro";
+import GuideDMF from "../components/GuideDMF.tsx";
+import { withBase } from "../lib/url";
+---
+
+<Base
+  title="Diamètre à maturité financière (DMF) | CFRQ"
+  description="À quel diamètre vos arbres cessent-ils de prendre de la valeur ? Consultez le diamètre à maturité financière (DMF) de 15 essences du sud du Québec pour prioriser vos récoltes en coupe partielle."
+>
+  <Header />
+  <main id="contenu">
+    <section class="bg-[#f4f5f2]">
+      <div class="mx-auto max-w-[1160px] px-[22px] py-[72px]">
+        <div class="max-w-[760px]">
+          <p class="text-[13px] font-semibold uppercase tracking-[0.14em] text-cfrq-leaf">Guide · aide à la décision</p>
+          <h1 class="mt-3.5 font-display text-[clamp(28px,5vw,42px)] font-medium leading-[1.08] text-cfrq-deep">
+            À quel diamètre vos arbres cessent-ils de prendre de la valeur ?
+          </h1>
+          <p class="mt-4 text-[17px] leading-relaxed text-cfrq-ink/65">
+            En coupe partielle, le réflexe est de laisser croître les beaux arbres sains. Pourtant, même eux
+            finissent par perdre de la valeur avant les premiers signes de détérioration : passé un certain
+            diamètre, le risque de mortalité et de dégradation dépasse le gain de croissance. Ce point de bascule,
+            c'est le <strong class="font-medium text-cfrq-deep">diamètre à maturité financière (DMF)</strong>.
+          </p>
+        </div>
+
+        <div class="mt-9">
+          <GuideDMF client:load />
+        </div>
+
+        <p class="mt-4 max-w-[760px] text-[12.5px] leading-relaxed text-black/55">
+          DMF₃₀ ans moyen projeté sur 30 ans et revenu brut d'approvisionnement associé, pour le bois d'œuvre.
+          Les valeurs du bouleau jaune et de l'érable à sucre correspondent à des arbres sains (classe de priorité CR).
+          Un DMF « ≥ » indique qu'aucun seuil n'a pu être établi dans l'intervalle de diamètre observé, faute
+          d'observations aux plus grands diamètres. Ces données guident la priorisation des tiges à récolter ;
+          elles ne remplacent pas une prescription sylvicole, qui intègre aussi la croissance, la régénération
+          et les attributs écologiques du peuplement.
+        </p>
+      </div>
+    </section>
+
+    <!-- Comment lire ces chiffres -->
+    <section class="bg-white">
+      <div class="mx-auto max-w-[1160px] px-[22px] py-[64px]">
+        <h2 class="font-display text-[clamp(22px,3.5vw,30px)] font-medium text-cfrq-deep">Comment lire ces chiffres</h2>
+        <div class="mt-8 grid gap-7 md:grid-cols-3">
+          <div>
+            <div class="text-[26px] text-cfrq-leaf" aria-hidden>◔</div>
+            <h3 class="mt-2 text-[17px] font-medium text-cfrq-deep">Un seuil, pas une cible</h3>
+            <p class="mt-2 text-[15px] leading-relaxed text-cfrq-ink/70">
+              Au-delà du DMF, un arbre sain ne bonifie plus votre boisé : sa valeur stagne puis décline.
+              C'est un signal pour envisager sa récolte, tige par tige, jamais une règle à appliquer aveuglément.
+            </p>
+          </div>
+          <div>
+            <div class="text-[26px] text-cfrq-leaf" aria-hidden>↗</div>
+            <h3 class="mt-2 text-[17px] font-medium text-cfrq-deep">Faire croître les petits à fort potentiel</h3>
+            <p class="mt-2 text-[15px] leading-relaxed text-cfrq-ink/70">
+              Financièrement, il est souvent plus payant de stimuler la croissance de jeunes tiges de belle qualité
+              que de prolonger celle de gros arbres déjà matures. Un DMF élevé va de pair avec forte croissance et
+              bon potentiel de qualité future.
+            </p>
+          </div>
+          <div>
+            <div class="text-[26px] text-cfrq-leaf" aria-hidden>◈</div>
+            <h3 class="mt-2 text-[17px] font-medium text-cfrq-deep">Le climat change la donne</h3>
+            <p class="mt-2 text-[15px] leading-relaxed text-cfrq-ink/70">
+              Nouveaux ravageurs, maladies et déplacement des habitats : pour plusieurs essences, les perspectives
+              se dégradent d'ici la fin du siècle. Un risque plus élevé pousse à récolter la valeur plus tôt.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <CTASection
+      title="Un DMF, ça se lit sur le terrain"
+      text="Ces seuils orientent la réflexion, mais c'est l'inventaire de votre boisé qui décide : essences, qualité des tiges, vigueur et objectifs d'aménagement. Nos ingénieurs forestiers traduisent tout ça en une prescription qui protège la valeur de votre forêt."
+      ctaLabel="Faire évaluer mon boisé"
+    />
+
+    <!-- Sources -->
+    <section class="bg-[#f4f5f2]">
+      <div class="mx-auto max-w-[1160px] px-[22px] py-[52px]">
+        <h2 class="text-[13px] font-semibold uppercase tracking-[0.14em] text-cfrq-leaf">Source</h2>
+        <p class="mt-3 max-w-[760px] text-[14px] leading-relaxed text-cfrq-ink/70">
+          Données tirées de Guillemette F., Roy M.-E. et Serban L. G. (Direction de la recherche forestière,
+          ministère des Ressources naturelles et des Forêts du Québec), « À quel diamètre mes arbres
+          risquent-ils de perdre leur valeur ? », <em>Le Progrès Forestier</em>, Association forestière du sud
+          du Québec, été 2026. Publication scientifique en libre accès :
+          <a href="https://doi.org/10.82204/nya4-8n06" class="text-cfrq-leaf underline" rel="noopener" target="_blank">doi.org/10.82204/nya4-8n06</a>.
+          Le revenu brut est comparé au coût moyen d'approvisionnement en coupe partielle en forêt publique
+          (~70 $/m³, Enquête 2019 du MRNF).
+        </p>
+        <p class="mt-4 text-[14px]">
+          <a href={withBase("/calculateur-valeur-bois")} class="font-medium text-cfrq-leaf underline">
+            Estimez maintenant la valeur nette du bois de votre forêt →
+          </a>
+        </p>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Base>

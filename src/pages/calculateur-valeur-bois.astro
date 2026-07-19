@@ -3,6 +3,7 @@ import Base from "../layouts/Base.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import WoodValueCalculator from "../components/WoodValueCalculator.tsx";
+import { withBase } from "../lib/url";
 ---
 
 <Base
@@ -26,6 +27,12 @@ import WoodValueCalculator from "../components/WoodValueCalculator.tsx";
         <div class="mt-8">
           <WoodValueCalculator client:load />
         </div>
+        <p class="mt-5 max-w-[720px] text-[14px] text-cfrq-ink/65">
+          Vos arbres sont-ils mûrs pour la récolte ?
+          <a href={withBase("/diametre-maturite-financiere")} class="font-medium text-cfrq-leaf underline">
+            Consultez le diamètre à maturité financière de 15 essences →
+          </a>
+        </p>
       </div>
     </section>
   </main>
