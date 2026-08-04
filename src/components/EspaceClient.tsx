@@ -5,6 +5,7 @@ import { site } from "../data/site";
 import CarteForet from "./CarteForet";
 import CalculateurValeurBois from "./CalculateurValeurBois";
 import FormulaireDemande, { DEMANDES, type ConfigDemande } from "./FormulaireDemande";
+import { essencesArbres } from "../lib/foret/essences-mffp";
 
 type Row = Record<string, any>;
 export interface Dossier {
@@ -156,31 +157,10 @@ const props = (carte: Row | null, couche: string): Row[] =>
     .filter((f: any) => f.properties?.couche === couche)
     .map((f: any) => f.properties as Row);
 
-// Le champ "essences" est une liste de NOMS COMPLETS separes par " / "
-// (ex. "Épinette blanche / Sapin baumier"). On decoupe UNIQUEMENT sur "/", puis
-// on exclut les regroupements (Feuillus tolerants, Bouleaux...) et les non-arbres
-// (Herbacees, Framboisier...) pour ne compter que de vraies essences d'arbres.
-const NON_ESPECE = /aulne|feuillus|éricac|ericac|herbac|herbe|framboisier|noisetier|arbuste|non[-\s]?commerc|sapin et épinette|inconnu|dénud|denud|coupe|régénér|regener|eau\b|chemin|gravier|sol\b|friche/i;
-const GROUPE_PLURIEL = new Set([
-  "bouleaux", "épinettes", "epinettes", "érables", "erables", "peupliers", "pins",
-  "sapins", "mélèzes", "melezes", "cerisiers", "chênes", "chenes", "frênes", "frenes",
-  "ormes", "tilleuls", "aulnes", "feuillus", "résineux", "resineux",
-]);
-
-// Liste triee des vraies essences d'arbres recensees au dossier.
-function essencesArbres(peuplements: Row[]): string[] {
-  const s = new Set<string>();
-  for (const p of peuplements) {
-    for (const raw of String(p.essences ?? "").split("/")) {
-      const sp = raw.trim();
-      if (sp.length < 2) continue;
-      const low = sp.toLowerCase();
-      if (NON_ESPECE.test(low) || GROUPE_PLURIEL.has(low)) continue;
-      s.add(sp);
-    }
-  }
-  return [...s].sort((a, b) => a.localeCompare(b, "fr"));
-}
+// Le comptage des essences vit dans lib/foret/essences-mffp : le champ `essences`
+// arrive en DEUX formats (codes MFFP separes par virgule OU noms separes par "/"),
+// et l'ancien decoupage sur "/" seul comptait chaque chaine de codes comme UNE
+// essence -> total gonfle et codes bruts ("SB, SB, EO") affiches au proprietaire.
 
 // Appellations non forestières / perturbations à exclure des « peuplements les plus présents ».
 const NON_APPELLATION = /anthropique|dénud|denud|coupe totale|gravièr|gravier|chemin|\beau\b|friche|inondé|inonde|résidentiel|residentiel|agricole/i;
@@ -398,7 +378,7 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null }: { 
       return {
         valeur: nbEssences, decimals: 0, mot: nbEssences > 1 ? "essences d'arbres" : "essence d'arbre",
         avant: "Votre forêt abrite",
-        sous: `Sur ${nf2.format(superficieTotale)} hectares, nos forestiers ont cartographié ${nfEnt.format(nbPeuplements)} peuplements. Une forêt diversifiée, c'est une forêt en santé, que vous protégez.`,
+        sous: `Sur ${nf2.format(superficieTotale)} hectares, la carte écoforestière du ministère recense ${nfEnt.format(nbPeuplements)} peuplements. Une forêt diversifiée, c'est une forêt en santé, que vous protégez.`,
       };
     }
     if (superficieBoisee >= 1) {
@@ -420,12 +400,12 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null }: { 
     { valeur: superficieTotale, decimals: 1, suffixe: " ha", label: "Superficie totale" },
     { valeur: d.proprietes.length, decimals: 0, suffixe: "", label: d.proprietes.length > 1 ? "Propriétés" : "Propriété" },
     { valeur: d.lots.length, decimals: 0, suffixe: "", label: "Lots boisés" },
-    { valeur: nbPeuplements, decimals: 0, suffixe: "", label: "Peuplements cartographiés" },
+    { valeur: nbPeuplements, decimals: 0, suffixe: "", label: "Peuplements recensés" },
   ].filter((r) => r.valeur > 0);
 
   // Parcours (jalons reels)
   const jalons = [
-    { fait: nbPeuplements > 0, label: "Forêt cartographiée" },
+    { fait: nbPeuplements > 0, label: "Portrait écoforestier au dossier" },
     { fait: aPaf, label: "Plan d'aménagement au dossier" },
     { fait: travauxCarte.length > 0, label: travauxCarte.length > 0 ? `${travauxCarte.length} travaux réalisés` : "Travaux réalisés" },
     { fait: prescriptions.length > 0, label: prescriptions.length > 0 ? `${prescriptions.length} prescriptions au dossier` : "Prescriptions" },
@@ -672,7 +652,7 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null }: { 
             <div className="rounded-2xl bg-cfrq-tint p-6 md:p-8">
               <p className="font-display text-xl leading-relaxed text-cfrq-ink md:text-2xl">
                 {superficieBoisee >= 1 ? `Sur vos ${nf.format(superficieBoisee)} hectares boisés, ` : "Sur votre forêt, "}
-                nos forestiers ont cartographié {nfEnt.format(nbPeuplements)} peuplements et recensé {nfEnt.format(nbEssences)} essences d'arbres différentes. C'est le signe d'une forêt diversifiée et résiliente, mieux armée face aux insectes, aux maladies et au climat.
+                la carte écoforestière du ministère recense {nfEnt.format(nbPeuplements)} peuplements et {nfEnt.format(nbEssences)} essences d'arbres différentes. C'est le signe d'une forêt diversifiée et résiliente, mieux armée face aux insectes, aux maladies et au climat.
               </p>
               {topAppellations.length >= 2 && (
                 <p className="mt-3 text-[15px] text-cfrq-ink/65">
@@ -687,6 +667,14 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null }: { 
                   <p className="mt-2 text-[14px] leading-relaxed text-cfrq-ink/70">{especes.join(", ")}.</p>
                 </details>
               )}
+              {/* Provenance des chiffres : la carte du portail est bâtie sur
+                  l'inventaire écoforestier du MFFP, pas sur un relevé terrain.
+                  Le dire explicitement — un chiffre non sourcé engage l'ingénieur. */}
+              <p className="mt-4 border-t border-cfrq-ink/10 pt-3 text-[13px] leading-relaxed text-cfrq-ink/55">
+                Source : inventaire écoforestier du ministère des Ressources naturelles et des
+                Forêts. Un inventaire terrain réalisé par CFRQ précise ces données lors d'un plan
+                d'aménagement forestier.
+              </p>
             </div>
           </Reveal>
         )}

@@ -100,6 +100,11 @@ raw AS (
            ON den.feuillet = eco.feuillet AND den.geocode = eco.geocode
           AND den.cat_co_cmp = 'TOT'
          WHERE ST_Intersects(pe.geom,prop.g)
+           -- Carte du portail = UNIQUEMENT la carte ecoforestiere du ministere
+           -- (peuplements synthetises depuis eco_pee, paf_id NULL). Les peuplements
+           -- issus de nos PAF signes (paf_id NON NULL) sont volontairement exclus :
+           -- le portail affiche une seule source, annoncee comme telle au client.
+           AND pe.paf_id IS NULL
            -- Exiger un recouvrement REEL (>10% de l'aire du peuplement), sinon un
            -- peuplement d'une propriete VOISINE qui ne fait qu'effleurer la limite
            -- cadastrale (micro-sliver <0,01 ha) apparaitrait sur la mauvaise carte.
