@@ -23,6 +23,7 @@ interface Membre {
   nom: string;
   titre?: string;
   chip?: string;
+  poste: string;
   texte: string;
 }
 
@@ -34,6 +35,7 @@ const groupes: { cle: string; titre: string; intro: string; membres: Membre[] }[
     membres: [
       {
         id: "joseph-moffet",
+        poste: "751",
         nom: "Joseph Moffet",
         titre: "ing.f.",
         chip: "Président",
@@ -41,6 +43,7 @@ const groupes: { cle: string; titre: string; intro: string; membres: Membre[] }[
       },
       {
         id: "sebastien-rioux",
+        poste: "753",
         nom: "Sébastien Rioux",
         titre: "ing.f.",
         chip: "Directeur général",
@@ -48,6 +51,7 @@ const groupes: { cle: string; titre: string; intro: string; membres: Membre[] }[
       },
       {
         id: "alexandra-fortier",
+        poste: "750",
         nom: "Alexandra Fortier",
         chip: "Adjointe administrative",
         texte: "C'est la voix que vous entendez quand vous appelez au bureau. Rendez-vous, documents, formulaires et programmes d'aide : elle sait toujours où en est votre demande, et elle vous l'explique simplement.",
@@ -61,24 +65,28 @@ const groupes: { cle: string; titre: string; intro: string; membres: Membre[] }[
     membres: [
       {
         id: "simon-proulx",
+        poste: "754",
         nom: "Simon Proulx",
         titre: "ing.f.",
         texte: "Ingénieur forestier passionné de foresterie urbaine, d'insectes et de maladies des arbres. C'est lui qui prend en charge les projets spéciaux et les arbres qui posent problème en ville. Il travaille surtout dans la région de Québec.",
       },
       {
         id: "christian-dumont",
+        poste: "761",
         nom: "Christian Dumont",
         titre: "tech.f.",
         texte: "Technicien forestier d'expérience, il a vu passer bien des chantiers dans la région de Québec. Il connaît les boisés du secteur, et surtout les gens qui les possèdent.",
       },
       {
         id: "jean-benoit-girard",
+        poste: "762",
         nom: "Jean-Benoît Girard",
         titre: "tech.f.",
         texte: "Technicien d'expérience et bûcheron à ses heures, il connaît la forêt autant du côté du plan que du côté de la scie. Un allié précieux quand vient le temps de préparer une récolte dans la région de Québec.",
       },
       {
         id: "alexandre-bouillon",
+        poste: "758",
         nom: "Alexandre Bouillon",
         titre: "tech.f.",
         texte: "Passionné de plein air et de vélo, il est aussi à l'aise dans un sentier que dans un peuplement. Il couvre la région de Québec et prend le temps de marcher votre terrain avec vous.",
@@ -92,54 +100,63 @@ const groupes: { cle: string; titre: string; intro: string; membres: Membre[] }[
     membres: [
       {
         id: "camay-boisvert",
+        poste: "752",
         nom: "Camay Boisvert",
         titre: "ing.f.",
         texte: "Ingénieure forestière depuis 2026, originaire de l'Abitibi, où la foresterie est une affaire de famille : deux de ses grandes sœurs sont elles aussi ingénieures forestières. Elle travaille dans les Bois-Francs et Chaudière-Appalaches.",
       },
       {
         id: "cedric-maheu",
+        poste: "766",
         nom: "Cédric Maheu",
         titre: "ing.f.",
         texte: "Beauceron, il a grandi dans les érablières et les terres à bois de son père. Ingénieur forestier depuis 2025, il connaît de l'intérieur la forêt privée, celle qu'on entretient en famille. Il couvre les Bois-Francs et Chaudière-Appalaches.",
       },
       {
         id: "ann-renee-rheaume",
+        poste: "757",
         nom: "Ann Renée Rhéaume",
         titre: "tech.f.",
         texte: "Agricultrice, acéricultrice et productrice forestière, elle vit exactement ce que vivent les propriétaires qu'elle accompagne dans les Bois-Francs et Chaudière-Appalaches. Quand elle parle de faire vivre une terre, elle sait de quoi il s'agit.",
       },
       {
         id: "louis-chabot",
+        poste: "759",
         nom: "Louis Chabot",
         titre: "tech.f.",
         texte: "Technicien d'expérience et passionné d'acériculture, il regarde votre érablière comme si c'était la sienne. Entaillage, santé du peuplement, potentiel : il a réponse à vos questions, dans les Bois-Francs et Chaudière-Appalaches.",
       },
       {
         id: "mathieu-jolibois",
+        poste: "763",
         nom: "Mathieu Jolibois",
         titre: "tech.f.",
         texte: "Amateur de produits forestiers non ligneux, les champignons en tête, et tonnelier à ses heures : il fabrique ses propres tonneaux. Pour lui, une forêt donne bien plus que du bois. Il travaille dans les Bois-Francs et Chaudière-Appalaches.",
       },
       {
         id: "frank-olivier-soucy",
+        poste: "755",
         nom: "Frank-Olivier Soucy",
         titre: "tech.f.",
         texte: "Originaire des Bois-Francs, il termine son baccalauréat en foresterie pour devenir ingénieur forestier. Travaillant et passionné, il ne compte pas ses pas dans les boisés des Bois-Francs et de Chaudière-Appalaches.",
       },
       {
         id: "michel-gagnon",
+        poste: "760",
         nom: "Michel Gagnon",
         titre: "tech.f.",
         texte: "Il était là à la fondation de CFRQ, en 1996. Trois décennies de boisés des Bois-Francs en mémoire, et toujours le même plaisir à repartir sur le terrain.",
       },
       {
         id: "pierre-cadorette",
+        poste: "756",
         nom: "Pierre Cadorette",
         titre: "tech.f.",
         texte: "Présent lui aussi depuis la fondation de CFRQ en 1996. Amateur de littérature, de poésie et de choses bien faites, il a de la jasette et prend le temps qu'il faut avec chaque propriétaire des Appalaches.",
       },
       {
         id: "gabrielle-kelly-poulin",
+        poste: "767",
         nom: "Gabrielle Kelly-Poulin",
         titre: "tech.f.",
         texte: "Plein air et sport, la natation en tête. La même énergie se retrouve dans les boisés des Appalaches, avec des explications simples et sans jargon.",
@@ -257,6 +274,12 @@ const eyebrow = "text-[12.5px] font-semibold uppercase tracking-[0.18em]";
                   <p class="mt-2 inline-block rounded-full bg-cfrq-tint px-[11px] py-[5px] text-[12.5px] font-medium text-[#2e6b1e]">{m.chip}</p>
                 )}
                 <p class="mt-3 text-[14.5px] leading-[1.6] text-cfrq-ink/[.68]">{m.texte}</p>
+                <a
+                  href={`tel:+13677770555,${m.poste}`}
+                  class="mt-3.5 inline-block border-t border-black/5 pt-3 text-[14.5px] font-medium text-cfrq-leaf underline-offset-2 hover:underline"
+                >
+                  {site.tel}, poste {m.poste}
+                </a>
               </div>
             </article>
           ))}
