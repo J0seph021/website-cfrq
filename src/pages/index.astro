@@ -73,7 +73,7 @@ const realisations = [
 
 const faq = [
   { q: "Combien coûte une première visite ?", parts: ["Contactez-nous pour connaître les modalités d'une ", { fort: "visite-conseil", vert: true }, ". Un technicien forestier se déplace sur votre propriété pour évaluer votre boisé et discuter de vos objectifs."] },
-  { q: "Ai-je droit à de l'aide financière ?", parts: ["Oui. Avec un plan d'aménagement, vous avez accès au ", { fort: "PAMVFP", vert: false }, ", au Programme de financement forestier et au remboursement des taxes foncières des producteurs forestiers reconnus."] },
+  { q: "Ai-je droit à de l'aide financière ?", parts: ["Si votre boisé fait ", { fort: "plus de 4 hectares", vert: true }, ", oui, avec un plan d'aménagement forestier (PAF). Il donne accès au ", { fort: "PAMVFP", vert: false }, ", au Programme de financement forestier et au remboursement des taxes foncières des producteurs forestiers reconnus."] },
   { q: "Qu'est-ce qu'un plan d'aménagement ?", parts: ["Un portrait de votre forêt (peuplements, potentiel, milieux à protéger) préparé par un ingénieur forestier, avec des scénarios adaptés à vos objectifs. C'est aussi la porte d'entrée vers l'aide financière."] },
   { q: "J'ai hérité d'un boisé et je n'y connais rien.", parts: ["Aucun problème. On accompagne les nouveaux propriétaires du début à la fin : visite terrain, plan, travaux et suivi. Aucune connaissance forestière requise de votre part."] },
   { q: "Faites-vous les plans ou aussi les travaux ?", parts: ["Les deux. Nos ingénieurs planifient et signent les plans et les rapports; nos techniciens organisent le chantier, supervisent les travaux sur le terrain et les vérifient, jusqu'au paiement des entrepreneurs."] },
@@ -139,7 +139,7 @@ const faqLd = {
   "@type": "FAQPage",
   mainEntity: [
     { "@type": "Question", name: "Combien coûte une première visite d'un conseiller forestier?", acceptedAnswer: { "@type": "Answer", text: "Contactez-nous pour connaître les modalités d'une visite-conseil. Un technicien forestier de CFRQ se déplace sur votre propriété pour évaluer votre boisé et discuter de vos objectifs." } },
-    { "@type": "Question", name: "Ai-je droit à de l'aide financière pour aménager mon boisé?", acceptedAnswer: { "@type": "Answer", text: "Oui. Avec un plan d'aménagement, vous avez accès au Programme d'aide à la mise en valeur des forêts privées (PAMVFP), au Programme de financement forestier et au remboursement des taxes foncières des producteurs forestiers reconnus." } },
+    { "@type": "Question", name: "Ai-je droit à de l'aide financière pour aménager mon boisé?", acceptedAnswer: { "@type": "Answer", text: "Si votre boisé fait plus de 4 hectares, oui, avec un plan d'aménagement forestier (PAF). Il donne accès au Programme d'aide à la mise en valeur des forêts privées (PAMVFP), au Programme de financement forestier et au remboursement des taxes foncières des producteurs forestiers reconnus." } },
     { "@type": "Question", name: "Qu'est-ce qu'un plan d'aménagement forestier?", acceptedAnswer: { "@type": "Answer", text: "C'est un portrait de votre forêt (composition des peuplements, potentiel de production, milieux à protéger) préparé par un ingénieur forestier, avec des scénarios sylvicoles adaptés à vos objectifs. C'est aussi la porte d'entrée vers l'aide financière." } },
     { "@type": "Question", name: "Je viens d'hériter d'un boisé et je n'y connais rien. Pouvez-vous m'aider?", acceptedAnswer: { "@type": "Answer", text: "Oui. CFRQ accompagne les nouveaux propriétaires du début à la fin : visite terrain, plan, travaux et suivi. Aucune connaissance forestière n'est requise de votre part." } },
     { "@type": "Question", name: "Faites-vous seulement les plans ou aussi les travaux?", acceptedAnswer: { "@type": "Answer", text: "Les deux. Nos ingénieurs forestiers planifient et signent les plans et les rapports; nos techniciens organisent le chantier, supervisent les travaux sur le terrain et les vérifient, jusqu'au paiement des entrepreneurs." } },
@@ -209,7 +209,7 @@ const btnVert = "inline-flex items-center gap-2 rounded-xl bg-cfrq-green font-bo
           <p class={`${eyebrow} text-cfrq-leaf`}>Outil gratuit · estimation</p>
           <h2 class={`mt-3.5 ${h2}`}>Combien pourriez-vous récupérer en taxes ?</h2>
           <p class="mt-4 text-[17px] leading-relaxed text-cfrq-ink/65">
-            Un producteur forestier reconnu peut récupérer jusqu'à 85 % des taxes foncières de son boisé. Ce n'est pas automatique : le remboursement récompense des travaux d'aménagement admissibles, ceux qu'on planifie et qu'on exécute pour vous. Bougez les curseurs pour voir le potentiel, on vous envoie le détail et les prochaines étapes.
+            Un producteur forestier reconnu peut récupérer jusqu'à 85 % des taxes foncières de son boisé. Ce n'est pas automatique : le remboursement récompense des travaux d'aménagement admissibles, ceux qu'on planifie et qu'on supervise pour vous. Bougez les curseurs pour voir le potentiel, on vous envoie le détail et les prochaines étapes.
           </p>
         </div>
         <div class="mt-8">
