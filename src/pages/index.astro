@@ -43,12 +43,13 @@ const etapes = [
   },
 ];
 
+// slug : renvoie vers la page du service (routes racine, cf. src/pages/[service].astro).
 const servicesApercu = [
-  { chip: "Diagnostic & plan", chipBrun: false, titre: "Aménagement forestier", texte: "Le plan qui met votre boisé en santé et ouvre l'accès aux programmes d'aide." },
-  { chip: "Récolte clé en main", chipBrun: false, titre: "Opérations forestières", texte: "Du martelage à la fin des travaux, on planifie, on supervise et on vérifie." },
-  { chip: "Acériculture", chipBrun: true, titre: "Érablière & acériculture", texte: "Santé du peuplement, normes d'entaillage et cartographie GPS de votre réseau." },
-  { chip: "Expertise légale", chipBrun: false, titre: "Évaluation & expertise", texte: "Valeur marchande, dommages, expropriation : le juste prix, démontré et défendu." },
-  { chip: "Milieu urbain", chipBrun: false, titre: "Arboriculture & foresterie urbaine", texte: "Santé et risque des arbres pour municipalités, promoteurs et propriétaires." },
+  { slug: "amenagement", chip: "Diagnostic & plan", chipBrun: false, titre: "Aménagement forestier", texte: "Le plan qui met votre boisé en santé et ouvre l'accès aux programmes d'aide." },
+  { slug: "operation-forestieres", chip: "Récolte clé en main", chipBrun: false, titre: "Opérations forestières", texte: "Du martelage à la fin des travaux, on planifie, on supervise et on vérifie." },
+  { slug: "erabliere", chip: "Acériculture", chipBrun: true, titre: "Érablière & acériculture", texte: "Santé du peuplement, normes d'entaillage et cartographie GPS de votre réseau." },
+  { slug: "evaluation-forestiere", chip: "Expertise légale", chipBrun: false, titre: "Évaluation & expertise", texte: "Valeur marchande, dommages, expropriation : le juste prix, démontré et défendu." },
+  { slug: "arboriculture-et-foresterie-urbaine", chip: "Milieu urbain", chipBrun: false, titre: "Arboriculture & foresterie urbaine", texte: "Santé et risque des arbres pour municipalités, promoteurs et propriétaires." },
 ];
 
 const profils = [
@@ -251,7 +252,7 @@ const btnVert = "inline-flex items-center gap-2 rounded-xl bg-cfrq-green font-bo
       </div>
       <div class="mt-10 grid gap-[18px] sm:grid-cols-2 lg:grid-cols-3">
         {servicesApercu.map((s) => (
-          <a href={withBase("/services")} class="group block rounded-[18px] border border-black/5 bg-white p-6 transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-1 hover:border-cfrq-green/40 hover:shadow-[0_16px_40px_rgba(20,51,26,.1)]">
+          <a href={withBase(`/${s.slug}`)} class="group block rounded-[18px] border border-black/5 bg-white p-6 transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-1 hover:border-cfrq-green/40 hover:shadow-[0_16px_40px_rgba(20,51,26,.1)]">
             <span class:list={["text-[11px] font-bold uppercase tracking-[0.14em]", s.chipBrun ? "text-[#8a6a3b]" : "text-cfrq-leaf"]}>{s.chip}</span>
             <h3 class="mt-2.5 font-display text-[22px] font-medium text-cfrq-deep">{s.titre}</h3>
             <p class="mt-2 text-[14px] leading-relaxed text-cfrq-ink/60">{s.texte}</p>
