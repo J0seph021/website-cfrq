@@ -56,6 +56,9 @@ export default function WoodValueCalculator() {
   const [website, setWebsite] = useState(""); // honeypot anti-spam (reste vide)
   const [envoi, setEnvoi] = useState(false);
   const [envoye, setEnvoye] = useState(false);
+  // Vrai quand l'envoi a ECHOUE et qu'on est retombe sur le brouillon courriel :
+  // le message affiche ne doit alors PAS promettre qu'on a recu la demande.
+  const [secours, setSecours] = useState(false);
 
   const calc = useMemo(() => {
     const prixResBlend = (pctSciage / 100) * prixResSciage + (1 - pctSciage / 100) * prixResPate;
@@ -117,6 +120,7 @@ export default function WoodValueCalculator() {
       setEnvoye(true);
     } catch {
       fallbackMailto();
+      setSecours(true);
       setEnvoye(true);
     } finally {
       setEnvoi(false);
@@ -226,9 +230,20 @@ export default function WoodValueCalculator() {
           </p>
 
           {envoye ? (
-            <div className="rounded-xl border border-cfrq-green/40 bg-cfrq-tint p-4 text-[15px] text-cfrq-deep">
-              <strong className="font-medium">Merci.</strong> On vous recontacte pour caractériser votre forêt et affiner cette estimation avec vos vrais chiffres.
-            </div>
+            secours ? (
+              <div className="rounded-xl border border-amber-500/50 bg-amber-50 p-4 text-[15px] text-cfrq-deep">
+                <strong className="font-medium">Votre demande n'a pas pu être transmise automatiquement.</strong>{" "}
+                Votre logiciel de courriel devrait s'être ouvert avec un brouillon déjà rempli : il ne reste
+                qu'à l'envoyer. S'il ne s'est pas ouvert, écrivez-nous à{" "}
+                <a href={`mailto:${site.courriel}`} className="font-medium underline">{site.courriel}</a>{" "}
+                ou appelez-nous au{" "}
+                <a href={site.telHref} className="font-medium underline">{site.tel}</a>.
+              </div>
+            ) : (
+              <div className="rounded-xl border border-cfrq-green/40 bg-cfrq-tint p-4 text-[15px] text-cfrq-deep">
+                <strong className="font-medium">Merci.</strong> On vous recontacte pour caractériser votre forêt et affiner cette estimation avec vos vrais chiffres.
+              </div>
+            )
           ) : (
             <form onSubmit={soumettre} className="relative flex flex-col gap-3">
               <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true"

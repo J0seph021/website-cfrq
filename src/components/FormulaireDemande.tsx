@@ -39,6 +39,9 @@ export default function FormulaireDemande({ config, courriel, identite, onClose 
   const [website, setWebsite] = useState(""); // honeypot
   const [envoi, setEnvoi] = useState(false);
   const [envoye, setEnvoye] = useState(false);
+  // Vrai quand l'envoi a ECHOUE et qu'on est retombe sur le brouillon courriel :
+  // le message affiche ne doit alors PAS promettre qu'on a recu la demande.
+  const [secours, setSecours] = useState(false);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
@@ -91,6 +94,7 @@ export default function FormulaireDemande({ config, courriel, identite, onClose 
       setEnvoye(true);
     } catch {
       fallbackMailto();
+      setSecours(true);
       setEnvoye(true);
     } finally {
       setEnvoi(false);
@@ -108,8 +112,24 @@ export default function FormulaireDemande({ config, courriel, identite, onClose 
 
         {envoye ? (
           <div className="px-5 py-8 text-center">
-            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-cfrq-green/15 text-2xl">✓</div>
-            <p className="text-[15px] leading-relaxed text-cfrq-deep">{config.merci}</p>
+            {secours ? (
+              <>
+                <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 text-2xl">!</div>
+                <p className="text-[15px] leading-relaxed text-cfrq-deep">
+                  <strong className="font-medium">Votre demande n'a pas pu être transmise automatiquement.</strong>{" "}
+                  Votre logiciel de courriel devrait s'être ouvert avec un brouillon déjà rempli : il ne reste
+                  qu'à l'envoyer. S'il ne s'est pas ouvert, écrivez-nous à{" "}
+                  <a href={`mailto:${site.courriel}`} className="font-medium underline">{site.courriel}</a>{" "}
+                  ou appelez-nous au{" "}
+                  <a href={site.telHref} className="font-medium underline">{site.tel}</a>.
+                </p>
+              </>
+            ) : (
+              <>
+                <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-cfrq-green/15 text-2xl">✓</div>
+                <p className="text-[15px] leading-relaxed text-cfrq-deep">{config.merci}</p>
+              </>
+            )}
             <button onClick={onClose} className="mt-5 rounded-lg bg-cfrq-green px-5 py-2.5 text-[14px] font-medium text-[#123005] hover:bg-cfrq-green-hover">Fermer</button>
           </div>
         ) : (

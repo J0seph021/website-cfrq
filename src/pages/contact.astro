@@ -100,6 +100,12 @@ const miniCarte = "background:radial-gradient(circle at 40% 40%,rgba(90,189,42,.
             <p id="contact-ok" class="mt-4 hidden rounded-xl border border-cfrq-green/40 bg-cfrq-tint p-4 text-center text-[15px] text-cfrq-deep" role="status" aria-live="polite">
               Merci ! Votre demande est bien envoyée. On vous répond en un jour ouvrable. Pour une réponse immédiate, appelez-nous au {site.tel}.
             </p>
+            <p id="contact-secours" class="mt-4 hidden rounded-xl border border-amber-500/50 bg-amber-50 p-4 text-center text-[15px] text-cfrq-deep" role="status" aria-live="polite">
+              Votre demande n'a pas pu être transmise automatiquement. Votre logiciel de courriel devrait
+              s'être ouvert avec un brouillon déjà rempli : il ne reste qu'à l'envoyer. S'il ne s'est pas
+              ouvert, écrivez-nous à <a href={`mailto:${site.courriel}`} class="font-medium underline">{site.courriel}</a>
+              ou appelez-nous au <a href={site.telHref} class="font-medium underline">{site.tel}</a>.
+            </p>
           </form>
         </div>
 
@@ -153,6 +159,7 @@ const miniCarte = "background:radial-gradient(circle at 40% 40%,rgba(90,189,42,.
   const ENDPOINT = "https://bpxzznykbikbqbvraqxj.supabase.co/functions/v1/capter-lead";
   const f = document.getElementById("contact-form") as HTMLFormElement | null;
   const ok = document.getElementById("contact-ok");
+  const secours = document.getElementById("contact-secours");
   f?.addEventListener("submit", async (e) => {
     e.preventDefault();
     if (!f.reportValidity()) return;
@@ -178,6 +185,9 @@ const miniCarte = "background:radial-gradient(circle at 40% 40%,rgba(90,189,42,.
       window.location.href = `mailto:cfrq@cfrq.ca?subject=${encodeURIComponent(sujet)}&body=${encodeURIComponent(corps)}`;
     };
 
+    // Vrai si la capture a echoue : on bascule alors sur le brouillon courriel et
+    // on ne doit PAS annoncer « bien envoyée ».
+    let echec = false;
     try {
       const res = await fetch(ENDPOINT, {
         method: "POST",
@@ -196,10 +206,11 @@ const miniCarte = "background:radial-gradient(circle at 40% 40%,rgba(90,189,42,.
       if (!res.ok) throw new Error(String(res.status));
       f.reset();
     } catch {
+      echec = true;
       fallbackMailto();
     } finally {
       if (btn) btn.disabled = false;
-      ok?.classList.remove("hidden");
+      (echec ? secours : ok)?.classList.remove("hidden");
     }
   });
 </script>
