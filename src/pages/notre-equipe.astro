@@ -7,6 +7,7 @@ import Footer from "../components/Footer.astro";
 import { site } from "../data/site";
 import { withBase } from "../lib/url";
 import photoEquipe from "../assets/photos/equipe.jpg";
+import boiseSentier from "../assets/photos/boise-sentier.jpg";
 
 // Photos individuelles : deposer les fichiers dans src/assets/photos/equipe/
 // (un fichier par membre, nomme comme son id : alexandre-bouillon.jpg), les
@@ -201,7 +202,7 @@ const eyebrow = "text-[12.5px] font-semibold uppercase tracking-[0.18em]";
   <main id="contenu">
     <!-- HERO -->
     <section class="relative isolate overflow-hidden bg-[#16200f]">
-      <Image src={photoEquipe} alt="L'équipe de CFRQ réunie en plein air" widths={[768, 1280, 1920]} sizes="100vw" loading="eager" class="absolute inset-0 -z-10 h-full w-full object-cover" />
+      <Image src={boiseSentier} alt="Vue sur un boisé privé et la vallée en arrière-plan" widths={[768, 1280, 1920]} sizes="100vw" loading="eager" class="absolute inset-0 -z-10 h-full w-full object-cover" />
       <div class="absolute inset-0 -z-10" style="background:linear-gradient(120deg,rgba(15,22,10,.9) 0%,rgba(15,22,10,.66) 55%,rgba(15,22,10,.3) 100%)"></div>
       <div class="mx-auto max-w-[1160px] px-[22px] py-[88px]">
         <div class="max-w-[640px]">
@@ -216,8 +217,19 @@ const eyebrow = "text-[12.5px] font-semibold uppercase tracking-[0.18em]";
       </div>
     </section>
 
+    <!-- PHOTO D'EQUIPE : hors du hero, pour qu'aucun texte ne couvre les visages -->
+    <section class="mx-auto max-w-[1160px] px-[22px] pt-[38px]">
+      <Image
+        src={photoEquipe}
+        alt="L'équipe de CFRQ réunie en plein air"
+        widths={[768, 1195]}
+        sizes="(min-width: 1204px) 1116px, 100vw"
+        class="aspect-[16/9] w-full rounded-[22px] border border-black/5 object-cover"
+      />
+    </section>
+
     <!-- MANIFESTE -->
-    <section class="mx-auto max-w-[900px] px-[22px] pb-2 pt-[84px]">
+    <section class="mx-auto max-w-[900px] px-[22px] pb-2 pt-[54px]">
       <p class={`${eyebrow} text-cfrq-leaf`}>Notre façon de travailler</p>
       <p class="mt-4 font-display text-[clamp(24px,3.6vw,34px)] font-normal leading-[1.32] text-cfrq-deep text-pretty">
         On a tous un médecin de famille. Votre boisé, lui, mérite <em class="not-italic text-cfrq-leaf">un forestier de famille</em>.
