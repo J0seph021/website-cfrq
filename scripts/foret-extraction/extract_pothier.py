@@ -120,7 +120,10 @@ def extract_page(page):
             continue
         age = min(anchors, key=lambda ta: abs(ta[0] - w["top"]))[1]
         rowtok[age].append((w["x0"], v))
+    #  C) colonne AAP9 (accroissement annuel periodique) : sert d'ARBITRE entre A et B.
+    aap_center_x = centers[7] if len(centers) >= 8 else None
     out = []
+    prev_v9 = None
     for _, age in anchors:
         toks = sorted(rowtok[age])
         vA = None
@@ -129,8 +132,29 @@ def extract_page(page):
             if cand is not None and abs(cand[0] - v9_center_x) <= GAP:
                 vA = cand[1]
         vB = toks[6][1] if len(toks) >= 7 else None
-        out.append({"age": age, "V9": vA if vA is not None else vB,
-                    "V9_seq": vB, "ntok": len(toks)})
+        aap = None
+        if aap_center_x is not None:
+            c = min(toks, key=lambda xv: abs(xv[0] - aap_center_x), default=None)
+            if c is not None and abs(c[0] - aap_center_x) <= GAP:
+                aap = c[1]
+        if aap is None and len(toks) >= 8:
+            aap = toks[7][1]
+
+        # ARBITRAGE A / B. Les deux signaux concordent presque partout ; quand ils
+        # divergent, c'est la proximite de colonne (A) qui a derive vers AAP9 dans
+        # le bas de la page. Cas reel corrige : PET/FAIBLE/IQS15 (page 144), ou les
+        # ages 95 a 135 lisaient la colonne AAP9 (1.33, 1.22, 0.80, 0.01, -0.87...)
+        # au lieu de V9 (130, 136, 140, 140, 136, 126) -> volumes NEGATIFS.
+        # On tranche par la COHERENCE PHYSIQUE de la table : sur un pas de 5 ans,
+        # V9(i) - V9(i-1) doit valoir environ 5 x AAP9(i).
+        v9 = vA if vA is not None else vB
+        if vA is not None and vB is not None and vA != vB \
+                and prev_v9 is not None and aap is not None:
+            attendu = prev_v9 + 5.0 * aap
+            v9 = min((vA, vB), key=lambda c: abs(c - attendu))
+        out.append({"age": age, "V9": v9, "V9_seq": vB, "ntok": len(toks)})
+        if v9 is not None:
+            prev_v9 = v9
     return out
 
 def header_exploit(page):
