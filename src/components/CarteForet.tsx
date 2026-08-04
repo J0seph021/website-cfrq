@@ -513,6 +513,22 @@ const STATUTS: Record<string, string> = {
   approuve: "Approuvé", refuse: "Refusé", paye: "Payé", complete: "Complété",
 };
 
+// Échappement HTML — inclut les guillemets, pour rester sûr aussi bien dans du
+// texte que dans une valeur d'attribut.
+const escHtml = (s: any) =>
+  String(s ?? "").replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
+
+// Valeur interpolée dans un attribut d'événement (onclick), donc évaluée comme du
+// JS APRÈS décodage HTML : échapper seulement pour le HTML ne suffit pas (&#39;
+// redeviendrait une apostrophe et casserait la chaîne JS). On sérialise donc en
+// littéral JS (JSON.stringify gère quotes et antislashs), puis on échappe le
+// résultat pour l'attribut.
+const jsArg = (s: any) =>
+  JSON.stringify(String(s ?? ""))
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
 // Bloc « volumes par essence » (B1) : ce que le peuplement contient, par essence,
 // en m³/ha. Volontairement SANS valeur $ (garde-fou légal du focus group).
 function blocVolumes(p: Record<string, any>): string {
@@ -524,7 +540,7 @@ function blocVolumes(p: Record<string, any>): string {
   const barre = (e: { nom: string; vol: number }) => {
     const pct = Math.max(3, Math.round((e.vol / (top[0].vol || 1)) * 100));
     return `<div style="margin-top:3px">`
-      + `<div style="display:flex;justify-content:space-between;gap:8px;font-size:11.5px"><span>${e.nom}</span>`
+      + `<div style="display:flex;justify-content:space-between;gap:8px;font-size:11.5px"><span>${escHtml(e.nom)}</span>`
       + `<span style="color:#6b7280;font-weight:500">${e.vol.toFixed(1)} m³/ha</span></div>`
       + `<div style="height:4px;background:#e5e7eb;border-radius:3px;margin-top:1px"><div style="height:4px;width:${pct}%;background:#2f7d32;border-radius:3px"></div></div>`
       + `</div>`;
@@ -554,7 +570,7 @@ function blocMaturite(p: Record<string, any>, anneeCourante: number): string {
 }
 
 function contenuPopup(p: Record<string, any>, docsParRef?: Map<string, Doc[]>, anneeCourante = new Date().getFullYear()): string {
-  const esc = (s: any) => String(s ?? "").replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]!));
+  const esc = escHtml;
   const ligne = (label: string, val: any, unite = "") =>
     val == null || val === ""
       ? ""
@@ -570,7 +586,7 @@ function contenuPopup(p: Record<string, any>, docsParRef?: Map<string, Doc[]>, a
     if (!docs.length) return "";
     const lbl = (t?: string) => (t === "prescription" ? "Prescription (PDF)" : t === "rapport" ? "Rapport d'exécution (PDF)" : "Document (PDF)");
     const lien = (d: Doc) =>
-      `<a href="#" onclick="window.__cfrqDoc('${esc(d.storage_path)}');return false;" style="display:block;margin-top:4px;color:#1f6feb;font-weight:600;text-decoration:none">📄 ${lbl(d.type_document)}</a>`;
+      `<a href="#" onclick="window.__cfrqDoc(${jsArg(d.storage_path)});return false;" style="display:block;margin-top:4px;color:#1f6feb;font-weight:600;text-decoration:none">📄 ${lbl(d.type_document)}</a>`;
     return `<div style="margin-top:6px;padding-top:6px;border-top:1px solid #eee">${docs.map(lien).join("")}</div>`;
   };
 
