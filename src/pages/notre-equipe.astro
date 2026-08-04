@@ -15,11 +15,14 @@ import boiseSentier from "../assets/photos/boise-sentier.jpg";
 // carte affiche le monogramme du membre.
 const photos: Record<string, ImageMetadata> = {};
 
+// chip : reserve aux fonctions de la direction et du bureau. Pour le personnel
+// terrain, les secteurs couverts sont dits dans la biographie, parce que la
+// plupart travaillent dans plus d'un secteur.
 interface Membre {
   id: string;
   nom: string;
   titre?: string;
-  chip: string;
+  chip?: string;
   texte: string;
 }
 
@@ -30,18 +33,18 @@ const groupes: { cle: string; titre: string; intro: string; membres: Membre[] }[
     intro: "Ceux qui répondent au téléphone, montent les demandes d'aide financière et gardent vos dossiers sur les rails.",
     membres: [
       {
-        id: "sebastien-rioux",
-        nom: "Sébastien Rioux",
-        titre: "ing.f.",
-        chip: "Directeur général",
-        texte: "Ingénieur forestier et directeur général, au CFRQ depuis plus de dix ans. Il voit à ce que chaque dossier avance et à ce que chaque propriétaire reparte avec une réponse claire, pas une réponse compliquée.",
-      },
-      {
         id: "joseph-moffet",
         nom: "Joseph Moffet",
         titre: "ing.f.",
         chip: "Président",
         texte: "Ingénieur forestier et copropriétaire. Il tient à ce que nos outils suivent le rythme, des cartes à jour jusqu'à votre espace client, avec un objectif simple : que vous compreniez ce que vous possédez.",
+      },
+      {
+        id: "sebastien-rioux",
+        nom: "Sébastien Rioux",
+        titre: "ing.f.",
+        chip: "Directeur général",
+        texte: "Ingénieur forestier et directeur général, au CFRQ depuis plus de dix ans. Il voit à ce que chaque dossier avance et à ce que chaque propriétaire reparte avec une réponse claire, pas une réponse compliquée.",
       },
       {
         id: "alexandra-fortier",
@@ -52,114 +55,94 @@ const groupes: { cle: string; titre: string; intro: string; membres: Membre[] }[
     ],
   },
   {
-    cle: "quebec",
-    titre: "Région de Québec",
-    intro: "Capitale-Nationale, Portneuf, Charlevoix et Côte-Nord.",
+    cle: "rive-nord",
+    titre: "Rive nord",
+    intro: "Capitale-Nationale, Portneuf, Charlevoix, Côte-Nord et Mauricie. Nos gens se déplacent d'un secteur à l'autre selon vos besoins.",
     membres: [
       {
         id: "simon-proulx",
         nom: "Simon Proulx",
         titre: "ing.f.",
-        chip: "Région de Québec",
-        texte: "Ingénieur forestier passionné de foresterie urbaine, d'insectes et de maladies des arbres. C'est lui qui prend en charge les projets spéciaux et les arbres qui posent problème en ville.",
+        texte: "Ingénieur forestier passionné de foresterie urbaine, d'insectes et de maladies des arbres. C'est lui qui prend en charge les projets spéciaux et les arbres qui posent problème en ville. Il travaille surtout dans la région de Québec.",
       },
       {
         id: "christian-dumont",
         nom: "Christian Dumont",
         titre: "tech.f.",
-        chip: "Région de Québec",
-        texte: "Technicien forestier d'expérience, il a vu passer bien des chantiers dans la région. Il connaît les boisés du secteur, et surtout les gens qui les possèdent.",
+        texte: "Technicien forestier d'expérience, il a vu passer bien des chantiers dans la région de Québec. Il connaît les boisés du secteur, et surtout les gens qui les possèdent.",
       },
       {
         id: "jean-benoit-girard",
         nom: "Jean-Benoît Girard",
         titre: "tech.f.",
-        chip: "Région de Québec",
-        texte: "Technicien d'expérience et bûcheron à ses heures, il connaît la forêt autant du côté du plan que du côté de la scie. Un allié précieux quand vient le temps de préparer une récolte.",
+        texte: "Technicien d'expérience et bûcheron à ses heures, il connaît la forêt autant du côté du plan que du côté de la scie. Un allié précieux quand vient le temps de préparer une récolte dans la région de Québec.",
       },
       {
         id: "alexandre-bouillon",
         nom: "Alexandre Bouillon",
         titre: "tech.f.",
-        chip: "Région de Québec",
-        texte: "Passionné de plein air et de vélo, il est aussi à l'aise dans un sentier que dans un peuplement. Il prend le temps de marcher votre terrain avec vous et d'expliquer ce qu'il y voit.",
+        texte: "Passionné de plein air et de vélo, il est aussi à l'aise dans un sentier que dans un peuplement. Il couvre la région de Québec et prend le temps de marcher votre terrain avec vous.",
       },
     ],
   },
   {
-    cle: "bois-francs",
-    titre: "Bois-Francs et Chaudière-Appalaches",
-    intro: "Le secteur le plus couvert de notre territoire, des érablières de la Beauce aux boisés de ferme des Bois-Francs.",
+    cle: "rive-sud",
+    titre: "Rive sud",
+    intro: "Bois-Francs, Chaudière et Appalaches, des érablières de la Beauce aux boisés de ferme. La plupart travaillent dans plus d'un secteur.",
     membres: [
       {
         id: "camay-boisvert",
         nom: "Camay Boisvert",
         titre: "ing.f.",
-        chip: "Bois-Francs · Chaudière-Appalaches",
-        texte: "Ingénieure forestière depuis 2026, originaire de l'Abitibi, où la foresterie est une affaire de famille : deux de ses grandes sœurs sont elles aussi ingénieures forestières. Un regard neuf et rigoureux sur vos peuplements.",
+        texte: "Ingénieure forestière depuis 2026, originaire de l'Abitibi, où la foresterie est une affaire de famille : deux de ses grandes sœurs sont elles aussi ingénieures forestières. Elle travaille dans les Bois-Francs et la Chaudière-Appalaches.",
       },
       {
         id: "cedric-maheu",
         nom: "Cédric Maheu",
         titre: "ing.f.",
-        chip: "Bois-Francs · Chaudière-Appalaches",
-        texte: "Beauceron, il a grandi dans les érablières et les terres à bois de son père. Ingénieur forestier depuis 2025, il connaît de l'intérieur la forêt privée, celle qu'on entretient en famille.",
+        texte: "Beauceron, il a grandi dans les érablières et les terres à bois de son père. Ingénieur forestier depuis 2025, il connaît de l'intérieur la forêt privée, celle qu'on entretient en famille. Il couvre les Bois-Francs et la Chaudière-Appalaches.",
       },
       {
         id: "ann-renee-rheaume",
         nom: "Ann Renée Rhéaume",
         titre: "tech.f.",
-        chip: "Bois-Francs · Chaudière-Appalaches",
-        texte: "Agricultrice, acéricultrice et productrice forestière, elle vit exactement ce que vivent les propriétaires qu'elle accompagne. Quand elle parle de faire vivre une terre, elle sait de quoi il s'agit.",
+        texte: "Agricultrice, acéricultrice et productrice forestière, elle vit exactement ce que vivent les propriétaires qu'elle accompagne dans les Bois-Francs et la Chaudière-Appalaches. Quand elle parle de faire vivre une terre, elle sait de quoi il s'agit.",
       },
       {
         id: "louis-chabot",
         nom: "Louis Chabot",
         titre: "tech.f.",
-        chip: "Bois-Francs · Chaudière-Appalaches",
-        texte: "Technicien d'expérience et passionné d'acériculture, il regarde votre érablière comme si c'était la sienne. Entaillage, santé du peuplement, potentiel : il a réponse à vos questions.",
+        texte: "Technicien d'expérience et passionné d'acériculture, il regarde votre érablière comme si c'était la sienne. Entaillage, santé du peuplement, potentiel : il a réponse à vos questions, des Bois-Francs à la Chaudière-Appalaches.",
       },
       {
         id: "mathieu-jolibois",
         nom: "Mathieu Jolibois",
         titre: "tech.f.",
-        chip: "Bois-Francs · Chaudière-Appalaches",
-        texte: "Amateur de produits forestiers non ligneux, les champignons en tête, et tonnelier à ses heures : il fabrique ses propres tonneaux. Pour lui, une forêt donne bien plus que du bois.",
+        texte: "Amateur de produits forestiers non ligneux, les champignons en tête, et tonnelier à ses heures : il fabrique ses propres tonneaux. Pour lui, une forêt donne bien plus que du bois. Il travaille dans les Bois-Francs et la Chaudière-Appalaches.",
       },
       {
         id: "frank-olivier-soucy",
         nom: "Frank-Olivier Soucy",
         titre: "tech.f.",
-        chip: "Bois-Francs · Chaudière-Appalaches",
-        texte: "Originaire des Bois-Francs, il termine son baccalauréat en foresterie pour devenir ingénieur forestier. Travaillant et passionné, il ne compte pas ses pas en forêt.",
+        texte: "Originaire des Bois-Francs, il termine son baccalauréat en foresterie pour devenir ingénieur forestier. Travaillant et passionné, il ne compte pas ses pas dans les boisés des Bois-Francs et de la Chaudière-Appalaches.",
       },
       {
         id: "michel-gagnon",
         nom: "Michel Gagnon",
         titre: "tech.f.",
-        chip: "Bois-Francs",
         texte: "Il était là à la fondation de CFRQ, en 1996. Trois décennies de boisés des Bois-Francs en mémoire, et toujours le même plaisir à repartir sur le terrain.",
       },
-    ],
-  },
-  {
-    cle: "appalaches",
-    titre: "Appalaches",
-    intro: "Des boisés de montagne et une longue tradition sylvicole.",
-    membres: [
       {
         id: "pierre-cadorette",
         nom: "Pierre Cadorette",
         titre: "tech.f.",
-        chip: "Appalaches",
-        texte: "Présent lui aussi depuis la fondation de CFRQ en 1996. Amateur de littérature, de poésie et de choses bien faites, il a de la jasette et prend le temps qu'il faut avec chaque propriétaire.",
+        texte: "Présent lui aussi depuis la fondation de CFRQ en 1996. Amateur de littérature, de poésie et de choses bien faites, il a de la jasette et prend le temps qu'il faut avec chaque propriétaire des Appalaches.",
       },
       {
         id: "gabrielle-kelly-poulin",
         nom: "Gabrielle Kelly-Poulin",
         titre: "tech.f.",
-        chip: "Appalaches",
-        texte: "Sportive et amateure de plein air, la natation en tête, elle amène son énergie dans les boisés des Appalaches. Elle explique simplement, sans jargon.",
+        texte: "Plein air et sport, la natation en tête. La même énergie se retrouve dans les boisés des Appalaches, avec des explications simples et sans jargon.",
       },
     ],
   },
@@ -174,7 +157,11 @@ const initiales = (nom: string) => {
 };
 
 const posteLong = (m: Membre) =>
-  m.titre === "ing.f." ? "Ingénieur forestier" : m.titre === "tech.f." ? "Technicien forestier" : m.chip;
+  m.titre === "ing.f."
+    ? "Ingénieur forestier"
+    : m.titre === "tech.f."
+      ? "Technicien forestier"
+      : (m.chip ?? "Membre de l'équipe");
 
 const ld = {
   "@context": "https://schema.org",
@@ -266,7 +253,9 @@ const eyebrow = "text-[12.5px] font-semibold uppercase tracking-[0.18em]";
                 <h3 class="font-display text-[20px] font-medium text-cfrq-deep">
                   {m.nom}{m.titre && <span class="text-cfrq-leaf">, {m.titre}</span>}
                 </h3>
-                <p class="mt-2 inline-block rounded-full bg-cfrq-tint px-[11px] py-[5px] text-[12.5px] font-medium text-[#2e6b1e]">{m.chip}</p>
+                {m.chip && (
+                  <p class="mt-2 inline-block rounded-full bg-cfrq-tint px-[11px] py-[5px] text-[12.5px] font-medium text-[#2e6b1e]">{m.chip}</p>
+                )}
                 <p class="mt-3 text-[14.5px] leading-[1.6] text-cfrq-ink/[.68]">{m.texte}</p>
               </div>
             </article>
