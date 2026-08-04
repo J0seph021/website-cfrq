@@ -7,16 +7,15 @@ import { site } from "../../data/site";
 import { withBase } from "../../lib/url";
 
 import peuplement from "../../assets/photos/peuplement.jpg";
-import foretTravaux from "../../assets/photos/foret-travaux.jpg";
-import heroRecolte from "../../assets/photos/hero-recolte.jpg";
 import erabliere from "../../assets/photos/erabliere.jpg";
-import territoire from "../../assets/photos/territoire.jpg";
-import inventaire from "../../assets/photos/inventaire.jpg";
+import recolteHiver from "../../assets/photos/recolte-hiver.jpg";
+import foretNeige from "../../assets/photos/foret-neige.jpg";
+import plantationErables from "../../assets/photos/plantation-erables.jpg";
 
 const approche = [
   { num: "01", titre: "La visite terrain", texte: "Nos techniciens évaluent votre forêt." },
   { num: "02", titre: "Le plan & le rapport", texte: "Signés par un ingénieur forestier." },
-  { num: "03", titre: "Les travaux", texte: "Réalisés dans les règles de l'art." },
+  { num: "03", titre: "Les travaux", texte: "Supervisés dans les règles de l'art." },
 ];
 
 const cartes = [
@@ -41,26 +40,26 @@ const cartes = [
   },
   {
     slug: "operation-forestieres",
-    img: foretTravaux,
-    alt: "Travaux en forêt",
+    img: recolteHiver,
+    alt: "Porteur forestier sur un chantier de récolte en hiver",
     eyebrow: "Récolte clé en main",
     brun: false,
     titre: "Opérations forestières",
     accroche: "Du service à la carte au clé en main.",
-    texte: "Nous supervisons chaque année la récolte de 35 000 m³ de bois sur les propriétés de nos clients. Du martelage à la mise en marché, nous encadrons les travaux de A à Z pour que vous ayez l'esprit tranquille.",
-    chips: ["Prescription de travaux", "Voirie forestière", "Gestion du transport", "Mise en marché des bois"],
+    texte: "Nous supervisons chaque année la récolte de 35 000 m³ de bois sur les propriétés de nos clients. Du martelage à la fin des travaux, nous planifions, supervisons et vérifions les opérations pour que vous ayez l'esprit tranquille.",
+    chips: ["Prescription de travaux", "Voirie forestière", "Supervision des opérations", "Vérification des travaux"],
     encadre: {
       titre: "Format clé en main",
       points: [
         "Un contrat qui précise le partage des revenus, établi avant le début des travaux",
-        "Supervision complète, de la planification à la vente du bois",
+        "Supervision complète, de la planification à la vérification des travaux",
       ],
     },
   },
   {
     slug: "evaluation-forestiere",
-    img: heroRecolte,
-    alt: "Évaluation forestière",
+    img: foretNeige,
+    alt: "Forêt mixte enneigée à flanc de montagne",
     eyebrow: "Expertise légale",
     brun: false,
     titre: "Évaluation forestière & expertise légale",
@@ -81,25 +80,14 @@ const cartes = [
   },
   {
     slug: "arboriculture-et-foresterie-urbaine",
-    img: territoire,
-    alt: "Foresterie urbaine",
+    img: plantationErables,
+    alt: "Plantation d'érables en milieu ouvert",
     eyebrow: "Milieu urbain",
     brun: false,
     titre: "Arboriculture & foresterie urbaine",
     accroche: "Des arbres sains, des milieux sécuritaires.",
     texte: "Pour les municipalités, les promoteurs et les propriétaires, nous évaluons la santé et le risque des arbres et prescrivons les travaux correctifs requis, signés par des ingénieurs forestiers.",
     chips: ["Santé de l'arbre", "Évaluation du risque", "Boisés municipaux", "Accompagnement des promoteurs"],
-  },
-  {
-    slug: "service-aux-entrepreneurs-en-travaux-sylvicoles",
-    img: inventaire,
-    alt: "Inventaire en forêt publique",
-    eyebrow: "Forêt publique",
-    brun: false,
-    titre: "Service aux entrepreneurs sylvicoles",
-    accroche: "Le soutien technique en forêt publique.",
-    texte: "Un service de supervision et de planification offert aux entreprises qui réalisent des travaux sylvicoles en forêt publique.",
-    chips: ["Plan sondage", "Compilation des inventaires", "Analyse des résultats", "Prescription"],
   },
 ];
 
@@ -119,7 +107,7 @@ const ld = {
     ] },
     { "@type": "OfferCatalog", name: "Services forestiers de CFRQ", provider: { "@id": "https://cfrq.ca/#organization" }, itemListElement: [
       { "@type": "Offer", itemOffered: { "@type": "Service", name: "Aménagement forestier", description: "Plan d'aménagement, préparation de terrain, reboisement, éducation de peuplement et travaux forêt-faune.", provider: { "@id": "https://cfrq.ca/#organization" } } },
-      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Opérations forestières", description: "Prescription, permis, voirie, transport et mise en marché des bois : du service à la carte au clé en main.", provider: { "@id": "https://cfrq.ca/#organization" } } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Opérations forestières", description: "Prescription, permis, voirie, planification, supervision et vérification des travaux de récolte : du service à la carte au clé en main.", provider: { "@id": "https://cfrq.ca/#organization" } } },
       { "@type": "Offer", itemOffered: { "@type": "Service", name: "Évaluation forestière", description: "Évaluation de propriété, expertise d'expropriation, évaluation de dommages et inventaire forestier.", provider: { "@id": "https://cfrq.ca/#organization" } } },
       { "@type": "Offer", itemOffered: { "@type": "Service", name: "Érablière et acériculture", description: "Bilan de santé, analyse de sol, évaluation du nombre d'entailles, plan d'érablière et cartographie GPS.", provider: { "@id": "https://cfrq.ca/#organization" } } },
       { "@type": "Offer", itemOffered: { "@type": "Service", name: "Arboriculture et foresterie urbaine", description: "Santé et risque des arbres, boisés municipaux et accompagnement des promoteurs.", provider: { "@id": "https://cfrq.ca/#organization" } } },
@@ -145,10 +133,10 @@ const eyebrow = "text-[12.5px] font-semibold uppercase tracking-[0.18em]";
       <div class="mx-auto max-w-[1160px] px-[22px] pb-[60px] pt-[76px]">
         <p class={`${eyebrow} tracking-[0.2em] text-cfrq-leaf`}>Nos services</p>
         <h1 class="mt-3 max-w-[800px] font-display font-medium text-cfrq-deep text-[clamp(40px,7vw,62px)] leading-[1.02] tracking-[-0.02em] text-balance">
-          Un seul partenaire, du conseil à l'exécution
+          Un seul partenaire, du conseil au chantier
         </h1>
         <p class="mt-5 max-w-[620px] text-[19px] leading-[1.55] text-cfrq-ink/70 text-pretty">
-          Nos techniciens vont sur le terrain, nos ingénieurs forestiers signent vos plans et rapports, et nous réalisons les travaux. Tout ce dont votre forêt a besoin, réuni sous un même toit depuis 1996.
+          Nos techniciens vont sur le terrain, nos ingénieurs forestiers signent vos plans et rapports, et nous supervisons les travaux jusqu'à la fin du chantier. Tout ce dont votre forêt a besoin, réuni sous un même toit depuis 1996.
         </p>
         <div class="mt-10 grid gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
           {site.stats.map((s) => (

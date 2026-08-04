@@ -12,6 +12,9 @@ import foretTravaux from "../assets/photos/foret-travaux.jpg";
 import erabliere from "../assets/photos/erabliere.jpg";
 import heroRecolte from "../assets/photos/hero-recolte.jpg";
 import territoire from "../assets/photos/territoire.jpg";
+import recolteHiver from "../assets/photos/recolte-hiver.jpg";
+import foretNeige from "../assets/photos/foret-neige.jpg";
+import plantationErables from "../assets/photos/plantation-erables.jpg";
 
 const imgMap = {
   peuplement,
@@ -19,11 +22,14 @@ const imgMap = {
   erabliere,
   "hero-recolte": heroRecolte,
   territoire,
+  "recolte-hiver": recolteHiver,
+  "foret-neige": foretNeige,
+  "plantation-erables": plantationErables,
 };
 
 // Routes racine calquees sur les URLs WordPress historiques (SEO preserve) :
 // /amenagement/, /operation-forestieres/, /evaluation-forestiere/, /erabliere/,
-// /arboriculture-et-foresterie-urbaine/, /service-aux-entrepreneurs-en-travaux-sylvicoles/
+// /arboriculture-et-foresterie-urbaine/
 export function getStaticPaths() {
   return services.map((s) => ({ params: { service: s.slug }, props: { service: s } }));
 }

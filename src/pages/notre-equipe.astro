@@ -1,0 +1,305 @@
+---
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import Base from "../layouts/Base.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { site } from "../data/site";
+import { withBase } from "../lib/url";
+import photoEquipe from "../assets/photos/equipe.jpg";
+
+// Photos individuelles : deposer les fichiers dans src/assets/photos/equipe/
+// (un fichier par membre, nomme comme son id : alexandre-bouillon.jpg), les
+// importer ici et les ajouter au dictionnaire. Tant qu'une photo manque, la
+// carte affiche le monogramme du membre.
+const photos: Record<string, ImageMetadata> = {};
+
+interface Membre {
+  id: string;
+  nom: string;
+  titre?: string;
+  chip: string;
+  texte: string;
+}
+
+const groupes: { cle: string; titre: string; intro: string; membres: Membre[] }[] = [
+  {
+    cle: "direction",
+    titre: "La direction et le bureau",
+    intro: "Ceux qui répondent au téléphone, montent les demandes d'aide financière et gardent vos dossiers sur les rails.",
+    membres: [
+      {
+        id: "sebastien-rioux",
+        nom: "Sébastien Rioux",
+        titre: "ing.f.",
+        chip: "Directeur général",
+        texte: "Ingénieur forestier et directeur général, au CFRQ depuis plus de dix ans. Il voit à ce que chaque dossier avance et à ce que chaque propriétaire reparte avec une réponse claire, pas une réponse compliquée.",
+      },
+      {
+        id: "joseph-moffet",
+        nom: "Joseph Moffet",
+        titre: "ing.f.",
+        chip: "Président",
+        texte: "Ingénieur forestier et copropriétaire. Il tient à ce que nos outils suivent le rythme, des cartes à jour jusqu'à votre espace client, avec un objectif simple : que vous compreniez ce que vous possédez.",
+      },
+      {
+        id: "alexandra-fortier",
+        nom: "Alexandra Fortier",
+        chip: "Adjointe administrative",
+        texte: "C'est la voix que vous entendez quand vous appelez au bureau. Rendez-vous, documents, formulaires et programmes d'aide : elle sait toujours où en est votre demande, et elle vous l'explique simplement.",
+      },
+    ],
+  },
+  {
+    cle: "quebec",
+    titre: "Région de Québec",
+    intro: "Capitale-Nationale, Portneuf, Charlevoix et Côte-Nord.",
+    membres: [
+      {
+        id: "simon-proulx",
+        nom: "Simon Proulx",
+        titre: "ing.f.",
+        chip: "Région de Québec",
+        texte: "Ingénieur forestier passionné de foresterie urbaine, d'insectes et de maladies des arbres. C'est lui qui prend en charge les projets spéciaux et les arbres qui posent problème en ville.",
+      },
+      {
+        id: "christian-dumont",
+        nom: "Christian Dumont",
+        titre: "tech.f.",
+        chip: "Région de Québec",
+        texte: "Technicien forestier d'expérience, il a vu passer bien des chantiers dans la région. Il connaît les boisés du secteur, et surtout les gens qui les possèdent.",
+      },
+      {
+        id: "jean-benoit-girard",
+        nom: "Jean-Benoît Girard",
+        titre: "tech.f.",
+        chip: "Région de Québec",
+        texte: "Technicien d'expérience et bûcheron à ses heures, il connaît la forêt autant du côté du plan que du côté de la scie. Un allié précieux quand vient le temps de préparer une récolte.",
+      },
+      {
+        id: "alexandre-bouillon",
+        nom: "Alexandre Bouillon",
+        titre: "tech.f.",
+        chip: "Région de Québec",
+        texte: "Passionné de plein air et de vélo, il est aussi à l'aise dans un sentier que dans un peuplement. Il prend le temps de marcher votre terrain avec vous et d'expliquer ce qu'il y voit.",
+      },
+    ],
+  },
+  {
+    cle: "bois-francs",
+    titre: "Bois-Francs et Chaudière-Appalaches",
+    intro: "Le secteur le plus couvert de notre territoire, des érablières de la Beauce aux boisés de ferme des Bois-Francs.",
+    membres: [
+      {
+        id: "camay-boisvert",
+        nom: "Camay Boisvert",
+        titre: "ing.f.",
+        chip: "Bois-Francs · Chaudière-Appalaches",
+        texte: "Ingénieure forestière depuis 2026, originaire de l'Abitibi, où la foresterie est une affaire de famille : deux de ses grandes sœurs sont elles aussi ingénieures forestières. Un regard neuf et rigoureux sur vos peuplements.",
+      },
+      {
+        id: "cedric-maheu",
+        nom: "Cédric Maheu",
+        titre: "ing.f.",
+        chip: "Bois-Francs · Chaudière-Appalaches",
+        texte: "Beauceron, il a grandi dans les érablières et les terres à bois de son père. Ingénieur forestier depuis 2025, il connaît de l'intérieur la forêt privée, celle qu'on entretient en famille.",
+      },
+      {
+        id: "ann-renee-rheaume",
+        nom: "Ann Renée Rhéaume",
+        titre: "tech.f.",
+        chip: "Bois-Francs · Chaudière-Appalaches",
+        texte: "Agricultrice, acéricultrice et productrice forestière, elle vit exactement ce que vivent les propriétaires qu'elle accompagne. Quand elle parle de faire vivre une terre, elle sait de quoi il s'agit.",
+      },
+      {
+        id: "louis-chabot",
+        nom: "Louis Chabot",
+        titre: "tech.f.",
+        chip: "Bois-Francs · Chaudière-Appalaches",
+        texte: "Technicien d'expérience et passionné d'acériculture, il regarde votre érablière comme si c'était la sienne. Entaillage, santé du peuplement, potentiel : il a réponse à vos questions.",
+      },
+      {
+        id: "mathieu-jolibois",
+        nom: "Mathieu Jolibois",
+        titre: "tech.f.",
+        chip: "Bois-Francs · Chaudière-Appalaches",
+        texte: "Amateur de produits forestiers non ligneux, les champignons en tête, et tonnelier à ses heures : il fabrique ses propres tonneaux. Pour lui, une forêt donne bien plus que du bois.",
+      },
+      {
+        id: "frank-olivier-soucy",
+        nom: "Frank-Olivier Soucy",
+        titre: "tech.f.",
+        chip: "Bois-Francs · Chaudière-Appalaches",
+        texte: "Originaire des Bois-Francs, il termine son baccalauréat en foresterie pour devenir ingénieur forestier. Travaillant et passionné, il ne compte pas ses pas en forêt.",
+      },
+      {
+        id: "michel-gagnon",
+        nom: "Michel Gagnon",
+        titre: "tech.f.",
+        chip: "Bois-Francs",
+        texte: "Il était là à la fondation de CFRQ, en 1996. Trois décennies de boisés des Bois-Francs en mémoire, et toujours le même plaisir à repartir sur le terrain.",
+      },
+    ],
+  },
+  {
+    cle: "appalaches",
+    titre: "Appalaches",
+    intro: "Des boisés de montagne et une longue tradition sylvicole.",
+    membres: [
+      {
+        id: "pierre-cadorette",
+        nom: "Pierre Cadorette",
+        titre: "tech.f.",
+        chip: "Appalaches",
+        texte: "Présent lui aussi depuis la fondation de CFRQ en 1996. Amateur de littérature, de poésie et de choses bien faites, il a de la jasette et prend le temps qu'il faut avec chaque propriétaire.",
+      },
+      {
+        id: "gabrielle-kelly-poulin",
+        nom: "Gabrielle Kelly-Poulin",
+        titre: "tech.f.",
+        chip: "Appalaches",
+        texte: "Sportive et amateure de plein air, la natation en tête, elle amène son énergie dans les boisés des Appalaches. Elle explique simplement, sans jargon.",
+      },
+    ],
+  },
+];
+
+const tous = groupes.flatMap((g) => g.membres);
+
+// Monogramme affiche tant que la photo du membre n'est pas fournie.
+const initiales = (nom: string) => {
+  const mots = nom.split(" ").filter(Boolean);
+  return `${mots[0][0]}${mots[mots.length - 1][0]}`.toUpperCase();
+};
+
+const posteLong = (m: Membre) =>
+  m.titre === "ing.f." ? "Ingénieur forestier" : m.titre === "tech.f." ? "Technicien forestier" : m.chip;
+
+const ld = {
+  "@context": "https://schema.org",
+  "@graph": [
+    { "@type": "WebPage", "@id": "https://cfrq.ca/notre-equipe/#webpage", url: "https://cfrq.ca/notre-equipe/", name: "Notre équipe | CFRQ", description: "Les ingénieurs et techniciens forestiers de CFRQ, par secteur : région de Québec, Bois-Francs, Chaudière-Appalaches et Appalaches.", inLanguage: "fr-CA", about: { "@id": "https://cfrq.ca/#organization" } },
+    { "@type": "BreadcrumbList", itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Accueil", item: "https://cfrq.ca/" },
+      { "@type": "ListItem", position: 2, name: "Notre équipe", item: "https://cfrq.ca/notre-equipe/" },
+    ] },
+    { "@type": "Organization", "@id": "https://cfrq.ca/#organization", name: "Conseillers Forestiers de la Région de Québec inc.", alternateName: "CFRQ", foundingDate: "1996", employee: tous.map((m) => ({ "@type": "Person", name: m.nom, jobTitle: posteLong(m) })) },
+  ],
+};
+
+const eyebrow = "text-[12.5px] font-semibold uppercase tracking-[0.18em]";
+---
+
+<Base
+  title="Notre équipe : vos ingénieurs et techniciens forestiers | CFRQ"
+  description="Rencontrez l'équipe de CFRQ : des ingénieurs et techniciens forestiers présents dans la région de Québec, les Bois-Francs, la Chaudière-Appalaches et les Appalaches."
+  canonical="/notre-equipe/"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(ld)} slot="head" />
+
+  <Header />
+  <main id="contenu">
+    <!-- HERO -->
+    <section class="relative isolate overflow-hidden bg-[#16200f]">
+      <Image src={photoEquipe} alt="L'équipe de CFRQ réunie en plein air" widths={[768, 1280, 1920]} sizes="100vw" loading="eager" class="absolute inset-0 -z-10 h-full w-full object-cover" />
+      <div class="absolute inset-0 -z-10" style="background:linear-gradient(120deg,rgba(15,22,10,.9) 0%,rgba(15,22,10,.66) 55%,rgba(15,22,10,.3) 100%)"></div>
+      <div class="mx-auto max-w-[1160px] px-[22px] py-[88px]">
+        <div class="max-w-[640px]">
+          <p class={`${eyebrow} tracking-[0.2em] text-cfrq-green-light`}>Notre équipe</p>
+          <h1 class="mt-3 font-display font-medium text-cfrq-cream text-[clamp(38px,6.5vw,58px)] leading-[1.03] tracking-[-0.02em] text-balance">
+            Votre forestier de famille
+          </h1>
+          <p class="mt-5 max-w-[560px] text-[19px] leading-[1.55] text-[#dce2d2] text-pretty">
+            Des ingénieurs et des techniciens forestiers qui connaissent votre coin de pays. Celui ou celle qui se présente chez vous, c'est la même personne qui suivra votre boisé les années suivantes.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- MANIFESTE -->
+    <section class="mx-auto max-w-[900px] px-[22px] pb-2 pt-[84px]">
+      <p class={`${eyebrow} text-cfrq-leaf`}>Notre façon de travailler</p>
+      <p class="mt-4 font-display text-[clamp(24px,3.6vw,34px)] font-normal leading-[1.32] text-cfrq-deep text-pretty">
+        On a tous un médecin de famille. Votre boisé, lui, mérite <em class="not-italic text-cfrq-leaf">un forestier de famille</em>.
+      </p>
+      <p class="mt-[26px] text-[17px] leading-[1.7] text-cfrq-ink/[.72]">
+        Votre forêt n'est pas un dossier parmi d'autres. La personne qui se déplace chez vous apprend votre terrain, vos objectifs et l'histoire de votre famille avec ce boisé, et c'est elle qui revient d'une visite à l'autre. On parle sans jargon, on répond au téléphone, et on vous dit franchement ce qui vaut la peine et ce qui peut attendre.
+      </p>
+    </section>
+
+    <!-- EQUIPE PAR SECTEUR -->
+    {groupes.map((g) => (
+      <section class="mx-auto max-w-[1160px] px-[22px] pt-[62px]">
+        <div class="max-w-[640px]">
+          <h2 class="font-display font-medium text-cfrq-deep text-[clamp(26px,3.6vw,34px)] leading-[1.08] tracking-[-0.015em] text-balance">{g.titre}</h2>
+          <p class="mt-2.5 text-[16px] leading-relaxed text-cfrq-ink/65">{g.intro}</p>
+        </div>
+        <div class="mt-[26px] grid gap-[18px] sm:grid-cols-2 lg:grid-cols-3">
+          {g.membres.map((m) => (
+            <article class="overflow-hidden rounded-[20px] border border-black/5 bg-white">
+              {photos[m.id] ? (
+                <Image
+                  src={photos[m.id]}
+                  alt={`Portrait de ${m.nom}, ${posteLong(m).toLowerCase()} chez CFRQ`}
+                  widths={[320, 640]}
+                  sizes="(min-width:1024px) 360px, (min-width:640px) 50vw, 100vw"
+                  class="aspect-[4/5] w-full object-cover"
+                />
+              ) : (
+                <div class="flex aspect-[4/5] w-full items-center justify-center bg-cfrq-tint" aria-hidden="true">
+                  <span class="font-display text-[46px] font-medium tracking-[0.02em] text-cfrq-deep/30">{initiales(m.nom)}</span>
+                </div>
+              )}
+              <div class="px-[22px] pb-[24px] pt-[20px]">
+                <h3 class="font-display text-[20px] font-medium text-cfrq-deep">
+                  {m.nom}{m.titre && <span class="text-cfrq-leaf">, {m.titre}</span>}
+                </h3>
+                <p class="mt-2 inline-block rounded-full bg-cfrq-tint px-[11px] py-[5px] text-[12.5px] font-medium text-[#2e6b1e]">{m.chip}</p>
+                <p class="mt-3 text-[14.5px] leading-[1.6] text-cfrq-ink/[.68]">{m.texte}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+    ))}
+
+    <!-- REPERES -->
+    <section class="mx-auto max-w-[1160px] px-[22px] pt-[72px]">
+      <div class="rounded-[22px] border border-cfrq-green/[.14] bg-[#eef2e6] p-[clamp(26px,4vw,40px)]">
+        <div class="grid gap-[26px] sm:grid-cols-3">
+          <div>
+            <p class="font-display text-[26px] font-medium text-cfrq-deep">Depuis 1996</p>
+            <p class="mt-1.5 text-[14.5px] leading-relaxed text-cfrq-ink/70">Deux membres de l'équipe actuelle étaient là à la fondation de CFRQ.</p>
+          </div>
+          <div>
+            <p class="font-display text-[26px] font-medium text-cfrq-deep">Ing.f. et tech.f.</p>
+            <p class="mt-1.5 text-[14.5px] leading-relaxed text-cfrq-ink/70">Des techniciens sur le terrain, des ingénieurs forestiers qui signent vos plans et vos rapports.</p>
+          </div>
+          <div>
+            <p class="font-display text-[26px] font-medium text-cfrq-deep">Votre secteur</p>
+            <p class="mt-1.5 text-[14.5px] leading-relaxed text-cfrq-ink/70">
+              Chaque région a ses responsables. <a href={withBase("/territoire-desservi")} class="font-semibold text-cfrq-leaf underline-offset-2 hover:underline">Voir le territoire desservi</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA FINAL -->
+    <section class="mx-auto max-w-[1160px] px-[22px] pb-[84px] pt-[62px]">
+      <div class="rounded-3xl px-[clamp(34px,5vw,56px)] py-[clamp(34px,5vw,56px)] text-center text-cfrq-cream" style="background:linear-gradient(140deg,#1D4011,#14331A)">
+        <h2 class="font-display text-[clamp(28px,4.5vw,44px)] font-medium leading-[1.06] text-balance">Faisons connaissance</h2>
+        <p class="mx-auto mt-4 max-w-[540px] text-[18px] leading-[1.55] text-cfrq-cream/[.82]">
+          Une visite-conseil de votre boisé, c'est le meilleur point de départ. On se déplace chez vous, et on part de là.
+        </p>
+        <div class="mt-[30px] flex flex-wrap items-center justify-center gap-4">
+          <a href={withBase("/contact")} class="inline-flex items-center rounded-xl bg-cfrq-green px-8 py-4 text-[16.5px] font-bold text-[#123005] transition-colors hover:bg-[#6ecb3e]">
+            Réserver une visite-conseil
+          </a>
+          <p class="text-[16px] text-cfrq-cream/85">ou&nbsp;<a href={site.telHref} class="font-semibold text-cfrq-cream hover:underline">{site.tel}</a></p>
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Base>

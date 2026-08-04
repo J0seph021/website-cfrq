@@ -5,7 +5,15 @@ export interface Service {
   intro: string;
   prestations: string[];
   encart?: { titre: string; points: string[] };
-  image: "peuplement" | "foret-travaux" | "erabliere" | "hero-recolte" | "territoire";
+  image:
+    | "peuplement"
+    | "foret-travaux"
+    | "erabliere"
+    | "hero-recolte"
+    | "territoire"
+    | "recolte-hiver"
+    | "foret-neige"
+    | "plantation-erables";
   icone: string;
 }
 
@@ -41,24 +49,24 @@ export const services: Service[] = [
     titre: "Opérations forestières",
     tagline: "Du service à la carte au clé en main.",
     intro:
-      "Nous supervisons chaque année la récolte de 35 000 m³ de bois sur les propriétés de nos clients. Du martelage à la mise en marché, nous encadrons les travaux de A à Z pour que vous ayez l'esprit tranquille.",
+      "Nous supervisons chaque année la récolte de 35 000 m³ de bois sur les propriétés de nos clients. Du martelage à la fin des travaux, nous planifions, supervisons et vérifions les opérations pour que vous ayez l'esprit tranquille.",
     prestations: [
       "Prescription de travaux",
       "Demande de permis",
       "Planification et suivi",
       "Voirie forestière",
-      "Gestion du transport",
-      "Mise en marché des bois",
+      "Supervision des opérations",
+      "Vérification des travaux réalisés",
       "Paiement des entrepreneurs",
     ],
     encart: {
       titre: "Format clé en main",
       points: [
         "Encadré par un contrat qui précise le partage des revenus, établi avant le début des travaux",
-        "Supervision complète des opérations, de la planification à la vente du bois",
+        "Supervision complète des opérations, de la planification à la vérification des travaux",
       ],
     },
-    image: "foret-travaux",
+    image: "recolte-hiver",
     icone: "chainsaw",
   },
   {
@@ -74,7 +82,7 @@ export const services: Service[] = [
       "Inventaire forestier",
       "Témoignage d'expert",
     ],
-    image: "hero-recolte",
+    image: "foret-neige",
     icone: "scale",
   },
   {
@@ -106,22 +114,7 @@ export const services: Service[] = [
       "État de santé des boisés municipaux",
       "Accompagnement des promoteurs immobiliers",
     ],
-    image: "territoire",
+    image: "plantation-erables",
     icone: "building",
-  },
-  {
-    slug: "service-aux-entrepreneurs-en-travaux-sylvicoles",
-    titre: "Service aux entrepreneurs en travaux sylvicoles",
-    tagline: "Le soutien technique en forêt publique.",
-    intro:
-      "Un service de supervision et de planification offert aux entreprises qui réalisent des travaux sylvicoles en forêt publique.",
-    prestations: [
-      "Plan sondage",
-      "Compilation des inventaires",
-      "Analyse des résultats",
-      "Prescription",
-    ],
-    image: "foret-travaux",
-    icone: "clipboard",
   },
 ];

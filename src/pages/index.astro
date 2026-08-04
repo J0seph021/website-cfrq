@@ -35,19 +35,18 @@ const etapes = [
     num: "03",
     img: foretTravaux,
     alt: "Travaux sylvicoles",
-    titre: "Les travaux réalisés",
-    texte: "On réalise et coordonne les interventions : reboisement, éclaircie, coupes d'assainissement, ",
+    titre: "Les travaux supervisés",
+    texte: "On planifie et on supervise les interventions : reboisement, éclaircie, coupes d'assainissement, ",
     fort: "dans les règles de l'art.",
   },
 ];
 
 const servicesApercu = [
   { chip: "Diagnostic & plan", chipBrun: false, titre: "Aménagement forestier", texte: "Le plan qui met votre boisé en santé et ouvre l'accès aux programmes d'aide." },
-  { chip: "Récolte clé en main", chipBrun: false, titre: "Opérations forestières", texte: "Du martelage à la mise en marché, on encadre la récolte de A à Z." },
+  { chip: "Récolte clé en main", chipBrun: false, titre: "Opérations forestières", texte: "Du martelage à la fin des travaux, on planifie, on supervise et on vérifie." },
   { chip: "Acériculture", chipBrun: true, titre: "Érablière & acériculture", texte: "Santé du peuplement, normes d'entaillage et cartographie GPS de votre réseau." },
   { chip: "Expertise légale", chipBrun: false, titre: "Évaluation & expertise", texte: "Valeur marchande, dommages, expropriation : le juste prix, démontré et défendu." },
   { chip: "Milieu urbain", chipBrun: false, titre: "Arboriculture & foresterie urbaine", texte: "Santé et risque des arbres pour municipalités, promoteurs et propriétaires." },
-  { chip: "Forêt publique", chipBrun: false, titre: "Service aux entrepreneurs", texte: "Supervision et planification pour les travaux sylvicoles en forêt publique." },
 ];
 
 const profils = [
@@ -64,9 +63,9 @@ const espaceAtouts = [
 ];
 
 const realisations = [
-  { img: foretTravaux, alt: "Éclaircie commerciale", titre: "Éclaircie commerciale", legende: "Récolter une partie des tiges pour faire grossir les meilleures." },
+  { img: foretTravaux, alt: "Reboisement", titre: "Reboisement", legende: "Replanter les superficies dégarnies et remettre la forêt en production." },
   { img: erabliere, alt: "Aménagement d'érablière", titre: "Aménagement d'érablière", legende: "Un peuplement en santé, une production qui dure." },
-  { img: boiseMature, alt: "Plan d'aménagement", titre: "Plan d'aménagement & reboisement", legende: "La stratégie d'ensemble, puis remettre la forêt en production." },
+  { img: boiseMature, alt: "Éclaircie commerciale", titre: "Éclaircie commerciale", legende: "Récolter une partie des tiges pour faire grossir les meilleures." },
 ];
 
 const faq = [
@@ -74,7 +73,7 @@ const faq = [
   { q: "Ai-je droit à de l'aide financière ?", parts: ["Oui. Avec un plan d'aménagement, vous avez accès au ", { fort: "PAMVFP", vert: false }, ", au Programme de financement forestier et au remboursement des taxes foncières des producteurs forestiers reconnus."] },
   { q: "Qu'est-ce qu'un plan d'aménagement ?", parts: ["Un portrait de votre forêt (peuplements, potentiel, milieux à protéger) préparé par un ingénieur forestier, avec des scénarios adaptés à vos objectifs. C'est aussi la porte d'entrée vers l'aide financière."] },
   { q: "J'ai hérité d'un boisé et je n'y connais rien.", parts: ["Aucun problème. On accompagne les nouveaux propriétaires du début à la fin : visite terrain, plan, travaux et suivi. Aucune connaissance forestière requise de votre part."] },
-  { q: "Faites-vous les plans ou aussi les travaux ?", parts: ["Les deux. Nos ingénieurs planifient et signent les rapports; nos techniciens supervisent la réalisation sur le terrain, jusqu'au paiement des entrepreneurs."] },
+  { q: "Faites-vous les plans ou aussi les travaux ?", parts: ["Les deux. Nos ingénieurs planifient et signent les plans et les rapports; nos techniciens organisent le chantier, supervisent les travaux sur le terrain et les vérifient, jusqu'au paiement des entrepreneurs."] },
   { q: "Quelles régions desservez-vous ?", parts: ["La grande région de Québec et l'est du Québec : Québec (Capitale-Nationale), Portneuf, Charlevoix, Côte-Nord, Mauricie, Bois-Francs, Chaudière et Appalaches."] },
 ];
 
@@ -123,7 +122,7 @@ const orgLd = {
     name: "Services forestiers",
     itemListElement: [
       { "@type": "Offer", itemOffered: { "@type": "Service", name: "Aménagement forestier", description: "Plan d'aménagement, préparation de terrain, reboisement, éducation de peuplement et travaux forêt-faune." } },
-      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Opérations forestières", description: "Prescription, permis, voirie, transport et mise en marché des bois : du service à la carte au clé en main." } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Opérations forestières", description: "Prescription, permis, voirie, planification, supervision et vérification des travaux de récolte : du service à la carte au clé en main." } },
       { "@type": "Offer", itemOffered: { "@type": "Service", name: "Évaluation forestière", description: "Évaluation de propriété, expertise d'expropriation, évaluation de dommages et inventaire forestier." } },
       { "@type": "Offer", itemOffered: { "@type": "Service", name: "Érablière et acériculture", description: "Bilan de santé, analyse de sol, évaluation du nombre d'entailles, plan d'érablière et cartographie GPS." } },
       { "@type": "Offer", itemOffered: { "@type": "Service", name: "Arboriculture et foresterie urbaine", description: "Évaluation de la santé et du risque des arbres, boisés municipaux et accompagnement des promoteurs." } },
@@ -140,7 +139,7 @@ const faqLd = {
     { "@type": "Question", name: "Ai-je droit à de l'aide financière pour aménager mon boisé?", acceptedAnswer: { "@type": "Answer", text: "Oui. Avec un plan d'aménagement, vous avez accès au Programme d'aide à la mise en valeur des forêts privées (PAMVFP), au Programme de financement forestier et au remboursement des taxes foncières des producteurs forestiers reconnus." } },
     { "@type": "Question", name: "Qu'est-ce qu'un plan d'aménagement forestier?", acceptedAnswer: { "@type": "Answer", text: "C'est un portrait de votre forêt (composition des peuplements, potentiel de production, milieux à protéger) préparé par un ingénieur forestier, avec des scénarios sylvicoles adaptés à vos objectifs. C'est aussi la porte d'entrée vers l'aide financière." } },
     { "@type": "Question", name: "Je viens d'hériter d'un boisé et je n'y connais rien. Pouvez-vous m'aider?", acceptedAnswer: { "@type": "Answer", text: "Oui. CFRQ accompagne les nouveaux propriétaires du début à la fin : visite terrain, plan, travaux et suivi. Aucune connaissance forestière n'est requise de votre part." } },
-    { "@type": "Question", name: "Faites-vous seulement les plans ou aussi les travaux?", acceptedAnswer: { "@type": "Answer", text: "Les deux. Nos ingénieurs forestiers planifient et signent les rapports; nos techniciens supervisent la réalisation des travaux sur le terrain, jusqu'au paiement des entrepreneurs." } },
+    { "@type": "Question", name: "Faites-vous seulement les plans ou aussi les travaux?", acceptedAnswer: { "@type": "Answer", text: "Les deux. Nos ingénieurs forestiers planifient et signent les plans et les rapports; nos techniciens organisent le chantier, supervisent les travaux sur le terrain et les vérifient, jusqu'au paiement des entrepreneurs." } },
     { "@type": "Question", name: "Quelles régions desservez-vous?", acceptedAnswer: { "@type": "Answer", text: "La grande région de Québec et l'est du Québec : Capitale-Nationale (Québec), Portneuf, Charlevoix, Côte-Nord, Mauricie, Bois-Francs, Chaudière et Appalaches." } },
   ],
 };
@@ -343,7 +342,7 @@ const btnVert = "inline-flex items-center gap-2 rounded-xl bg-cfrq-green font-bo
       <p class="font-display text-[clamp(26px,4.5vw,40px)] font-normal italic leading-[1.35] text-cfrq-deep">
         « Ils sont venus sur mon terrain, m'ont tout expliqué simplement, et ont trouvé une subvention à laquelle je n'avais jamais pensé. »
       </p>
-      <p class="mt-[22px] text-[14.5px] text-cfrq-ink/70">- Propriétaire accompagné, région de Québec</p>
+      <p class="mt-[22px] text-[14.5px] text-cfrq-ink/70">- Jean Gagné, région de Québec</p>
     </section>
 
     <!-- 3.10 FAQ -->

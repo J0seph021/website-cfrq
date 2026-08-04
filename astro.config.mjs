@@ -12,6 +12,12 @@ export default defineConfig({
   // Slash final systematique pour coller aux URLs WordPress historiques
   // (ex. /amenagement/) et preserver le referencement acquis.
   trailingSlash: 'always',
+  // Service retire (2026-08) : on preserve l'ancienne URL WordPress au lieu de la laisser en 404.
+  // La destination doit porter la base a la main : Astro ne la prefixe pas aux redirections.
+  redirects: {
+    '/service-aux-entrepreneurs-en-travaux-sylvicoles/':
+      `${(process.env.SITE_BASE || '').replace(/\/$/, '')}/services/`,
+  },
   integrations: [react()],
   vite: {
     plugins: [tailwindcss()],

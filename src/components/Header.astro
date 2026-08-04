@@ -7,6 +7,7 @@ const nav = [
   { label: "Accueil", href: "/" },
   { label: "Services", href: "/services" },
   { label: "Territoire", href: "/territoire-desservi" },
+  { label: "Équipe", href: "/notre-equipe" },
   { label: "À propos", href: "/a-propos-de-nous" },
   { label: "Contact", href: "/contact" },
 ];
@@ -25,7 +26,7 @@ const isActive = (href: string) =>
       <Logo class="h-9 w-auto" />
     </a>
 
-    <ul class="hidden items-center gap-8 text-[15px] font-medium lg:flex">
+    <ul class="hidden items-center gap-6 text-[15px] font-medium lg:flex xl:gap-8">
       {nav.map((l) => (
         <li>
           <a

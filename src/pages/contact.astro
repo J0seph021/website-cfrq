@@ -30,7 +30,11 @@ const ld = {
 const eyebrow = "text-[12.5px] font-semibold uppercase tracking-[0.18em]";
 const champ = "h-12 w-full rounded-[10px] border border-black/15 bg-white px-4 text-[16px] outline-none transition-shadow focus:border-cfrq-green focus:shadow-[0_0_0_3px_rgba(90,189,42,.18)]";
 const labelCls = "text-[13.5px] font-medium text-cfrq-ink/70";
-const miniCarte = "background:radial-gradient(circle at 40% 40%,rgba(90,189,42,.14),rgba(90,189,42,0) 50%),repeating-linear-gradient(0deg,rgba(20,51,26,.05) 0 1px,transparent 1px 30px),repeating-linear-gradient(90deg,rgba(20,51,26,.05) 0 1px,transparent 1px 30px),#EEF4E5";
+// Bureau : 6021 boul. Wilfrid-Hamel, L'Ancienne-Lorette (coordonnees geocodees via Nominatim).
+const bureau = { lat: 46.79988, lon: -71.33887 };
+const bbox = [bureau.lon - 0.006, bureau.lat - 0.003, bureau.lon + 0.006, bureau.lat + 0.003];
+const carteOsm = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox.join("%2C")}&layer=mapnik&marker=${bureau.lat}%2C${bureau.lon}`;
+const itineraire = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${site.adresse.ligne1}, ${site.adresse.ville} ${site.adresse.code}`)}`;
 ---
 
 <Base
@@ -131,9 +135,18 @@ const miniCarte = "background:radial-gradient(circle at 40% 40%,rgba(90,189,42,.
               </div>
             </div>
           </div>
-          <div class="relative min-h-[200px] overflow-hidden rounded-[22px] border border-black/5" style={miniCarte}>
-            <span class="absolute h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full bg-cfrq-green" style="left:50%;top:46%;box-shadow:0 0 0 6px rgba(90,189,42,.25)"></span>
-            <span class="absolute bottom-3.5 left-3.5 rounded-lg bg-white/85 px-[11px] py-[5px] text-[12px] font-medium text-cfrq-deep">L'Ancienne-Lorette (Québec)</span>
+          <div class="overflow-hidden rounded-[22px] border border-black/5 bg-[#EEF4E5]">
+            <iframe
+              title="Carte du bureau de CFRQ, 6021 boulevard Wilfrid-Hamel, L'Ancienne-Lorette"
+              src={carteOsm}
+              class="block h-[240px] w-full border-0"
+              loading="lazy"
+              referrerpolicy="no-referrer"
+            ></iframe>
+            <div class="flex flex-wrap items-center justify-between gap-2 border-t border-black/5 bg-white px-[14px] py-2.5">
+              <span class="text-[12.5px] font-medium text-cfrq-deep">L'Ancienne-Lorette (Québec)</span>
+              <a href={itineraire} target="_blank" rel="noopener noreferrer" class="text-[12.5px] font-semibold text-cfrq-leaf hover:underline">Itinéraire →</a>
+            </div>
           </div>
         </div>
       </div>

@@ -25,7 +25,7 @@ const equipe = [...direction, ...foretPrivee];
 const valeurs = [
   { titre: "Un conseil indépendant", texte: "On recommande ce qui est bon pour votre forêt, pas pour un tiers. Vos objectifs passent avant tout." },
   { titre: "Ingénieurs & techniciens", texte: "Des techniciens sur le terrain et des ingénieurs forestiers qui signent vos plans et rapports." },
-  { titre: "Du diagnostic aux travaux", texte: "Un seul interlocuteur, de la première visite jusqu'à la réalisation des interventions." },
+  { titre: "Du diagnostic aux travaux", texte: "Un seul interlocuteur, de la première visite jusqu'à la supervision des interventions." },
   { titre: "On maximise vos aides", texte: "On connaît les programmes et on monte les demandes avec vous, pour réduire vos coûts." },
 ];
 
@@ -51,7 +51,6 @@ const ld = {
 };
 
 const eyebrow = "text-[12.5px] font-semibold uppercase tracking-[0.18em]";
-const hatch = "background:repeating-linear-gradient(135deg,#E7EEDA,#E7EEDA 8px,#EEF3E5 8px,#EEF3E5 16px)";
 ---
 
 <Base
@@ -99,7 +98,7 @@ const hatch = "background:repeating-linear-gradient(135deg,#E7EEDA,#E7EEDA 8px,#
         Rendre l'aménagement forestier <em class="not-italic text-cfrq-leaf">simple, accessible et payant</em> pour chaque propriétaire, qu'il possède un petit boisé de loisir ou une grande forêt productive.
       </p>
       <p class="mt-[26px] text-[17px] leading-[1.7] text-cfrq-ink/[.72]">
-        Depuis près de 30 ans, nos ingénieurs et techniciens forestiers accompagnent les propriétaires de la grande région de Québec. On va sur le terrain, on explique sans jargon, on signe des plans rigoureux et on réalise les travaux. Notre indépendance nous permet de toujours recommander ce qui sert vraiment votre forêt et vos objectifs.
+        Depuis près de 30 ans, nos ingénieurs et techniciens forestiers accompagnent les propriétaires de la grande région de Québec. On va sur le terrain, on explique sans jargon, on signe des plans rigoureux et on supervise les travaux. Notre indépendance nous permet de toujours recommander ce qui sert vraiment votre forêt et vos objectifs.
       </p>
     </section>
 
@@ -125,6 +124,9 @@ const hatch = "background:repeating-linear-gradient(135deg,#E7EEDA,#E7EEDA 8px,#
           présents dans chaque secteur. Ce sont eux qui se déplacent sur votre propriété, de la
           première visite jusqu'aux travaux.
         </p>
+        <a href={withBase("/notre-equipe")} class="mt-4 inline-flex items-center gap-2 text-[15.5px] font-semibold text-cfrq-leaf underline-offset-2 hover:underline">
+          Rencontrer toute l'équipe <span aria-hidden="true">→</span>
+        </a>
       </div>
       <Image
         src={photoEquipe}

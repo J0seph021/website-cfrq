@@ -18,17 +18,6 @@ const regions = [
   { nom: "Appalaches", texte: "Boisés de montagne et longue tradition sylvicole." },
 ];
 
-// Marqueurs « régions » de la carte stylisée (positions en %).
-const marqueurs = [
-  { left: "24%", top: "62%" },
-  { left: "60%", top: "30%" },
-  { left: "72%", top: "56%" },
-  { left: "30%", top: "30%" },
-];
-
-const carteBg =
-  "background:radial-gradient(circle at 42% 44%,rgba(90,189,42,.18),rgba(90,189,42,0) 46%),radial-gradient(circle at 66% 60%,rgba(46,112,22,.16),rgba(46,112,22,0) 46%),repeating-linear-gradient(0deg,rgba(20,51,26,.05) 0 1px,transparent 1px 32px),repeating-linear-gradient(90deg,rgba(20,51,26,.05) 0 1px,transparent 1px 32px),#EEF4E5";
-
 const ld = {
   "@context": "https://schema.org",
   "@graph": [
@@ -82,13 +71,14 @@ const eyebrow = "text-[12.5px] font-semibold uppercase tracking-[0.18em]";
     <!-- CARTE + BUREAU -->
     <section class="mx-auto max-w-[1160px] px-[22px] pb-5 pt-14">
       <div class="flex flex-wrap items-stretch gap-5">
-        <div class="relative min-h-[360px] flex-[1.6] basis-[380px] overflow-hidden rounded-3xl border border-black/5" style={carteBg}>
-          <span class="absolute h-[18px] w-[18px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-cfrq-deep" style="left:42%;top:44%;box-shadow:0 0 0 6px rgba(20,51,26,.18)"></span>
-          <span class="absolute whitespace-nowrap rounded-[7px] bg-white/90 px-[9px] py-[3px] text-[12px] font-semibold text-cfrq-deep" style="left:42%;top:44%;transform:translate(-50%,14px)">Bureau · L'Ancienne-Lorette</span>
-          {marqueurs.map((m) => (
-            <span class="absolute h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-cfrq-green" style={`left:${m.left};top:${m.top};box-shadow:0 0 0 5px rgba(90,189,42,.22)`}></span>
-          ))}
-          <span class="absolute bottom-3.5 left-4 rounded-lg bg-white/85 px-[11px] py-[5px] text-[12px] font-medium text-cfrq-deep">Carte du territoire desservi</span>
+        <div class="relative flex-[1.6] basis-[380px] self-start overflow-hidden rounded-3xl border border-black/5 bg-[#EEF4E5]">
+          <Image
+            src={territoire}
+            alt="Carte du territoire desservi par CFRQ : les MRC de la région de Québec, de Portneuf, de Charlevoix, de la Côte-Nord, de la Mauricie, des Bois-Francs, de la Chaudière et des Appalaches."
+            widths={[600, 900, 1500]}
+            sizes="(min-width:1024px) 700px, 100vw"
+            class="block w-full"
+          />
         </div>
 
         <div class="flex-1 basis-[260px] rounded-3xl bg-cfrq-deep p-[30px] text-cfrq-cream">
