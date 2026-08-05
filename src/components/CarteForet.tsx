@@ -586,13 +586,44 @@ function blocProvenance(p: Record<string, any>): string {
   const enc = (txt: string, couleur: string, fond: string) =>
     `<div style="margin-top:6px;padding:6px 8px;border-radius:6px;background:${fond};color:${couleur};font-size:11.5px;line-height:1.4">${txt}</div>`;
 
+  // Explication de fond, commune à tous les cas : les peuplements du ministère sont
+  // délimités à une échelle bien plus grossière que les nôtres (en moyenne 24 fois
+  // plus étendus), parce qu'ils sont tracés par photo-interprétation sur tout le
+  // territoire et non lot par lot. C'est la cause première des écarts.
+  const ECHELLE =
+    "Les peuplements du ministère sont délimités par photo-interprétation à l'échelle du "
+    + "territoire, pas de votre lot : ils sont beaucoup plus vastes et moins découpés que "
+    + "ceux que nos forestiers tracent chez vous. Un seul de leurs polygones couvre souvent "
+    + "plusieurs de nos peuplements, ce qui explique les écarts.";
+
+  // Codes de groupe « indéterminé » : le photo-interprète n'a pas pu trancher l'essence.
+  const gr = String(p.gr_ess ?? "").toUpperCase();
+  const indetermine = /^(RX|RZ|FX|FN|FZ)/.test(gr);
+  const INDET =
+    "Le ministère classe d'ailleurs ce secteur en « essences indéterminées » : ses "
+    + "photo-interprètes n'ont pas pu identifier les essences depuis les photos aériennes. "
+    + "L'estimation est donc particulièrement approximative ici.";
+
+  // Provenance du DESCRIPTIF (appellation, essences, densité, hauteur…) : lue de
+  // la propriété `source` poussée par export-cartes ('paf' = relevé terrain CFRQ,
+  // 'ecoforestier' = synthèse de la carte du ministère). Les cartes exportées
+  // avant la migration 032 n'ont pas cette propriété : on reste alors neutre —
+  // ne JAMAIS revendiquer un relevé terrain sans preuve (OIFQ art. 13).
+  const descriptifTerrain =
+    p.source === "paf"
+      ? "Le descriptif du peuplement (appellation, essences, densité…), lui, vient du relevé terrain de CFRQ."
+      : p.source === "ecoforestier"
+        ? "Le descriptif de ce peuplement provient lui aussi de la carte écoforestière du ministère — aucun relevé terrain de CFRQ sur ce peuplement."
+        : "Le descriptif du peuplement provient de votre dossier forestier.";
+
   // 1. Aucun polygone du ministère ne concorde avec le relevé terrain.
   if (p.analyse_absente) {
     return enc(
       "<strong>Pas d'estimation pour ce peuplement.</strong> La carte écoforestière du "
-      + "ministère ne concorde pas avec le relevé de nos techniciens (âge ou hauteur trop "
-      + "différents). Plutôt qu'un chiffre douteux, nous n'en affichons aucun. Le descriptif "
-      + "ci-dessus, lui, vient de notre relevé.",
+      + "ministère ne concorde pas avec "
+      + (p.source === "paf" ? "le relevé de nos techniciens" : "le descriptif au dossier")
+      + " (âge ou hauteur trop différents). Plutôt qu'un chiffre douteux, nous n'en "
+      + "affichons aucun. " + descriptifTerrain + "<br><br>" + ECHELLE,
       "#7a4b00", "#fff6e5");
   }
 
@@ -604,7 +635,7 @@ function blocProvenance(p: Record<string, any>): string {
     parts.push(
       `<strong>Peuplement hétérogène.</strong> Il recoupe ${n} types écoforestiers distincts`
       + (ecart >= 30 ? ` (jusqu'à ${ecart} ans d'écart d'âge)` : "")
-      + ". Les estimations ci-dessus sont une moyenne et ne décrivent aucune partie précise du peuplement.");
+      + ". Les estimations ci-dessous sont une moyenne et ne décrivent aucune partie précise du peuplement.");
   }
 
   // 3. Provenance, toujours affichée dès qu'une estimation est montrée.
@@ -613,8 +644,8 @@ function blocProvenance(p: Record<string, any>): string {
     "Volumes et capital forestier : <strong>estimations</strong> tirées de l'inventaire "
     + "écoforestier du ministère"
     + (Number.isFinite(couv) && couv > 0 ? `, sur un polygone couvrant ${couv} % du peuplement` : "")
-    + ". Ce ne sont pas des mesures prises dans votre boisé. Le descriptif du peuplement, lui, "
-    + "vient du relevé terrain de CFRQ.");
+    + ". Ce ne sont pas des mesures prises dans votre boisé. " + descriptifTerrain);
+  parts.push(ECHELLE + (indetermine ? " " + INDET : ""));
 
   return enc(parts.join("<br><br>"),
     p.peuplement_heterogene ? "#7a4b00" : "#4b5563",

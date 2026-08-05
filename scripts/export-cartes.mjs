@@ -68,10 +68,22 @@ peup AS (
                    FROM unnest(regexp_split_to_array(coalesce(pe.classe_age,''),'[^0-9]+')) v
                   WHERE v ~ '^[0-9]+$' AND v::numeric BETWEEN 1 AND 249)
          END AS age_paf,
+         -- Couper sur tout sauf chiffres ET point : « 19.5 » doit rester 19,5 m
+         -- (couper sur le point en ferait moyenne(19,5) = 12 m et un peuplement se
+         -- ferait rejeter par sa propre hauteur). La virgule n'est convertie en
+         -- point que si elle est DECIMALE (suivie d'un seul chiffre final) :
+         -- « 12,5 » -> 12.5, mais « 13,15,17 » (liste multi-etages) garde ses
+         -- virgules separatrices -> tokens 13/15/17 -> moyenne 15.
          (SELECT avg(v::numeric)
-            FROM unnest(regexp_split_to_array(coalesce(pe.hauteur_m,''),'[^0-9]+')) v
-           WHERE v ~ '^[0-9]+$' AND v::numeric BETWEEN 1 AND 39) AS haut_paf
-  FROM planilogix.peuplements pe, prop
+            FROM unnest(regexp_split_to_array(
+                   regexp_replace(coalesce(pe.hauteur_m,''), ',([0-9])([^0-9]|$)', '.\\1\\2', 'g'),
+                   '[^0-9.]+')) v
+           WHERE v ~ '^[0-9]+(\\.[0-9]+)?$' AND v::numeric BETWEEN 1 AND 39) AS haut_paf
+  -- v_peuplements_complets = archive PAF (releves terrain CFRQ) + synthese
+  -- ecoforestiere (peuplements_eco, migration 032), avec source_donnee
+  -- ('paf' | 'ecoforestier'). L'archive planilogix.peuplements est redevenue
+  -- 100 % PAF le 2026-08-04 — ne plus jamais la lire seule ici.
+  FROM planilogix.v_peuplements_complets pe, prop
   -- Exiger un recouvrement REEL (>10% de l'aire du peuplement), sinon un peuplement
   -- d'une propriete VOISINE qui ne fait qu'effleurer la limite cadastrale
   -- (micro-sliver <0,01 ha) apparaitrait sur la mauvaise carte.
@@ -83,6 +95,10 @@ raw AS (
   UNION ALL
   SELECT 'peuplement', jsonb_strip_nulls(jsonb_build_object(
            'no_peup', pe.no_peup,
+           -- Provenance du DESCRIPTIF ('paf' = releve terrain CFRQ,
+           -- 'ecoforestier' = synthese de la carte du ministere). L'interface
+           -- s'en sert pour etiqueter honnetement chaque peuplement.
+           'source', pe.source_donnee,
            'appellation', pe.appellation,
            'essences', pe.essences,
            'superficie_ha', round(pe.superficie_ha::numeric,2),
@@ -261,6 +277,23 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
 
 async function main() {
   await pgClient.connect();
+
+  // Prévol : ce script lit v_peuplements_complets (migration 032). Sans elle,
+  // chaque producteur échouerait individuellement (911 erreurs) — on préfère un
+  // seul message clair. Protège aussi du scénario inverse : une VIEILLE version
+  // du script lancée APRÈS la migration lirait planilogix.peuplements (redevenue
+  // 100 % PAF) et REMPLACERAIT les cartes des clients éco par des cartes vides.
+  const chk = await pgClient.query(
+    "SELECT to_regclass('planilogix.v_peuplements_complets') AS v",
+  );
+  if (!chk.rows[0]?.v) {
+    console.error(
+      "Migration 032 non appliquée (planilogix.v_peuplements_complets absente). " +
+        "Appliquer db/migrations/032_peuplements_eco.sql du dépôt PlaniLogix, puis relancer.",
+    );
+    await pgClient.end();
+    process.exit(1);
+  }
 
   const cibles = process.argv.slice(2).map(Number).filter(Boolean);
   const ids = cibles.length
