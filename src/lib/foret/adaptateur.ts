@@ -38,7 +38,7 @@ export const COULEUR_STATUT: Record<AnalysePeuplement["couleur"], string> = {
 
 export const LEGENDE_CAPITAL: { couleur: string; nom: string }[] = [
   { couleur: COULEUR_STATUT.vert, nom: "En croissance (gagne en valeur)" },
-  { couleur: COULEUR_STATUT.jaune, nom: "Mûr — fenêtre d'intervention" },
+  { couleur: COULEUR_STATUT.jaune, nom: "Mûr : fenêtre d'intervention" },
   { couleur: COULEUR_STATUT.rouge, nom: "En décroissance (au-delà du sommet)" },
   { couleur: COULEUR_STATUT.gris, nom: "Indéterminé (données insuffisantes)" },
 ];

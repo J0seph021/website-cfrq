@@ -613,7 +613,7 @@ function blocProvenance(p: Record<string, any>): string {
     p.source === "paf"
       ? "Le descriptif du peuplement (appellation, essences, densité…), lui, vient du relevé terrain de CFRQ."
       : p.source === "ecoforestier"
-        ? "Le descriptif de ce peuplement provient lui aussi de la carte écoforestière du ministère — aucun relevé terrain de CFRQ sur ce peuplement."
+        ? "Le descriptif de ce peuplement provient lui aussi de la carte écoforestière du ministère : aucun relevé terrain de CFRQ sur ce peuplement."
         : "Le descriptif du peuplement provient de votre dossier forestier.";
 
   // 1. Aucun polygone du ministère ne concorde avec le relevé terrain.

@@ -995,9 +995,9 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null }: { 
             <h2 className="font-display text-xl font-medium text-cfrq-deep">Saviez-vous que...</h2>
             <p className="mt-2 max-w-2xl text-[15.5px] leading-relaxed text-cfrq-ink/75">
               {reconnu
-                ? "Comme producteur forestier reconnu, vous pouvez récupérer une large part de vos taxes foncières — jusqu'à 85 % — et faire financer une partie de vos travaux par des programmes qui se combinent."
+                ? "Comme producteur forestier reconnu, vous pouvez récupérer une large part de vos taxes foncières (jusqu'à 85 %) et faire financer une partie de vos travaux par des programmes qui se combinent."
                 : "Un propriétaire forestier reconnu peut récupérer jusqu'à 85 % de ses taxes foncières et faire financer une partie de ses travaux d'aménagement."}{" "}
-              La plupart des propriétaires ignorent ces mesures. La reconnaissance, les demandes de subvention et la paperasse, c'est nous qui nous en occupons — votre ingénieur valide votre admissibilité.
+              La plupart des propriétaires ignorent ces mesures. La reconnaissance, les demandes de subvention et la paperasse, c'est nous qui nous en occupons : votre ingénieur valide votre admissibilité.
             </p>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               <details className="group rounded-xl bg-white/70 p-4">
@@ -1157,7 +1157,7 @@ export function BilanInvestissements({ bilan }: { bilan: Row }) {
         {periode.charAt(0).toUpperCase() + periode.slice(1)}, {cad(valeur)} de travaux ont été réalisés chez vous
       </h2>
       <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-cfrq-ink/75">
-        Aménager une forêt a un coût — et une grande part est financée par les programmes que nous mobilisons pour vous.
+        Aménager une forêt a un coût, et une grande part est financée par les programmes que nous mobilisons pour vous.
         Voici ce qui a été investi{superficie > 0 ? ` sur ${nf.format(superficie)} ha de vos boisés` : ""}.
       </p>
       <div className="mt-5 grid gap-3 sm:grid-cols-3">
