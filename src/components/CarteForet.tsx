@@ -569,6 +569,58 @@ function blocMaturite(p: Record<string, any>, anneeCourante: number): string {
     + `</div>`;
 }
 
+// Bloc « provenance et réserves » du popup d'un peuplement.
+//
+// POURQUOI CE BLOC EXISTE. Le descriptif d'un peuplement (appellation, essences,
+// densité, hauteur, traitement, priorité) vient du relevé terrain de CFRQ. Tout ce
+// qui est CALCULÉ — volumes par essence, capital forestier, projection — vient de
+// l'inventaire écoforestier du ministère, greffé sur le peuplement par appariement
+// spatial. Le polygone du ministère est en moyenne 24 fois plus grand que le
+// peuplement : c'est une estimation, jamais une mesure du peuplement.
+//
+// Le taire reviendrait à laisser croire à une mesure. Le Code de déontologie des
+// ingénieurs forestiers l'interdit : art. 13 (ne pas omettre de données
+// nécessaires), art. 14 (pas d'avis incomplet), art. 20 (fournir les explications
+// nécessaires à la compréhension et à l'appréciation des services).
+function blocProvenance(p: Record<string, any>): string {
+  const enc = (txt: string, couleur: string, fond: string) =>
+    `<div style="margin-top:6px;padding:6px 8px;border-radius:6px;background:${fond};color:${couleur};font-size:11.5px;line-height:1.4">${txt}</div>`;
+
+  // 1. Aucun polygone du ministère ne concorde avec le relevé terrain.
+  if (p.analyse_absente) {
+    return enc(
+      "<strong>Pas d'estimation pour ce peuplement.</strong> La carte écoforestière du "
+      + "ministère ne concorde pas avec le relevé de nos techniciens (âge ou hauteur trop "
+      + "différents). Plutôt qu'un chiffre douteux, nous n'en affichons aucun. Le descriptif "
+      + "ci-dessus, lui, vient de notre relevé.",
+      "#7a4b00", "#fff6e5");
+  }
+
+  // 2. Le peuplement recoupe plusieurs types écoforestiers franchement différents.
+  const parts: string[] = [];
+  if (p.peuplement_heterogene) {
+    const n = Number(p.heterogene_nb_types) || 2;
+    const ecart = Number(p.heterogene_ecart_age) || 0;
+    parts.push(
+      `<strong>Peuplement hétérogène.</strong> Il recoupe ${n} types écoforestiers distincts`
+      + (ecart >= 30 ? ` (jusqu'à ${ecart} ans d'écart d'âge)` : "")
+      + ". Les estimations ci-dessus sont une moyenne et ne décrivent aucune partie précise du peuplement.");
+  }
+
+  // 3. Provenance, toujours affichée dès qu'une estimation est montrée.
+  const couv = Number(p.analyse_couverture_pct);
+  parts.push(
+    "Volumes et capital forestier : <strong>estimations</strong> tirées de l'inventaire "
+    + "écoforestier du ministère"
+    + (Number.isFinite(couv) && couv > 0 ? `, sur un polygone couvrant ${couv} % du peuplement` : "")
+    + ". Ce ne sont pas des mesures prises dans votre boisé. Le descriptif du peuplement, lui, "
+    + "vient du relevé terrain de CFRQ.");
+
+  return enc(parts.join("<br><br>"),
+    p.peuplement_heterogene ? "#7a4b00" : "#4b5563",
+    p.peuplement_heterogene ? "#fff6e5" : "#f3f4f6");
+}
+
 function contenuPopup(p: Record<string, any>, docsParRef?: Map<string, Doc[]>, anneeCourante = new Date().getFullYear()): string {
   const esc = escHtml;
   const ligne = (label: string, val: any, unite = "") =>
@@ -611,7 +663,8 @@ function contenuPopup(p: Record<string, any>, docsParRef?: Map<string, Doc[]>, a
           : "") +
         ligne("Priorité", p.priorite) +
         blocVolumes(p) +
-        blocMaturite(p, anneeCourante)
+        blocMaturite(p, anneeCourante) +
+        blocProvenance(p)
       );
     case "travaux":
       return wrap(

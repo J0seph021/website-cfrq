@@ -54,6 +54,30 @@ trait AS (
   LEFT JOIN dict d ON d.code_pr = pt.code_pr
   GROUP BY pt.no_prescription
 ),
+-- Peuplements du producteur, avec l'age et la hauteur du PAF convertis en NOMBRE.
+-- Le PAF stocke du texte : un entier (« 35 »), une plage (« 8-17 », « 60-30 ») ou un
+-- code de structure MFFP (« VIN », « JIN »). On prend la moyenne des nombres presents,
+-- et le milieu de classe pour les codes. NULL si rien d'exploitable : une valeur
+-- absente ne doit JAMAIS compter comme une contradiction.
+peup AS (
+  SELECT pe.*,
+         CASE upper(btrim(coalesce(pe.classe_age,'')))
+           WHEN 'JIN' THEN 40 WHEN 'JIR' THEN 40 WHEN 'JIIN' THEN 40
+           WHEN 'VIN' THEN 110 WHEN 'VIR' THEN 110 WHEN 'VIIN' THEN 110
+           ELSE (SELECT avg(v::numeric)
+                   FROM unnest(regexp_split_to_array(coalesce(pe.classe_age,''),'[^0-9]+')) v
+                  WHERE v ~ '^[0-9]+$' AND v::numeric BETWEEN 1 AND 249)
+         END AS age_paf,
+         (SELECT avg(v::numeric)
+            FROM unnest(regexp_split_to_array(coalesce(pe.hauteur_m,''),'[^0-9]+')) v
+           WHERE v ~ '^[0-9]+$' AND v::numeric BETWEEN 1 AND 39) AS haut_paf
+  FROM planilogix.peuplements pe, prop
+  -- Exiger un recouvrement REEL (>10% de l'aire du peuplement), sinon un peuplement
+  -- d'une propriete VOISINE qui ne fait qu'effleurer la limite cadastrale
+  -- (micro-sliver <0,01 ha) apparaitrait sur la mauvaise carte.
+  WHERE ST_Intersects(pe.geom, prop.g)
+    AND ST_Area(ST_Intersection(ST_MakeValid(pe.geom), prop.g)) > 0.10*ST_Area(ST_MakeValid(pe.geom))
+),
 raw AS (
   SELECT 'propriete'::text AS couche, jsonb_build_object('nom','Propriété') AS props, p.g4326 AS g FROM prop p
   UNION ALL
@@ -75,9 +99,10 @@ raw AS (
            'traitements_rec', pe.traitements_rec,
            'priorite', pe.priorite,
            -- Codes bruts MRNF pour le moteur foret (courbe de maturite E1/E2/E3,
-           -- src/lib/foret). Source: polygone eco_pee au recouvrement DOMINANT
-           -- (les peuplements PAF ont leur propre decoupage, different du tuilage
-           -- ecoforestier -> on prend l'enregistrement qui recouvre le plus).
+           -- src/lib/foret). Source : polygone eco_pee retenu par le FILTRE DE
+           -- NON-CONTRADICTION (voir la CTE eco_ok plus bas). NULL quand aucun
+           -- polygone du ministere ne concorde -> le portail n'affiche alors
+           -- aucune analyse pour ce peuplement, plutot qu'un chiffre douteux.
            'gr_ess', eco.gr_ess,
            'type_eco', eco.type_eco,
            'cl_dens', eco.cl_dens,
@@ -85,30 +110,70 @@ raw AS (
            'an_origine', CASE WHEN eco.an_origine ~ '^[0-9]{4}' THEN left(eco.an_origine,4)::int END,
            'region_eco', eco.region_eco,
            'vmb_ha_reel', round(den.vmb_ha::numeric,1),
-           'composition', den.composition)),
-         ST_Transform(pe.geom,4326) FROM planilogix.peuplements pe
+           'composition', den.composition,
+           -- Etiquettes de provenance et de fiabilite, LUES PAR L'INTERFACE.
+           -- Obligation deontologique (OIFQ, art. 13/14/20) : ne pas presenter
+           -- une estimation issue de la carte du ministere comme une mesure du
+           -- peuplement, et signaler les reserves qui s'y rattachent.
+           'analyse_absente', (eco.gr_ess IS NULL),
+           'analyse_couverture_pct', round((100*eco.aire/nullif(ST_Area(ST_MakeValid(pe.geom)),0))::numeric,0),
+           'peuplement_heterogene',
+             (het.n_signif >= 2 AND (het.ecart_age >= 30 OR het.n_couv > 1)),
+           'heterogene_nb_types', het.n_signif,
+           'heterogene_ecart_age', het.ecart_age)),
+         ST_Transform(pe.geom,4326) FROM peup pe
          CROSS JOIN prop
+         -- Polygone ecoforestier retenu : le plus grand recouvrement PARMI CEUX
+         -- QUI NE CONTREDISENT PAS le releve terrain sur l'age et la hauteur.
+         -- Ces deux attributs structuraux sont les seuls dont la validation
+         -- croisee (4 verificateurs independants, 8 726 peuplements de PAF) montre
+         -- un gain reel : -13 % d'erreur. Les essences n'apportent presque rien
+         -- seules et la densite DEGRADE le resultat -> volontairement non testees.
          LEFT JOIN LATERAL (
-           SELECT ep.gr_ess, ep.type_eco, ep.cl_dens, ep.cl_age, ep.an_origine,
-                  ep.region_eco, ep.feuillet, ep.geocode
-           FROM planilogix.eco_pee ep
-           WHERE ep.geom && pe.geom AND ST_Intersects(ep.geom, pe.geom)
-           ORDER BY ST_Area(ST_Intersection(ST_MakeValid(ep.geom), ST_MakeValid(pe.geom))) DESC
+           SELECT e.* FROM (
+             SELECT ep.gr_ess, ep.type_eco, ep.cl_dens, ep.cl_age, ep.an_origine,
+                    ep.region_eco, ep.feuillet, ep.geocode,
+                    ST_Area(ST_Intersection(ST_MakeValid(ep.geom), ST_MakeValid(pe.geom))) AS aire,
+                    CASE ep.cl_age WHEN '10' THEN 10 WHEN '30' THEN 30 WHEN '50' THEN 50
+                                   WHEN '70' THEN 70 WHEN '90' THEN 90 WHEN '120' THEN 120
+                                   WHEN 'JIN' THEN 40 WHEN 'JIR' THEN 40
+                                   WHEN 'VIN' THEN 110 WHEN 'VIR' THEN 110 END AS age_eco,
+                    CASE left(coalesce(ep.cl_haut,''),1)
+                         WHEN '1' THEN 24.0 WHEN '2' THEN 19.5 WHEN '3' THEN 14.5
+                         WHEN '4' THEN 9.5  WHEN '5' THEN 5.5  WHEN '6' THEN 3.0
+                         WHEN '7' THEN 1.0 END AS haut_eco
+             FROM planilogix.eco_pee ep
+             WHERE ep.geom && pe.geom AND ST_Intersects(ep.geom, pe.geom)
+           ) e
+           -- Non-contradiction : on ne rejette QUE si les deux valeurs existent et
+           -- s'ecartent trop. Une valeur manquante n'est jamais une contradiction.
+           WHERE (pe.age_paf  IS NULL OR e.age_eco  IS NULL OR abs(pe.age_paf  - e.age_eco)  <= 20)
+             AND (pe.haut_paf IS NULL OR e.haut_eco IS NULL OR abs(pe.haut_paf - e.haut_eco) <= 5)
+           ORDER BY e.aire DESC
            LIMIT 1
          ) eco ON true
+         -- Heterogeneite : le peuplement recoupe-t-il plusieurs types ecoforestiers
+         -- franchement differents ? (>= 20 % de l'aire chacun). Si oui, AUCUN chiffre
+         -- unique ne le decrit -> l'interface affiche un avertissement.
+         LEFT JOIN LATERAL (
+           SELECT count(*) AS n_signif,
+                  max(h.age_eco) - min(h.age_eco) AS ecart_age,
+                  count(DISTINCT left(coalesce(h.type_couv,''),1)) AS n_couv
+           FROM (
+             SELECT ep.type_couv,
+                    CASE ep.cl_age WHEN '10' THEN 10 WHEN '30' THEN 30 WHEN '50' THEN 50
+                                   WHEN '70' THEN 70 WHEN '90' THEN 90 WHEN '120' THEN 120
+                                   WHEN 'JIN' THEN 40 WHEN 'JIR' THEN 40
+                                   WHEN 'VIN' THEN 110 WHEN 'VIR' THEN 110 END AS age_eco
+             FROM planilogix.eco_pee ep
+             WHERE ep.geom && pe.geom AND ST_Intersects(ep.geom, pe.geom)
+               AND ST_Area(ST_Intersection(ST_MakeValid(ep.geom), ST_MakeValid(pe.geom)))
+                   >= 0.20 * ST_Area(ST_MakeValid(pe.geom))
+           ) h
+         ) het ON true
          LEFT JOIN planilogix.eco_dendro den
            ON den.feuillet = eco.feuillet AND den.geocode = eco.geocode
           AND den.cat_co_cmp = 'TOT'
-         WHERE ST_Intersects(pe.geom,prop.g)
-           -- Carte du portail = UNIQUEMENT la carte ecoforestiere du ministere
-           -- (peuplements synthetises depuis eco_pee, paf_id NULL). Les peuplements
-           -- issus de nos PAF signes (paf_id NON NULL) sont volontairement exclus :
-           -- le portail affiche une seule source, annoncee comme telle au client.
-           AND pe.paf_id IS NULL
-           -- Exiger un recouvrement REEL (>10% de l'aire du peuplement), sinon un
-           -- peuplement d'une propriete VOISINE qui ne fait qu'effleurer la limite
-           -- cadastrale (micro-sliver <0,01 ha) apparaitrait sur la mauvaise carte.
-           AND ST_Area(ST_Intersection(ST_MakeValid(pe.geom),prop.g)) > 0.10*ST_Area(ST_MakeValid(pe.geom))
   UNION ALL
   SELECT 'travaux', jsonb_strip_nulls(jsonb_build_object(
            'no_prescription', left(t.id_travaux,13),
