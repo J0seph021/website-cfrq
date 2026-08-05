@@ -5,6 +5,7 @@ import { site } from "../data/site";
 import CarteForet from "./CarteForet";
 import CalculateurValeurBois from "./CalculateurValeurBois";
 import FormulaireDemande, { DEMANDES, type ConfigDemande } from "./FormulaireDemande";
+import { BarreEmploye, ChoixClient, type Moi } from "./VueEmploye";
 import { essencesArbres } from "../lib/foret/essences-mffp";
 
 type Row = Record<string, any>;
@@ -296,11 +297,13 @@ function DefinirMotDePasse({ onClose }: { onClose: () => void }) {
   );
 }
 
-export function DashboardView({ d, offre = null, onLogout, courriel = null }: { d: Dossier; offre?: Offre; onLogout?: () => void; courriel?: string | null }) {
+export function DashboardView({ d, offre = null, onLogout, courriel = null, vueEmploye = false }: { d: Dossier; offre?: Offre; onLogout?: () => void; courriel?: string | null; vueEmploye?: boolean }) {
   const nom = d.producteur?.nom ?? "Votre dossier";
   const [achatEnCours, setAchatEnCours] = useState<string | null>(null);
   const [pwdOuvert, setPwdOuvert] = useState(false);
   const [demande, setDemande] = useState<ConfigDemande | null>(null); // F2/F3/F4/F6
+  // Message des actions neutralisées quand un employé regarde le dossier d'un client.
+  const [noteEmploye, setNoteEmploye] = useState("");
 
   // Statut d'achat par thème (vide tant qu'aucun relevé n'existe: tout est offert à l'achat).
   const acheteParTheme = useMemo(() => {
@@ -322,6 +325,12 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null }: { 
       window.removeEventListener("focus", relacher);
     };
   }, []);
+
+  useEffect(() => {
+    if (!noteEmploye) return;
+    const t = setTimeout(() => setNoteEmploye(""), 4000);
+    return () => clearTimeout(t);
+  }, [noteEmploye]);
 
   // Retour après paiement (?paye=1): remerciement + on descend à la section Portrait.
   const [paye, setPaye] = useState(false);
@@ -494,6 +503,9 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null }: { 
   // rattaché au dossier du client connecté, puis on l'envoie au paiement Stripe.
   // Si la commande en ligne n'est pas encore branchée, on retombe sur le courriel.
   async function acheter(theme: string) {
+    // En vue employé : lecture seule. portrait_token_client fait tourner le jeton
+    // du relevé du client, ce qui invaliderait le lien qu'il a déjà reçu.
+    if (vueEmploye) { setNoteEmploye("Commande désactivée : vous consultez le dossier d'un client."); return; }
     if (achatEnCours) return;
     setAchatEnCours(theme);
     try {
@@ -514,6 +526,7 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null }: { 
   // par current_producteur_id()), puis on ouvre la fonction 'telecharger' qui renvoie une
   // URL signée temporaire du bucket privé. Plus besoin du lien reçu par courriel.
   async function telecharger(theme: string) {
+    if (vueEmploye) { setNoteEmploye("Téléchargement désactivé : vous consultez le dossier d'un client."); return; }
     const { data } = await supabase.rpc("portrait_token_client");
     const token = (data as any)?.token as string | undefined;
     if (!token) return;
@@ -1122,6 +1135,13 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null }: { 
         </Reveal>
       </div>
 
+      {/* Actions neutralisées en vue employé */}
+      {noteEmploye && (
+        <div className="fixed inset-x-0 bottom-[68px] z-[55] flex justify-center px-5" role="status" aria-live="polite">
+          <p className="rounded-full bg-cfrq-deep px-4 py-2 text-[13.5px] text-cfrq-cream shadow-[0_10px_30px_rgba(0,0,0,.3)]">{noteEmploye}</p>
+        </div>
+      )}
+
       {/* Modal de demande (F2/F3/F4/F6) */}
       {demande && (
         <FormulaireDemande
@@ -1203,6 +1223,9 @@ export default function EspaceClient() {
   const [d, setD] = useState<Dossier | null>(null);
   const [offre, setOffre] = useState<Offre>(null);
   const [courriel, setCourriel] = useState<string | null>(null);
+  // Vue employé : qui suis-je, et quel dossier suis-je en train de regarder ?
+  const [moi, setMoi] = useState<Moi | null>(null);
+  const [choixOuvert, setChoixOuvert] = useState(false);
 
   useEffect(() => {
     let alive = true;
@@ -1210,7 +1233,7 @@ export default function EspaceClient() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) { window.location.replace(withBase("/espace-client")); return; }
       setCourriel(session.user?.email ?? null);
-      const [prod, proprietes, lots, paf, travaux, docs, carte, bilan, offreRes] = await Promise.all([
+      const [prod, proprietes, lots, paf, travaux, docs, carte, bilan, offreRes, moiRes] = await Promise.all([
         supabase.from("producteurs").select("*").maybeSingle(),
         supabase.from("proprietes").select("*").order("no_propriete"),
         supabase.from("lots").select("*"),
@@ -1222,6 +1245,8 @@ export default function EspaceClient() {
         supabase.from("bilan_investissement").select("*").maybeSingle(),
         // Offre du Portrait (statut d'achat). RPC absente -> erreur silencieuse, offre = null.
         supabase.rpc("portrait_offre_client"),
+        // Vue employé : employe / producteur_id / vue_employe / client.
+        supabase.rpc("portail_moi"),
       ]);
       if (!alive) return;
       setD({
@@ -1235,6 +1260,7 @@ export default function EspaceClient() {
         bilan: bilan.data ?? null,
       });
       setOffre((offreRes?.data as Offre) ?? null);
+      setMoi((moiRes?.data as Moi) ?? null);
       setLoading(false);
     })();
     const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => {
@@ -1257,8 +1283,16 @@ export default function EspaceClient() {
   }, []);
 
   async function logout() {
+    // Une vue employé ne survit pas à la déconnexion : la prochaine ouverture de
+    // session repart du dossier de la personne, jamais de celui d'un client.
+    if (moi?.vue_employe) await supabase.rpc("portail_quitter_client");
     await supabase.auth.signOut();
     window.location.replace(withBase("/espace-client"));
+  }
+
+  async function quitterVue() {
+    await supabase.rpc("portail_quitter_client");
+    window.location.reload();
   }
 
   if (loading || !d) {
@@ -1272,5 +1306,34 @@ export default function EspaceClient() {
     );
   }
 
-  return <DashboardView d={d} offre={offre} onLogout={logout} courriel={courriel} />;
+  // Employé sans dossier ouvert ni dossier personnel : on demande d'abord
+  // quel client il veut regarder.
+  if (moi?.employe && !moi.producteur_id) {
+    return <ChoixClient courriel={courriel} onDeconnexion={logout} />;
+  }
+
+  return (
+    <>
+      <DashboardView d={d} offre={offre} onLogout={logout} courriel={courriel} vueEmploye={!!moi?.vue_employe} />
+      {moi?.employe && (
+        <>
+          {/* Place réservée sous la barre fixe, sinon elle masque la fin de la page. */}
+          <div className="h-14 bg-cfrq-cream" />
+          <BarreEmploye
+            vue={moi.vue_employe}
+            client={moi.client}
+            onChanger={() => setChoixOuvert(true)}
+            onQuitter={quitterVue}
+          />
+        </>
+      )}
+      {choixOuvert && (
+        <ChoixClient
+          enModal
+          clientActuel={moi?.vue_employe ? moi.producteur_id : null}
+          onFermer={() => setChoixOuvert(false)}
+        />
+      )}
+    </>
+  );
 }
