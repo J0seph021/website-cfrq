@@ -16,6 +16,16 @@ const nf1 = new Intl.NumberFormat("fr-CA", { maximumFractionDigits: 0 });
 type PrixParSyndicat = Record<string, { syndicat: string; prix: Record<string, PrixEssence> }>;
 const PRIX = prixData as unknown as PrixParSyndicat;
 
+// prixbois.ca écrit les noms de syndicat sans accents : on les affiche en français correct.
+const NOM_SYNDICAT: Record<string, string> = {
+  "Region de Quebec": "Région de Québec",
+  "Centre-du-Quebec": "Centre-du-Québec",
+  "Cote-du-Sud": "Côte-du-Sud",
+  "Abitibi-Temiscamingue": "Abitibi-Témiscamingue",
+  "Saguenay-Lac-St-Jean": "Saguenay-Lac-Saint-Jean",
+  "Sud du Quebec": "Sud du Québec",
+};
+
 export default function CalculateurValeurBois({
   peuplements, syndicatGuid,
 }: {
@@ -29,6 +39,8 @@ export default function CalculateurValeurBois({
 
   const gr = PRIX[syndicatGuid || ""] || PRIX[PROVINCIAL];
   const prixResolu = gr?.prix ?? {};
+  const estProvincial = !PRIX[syndicatGuid || ""];
+  const nomSyndicat = NOM_SYNDICAT[gr?.syndicat ?? ""] ?? gr?.syndicat;
 
   const peups: Peuplement[] = useMemo(
     () => peuplements
@@ -51,7 +63,7 @@ export default function CalculateurValeurBois({
       <section className="rounded-2xl border border-black/5 bg-white p-6 md:p-8">
         <h2 className="font-display text-xl font-medium text-cfrq-deep">Valeur de votre bois</h2>
         <p className="mt-2 text-[15px] text-cfrq-ink/70">
-          Le volume par essence de votre forêt n'est pas encore disponible pour ce calcul. Votre ingénieur peut le compléter.
+          Le volume par essence de votre forêt n'est pas encore disponible pour ce calcul. Votre ingénieur forestier peut le compléter.
         </p>
       </section>
     );
@@ -75,7 +87,7 @@ export default function CalculateurValeurBois({
       <p className="text-[12px] font-medium uppercase tracking-wide text-cfrq-leaf">Estimez la valeur de votre bois</p>
       <h2 className="mt-1 font-display text-xl font-medium text-cfrq-deep">Vous calculez, avec vos hypothèses</h2>
       <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-cfrq-ink/75">
-        On part de vos vrais volumes par essence et des prix de votre région ({gr?.syndicat}). Ajustez vos hypothèses de mise en marché : le résultat est <strong>votre</strong> estimation, pas une valeur posée par CFRQ.
+        On part de vos vrais volumes par essence et {estProvincial ? "des prix moyens du Québec" : <>des prix de votre région ({nomSyndicat})</>}. Ajustez vos hypothèses de mise en marché : le résultat est <strong>votre</strong> estimation, pas une valeur posée par CFRQ.
       </p>
 
       <div className="mt-5 grid gap-5 md:grid-cols-2">
@@ -105,7 +117,7 @@ export default function CalculateurValeurBois({
           </p>
           {v.net < 0 && (
             <div className="rounded-xl bg-[#f7efe2] p-3.5 text-[13.5px] leading-relaxed text-[#7a4d12]">
-              Avec ces coûts, la récolte seule n'est pas rentable. C'est justement là que les programmes d'aide et le remboursement de taxes font la différence. Votre ingénieur peut vous montrer lesquels.
+              Avec ces coûts, la récolte seule n'est pas rentable. C'est justement là que les programmes d'aide et le remboursement de taxes font la différence. Votre ingénieur forestier peut vous montrer lesquels.
             </div>
           )}
         </div>

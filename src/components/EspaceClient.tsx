@@ -428,8 +428,8 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
     if (nbPrioHaute > 0) {
       return {
         titre: "La prochaine étape pour votre forêt",
-        sous: `Vos forestiers ont repéré ${nfEnt.format(nbPrioHaute)} peuplements prioritaires (priorité 1 et 2) qui gagneraient à recevoir des travaux bénéfiques à leur santé. Votre ingénieur peut vous expliquer lesquels, simplement.`,
-        cta: "En parler à mon ingénieur", href: withBase("/contact"),
+        sous: `Vos forestiers ont repéré ${nfEnt.format(nbPrioHaute)} peuplements prioritaires (priorité 1 et 2) qui gagneraient à recevoir des travaux bénéfiques à leur santé. Votre ingénieur forestier peut vous expliquer lesquels, simplement.`,
+        cta: "En parler à mon ingénieur forestier", href: withBase("/contact"),
       };
     }
     if (prescriptions.some((p) => p.statut === "rapport_soumis")) {
@@ -448,8 +448,8 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
     }
     return {
       titre: "Faites le point sur votre forêt",
-      sous: "Votre ingénieur peut faire avec vous un tour d'horizon de votre boisé et des prochaines étapes possibles.",
-      cta: "Faire le point avec mon ingénieur", href: withBase("/contact"),
+      sous: "Votre ingénieur forestier peut faire avec vous un tour d'horizon de votre boisé et des prochaines étapes possibles.",
+      cta: "Faire le point avec mon ingénieur forestier", href: withBase("/contact"),
     };
   }, [nbPrioHaute, prescriptions, aPaf]);
 
@@ -682,7 +682,7 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
               )}
               {/* Provenance des chiffres : la carte du portail est bâtie sur
                   l'inventaire écoforestier du MFFP, pas sur un relevé terrain.
-                  Le dire explicitement — un chiffre non sourcé engage l'ingénieur. */}
+                  Le dire explicitement — un chiffre non sourcé engage l'ingénieur forestier. */}
               <p className="mt-4 border-t border-cfrq-ink/10 pt-3 text-[13px] leading-relaxed text-cfrq-ink/55">
                 Source : inventaire écoforestier du ministère des Ressources naturelles et des
                 Forêts. Un inventaire terrain réalisé par CFRQ précise ces données lors d'un plan
@@ -744,8 +744,8 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
             <section className="rounded-2xl bg-white p-6">
               <h2 className="font-display text-xl font-medium text-cfrq-deep">Ce que votre forêt demande</h2>
               <p className="mt-2 max-w-2xl text-[15.5px] leading-relaxed text-black/65">
-                {nfEnt.format(nbTraitementRec)} peuplements pourraient profiter d'un traitement partiel recommandé par votre ingénieur
-                {nbPrioHaute > 0 ? `, dont ${nfEnt.format(nbPrioHaute)} en priorité` : ""}. Chaque intervention vise la santé et la diversité de votre boisé. Même une coupe totale n'est pas un déboisement : le peuplement est remis en production, et votre forêt reste une forêt.
+                {nfEnt.format(nbTraitementRec)} peuplements pourraient profiter d'un traitement recommandé par votre ingénieur forestier
+                {nbPrioHaute > 0 ? `, dont ${nfEnt.format(nbPrioHaute)} en priorité` : ""}. Chaque intervention vise la santé et la diversité de votre boisé.
               </p>
               <div className="mt-4 grid gap-3 sm:grid-cols-3">
                 {[
@@ -949,7 +949,7 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
                   <h3 className="font-display text-lg font-medium text-cfrq-deep">Vos rapports de taxes foncières</h3>
                   <span className="text-[13px] text-black/50">{rtfDocs.length} au total</span>
                 </div>
-                <p className="mt-1 text-[14.5px] text-black/55">Le rapport annuel préparé par nos ingénieurs pour votre remboursement de taxes foncières : la pièce à remettre à votre comptable.</p>
+                <p className="mt-1 text-[14.5px] text-black/55">Le rapport annuel préparé par nos ingénieurs forestiers pour votre remboursement de taxes foncières : la pièce à remettre à votre comptable.</p>
                 <div className="mt-4 rounded-2xl border border-black/5 bg-white p-6">
                   <ul className="divide-y divide-black/5">
                     {(rtfOuvert ? rtfDocs : rtfDocs.slice(0, LIMITE_RTF)).map((doc) => {
@@ -1010,14 +1010,14 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
               {reconnu
                 ? "Comme producteur forestier reconnu, vous pouvez récupérer une large part de vos taxes foncières (jusqu'à 85 %) et faire financer une partie de vos travaux par des programmes qui se combinent."
                 : "Un propriétaire forestier reconnu peut récupérer jusqu'à 85 % de ses taxes foncières et faire financer une partie de ses travaux d'aménagement."}{" "}
-              La plupart des propriétaires ignorent ces mesures. La reconnaissance, les demandes de subvention et la paperasse, c'est nous qui nous en occupons : votre ingénieur valide votre admissibilité.
+              La plupart des propriétaires ignorent ces mesures. La reconnaissance, les demandes de subvention et la paperasse, c'est nous qui nous en occupons : votre ingénieur forestier valide votre admissibilité.
             </p>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               <details className="group rounded-xl bg-white/70 p-4">
                 <summary className="flex cursor-pointer list-none items-center justify-between font-medium text-cfrq-deep">
                   Le remboursement de taxes foncières <span className="text-cfrq-leaf transition-transform group-open:rotate-45" aria-hidden>+</span>
                 </summary>
-                <p className="mt-2 text-[14px] leading-relaxed text-cfrq-ink/75">Un propriétaire forestier reconnu peut récupérer une part de ses taxes foncières liées à ses dépenses d'aménagement admissibles. Votre ingénieur valide l'admissibilité et monte la demande.</p>
+                <p className="mt-2 text-[14px] leading-relaxed text-cfrq-ink/75">Un propriétaire forestier reconnu peut récupérer une part de ses taxes foncières liées à ses dépenses d'aménagement admissibles. Votre ingénieur forestier valide l'admissibilité et monte la demande.</p>
               </details>
               <details className="group rounded-xl bg-white/70 p-4">
                 <summary className="flex cursor-pointer list-none items-center justify-between font-medium text-cfrq-deep">
@@ -1041,7 +1041,7 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
             <div className="max-w-2xl">
               <h2 className="font-display text-xl font-medium text-cfrq-deep">Allez plus loin : votre Portrait des forêts</h2>
               <p className="mt-2 text-[15.5px] leading-relaxed text-black/65">
-                Le relevé de patrimoine de votre boisé, préparé par vos ingénieurs à partir de l'inventaire écoforestier et de vos données : sa valeur en bois, le carbone qu'il stocke, son potentiel acéricole, sa qualité d'habitat, sa richesse écologique et vos leviers fiscaux. Des chiffres propres à votre forêt.
+                Le relevé de patrimoine de votre boisé, préparé par vos ingénieurs forestiers à partir de l'inventaire écoforestier et de vos données : sa valeur en bois, le carbone qu'il stocke, son potentiel acéricole, sa qualité d'habitat, sa richesse écologique et vos leviers fiscaux. Des chiffres propres à votre forêt.
               </p>
             </div>
             <div className="mt-5 grid gap-3 lg:grid-cols-3">
