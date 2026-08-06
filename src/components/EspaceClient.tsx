@@ -163,6 +163,122 @@ const props = (carte: Row | null, couche: string): Row[] =>
 // et l'ancien decoupage sur "/" seul comptait chaque chaine de codes comme UNE
 // essence -> total gonfle et codes bruts ("SB, SB, EO") affiches au proprietaire.
 
+// Lexique des traitements recommandes affiche au proprietaire. La cle est la valeur
+// exacte de `traitements_rec` (PlaniLogix), comparee apres trim. Definitions validees
+// par Joseph le 2026-08-05, appuyees sur le Cahier de references techniques en foret
+// privee (MRNF, juin 2023) et sur Travaux forestiers, definitions et illustrations
+// (MRNF, 2022). Voir LEXIQUE_traitements_espace_client.md.
+// Plusieurs cles peuvent pointer vers la meme entree : c'est une fusion voulue
+// (variantes d'un meme traitement). Le rendu dedoublonne par titre.
+const REBOISEMENT = {
+  titre: "Reboisement",
+  texte: "On prépare le sol pour offrir aux plants un endroit où s'enraciner, puis on met en terre des plants forestiers pour établir le nouveau peuplement.",
+};
+const EPC = {
+  titre: "Éclaircie précommerciale",
+  texte: "Dans un jeune peuplement trop dense, on coupe les tiges de dimension non marchande qui nuisent aux meilleures, pour concentrer la croissance sur celles d'avenir.",
+};
+const LEXIQUE_TRAITEMENTS: Record<string, { titre: string; texte: string }> = {
+  "Coupe d'assainissement": {
+    titre: "Coupe d'assainissement",
+    texte: "On récolte les arbres malades, dépérissants ou endommagés pour protéger la santé du reste du peuplement.",
+  },
+  "Éclaircie commerciale": {
+    titre: "Éclaircie commerciale",
+    texte: "On récolte une partie des arbres de dimension marchande pour accélérer la croissance de ceux qui restent et améliorer la qualité du peuplement.",
+  },
+  "Coupe de jardinage": {
+    titre: "Coupe de jardinage",
+    texte: "Des coupes périodiques dans un peuplement de tous les âges, pour l'amener vers une structure équilibrée et laisser s'installer de nouveaux semis.",
+  },
+  "Coupe avec protection de la régénération et des sols": {
+    titre: "Coupe avec protection de la régénération et des sols",
+    texte: "On récolte les arbres matures en protégeant les jeunes tiges déjà en place et les sols, pour que la forêt reparte d'elle-même.",
+  },
+  "Récolte des tiges matures": {
+    titre: "Récolte des tiges matures",
+    texte: "On récolte les arbres arrivés à maturité, ceux qui ne gagnent plus de valeur, et on laisse la place aux plus jeunes.",
+  },
+  "Coupe progressive": {
+    titre: "Coupe progressive",
+    texte: "La récolte se fait en plusieurs passages étalés dans le temps, sous le couvert des arbres semenciers, pour installer la nouvelle génération avant de retirer l'ancienne.",
+  },
+  "Coupe d'amélioration": {
+    titre: "Coupe d'amélioration",
+    texte: "On retire les arbres de moindre qualité ou d'essences moins désirées pour concentrer la croissance sur les meilleurs.",
+  },
+  "Coupe de récupération": {
+    titre: "Coupe de récupération",
+    texte: "Après un chablis, une épidémie, un verglas ou un feu, on récolte les arbres marchands d'un peuplement qui se détériore, avant de perdre leur valeur.",
+  },
+  "Coupe de succession": {
+    titre: "Coupe de succession",
+    texte: "On récolte le peuplement en place pour laisser la place à l'essence qui lui succède naturellement sur le site.",
+  },
+  "Coupe avec protection des petites tiges marchandes": {
+    titre: "Coupe avec protection des petites tiges marchandes",
+    texte: "On récolte les gros arbres en préservant les petites tiges déjà marchandes, qui formeront le prochain peuplement.",
+  },
+  "Éclaircie intermédiaire": {
+    titre: "Éclaircie intermédiaire",
+    texte: "Une éclaircie faite entre deux interventions majeures, pour maintenir la croissance du peuplement.",
+  },
+  "Récupération des tiges résiduelles": {
+    titre: "Récupération des tiges résiduelles",
+    texte: "On récolte les tiges marchandes laissées sur place après une intervention antérieure.",
+  },
+  "Préparation de terrain et reboisement": REBOISEMENT,
+  Reboisement: REBOISEMENT,
+  Regarni: {
+    titre: "Regarni",
+    texte: "On plante dans les trous d'un peuplement ou d'une plantation où la régénération n'a pas suffi, pour occuper tout le terrain.",
+  },
+  Enrichissement: {
+    titre: "Enrichissement",
+    texte: "On introduit ou on réintroduit une essence rare ou de plus grande valeur, pour enrichir le peuplement ou sa biodiversité.",
+  },
+  "Dégagement de plantation": {
+    titre: "Dégagement de plantation",
+    texte: "On coupe la végétation qui étouffe les jeunes plants pour leur laisser la lumière et l'espace.",
+  },
+  "Dégagement de régénération naturelle": {
+    titre: "Dégagement de régénération naturelle",
+    texte: "On coupe les arbustes et les herbacées qui concurrencent les jeunes arbres venus d'eux-mêmes après une coupe, pour que les essences désirées prennent le dessus.",
+  },
+  "Éclaircie précommerciale": EPC,
+  "Éclaircie précommerciale systématique": EPC,
+  "Éclaircie précommerciale puits de lumière": EPC,
+  Élagage: {
+    titre: "Élagage",
+    texte: "On coupe les branches basses pour produire un bois plus droit, avec moins de nœuds, ou pour freiner une maladie.",
+  },
+  "Taille de formation": {
+    titre: "Taille de formation",
+    texte: "On corrige la forme du jeune arbre, fourches et branches concurrentes, pour obtenir un tronc droit.",
+  },
+  "Taille Phytosanitaire": {
+    titre: "Taille phytosanitaire",
+    texte: "On coupe les parties mortes, endommagées ou infectées pour éviter que la maladie ou le parasite se propage.",
+  },
+};
+
+// Valeurs de `traitements_rec` qui ne designent pas des travaux : elles ne comptent pas
+// comme un traitement recommande et n'ont pas de definition. « None » est une chaine
+// parasite laissee par l'import (a corriger dans PlaniLogix).
+const NON_TRAITEMENTS = new Set([
+  "Évaluer de nouveau dans quelques années",
+  "Inventaire de régénération",
+  "Traitement de protection",
+  "Protection (aucune intervention)",
+  "None",
+]);
+const A_REEVALUER = new Set(["Évaluer de nouveau dans quelques années"]);
+
+// `traitements_rec` arrive parfois avec des espaces parasites (ex. « Récolte des tiges
+// matures » sur 555 peuplements) : toujours passer par ce lecteur.
+const traitementDe = (p: Row) => String(p.traitements_rec ?? "").trim();
+const estTraitement = (v: string) => v.length > 0 && !NON_TRAITEMENTS.has(v);
+
 // Appellations non forestières / perturbations à exclure des « peuplements les plus présents ».
 const NON_APPELLATION = /anthropique|dénud|denud|coupe totale|gravièr|gravier|chemin|\beau\b|friche|inondé|inonde|résidentiel|residentiel|agricole/i;
 function appellations(peuplements: Row[]): { nb: number; top: string[] } {
@@ -368,7 +484,21 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
   const prescriptions = useMemo(() => prescriptionsDepuisCarte(d.carte), [d.carte]);
   const nbPrioHaute = useMemo(() => peuplements.filter(estPrioriteHaute).length, [peuplements]);
   const nbTraitementRec = useMemo(
-    () => peuplements.filter((p) => String(p.traitements_rec ?? "").trim().length > 0).length,
+    () => peuplements.filter((p) => estTraitement(traitementDe(p))).length,
+    [peuplements]
+  );
+  // Les definitions affichees suivent le PAF du client : un traitement absent de ses
+  // peuplements n'apparait jamais. Les valeurs hors lexique ne donnent pas de carte.
+  const lexiquePaf = useMemo(() => {
+    const vus = new Map<string, { titre: string; texte: string }>();
+    for (const p of peuplements) {
+      const e = LEXIQUE_TRAITEMENTS[traitementDe(p)];
+      if (e && !vus.has(e.titre)) vus.set(e.titre, e);
+    }
+    return [...vus.values()];
+  }, [peuplements]);
+  const nbAReevaluer = useMemo(
+    () => peuplements.filter((p) => A_REEVALUER.has(traitementDe(p))).length,
     [peuplements]
   );
 
@@ -746,18 +876,17 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
               <p className="mt-2 max-w-2xl text-[15.5px] leading-relaxed text-black/65">
                 {nfEnt.format(nbTraitementRec)} peuplements pourraient profiter d'un traitement recommandé par votre ingénieur forestier
                 {nbPrioHaute > 0 ? `, dont ${nfEnt.format(nbPrioHaute)} en priorité` : ""}. Chaque intervention vise la santé et la diversité de votre boisé.
+                {nbAReevaluer > 0
+                  ? ` ${nfEnt.format(nbAReevaluer)} autres peuplements sont simplement à revoir dans quelques années, sans intervention d'ici là.`
+                  : ""}
               </p>
               <div className="mt-4 grid gap-3 sm:grid-cols-3">
-                {[
-                  ["Éclaircie", "On retire quelques arbres pour donner de l'espace et de la lumière aux plus beaux."],
-                  ["Jardinage", "On prélève quelques tiges ici et là pour garder une forêt de tous les âges."],
-                  ["Coupe d'assainissement", "On retire les arbres malades ou abîmés pour protéger le reste du peuplement."],
-                ].map(([t, exp]) => (
-                  <details key={t} className="group rounded-xl bg-cfrq-tint p-4">
-                    <summary className="flex cursor-pointer list-none items-center justify-between font-medium text-cfrq-deep">
-                      {t} <span className="text-cfrq-leaf transition-transform group-open:rotate-45" aria-hidden>+</span>
+                {lexiquePaf.map((t) => (
+                  <details key={t.titre} className="group rounded-xl bg-cfrq-tint p-4">
+                    <summary className="flex cursor-pointer list-none items-start justify-between gap-2 font-medium text-cfrq-deep">
+                      {t.titre} <span className="mt-0.5 text-cfrq-leaf transition-transform group-open:rotate-45" aria-hidden>+</span>
                     </summary>
-                    <p className="mt-2 text-[14px] leading-relaxed text-cfrq-ink/75">{exp}</p>
+                    <p className="mt-2 text-[14px] leading-relaxed text-cfrq-ink/75">{t.texte}</p>
                   </details>
                 ))}
               </div>
