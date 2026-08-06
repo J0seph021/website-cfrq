@@ -97,6 +97,13 @@ Les définitions 1 à 24 sont approuvées telles quelles. Deux fusions retenues,
 - **28 Protection (aucune intervention)** : même idée que la 25, formulée autrement. Aucune carte.
 - **29 None** : valeur parasite, traitée comme vide.
 
+**Affichage.** Jusqu'à six définitions, une seule grille. **Au-delà de six, les cartes sont
+classées par type de travaux** : Récolte, Remise en production, Entretien et éducation. Les
+douze traitements commerciaux tombent sous Récolte, les quatre de remise en production sous
+Remise en production, les six autres sous Entretien et éducation. Un garde-fou « Autres
+travaux » ramasse toute définition qui ne serait dans aucune catégorie, pour qu'aucune ne
+disparaisse si le lexique grossit.
+
 **Résultat : 21 définitions affichables**, choisies selon le PAF du client. Le lexique complet
 vit dans `src/components/EspaceClient.tsx` (`LEXIQUE_TRAITEMENTS`). Couverture vérifiée par
 requête : aucune des 29 valeurs en base n'échappe au lexique ou à la liste des non-traitements.

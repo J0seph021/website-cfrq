@@ -262,6 +262,53 @@ const LEXIQUE_TRAITEMENTS: Record<string, { titre: string; texte: string }> = {
   },
 };
 
+// Au-dela de SEUIL_REGROUPEMENT definitions, la liste devient longue : on la classe par
+// type de travaux. En dessous, une seule grille suffit. Un titre absent de ces listes
+// n'est jamais perdu : il tombe dans « Autres travaux ».
+const SEUIL_REGROUPEMENT = 6;
+const CATEGORIES: { nom: string; titres: string[] }[] = [
+  {
+    nom: "Récolte",
+    titres: [
+      "Coupe d'assainissement",
+      "Éclaircie commerciale",
+      "Coupe de jardinage",
+      "Coupe avec protection de la régénération et des sols",
+      "Récolte des tiges matures",
+      "Coupe progressive",
+      "Coupe d'amélioration",
+      "Coupe de récupération",
+      "Coupe de succession",
+      "Coupe avec protection des petites tiges marchandes",
+      "Éclaircie intermédiaire",
+      "Récupération des tiges résiduelles",
+    ],
+  },
+  { nom: "Remise en production", titres: ["Reboisement", "Regarni", "Enrichissement"] },
+  {
+    nom: "Entretien et éducation",
+    titres: [
+      "Dégagement de plantation",
+      "Dégagement de régénération naturelle",
+      "Éclaircie précommerciale",
+      "Élagage",
+      "Taille de formation",
+      "Taille phytosanitaire",
+    ],
+  },
+];
+
+function DefinitionTraitement({ titre, texte }: { titre: string; texte: string }) {
+  return (
+    <details className="group rounded-xl bg-cfrq-tint p-4">
+      <summary className="flex cursor-pointer list-none items-start justify-between gap-2 font-medium text-cfrq-deep">
+        {titre} <span className="mt-0.5 text-cfrq-leaf transition-transform group-open:rotate-45" aria-hidden>+</span>
+      </summary>
+      <p className="mt-2 text-[14px] leading-relaxed text-cfrq-ink/75">{texte}</p>
+    </details>
+  );
+}
+
 // Valeurs de `traitements_rec` qui ne designent pas des travaux : elles ne comptent pas
 // comme un traitement recommande et n'ont pas de definition. « None » est une chaine
 // parasite laissee par l'import (a corriger dans PlaniLogix).
@@ -501,6 +548,18 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
     () => peuplements.filter((p) => A_REEVALUER.has(traitementDe(p))).length,
     [peuplements]
   );
+  // Groupes affiches seulement au-dela du seuil. « Autres travaux » ramasse ce qui
+  // n'est dans aucune categorie, pour qu'aucune definition ne disparaisse.
+  const lexiqueGroupe = useMemo(() => {
+    const classes = new Set(CATEGORIES.flatMap((c) => c.titres));
+    const groupes = CATEGORIES.map((c) => ({
+      nom: c.nom,
+      defs: lexiquePaf.filter((d) => c.titres.includes(d.titre)),
+    }));
+    const orphelins = lexiquePaf.filter((d) => !classes.has(d.titre));
+    if (orphelins.length) groupes.push({ nom: "Autres travaux", defs: orphelins });
+    return groupes.filter((g) => g.defs.length > 0);
+  }, [lexiquePaf]);
 
   const superficieTotale = d.proprietes.reduce((t, p) => t + (Number(p.superficie_totale) || 0), 0);
   const superficieBoisee = d.proprietes.reduce((t, p) => t + (Number(p.superficie_boisee) || 0), 0);
@@ -880,16 +939,24 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
                   ? ` ${nfEnt.format(nbAReevaluer)} autres peuplements sont simplement à revoir dans quelques années, sans intervention d'ici là.`
                   : ""}
               </p>
-              <div className="mt-4 grid gap-3 sm:grid-cols-3">
-                {lexiquePaf.map((t) => (
-                  <details key={t.titre} className="group rounded-xl bg-cfrq-tint p-4">
-                    <summary className="flex cursor-pointer list-none items-start justify-between gap-2 font-medium text-cfrq-deep">
-                      {t.titre} <span className="mt-0.5 text-cfrq-leaf transition-transform group-open:rotate-45" aria-hidden>+</span>
-                    </summary>
-                    <p className="mt-2 text-[14px] leading-relaxed text-cfrq-ink/75">{t.texte}</p>
-                  </details>
-                ))}
-              </div>
+              {lexiquePaf.length > SEUIL_REGROUPEMENT ? (
+                lexiqueGroupe.map((g) => (
+                  <div key={g.nom} className="mt-5">
+                    <h3 className="text-[12.5px] font-semibold uppercase tracking-[0.14em] text-cfrq-leaf">{g.nom}</h3>
+                    <div className="mt-2.5 grid gap-3 sm:grid-cols-3">
+                      {g.defs.map((t) => (
+                        <DefinitionTraitement key={t.titre} titre={t.titre} texte={t.texte} />
+                      ))}
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                  {lexiquePaf.map((t) => (
+                    <DefinitionTraitement key={t.titre} titre={t.titre} texte={t.texte} />
+                  ))}
+                </div>
+              )}
             </section>
           </Reveal>
         )}
