@@ -744,7 +744,7 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
             <section className="rounded-2xl bg-white p-6">
               <h2 className="font-display text-xl font-medium text-cfrq-deep">Ce que votre forêt demande</h2>
               <p className="mt-2 max-w-2xl text-[15.5px] leading-relaxed text-black/65">
-                {nfEnt.format(nbTraitementRec)} peuplements pourraient profiter d'un traitement doux recommandé par votre ingénieur
+                {nfEnt.format(nbTraitementRec)} peuplements pourraient profiter d'un traitement partiel recommandé par votre ingénieur
                 {nbPrioHaute > 0 ? `, dont ${nfEnt.format(nbPrioHaute)} en priorité` : ""}. Chaque intervention vise la santé et la diversité de votre boisé, jamais la coupe à blanc.
               </p>
               <div className="mt-4 grid gap-3 sm:grid-cols-3">
