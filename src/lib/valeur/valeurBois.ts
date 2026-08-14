@@ -1,7 +1,16 @@
-// Moteur Valeur du bois PAR ESSENCE — cœur partagé (TypeScript).
-// MIROIR EXACT de Portrait-forets-clients/moteurs/valeur_bois_essence.py : mêmes
-// constantes, même arrondi, même ordre déterministe -> les deux passent la même
-// FIXTURE DORÉE (fixture_valeur_bois.json). Ne jamais faire diverger l'un sans l'autre.
+// =============================================================================
+// FICHIER GÉNÉRÉ : NE PAS ÉDITER À LA MAIN.
+// =============================================================================
+// Source de vérité : dépôt privé « releves-forestiers » (Relevés forestiers CFRQ).
+//   moteur   : moteurs/valeur_bois_essence.py  (la référence du calcul)
+//   gabarit  : moteurs/web/valeurBois.tpl.ts   (la logique TypeScript)
+//   export   : python outils/exporter_moteur_web.py --site "<chemin du site>"
+//
+// Toute modification faite dans le dépôt du site sera écrasée au prochain export.
+// Pour changer le calcul : modifier le moteur Python ET ce gabarit, puis relancer
+// l'export. L'export REFUSE de publier si le moteur Python ne passe pas la fixture
+// dorée, et il rejoue ensuite la même fixture côté TypeScript.
+// =============================================================================
 //
 // Croise le VOLUME par essence (composition, m³/HA) × la SUPERFICIE × le PRIX par
 // essence (déjà résolu) -> volumes ventilés sciage/pâte + valeur brute + valeur nette
@@ -10,34 +19,63 @@
 
 export type Classe = "resineux" | "feuillu";
 
-// Partition 13 résineux / 26 feuillus (miroir de prixbois_crosswalk.IEQM_TO_PRIX).
+// Partition résineux / feuillus (miroir de prixbois_crosswalk.IEQM_TO_PRIX).
+// >>> GENERE:CLASSE_ESSENCE
 export const CLASSE_ESSENCE: Record<string, Classe> = {
   SAB: "resineux", EPB: "resineux", EPN: "resineux", EPR: "resineux", EPO: "resineux",
   PIG: "resineux", PIB: "resineux", PIR: "resineux", PIS: "resineux", MEL: "resineux",
-  MEH: "resineux", PRU: "resineux", THO: "resineux",
-  BOP: "feuillu", BOJ: "feuillu", BOG: "feuillu", ERS: "feuillu", ERR: "feuillu",
-  ERA: "feuillu", PET: "feuillu", PEG: "feuillu", PED: "feuillu", PEH: "feuillu",
-  PEB: "feuillu", CHR: "feuillu", CHB: "feuillu", CHG: "feuillu", FRA: "feuillu",
-  FRN: "feuillu", FRP: "feuillu", HEG: "feuillu", TIL: "feuillu", CET: "feuillu",
-  CAC: "feuillu", OSV: "feuillu", ORA: "feuillu", ORR: "feuillu", ORT: "feuillu",
-  NOC: "feuillu",
+  MEH: "resineux", PRU: "resineux", THO: "resineux", BOP: "feuillu", BOJ: "feuillu",
+  BOG: "feuillu", ERS: "feuillu", ERR: "feuillu", ERA: "feuillu", PET: "feuillu",
+  PEG: "feuillu", PED: "feuillu", PEH: "feuillu", PEB: "feuillu", CHR: "feuillu",
+  CHB: "feuillu", CHG: "feuillu", FRA: "feuillu", FRN: "feuillu", FRP: "feuillu",
+  HEG: "feuillu", TIL: "feuillu", CET: "feuillu", CAC: "feuillu", OSV: "feuillu",
+  ORA: "feuillu", ORR: "feuillu", ORT: "feuillu", NOC: "feuillu",
 };
+// <<< GENERE:CLASSE_ESSENCE
 
+// >>> GENERE:NOM_ESSENCE
 export const NOM_ESSENCE: Record<string, string> = {
-  SAB: "Sapin baumier", EPB: "Épinette blanche", EPN: "Épinette noire",
-  EPR: "Épinette rouge", EPO: "Épinette de Norvège", PIB: "Pin blanc",
-  PIG: "Pin gris", PIR: "Pin rouge", PIS: "Pin sylvestre", MEL: "Mélèze laricin",
-  MEH: "Mélèze hybride", PRU: "Pruche du Canada", THO: "Thuya (cèdre)",
-  BOP: "Bouleau à papier", BOJ: "Bouleau jaune (merisier)", BOG: "Bouleau gris",
-  ERS: "Érable à sucre", ERR: "Érable rouge", ERA: "Érable argenté",
-  PET: "Peuplier faux-tremble", PEG: "Peuplier à grandes dents",
-  PEB: "Peuplier baumier", PED: "Peuplier deltoïde", PEH: "Peuplier hybride",
-  HEG: "Hêtre à grandes feuilles", TIL: "Tilleul d'Amérique", CET: "Cerisier tardif",
-  CAC: "Caryer cordiforme", FRA: "Frêne d'Amérique", FRN: "Frêne noir",
-  FRP: "Frêne rouge", CHR: "Chêne rouge", CHB: "Chêne blanc", CHG: "Chêne à gros fruits",
-  ORA: "Orme d'Amérique", ORR: "Orme rouge", ORT: "Orme liège",
-  OSV: "Ostryer de Virginie", NOC: "Noyer cendré",
+  SAB: "Sapin baumier",
+  EPB: "Épinette blanche",
+  EPN: "Épinette noire",
+  EPR: "Épinette rouge",
+  EPO: "Épinette de Norvège",
+  PIB: "Pin blanc",
+  PIG: "Pin gris",
+  PIR: "Pin rouge",
+  PIS: "Pin sylvestre",
+  MEL: "Mélèze laricin",
+  MEH: "Mélèze hybride",
+  PRU: "Pruche du Canada",
+  THO: "Thuya (cèdre)",
+  BOP: "Bouleau à papier",
+  BOJ: "Bouleau jaune (merisier)",
+  BOG: "Bouleau gris",
+  ERS: "Érable à sucre",
+  ERR: "Érable rouge",
+  ERA: "Érable argenté",
+  PET: "Peuplier faux-tremble",
+  PEG: "Peuplier à grandes dents",
+  PEB: "Peuplier baumier",
+  PED: "Peuplier deltoïde",
+  PEH: "Peuplier hybride",
+  HEG: "Hêtre à grandes feuilles",
+  TIL: "Tilleul d'Amérique",
+  CET: "Cerisier tardif",
+  CAC: "Caryer cordiforme",
+  FRA: "Frêne d'Amérique",
+  FRN: "Frêne noir",
+  FRP: "Frêne rouge",
+  CHR: "Chêne rouge",
+  CHB: "Chêne blanc",
+  CHG: "Chêne à gros fruits",
+  ORA: "Orme d'Amérique",
+  ORR: "Orme rouge",
+  ORT: "Orme liège",
+  OSV: "Ostryer de Virginie",
+  NOC: "Noyer cendré",
 };
+// <<< GENERE:NOM_ESSENCE
 
 export type PrixEssence = { sciage: number | null; pate: number | null };
 export type Peuplement = { composition: Record<string, number>; superficie_ha: number };
@@ -49,16 +87,18 @@ export type Params = {
   cout_recolte_pct?: number | null;
 };
 
-// Ventilation : résineux 70 % sciage (reste pâte), feuillu = pâte (règle JM).
+// Ventilation : résineux majoritairement sciage (reste pâte), feuillu = pâte (règle JM).
 // Déductions du net à 0 par défaut (net = brut tant que le client n'a pas saisi
-// ses coûts — logique B3 « le client remplit »).
+// ses coûts, logique B3 « le client remplit »).
+// >>> GENERE:PARAMS_DEFAUT
 const PARAMS_DEFAUT: Required<Params> = {
-  ratio_resineux_sciage: 0.70,
+  ratio_resineux_sciage: 0.7,
   ratio_feuillu_sciage: 0.0,
   transport_m3: 0.0,
   cout_recolte_m3: 0.0,
   cout_recolte_pct: null,
 };
+// <<< GENERE:PARAMS_DEFAUT
 
 // Arrondi « moitié loin de zéro », IDENTIQUE à la version Python (pas banquier).
 function r(x: number, n: number): number {
