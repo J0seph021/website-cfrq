@@ -29,3 +29,14 @@ src/pages/_dev_carte_644.json
 src/pages/dev-bilan-test.astro
 src/pages/dev-form-test.astro
 src/components/FormTestHarness.tsx
+
+# etat local du CLI Supabase, ne doit jamais etre committe
+supabase/.temp/
+
+# Documents d'affaires internes. LE DEPOT EST PUBLIC : rapport de focus group,
+# plan marketing et prix internes n'ont rien a y faire, et l'historique Git
+# garderait une copie meme apres suppression. Ils restent en local (OneDrive).
+RAPPORT_focus_group_*.pdf
+RECAP_focus_group_*.md
+PLAN_marketing_*.md
+DESIGN_calculateur_valeur_bois.md

@@ -2,6 +2,9 @@
 import "@fontsource-variable/fraunces";
 import "@fontsource-variable/inter";
 import "../styles/global.css";
+import Analytique from "../components/Analytique.astro";
+import BanniereTemoins from "../components/BanniereTemoins.astro";
+import { analytiqueActive, estProduction } from "../data/flags";
 
 interface Props {
   title?: string;
@@ -28,10 +31,13 @@ const canonicalPath = canonical ?? Astro.url.pathname;
 const canonicalUrl = new URL(canonicalPath, siteOrigin).href;
 const ogImageUrl = ogImage ? new URL(ogImage, siteOrigin).href : undefined;
 
-// Aperçu GitHub Pages (*.github.io) : ne jamais laisser indexer, pour éviter tout
-// contenu dupliqué avec cfrq.ca. Au basculement (SITE_URL=cfrq.ca), l'index reprend.
-const isPreview = siteOrigin.includes("github.io");
-const robotsFinal = robots ?? (isPreview ? "noindex, follow" : undefined);
+// Seule la production s'indexe. La préproduction et l'aperçu GitHub Pages
+// servent le même contenu : les laisser indexer créerait du contenu dupliqué
+// avec cfrq.ca. Le robots.txt applique la même règle (src/pages/robots.txt.ts).
+const production = estProduction(siteOrigin);
+const robotsFinal = robots ?? (production ? undefined : "noindex, follow");
+
+const mesureActive = analytiqueActive(siteOrigin);
 ---
 
 <!doctype html>
@@ -52,6 +58,8 @@ const robotsFinal = robots ?? (isPreview ? "noindex, follow" : undefined);
     <meta property="og:locale" content="fr_CA" />
     {ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
 
+    <Analytique actif={mesureActive} />
+
     <slot name="head" />
   </head>
   <body class="font-body text-cfrq-ink">
@@ -62,5 +70,6 @@ const robotsFinal = robots ?? (isPreview ? "noindex, follow" : undefined);
       Aller au contenu
     </a>
     <slot />
+    {mesureActive && <BanniereTemoins />}
   </body>
 </html>

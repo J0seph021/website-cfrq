@@ -2,6 +2,7 @@
 import Logo from "./Logo.astro";
 import { withBase } from "../lib/url";
 import { site } from "../data/site";
+import { PUBLIER_ESPACE_CLIENT } from "../data/flags";
 
 const nav = [
   { label: "Accueil", href: "/" },
@@ -46,12 +47,14 @@ const isActive = (href: string) =>
     </ul>
 
     <div class="flex items-center gap-4">
-      <a
-        href={withBase("/espace-client")}
-        class="hidden text-[15px] font-medium text-cfrq-deep transition-colors hover:text-cfrq-green sm:inline"
-      >
-        Espace client
-      </a>
+      {PUBLIER_ESPACE_CLIENT && (
+        <a
+          href={withBase("/espace-client")}
+          class="hidden text-[15px] font-medium text-cfrq-deep transition-colors hover:text-cfrq-green sm:inline"
+        >
+          Espace client
+        </a>
+      )}
       <a
         href={withBase("/contact")}
         class="hidden rounded-[10px] bg-cfrq-green px-5 py-2.5 text-[15px] font-semibold text-cfrq-deep transition-colors hover:bg-cfrq-green-hover sm:inline"
@@ -84,7 +87,9 @@ const isActive = (href: string) =>
           </a>
         </li>
       ))}
-      <li><a href={withBase("/espace-client")} class="block py-2.5">Espace client</a></li>
+      {PUBLIER_ESPACE_CLIENT && (
+        <li><a href={withBase("/espace-client")} class="block py-2.5">Espace client</a></li>
+      )}
       <li class="pt-2 pb-1">
         <a href={site.telHref} class="block rounded-[10px] bg-cfrq-green px-4 py-3 text-center font-semibold text-cfrq-deep">
           Nous joindre, {site.tel}

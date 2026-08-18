@@ -5,6 +5,7 @@ import Header from "../../components/Header.astro";
 import Footer from "../../components/Footer.astro";
 import { site } from "../../data/site";
 import { withBase } from "../../lib/url";
+import { PUBLIER_ESPACE_CLIENT } from "../../data/flags";
 
 import peuplement from "../../assets/photos/peuplement.jpg";
 import erabliere from "../../assets/photos/erabliere.jpg";
@@ -203,7 +204,8 @@ const eyebrow = "text-[12.5px] font-semibold uppercase tracking-[0.18em]";
       </div>
     </section>
 
-    <!-- RELEVE DE PORTEFEUILLE -->
+    <!-- RELEVE DE PORTEFEUILLE, sert l'espace client : masquée avec lui -->
+    {PUBLIER_ESPACE_CLIENT && (
     <section aria-labelledby="releve-titre" class="mx-auto max-w-[1160px] px-[22px] pb-6 pt-7">
       <div class="flex flex-wrap items-center gap-x-12 gap-y-9 rounded-3xl border border-cfrq-green/20 p-[clamp(28px,4vw,48px)]" style="background:linear-gradient(140deg,#EAF4E0,#FFFFFF 66%)">
         <div class="flex-[1.2] basis-[380px]">
@@ -238,6 +240,7 @@ const eyebrow = "text-[12.5px] font-semibold uppercase tracking-[0.18em]";
         </div>
       </div>
     </section>
+    )}
 
     <!-- CTA FINAL -->
     <section class="mx-auto max-w-[1160px] px-[22px] pb-20 pt-5">

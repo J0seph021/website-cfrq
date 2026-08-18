@@ -2,17 +2,9 @@
 import Base from "../layouts/Base.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
-
-let html = "";
-try {
-  const r = await fetch("https://cfrq.ca/wp-json/wp/v2/pages/8962?_fields=content");
-  const d = await r.json();
-  html = d?.content?.rendered ?? "";
-} catch (e) {
-  html = "";
-}
-const fallback =
-  "<p>Le contenu de notre politique de confidentialité est en cours de révision. Pour toute question sur le traitement de vos données, écrivez-nous à cfrq@cfrq.ca.</p>";
+// Contenu figé dans le dépôt. Il provenait auparavant de l'API WordPress de
+// cfrq.ca, ce qui vidait la page dès l'extinction de l'ancien site.
+import html from "../contenu-legal/politique-de-confidentialite.html?raw";
 ---
 
 <Base
@@ -34,7 +26,7 @@ const fallback =
       </div>
     </section>
 
-    <section class="contenu-legal mx-auto max-w-[820px] px-[22px] pb-5 pt-12" set:html={html || fallback}></section>
+    <section class="contenu-legal mx-auto max-w-[820px] px-[22px] pb-5 pt-12" set:html={html}></section>
   </main>
   <Footer />
 </Base>

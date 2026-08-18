@@ -5,6 +5,7 @@ import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import { site } from "../data/site";
 import { withBase } from "../lib/url";
+import { PUBLIER_ESPACE_CLIENT } from "../data/flags";
 import TaxCalculator from "../components/TaxCalculator.tsx";
 
 import boiseSentier from "../assets/photos/boise-sentier.jpg";
@@ -296,7 +297,8 @@ const btnVert = "inline-flex items-center gap-2 rounded-xl bg-cfrq-green font-bo
       </div>
     </section>
 
-    <!-- 3.7 ESPACE CLIENT -->
+    <!-- 3.7 ESPACE CLIENT, masquée tant que l'espace client n'est pas ouvert au public -->
+    {PUBLIER_ESPACE_CLIENT && (
     <section class="mx-auto max-w-[1160px] px-[22px] pb-5 pt-[84px]">
       <div class="flex flex-wrap items-center justify-between gap-8 rounded-3xl border border-cfrq-green/[.18] p-[clamp(28px,4vw,48px)]" style="background:linear-gradient(140deg,#EAF4E0,#FFFFFF 65%)">
         <div class="flex-1 basis-[420px]">
@@ -322,6 +324,7 @@ const btnVert = "inline-flex items-center gap-2 rounded-xl bg-cfrq-green font-bo
         </div>
       </div>
     </section>
+    )}
 
     <!-- 3.8 REALISATIONS -->
     <section class="mx-auto max-w-[1160px] px-[22px] pb-5 pt-[84px]">

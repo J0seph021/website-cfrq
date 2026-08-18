@@ -1,0 +1,114 @@
+---
+// Bandeau de consentement aux témoins (cookies), exigé par la Loi 25 pour les
+// témoins de mesure d'audience.
+//
+// Ce que la loi demande et qui est respecté ici :
+//  - rien n'est déposé avant le choix (voir Analytique.astro, Consent Mode) ;
+//  - refuser doit être aussi facile qu'accepter : les deux boutons ont la même
+//    taille et la même importance visuelle, aucun n'est grisé ni caché ;
+//  - le choix doit pouvoir être changé à tout moment : le pied de page expose
+//    « Préférences de témoins », qui rouvre ce bandeau ;
+//  - l'information doit être claire et en français, avec un lien vers la
+//    politique de confidentialité.
+import { withBase } from "../lib/url";
+---
+
+<div
+  id="banniere-temoins"
+  class="fixed inset-x-0 bottom-0 z-50 hidden border-t border-black/10 bg-white shadow-[0_-10px_40px_-20px_rgba(0,0,0,.35)]"
+  role="dialog"
+  aria-modal="false"
+  aria-labelledby="temoins-titre"
+  aria-describedby="temoins-texte"
+>
+  <div class="mx-auto flex max-w-[1160px] flex-col gap-5 px-[22px] py-5 md:flex-row md:items-center md:justify-between">
+    <div class="max-w-[640px]">
+      <h2 id="temoins-titre" class="font-display text-[18px] font-medium text-cfrq-deep">
+        Témoins de navigation
+      </h2>
+      <p id="temoins-texte" class="mt-1.5 text-[14.5px] leading-relaxed text-cfrq-ink/70">
+        Nous aimerions déposer des témoins de mesure d'audience pour comprendre comment le site est
+        utilisé et l'améliorer. Ils ne sont pas nécessaires au fonctionnement du site, et vous pouvez
+        refuser sans rien perdre. Détails dans notre
+        <a
+          href={withBase("/politique-de-confidentialite-et-sur-les-cookies/")}
+          class="font-medium text-cfrq-leaf underline underline-offset-2">politique de confidentialité</a
+        >.
+      </p>
+    </div>
+
+    <div class="flex flex-none flex-col gap-2.5 sm:flex-row">
+      <button
+        type="button"
+        data-temoins="refuse"
+        class="rounded-[10px] border border-cfrq-deep/25 px-6 py-3 text-[15px] font-semibold text-cfrq-deep transition-colors hover:bg-cfrq-tint sm:min-w-[150px]"
+      >
+        Refuser
+      </button>
+      <button
+        type="button"
+        data-temoins="accepte"
+        class="rounded-[10px] border border-cfrq-green bg-cfrq-green px-6 py-3 text-[15px] font-semibold text-[#123005] transition-colors hover:bg-cfrq-green-hover sm:min-w-[150px]"
+      >
+        Accepter
+      </button>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    var CLE = "cfrq-temoins";
+    var banniere = document.getElementById("banniere-temoins");
+    if (!banniere) return;
+
+    function lire() {
+      try {
+        return localStorage.getItem(CLE);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function afficher() {
+      banniere.classList.remove("hidden");
+    }
+
+    function masquer() {
+      banniere.classList.add("hidden");
+    }
+
+    function decider(choix) {
+      try {
+        localStorage.setItem(CLE, choix);
+      } catch (e) {
+        /* stockage bloqué : le choix ne survivra pas à la visite, tant pis */
+      }
+      if (typeof window.gtag === "function") {
+        var etat = choix === "accepte" ? "granted" : "denied";
+        window.gtag("consent", "update", {
+          ad_storage: etat,
+          ad_user_data: etat,
+          ad_personalization: etat,
+          analytics_storage: etat,
+        });
+      }
+      masquer();
+    }
+
+    banniere.addEventListener("click", function (e) {
+      var btn = e.target.closest("[data-temoins]");
+      if (btn) decider(btn.getAttribute("data-temoins"));
+    });
+
+    // Le pied de page permet de revenir sur son choix à tout moment.
+    document.addEventListener("click", function (e) {
+      if (e.target.closest("[data-rouvrir-temoins]")) {
+        e.preventDefault();
+        afficher();
+      }
+    });
+
+    if (!lire()) afficher();
+  })();
+</script>

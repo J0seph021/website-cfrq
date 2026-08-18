@@ -2,6 +2,10 @@
 import Logo from "./Logo.astro";
 import { withBase } from "../lib/url";
 import { site } from "../data/site";
+import { PUBLIER_ESPACE_CLIENT, analytiqueActive } from "../data/flags";
+
+// Le bouton de préférences n'a de sens que si un bandeau existe pour l'ouvrir.
+const mesureActive = analytiqueActive((Astro.site ?? new URL("https://cfrq.ca")).origin);
 
 const servicesLinks = [
   { label: "Aménagement forestier", href: "/amenagement" },
@@ -15,7 +19,8 @@ const explorer = [
   { label: "Territoire desservi", href: "/territoire-desservi" },
   { label: "Notre équipe", href: "/notre-equipe" },
   { label: "Demande de plants", href: "/demande-des-plants-non-subventionnes" },
-  { label: "Espace client", href: "/espace-client" },
+  // L'espace client n'apparaît qu'une fois ouvert au public (voir data/flags.ts).
+  ...(PUBLIER_ESPACE_CLIENT ? [{ label: "Espace client", href: "/espace-client" }] : []),
 ];
 const regions = [
   "Québec",
@@ -80,6 +85,15 @@ const labelClass = "mb-4 text-[11px] font-bold uppercase tracking-[0.16em] text-
         <a href={withBase("/termes-et-conditions")} class="text-cfrq-green-light hover:underline">Termes</a>
         <span class="px-1">·</span>
         <a href={withBase("/politique-de-confidentialite-et-sur-les-cookies")} class="text-cfrq-green-light hover:underline">Confidentialité</a>
+        {/* Loi 25 : le choix sur les témoins doit pouvoir être changé à tout moment. */}
+        {mesureActive && (
+          <Fragment>
+            <span class="px-1">·</span>
+            <button type="button" data-rouvrir-temoins class="text-cfrq-green-light hover:underline">
+              Préférences de témoins
+            </button>
+          </Fragment>
+        )}
       </p>
       <p>{regions.join(" · ")}</p>
     </div>

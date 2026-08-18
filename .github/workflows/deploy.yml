@@ -1,5 +1,9 @@
 name: Déploiement GitHub Pages
 
+# Tout ce qui arrive sur `main` part en PRODUCTION sur https://cfrq.ca.
+# Le domaine est servi par GitHub Pages (fichier public/CNAME), la zone DNS est
+# chez Cloudflare et le registraire est GoDaddy : voir MISE_EN_PROD.md.
+
 on:
   push:
     branches: [main]
@@ -30,8 +34,14 @@ jobs:
       - name: Build Astro
         run: npm run build
         env:
-          SITE_URL: https://j0seph021.github.io
-          SITE_BASE: /website-cfrq
+          SITE_URL: https://cfrq.ca
+          SITE_BASE: /
+          # L'espace client n'est pas encore ouvert au public : ses pages ne
+          # sont pas construites et ses liens n'apparaissent nulle part.
+          # Pour l'ouvrir, passer cette variable à "1".
+          PUBLIER_ESPACE_CLIENT: "0"
+      - name: Vérifier le rendu avant publication
+        run: node scripts/verifier-build.mjs
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
