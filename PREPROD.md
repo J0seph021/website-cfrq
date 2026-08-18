@@ -56,10 +56,14 @@ Le contrôle vérifie aussi l'inverse : un build de **production** qui porterait
 `_headers` avec `noindex` est refusé, pour que cfrq.ca ne puisse pas se retirer
 de Google par accident.
 
-Le contrôle **refuse un build de préproduction** dont une seule page ne serait
-pas en `noindex`, ou dont le `robots.txt` serait ouvert. La règle est unique
-(`estProduction()` dans `src/data/flags.ts`), les trois verrous ne peuvent pas
+Il refuse aussi un build de préproduction dont une seule page ne serait pas en
+`noindex`, ou dont le `robots.txt` serait ouvert. La règle est unique
+(`estProduction()` dans `src/data/flags.ts`) : les quatre verrous ne peuvent pas
 diverger.
+
+À ces quatre verrous s'ajoute **Cloudflare Access** (voir plus bas), qui ferme
+l'accès en amont. Les deux niveaux se complètent : Access suit le nom d'hôte,
+les quatre verrous suivent le contenu.
 
 ---
 
@@ -157,26 +161,31 @@ ajouter son adresse dans la politique avec *Include → E-mails*.
 
 ### Les étapes suivies, pour mémoire
 
-1. Dans Cloudflare, aller dans **Zero Trust** (barre latérale, ou
-   `one.dash.cloudflare.com`).
-2. Au premier passage, Cloudflare demande un **nom d'équipe**. Mettre `cfrq` :
-   ça donne `cfrq.cloudflareaccess.com`, l'adresse de la page de connexion.
-   Choisir le forfait **Free**.
-3. **Access → Applications → Add an application → Self-hosted**.
-4. **Application name** : `Préproduction CFRQ`.
-   **Session duration** : 1 semaine, pour ne pas se reconnecter sans cesse.
-5. **Public hostname** : sous-domaine `preview`, domaine `cfrq.ca`.
-6. **Next**, puis créer la règle :
-   - *Policy name* : `Équipe CFRQ`
-   - *Action* : **Allow**
-   - *Include* → **Emails ending in** → `@cfrq.ca`
-7. **Login methods** : laisser **One-time PIN**. Pas besoin de fournisseur
-   d'identité : Cloudflare envoie un code à 6 chiffres par courriel.
-8. **Save**.
+Chemin dans l'interface : **Cloudflare One → Contrôles Access → Applications →
+Créer une nouvelle application → Auto-hébergée et privée → DNS public**.
 
-Ensuite, ouvrir `preview.cfrq.ca` demande un courriel `@cfrq.ca` puis le code
-reçu. Pour montrer la préproduction à quelqu'un d'externe, ajouter son adresse
-dans la règle avec *Include → Emails*.
+1. **Destinations, noms d'hôte publics** — deux lignes :
+   - sous-domaine `preview`, domaine `cfrq.ca`
+   - sous-domaine **vide**, domaine `cfrq-preprod.pages.dev`
+
+   > ⚠️ Le sous-domaine de la première ligne est le champ à ne pas rater. Laissé
+   > vide avec `cfrq.ca` sélectionné, il mettrait **la production entière**
+   > derrière une authentification. Vérifier l'encadré *Aperçu* avant
+   > d'enregistrer : `cfrq.ca` seul ne doit jamais figurer dans *Destinations*.
+
+2. **Politiques Access → Créer une nouvelle politique**
+   - *Nom* : `Équipe CFRQ`, *Action* : **Autoriser**
+   - *Inclure* → **E-mails se terminant par** → `@cfrq.ca`
+   - **Enregistrer la stratégie**
+
+3. **Détails** : *Nom* `Préproduction CFRQ`, *Durée de session* **1 week**.
+
+4. **Créer**.
+
+Le nom d'équipe a été laissé à celui généré par Cloudflare,
+`summer-cake-6a83.cloudflareaccess.com` : c'est l'adresse de la page de
+connexion. Il se change dans *Zero Trust → Paramètres* si on veut quelque chose
+de plus présentable.
 
 ### Deux choses à savoir
 
