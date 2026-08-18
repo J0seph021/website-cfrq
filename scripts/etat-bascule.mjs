@@ -8,6 +8,10 @@
 // Usage : node scripts/etat-bascule.mjs
 
 import { Resolver } from 'node:dns/promises';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+
+const execFileP = promisify(execFile);
 
 const ZONE_AGENCE = ['adele.ns.cloudflare.com', 'alexis.ns.cloudflare.com'];
 const ZONE_CFRQ = ['anna.ns.cloudflare.com', 'kyle.ns.cloudflare.com'];
@@ -41,6 +45,41 @@ function quelleZone(liste) {
   if (ZONE_CFRQ.every((n) => set.has(n))) return 'cfrq';
   if (ZONE_AGENCE.every((n) => set.has(n))) return 'agence';
   return 'inconnue';
+}
+
+// --- 0. Le registre .ca ----------------------------------------------------
+// Source de vérité : c'est le registre qui dit quels serveurs de noms font
+// autorité. Il distingue « GoDaddy n'a pas encore poussé le changement » de
+// « c'est poussé, les résolveurs publics ont encore l'ancienne réponse en
+// cache ». Passe par nslookup, faute de requête non récursive dans Node.
+
+async function delegationRegistre() {
+  try {
+    const { stdout } = await execFileP('nslookup', ['-type=NS', '-norecurse', 'cfrq.ca', 'c.ca-servers.ca'], {
+      timeout: 15000,
+    });
+    const trouves = [...stdout.matchAll(/([a-z0-9-]+\.ns\.cloudflare\.com)/gi)].map((m) => m[1].toLowerCase());
+    return trouves.length ? [...new Set(trouves)].sort() : null;
+  } catch {
+    return null;
+  }
+}
+
+console.log('\n=== 0. Que dit le registre .ca (source de vérité) ? ===\n');
+
+const registre = await delegationRegistre();
+const zoneRegistre = quelleZone(registre);
+if (!registre) {
+  console.log(attente('Registre injoignable, on se fie aux résolveurs ci-dessous.'));
+} else if (zoneRegistre === 'cfrq') {
+  console.log(ok(`Le registre pointe vers la zone CFRQ : ${registre.join(', ')}`));
+  console.log('     Le changement chez GoDaddy est passé. Reste la propagation dans les caches.');
+} else if (zoneRegistre === 'agence') {
+  console.log(attente(`Le registre pointe encore vers l'ancien fournisseur : ${registre.join(', ')}`));
+  console.log("     Si GoDaddy affiche déjà anna/kyle, c'est qu'il n'a pas encore poussé le");
+  console.log('     changement au registre. Compter de quelques minutes à deux heures.');
+} else {
+  console.log(alerte(`Délégation inattendue au registre : ${registre.join(', ')}`));
 }
 
 // --- 1. Délégation ---------------------------------------------------------
