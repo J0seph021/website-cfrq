@@ -13,7 +13,45 @@ import boiseSentier from "../assets/photos/boise-sentier.jpg";
 // (un fichier par membre, nomme comme son id : alexandre-bouillon.jpg), les
 // importer ici et les ajouter au dictionnaire. Tant qu'une photo manque, la
 // carte affiche le monogramme du membre.
-const photos: Record<string, ImageMetadata> = {};
+//
+// Silhouettes temporaires en attendant les vraies photos (issues des deux
+// planches fournies par Joseph le 2026-08-18) : a remplacer des qu'un
+// portrait reel est disponible pour un membre.
+import phJosephMoffet from "../assets/photos/equipe/joseph-moffet.jpg";
+import phSebastienRioux from "../assets/photos/equipe/sebastien-rioux.jpg";
+import phAlexandraFortier from "../assets/photos/equipe/alexandra-fortier.jpg";
+import phSimonProulx from "../assets/photos/equipe/simon-proulx.jpg";
+import phChristianDumont from "../assets/photos/equipe/christian-dumont.jpg";
+import phJeanBenoitGirard from "../assets/photos/equipe/jean-benoit-girard.jpg";
+import phAlexandreBouillon from "../assets/photos/equipe/alexandre-bouillon.jpg";
+import phCamayBoisvert from "../assets/photos/equipe/camay-boisvert.jpg";
+import phCedricMaheu from "../assets/photos/equipe/cedric-maheu.jpg";
+import phAnnReneeRheaume from "../assets/photos/equipe/ann-renee-rheaume.jpg";
+import phLouisChabot from "../assets/photos/equipe/louis-chabot.jpg";
+import phMathieuJolibois from "../assets/photos/equipe/mathieu-jolibois.jpg";
+import phFrankOlivierSoucy from "../assets/photos/equipe/frank-olivier-soucy.jpg";
+import phMichelGagnon from "../assets/photos/equipe/michel-gagnon.jpg";
+import phPierreCadorette from "../assets/photos/equipe/pierre-cadorette.jpg";
+import phGabrielleKellyPoulin from "../assets/photos/equipe/gabrielle-kelly-poulin.jpg";
+
+const photos: Record<string, ImageMetadata> = {
+  "joseph-moffet": phJosephMoffet,
+  "sebastien-rioux": phSebastienRioux,
+  "alexandra-fortier": phAlexandraFortier,
+  "simon-proulx": phSimonProulx,
+  "christian-dumont": phChristianDumont,
+  "jean-benoit-girard": phJeanBenoitGirard,
+  "alexandre-bouillon": phAlexandreBouillon,
+  "camay-boisvert": phCamayBoisvert,
+  "cedric-maheu": phCedricMaheu,
+  "ann-renee-rheaume": phAnnReneeRheaume,
+  "louis-chabot": phLouisChabot,
+  "mathieu-jolibois": phMathieuJolibois,
+  "frank-olivier-soucy": phFrankOlivierSoucy,
+  "michel-gagnon": phMichelGagnon,
+  "pierre-cadorette": phPierreCadorette,
+  "gabrielle-kelly-poulin": phGabrielleKellyPoulin,
+};
 
 // chip : reserve aux fonctions de la direction et du bureau. Pour le personnel
 // terrain, les secteurs couverts sont dits dans la biographie, parce que la
