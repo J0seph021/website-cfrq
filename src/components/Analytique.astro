@@ -1,22 +1,30 @@
 ---
-// Google Tag Manager, conteneur GTM-PW8SP69 (le même que l'ancien site, pour ne
-// pas casser l'historique de mesure au moment de la bascule).
+// Google Analytics 4, propriété « CFRQ » (compte 267159722, propriété 550578747,
+// flux « Site cfrq.ca »). Chargement direct de gtag.js, sans Google Tag Manager.
+//
+// Pourquoi sans GTM : le conteneur GTM-PW8SP69 repris de l'ancien site
+// alimentait la propriété GA4 G-6JE2CNCNNM, qui appartient à un tiers non
+// identifié. CFRQ n'en recevait aucune donnée, et les visiteurs étaient mesurés
+// par quelqu'un d'autre que celui annoncé dans la politique de confidentialité.
+// Une couche d'indirection qu'on ne contrôle pas est une couche de trop.
 //
 // Loi 25 : aucun témoin de mesure n'est déposé avant un consentement explicite.
-// On s'appuie sur le mode consentement de Google (Consent Mode v2) : les
-// balises se chargent, mais tout stockage reste « denied » tant que la personne
-// n'a pas accepté dans la bannière (voir BanniereTemoins.astro).
+// Le mode consentement de Google (Consent Mode v2) est initialisé à « denied »
+// dans le script en ligne, qui s'exécute AVANT le chargement asynchrone de
+// gtag.js. La bannière le passe à « granted » si la personne accepte
+// (voir BanniereTemoins.astro).
 //
-// Le conteneur ne se charge qu'en production : ni en local, ni sur l'aperçu
-// GitHub Pages, pour ne pas polluer les statistiques.
-const GTM = "GTM-PW8SP69";
+// Ne se charge qu'en production : ni en local, ni en préproduction, pour ne pas
+// polluer les statistiques (voir analytiqueActive() dans data/flags.ts).
+import { ID_MESURE } from "../data/flags";
+
 const { actif = false } = Astro.props;
 ---
 
 {
-  actif && (
+  actif && ID_MESURE && (
     <Fragment>
-      <script is:inline define:vars={{ GTM }}>
+      <script is:inline define:vars={{ ID_MESURE }}>
         // `define:vars` enferme ce script dans une fonction : on accroche donc
         // gtag explicitement à window, sinon la bannière de consentement ne
         // pourrait pas l'appeler pour mettre le consentement à jour.
@@ -26,7 +34,7 @@ const { actif = false } = Astro.props;
         };
         var gtag = window.gtag;
 
-        // État par défaut : tout refusé. Doit être poussé AVANT le conteneur.
+        // État par défaut : tout refusé. Doit être poussé AVANT gtag.js.
         gtag("consent", "default", {
           ad_storage: "denied",
           ad_user_data: "denied",
@@ -51,18 +59,11 @@ const { actif = false } = Astro.props;
           /* stockage bloqué par le navigateur : on reste sur « denied » */
         }
 
-        // Conteneur GTM.
-        (function (w, d, s, l, i) {
-          w[l] = w[l] || [];
-          w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
-          var f = d.getElementsByTagName(s)[0],
-            j = d.createElement(s),
-            dl = l != "dataLayer" ? "&l=" + l : "";
-          j.async = true;
-          j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
-          f.parentNode.insertBefore(j, f);
-        })(window, document, "script", "dataLayer", GTM);
+        gtag("js", new Date());
+        gtag("config", ID_MESURE);
       </script>
+
+      <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${ID_MESURE}`} />
     </Fragment>
   )
 }

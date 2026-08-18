@@ -22,13 +22,15 @@ export function estProduction(siteOrigin: string): boolean {
  * Identifiant de mesure d'audience. **Vide = aucune mesure**, ni balise ni
  * bandeau de consentement.
  *
- * Coupé le 2026-08-18 : le conteneur `GTM-PW8SP69` repris de l'ancien site
- * alimente la propriété GA4 `G-6JE2CNCNNM`, qui appartient à un tiers non
- * identifié. CFRQ n'en recevait donc aucune donnée, et le bandeau promettait
- * aux visiteurs une mesure « par CFRQ » qui partait ailleurs. À remplacer par
- * l'identifiant `G-XXXXXXXXXX` de la propriété GA4 de CFRQ.
+ * Propriété GA4 « CFRQ » (compte 267159722, propriété 550578747, flux
+ * « Site cfrq.ca »), créée le 2026-08-18 et contrôlée par CFRQ.
+ *
+ * Elle remplace le conteneur `GTM-PW8SP69` repris de l'ancien site, qui
+ * alimentait la propriété `G-6JE2CNCNNM` d'un tiers non identifié : CFRQ n'en
+ * recevait aucune donnée, et le bandeau promettait aux visiteurs une mesure
+ * « par CFRQ » qui partait ailleurs.
  */
-export const ID_MESURE = "";
+export const ID_MESURE = "G-80JJK0XLVZ";
 
 /**
  * Mesure d'audience et bandeau de consentement : production seulement, et
