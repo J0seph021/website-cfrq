@@ -36,12 +36,25 @@ npm run build:preprod
 
 La préproduction sert le même contenu que cfrq.ca. Si Google l'indexait, il
 verrait deux copies du site et pourrait classer la copie à la place du vrai
-site. Trois verrous, tous automatiques, tous vérifiés par `npm run verifier` :
+site. Quatre verrous, tous automatiques, tous vérifiés par `npm run verifier` :
 
-1. **`noindex` sur chaque page**, dès que `SITE_URL` n'est pas `https://cfrq.ca`.
-2. **`robots.txt` en `Disallow: /`**, généré au build (`src/pages/robots.txt.ts`).
-3. **Aucune mesure d'audience** : GTM et le bandeau de consentement ne se
+1. **En-tête HTTP `X-Robots-Tag: noindex`** sur tout le site, via le fichier
+   `_headers` écrit au build et lu par Cloudflare Pages. **C'est le verrou
+   principal**, parce que c'est le seul qu'on ne peut pas contredire ailleurs.
+2. **`noindex` en balise meta sur chaque page**, dès que `SITE_URL` n'est pas
+   `https://cfrq.ca`.
+3. **`robots.txt` en `Disallow: /`**, généré au build (`src/pages/robots.txt.ts`).
+   ⚠️ Verrou le plus faible : l'option **« Robots.txt géré »** d'AI Crawl Control
+   réécrit le `robots.txt` de la zone et y injecte un `User-agent: * / Allow: /`
+   **avant** le nôtre. À longueur de chemin égale, le moins restrictif gagne,
+   donc ce `Disallow: /` est neutralisé tant que cette option est active. D'où le
+   verrou n° 1, qu'aucun `robots.txt` ne peut annuler.
+4. **Aucune mesure d'audience** : GTM et le bandeau de consentement ne se
    chargent qu'en production, donc les essais ne polluent pas les statistiques.
+
+Le contrôle vérifie aussi l'inverse : un build de **production** qui porterait un
+`_headers` avec `noindex` est refusé, pour que cfrq.ca ne puisse pas se retirer
+de Google par accident.
 
 Le contrôle **refuse un build de préproduction** dont une seule page ne serait
 pas en `noindex`, ou dont le `robots.txt` serait ouvert. La règle est unique

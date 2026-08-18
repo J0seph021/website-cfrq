@@ -1,4 +1,6 @@
 // @ts-check
+import { writeFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
@@ -16,6 +18,10 @@ const SITE_BASE = process.env.SITE_BASE || '/';
 // (src/routes-differees/), il n'est simplement pas publié.
 const publierEspaceClient = process.env.PUBLIER_ESPACE_CLIENT === '1';
 
+// Seule cfrq.ca est de la production. Doit rester aligné sur estProduction()
+// dans src/data/flags.ts.
+const estProduction = SITE_URL === 'https://cfrq.ca';
+
 /** Pages volontairement absentes du sitemap : redirections et pages noindex. */
 const horsSitemap = [/\/private-page\//, /\/service-aux-entrepreneurs-en-travaux-sylvicoles\//, /\/espace-client/];
 
@@ -32,6 +38,31 @@ export default defineConfig({
     sitemap({
       filter: (page) => !horsSitemap.some((motif) => motif.test(page)),
     }),
+    {
+      // Hors production, poser un en-tête HTTP `X-Robots-Tag: noindex` sur tout
+      // le site, via le fichier `_headers` que lit Cloudflare Pages.
+      //
+      // Pourquoi un en-tête en plus du `noindex` en balise meta : Cloudflare
+      // réécrit le `robots.txt` de la zone (option « Robots.txt géré » d'AI
+      // Crawl Control) et y injecte un `User-agent: * / Allow: /` AVANT le
+      // nôtre. À longueur de chemin égale, le moins restrictif gagne, donc
+      // notre `Disallow: /` de préproduction se fait neutraliser. Un en-tête
+      // HTTP, lui, ne peut pas être contredit par un robots.txt, et il couvre
+      // aussi les fichiers non HTML (PDF, XML).
+      //
+      // GitHub Pages ignore `_headers`, mais le fichier n'est de toute façon
+      // écrit que hors production : la production ne peut pas se noindexer par
+      // accident, même si elle déménageait un jour chez Cloudflare Pages.
+      name: 'cfrq-entetes-preprod',
+      hooks: {
+        'astro:build:done': ({ dir, logger }) => {
+          if (estProduction) return;
+          const chemin = fileURLToPath(new URL('_headers', dir));
+          writeFileSync(chemin, `# Préproduction (${SITE_URL}) : jamais d'indexation.\n/*\n  X-Robots-Tag: noindex\n`, 'utf8');
+          logger.info(`_headers écrit : X-Robots-Tag: noindex sur tout ${SITE_URL}`);
+        },
+      },
+    },
     {
       name: 'cfrq-routes-differees',
       hooks: {

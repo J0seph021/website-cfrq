@@ -265,9 +265,28 @@ if (EST_PRODUCTION) {
   if (!robotsTexte.includes('sitemap-index.xml')) {
     echec("robots.txt de production n'annonce pas le sitemap.");
   }
+  // La production ne doit jamais porter l'en-tête noindex de la préproduction.
+  if (ressources.has('/_headers') && /noindex/i.test(readFileSync(join(DIST, '_headers'), 'utf8'))) {
+    echec('Le build de production contient un `_headers` avec noindex : il se retirerait de Google.');
+  }
 } else {
   if (!/^\s*Disallow:\s*\/\s*$/m.test(robotsTexte)) {
     echec(`robots.txt hors production (${SITE_URL}) doit contenir « Disallow: / », sinon la préproduction s'indexe.`);
+  }
+
+  // Verrou principal de la préproduction. Le `robots.txt` ne suffit pas : le
+  // « Robots.txt géré » de Cloudflare y injecte un « Allow: / » qui gagne sur
+  // notre « Disallow: / ». Un en-tête HTTP est insensible à cette réécriture.
+  if (!ressources.has('/_headers')) {
+    echec("Fichier `_headers` manquant : la préproduction n'a pas d'en-tête X-Robots-Tag.");
+  } else {
+    const entetes = readFileSync(join(DIST, '_headers'), 'utf8');
+    if (!/X-Robots-Tag:\s*noindex/i.test(entetes)) {
+      echec('`_headers` ne pose pas « X-Robots-Tag: noindex » sur la préproduction.');
+    }
+    if (!/^\/\*\s*$/m.test(entetes)) {
+      echec("`_headers` ne cible pas tout le site (motif « /* » attendu).");
+    }
   }
   for (const [url, html] of pages) {
     if (/http-equiv=["']?refresh/i.test(html)) continue; // redirections : déjà noindex
