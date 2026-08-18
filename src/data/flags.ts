@@ -19,12 +19,25 @@ export function estProduction(siteOrigin: string): boolean {
 }
 
 /**
- * Mesure d'audience (GTM) et bandeau de consentement : production seulement.
- * Ailleurs, rien n'est chargé, donc aucun témoin non essentiel n'est déposé et
- * les statistiques ne sont pas polluées par les essais.
+ * Identifiant de mesure d'audience. **Vide = aucune mesure**, ni balise ni
+ * bandeau de consentement.
+ *
+ * Coupé le 2026-08-18 : le conteneur `GTM-PW8SP69` repris de l'ancien site
+ * alimente la propriété GA4 `G-6JE2CNCNNM`, qui appartient à un tiers non
+ * identifié. CFRQ n'en recevait donc aucune donnée, et le bandeau promettait
+ * aux visiteurs une mesure « par CFRQ » qui partait ailleurs. À remplacer par
+ * l'identifiant `G-XXXXXXXXXX` de la propriété GA4 de CFRQ.
+ */
+export const ID_MESURE = "";
+
+/**
+ * Mesure d'audience et bandeau de consentement : production seulement, et
+ * seulement si un identifiant de mesure est configuré. Sans identifiant, aucun
+ * témoin non essentiel n'est déposé, donc il n'y a rien à consentir et le
+ * bandeau n'a pas lieu d'être.
  */
 export function analytiqueActive(siteOrigin: string): boolean {
-  return import.meta.env.PROD && estProduction(siteOrigin);
+  return import.meta.env.PROD && estProduction(siteOrigin) && ID_MESURE !== "";
 }
 
 /**

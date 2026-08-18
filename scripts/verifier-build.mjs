@@ -219,26 +219,44 @@ for (const [url, html] of pages) {
 // Uniquement sur un build de production : en développement et sur l'aperçu
 // GitHub Pages, rien n'est chargé, donc il n'y a rien à contrôler.
 
-if (EST_PRODUCTION) {
+// L'identifiant de mesure est lu dans la source : vide = aucune mesure attendue.
+const ID_MESURE =
+  readFileSync('src/data/flags.ts', 'utf8').match(/ID_MESURE\s*=\s*["']([^"']*)["']/)?.[1] ?? '';
+
+if (EST_PRODUCTION && ID_MESURE === '') {
+  // Mesure coupée : il ne doit rester aucune balise, et donc aucun bandeau de
+  // consentement, puisqu'il n'y a plus rien à consentir.
+  for (const [url, html] of pages) {
+    if (/googletagmanager\.com|GTM-[A-Z0-9]+|gtag\/js/i.test(html)) {
+      echec(`${url} charge encore une balise de mesure alors que ID_MESURE est vide.`);
+    }
+    if (html.includes('banniere-temoins')) {
+      echec(`${url} affiche le bandeau de consentement alors qu'aucune mesure n'est chargée.`);
+    }
+  }
+}
+
+if (EST_PRODUCTION && ID_MESURE !== '') {
   for (const [url, html] of pages) {
     if (/http-equiv=["']?refresh/i.test(html)) continue; // redirections : pas de mesure
 
-    if (!html.includes('GTM-PW8SP69')) {
-      echec(`Google Tag Manager absent de ${url}.`);
+    if (!html.includes(ID_MESURE)) {
+      echec(`Balise de mesure ${ID_MESURE} absente de ${url}.`);
       continue;
     }
     if (!html.includes('banniere-temoins')) {
-      echec(`Bandeau de consentement absent de ${url}, alors que GTM y est chargé.`);
+      echec(`Bandeau de consentement absent de ${url}, alors que la mesure y est chargée.`);
     }
 
-    // Loi 25 : l'état « refusé par défaut » doit être poussé AVANT le conteneur,
-    // sinon GTM peut déposer un témoin avant que la personne ait choisi.
+    // Loi 25 : l'état « refusé par défaut » doit être poussé AVANT le script de
+    // mesure, sinon un témoin peut être déposé avant que la personne ait choisi.
+    // Vaut pour GTM (gtm.js) comme pour GA4 en direct (gtag/js).
     const iDefaut = html.search(/["']consent["'],\s*["']default["']/);
-    const iConteneur = html.indexOf('googletagmanager.com/gtm.js');
+    const iBalise = html.search(/googletagmanager\.com\/(gtm\.js|gtag\/js)/);
     if (iDefaut === -1) {
-      echec(`${url} charge GTM sans état de consentement par défaut.`);
-    } else if (iConteneur !== -1 && iDefaut > iConteneur) {
-      echec(`${url} pousse le consentement par défaut APRÈS le conteneur GTM.`);
+      echec(`${url} charge la mesure sans état de consentement par défaut.`);
+    } else if (iBalise !== -1 && iDefaut > iBalise) {
+      echec(`${url} pousse le consentement par défaut APRÈS le script de mesure.`);
     }
     if (!/analytics_storage:\s*["']denied["']/.test(html)) {
       echec(`${url} ne refuse pas analytics_storage par défaut.`);
