@@ -135,19 +135,27 @@ pages, aucun GTM.
 
 ---
 
-## Verrouiller l'accès avec Cloudflare Access
+## Cloudflare Access (FAIT le 2026-08-18)
 
 Le `noindex` empêche Google d'indexer, mais n'empêche personne d'ouvrir
 l'adresse. **Cloudflare Access** met une authentification par courriel devant la
 préproduction : ce qui n'est pas accessible ne peut être ni indexé, ni tombé sous
 les yeux d'un client au mauvais moment.
 
-Gratuit jusqu'à 50 personnes. **À savoir avant de commencer :** Cloudflare
-demande parfois d'enregistrer une carte pour activer Zero Trust, même sur le
-forfait gratuit. Rien n'est facturé sur le forfait Free, mais la demande peut
-surprendre.
+**En place, forfait Zero Trust Free.** Application `Préproduction CFRQ`,
+politique `Équipe CFRQ` (Autoriser, e-mails se terminant par `@cfrq.ca`),
+session d'une semaine, connexion par code à 6 chiffres envoyé par courriel.
 
-### Les étapes
+**Les deux adresses sont couvertes**, `preview.cfrq.ca` et
+`cfrq-preprod.pages.dev` : la brèche du `pages.dev` est donc fermée. Vérifié,
+les deux répondent 302 vers `summer-cake-6a83.cloudflareaccess.com`, et la
+production reste libre d'accès.
+
+Se connecter avec une adresse **`@cfrq.ca`** : une adresse personnelle (Gmail)
+ne correspond pas à la politique. Pour ouvrir l'accès à quelqu'un d'externe,
+ajouter son adresse dans la politique avec *Include → E-mails*.
+
+### Les étapes suivies, pour mémoire
 
 1. Dans Cloudflare, aller dans **Zero Trust** (barre latérale, ou
    `one.dash.cloudflare.com`).
@@ -170,18 +178,18 @@ Ensuite, ouvrir `preview.cfrq.ca` demande un courriel `@cfrq.ca` puis le code
 reçu. Pour montrer la préproduction à quelqu'un d'externe, ajouter son adresse
 dans la règle avec *Include → Emails*.
 
-### Deux limites à connaître
+### Deux choses à savoir
 
-**L'adresse `cfrq-preprod.pages.dev` reste ouverte.** Access ne protège que le
-nom d'hôte déclaré. C'est justement pourquoi on garde en plus l'en-tête
-`X-Robots-Tag` et le `noindex` : ils couvrent les deux adresses, alors qu'Access
-n'en couvre qu'une. Les deux protections se complètent, il ne faut pas retirer
-l'une en installant l'autre.
+**Les contrôles automatiques ne passent plus sur la préproduction.** `curl` sur
+`preview.cfrq.ca` reçoit la page de connexion, pas le site. Sans conséquence
+ici : `verifier-en-ligne.mjs` interroge la production. Pour contrôler un build
+de préproduction, passer par `npm run build:preprod` en local.
 
-**Les contrôles automatiques ne passent plus.** Une fois Access en place,
-`curl` sur `preview.cfrq.ca` reçoit la page de connexion, pas le site. Sans
-conséquence ici : `verifier-en-ligne.mjs` interroge la production, pas la
-préproduction.
+**Ne pas retirer les autres verrous.** Access protège les deux noms d'hôte
+aujourd'hui, mais l'en-tête `X-Robots-Tag` et le `noindex` restent utiles : ils
+suivent le contenu, pas le nom d'hôte. Si un jour une adresse de déploiement
+d'aperçu Cloudflare (`<hash>.cfrq-preprod.pages.dev`) échappait à la politique,
+ils la couvriraient quand même.
 
 ---
 
