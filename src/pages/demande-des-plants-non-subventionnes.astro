@@ -70,7 +70,7 @@ const champ = "h-12 w-full rounded-[10px] border border-black/15 bg-white px-4 t
           Pour les résineux, une prescription sylvicole doit être préparée au préalable. Le reboisement de friche avec des plants du gouvernement doit être autorisé par le MAPAQ. Renseignez-vous auprès de l'ingénieur forestier de votre secteur.
         </p>
         <p class="mt-3 text-[14.5px] leading-[1.65] text-cfrq-ink/[.82]">
-          Idéalement, les demandes doivent être complétées <strong class="font-semibold text-cfrq-deep">avant le 1<sup>er</sup> mai</strong>. Les plants sont distribués à la fin du mois de mai (la date précise est transmise par courriel). Des frais de transport de <strong class="font-semibold text-cfrq-deep">22 $ par sac (50 plants)</strong> s'appliquent à la réception. Les quantités demandées ne sont pas garanties.
+          Idéalement, les demandes doivent être complétées <strong class="font-semibold text-cfrq-deep">avant le 1<sup>er</sup> mai</strong>. Les plants sont distribués à la fin du mois de mai (la date précise est transmise par courriel). Des frais de transport de <strong class="font-semibold text-cfrq-deep">24 $ par sac (50 plants)</strong> s'appliquent à la réception. Les quantités demandées ne sont pas garanties.
         </p>
       </div>
     </section>
@@ -106,7 +106,7 @@ const champ = "h-12 w-full rounded-[10px] border border-black/15 bg-white px-4 t
 
           <label class="mt-4 flex items-start gap-[11px] text-[14px] leading-[1.55] text-cfrq-ink/[.72]">
             <input name="consent" type="checkbox" required class="mt-[3px] h-5 w-5 accent-cfrq-green" />
-            <span>Je comprends et j'accepte que les quantités demandées ne sont pas garanties et que des frais de transport de 22 $ le sac (50 plants) devront être acquittés à la réception.</span>
+            <span>Je comprends et j'accepte que les quantités demandées ne sont pas garanties et que des frais de transport de 24 $ le sac (50 plants) devront être acquittés à la réception.</span>
           </label>
 
           <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" class="hidden" />
@@ -122,6 +122,7 @@ const champ = "h-12 w-full rounded-[10px] border border-black/15 bg-white px-4 t
             ouvert, écrivez-nous à <a href={`mailto:${site.courriel}`} class="font-medium underline">{site.courriel}</a>
             ou appelez-nous au <a href={site.telHref} class="font-medium underline">{site.tel}</a>.
           </p>
+          <p id="plants-invalide" class="mt-4 hidden rounded-xl border border-red-500/50 bg-red-50 p-4 text-[15px] text-cfrq-deep" role="alert" aria-live="assertive"></p>
         </form>
       </div>
     </section>
@@ -134,20 +135,45 @@ const champ = "h-12 w-full rounded-[10px] border border-black/15 bg-white px-4 t
   const f = document.getElementById("plants-form") as HTMLFormElement | null;
   const ok = document.getElementById("plants-ok");
   const secours = document.getElementById("plants-secours");
+  const invalide = document.getElementById("plants-invalide");
+
+  const bandeaux = [ok, secours, invalide];
+  const montrer = (cible: HTMLElement | null, texte?: string) => {
+    for (const b of bandeaux) b?.classList.add("hidden");
+    if (!cible) return;
+    if (texte) cible.textContent = texte;
+    cible.classList.remove("hidden");
+  };
+
+  // Multiple de sac impose par le fournisseur : doit valoir celui du serveur.
+  const PAS = 50;
+
   f?.addEventListener("submit", async (e) => {
     e.preventDefault();
     if (!f.reportValidity()) return;
     const d = new FormData(f);
     const v = (k: string) => String(d.get(k) ?? "").trim();
+    const n = (k: string) => { const x = Number(v(k) || "0"); return Number.isFinite(x) ? x : NaN; };
     const btn = f.querySelector('button[type="submit"]') as HTMLButtonElement | null;
-    if (btn) btn.disabled = true;
 
-    const nom = `${v("prenom")} ${v("nom")}`.trim();
+    const nomComplet = `${v("prenom")} ${v("nom")}`.trim();
+    // Codes essence alignes sur les colonnes du classeur Demande Feuillus.xlsx.
+    // ERR (erable rouge) n'est pas offert ici, le serveur l'ecrit a 0.
+    const quantites = { ERS: n("q-erable"), CHR: n("q-chene-rouge"), CHG: n("q-chene-gros") };
+
+    // Le serveur revalide de toute facon, mais autant le dire ici : une erreur
+    // de saisie ne doit pas basculer l'utilisateur sur le brouillon courriel.
+    const total = quantites.ERS + quantites.CHR + quantites.CHG;
+    if (!Number.isFinite(total) || Object.values(quantites).some((q) => !Number.isInteger(q) || q < 0 || q % PAS !== 0)) {
+      montrer(invalide, `Les plants se commandent par sac de ${PAS} : chaque quantité doit être un multiple de ${PAS}.`);
+      return;
+    }
+    if (total === 0) {
+      montrer(invalide, "Indiquez au moins une quantité de plants.");
+      return;
+    }
+
     const details: Record<string, string> = {};
-    const q = (name: string, label: string) => { const val = v(name); if (val && val !== "0") details[label] = val; };
-    q("q-erable", "Érable à sucre");
-    q("q-chene-rouge", "Chêne rouge");
-    q("q-chene-gros", "Chêne à gros fruits");
     if (v("tel2")) details["Téléphone (autre)"] = v("tel2");
 
     // Filet de secours : capture serveur echoue -> courriel pre-rempli vers CFRQ.
@@ -161,20 +187,18 @@ const champ = "h-12 w-full rounded-[10px] border border-black/15 bg-white px-4 t
         `Téléphone (autre) : ${v("tel2") || "(aucun)"}`,
         "",
         "Quantités demandées :",
-        `- Érable à sucre : ${v("q-erable") || "0"}`,
-        `- Chêne rouge : ${v("q-chene-rouge") || "0"}`,
-        `- Chêne à gros fruits : ${v("q-chene-gros") || "0"}`,
+        `- Érable à sucre : ${quantites.ERS}`,
+        `- Chêne rouge : ${quantites.CHR}`,
+        `- Chêne à gros fruits : ${quantites.CHG}`,
         "",
         "Message :",
         v("message") || "(aucun)",
       ].join("\n");
-      const sujet = `Demande de plants, ${nom}`;
+      const sujet = `Demande de plants, ${nomComplet}`;
       window.location.href = `mailto:cfrq@cfrq.ca?subject=${encodeURIComponent(sujet)}&body=${encodeURIComponent(corps)}`;
     };
 
-    // Vrai si la capture a echoue : on bascule alors sur le brouillon courriel et
-    // on ne doit PAS annoncer « bien envoyée ».
-    let echec = false;
+    if (btn) btn.disabled = true;
     try {
       const res = await fetch(ENDPOINT, {
         method: "POST",
@@ -182,22 +206,32 @@ const champ = "h-12 w-full rounded-[10px] border border-black/15 bg-white px-4 t
         body: JSON.stringify({
           source: "plants",
           courriel: v("courriel"),
-          nom,
+          prenom: v("prenom"),
+          nom: v("nom"),
           telephone: v("tel"),
           municipalite: v("muni"),
           message: v("message"),
+          quantites: { ...quantites, ERR: 0 },
           details,
           website: v("website"),
         }),
       });
+      // Un 400 est un refus de validation : le repeter a l'utilisateur, un
+      // brouillon courriel ne corrigerait rien. Tout le reste (429, 5xx, reseau)
+      // bascule sur le filet de secours.
+      if (res.status === 400) {
+        const msg = await res.json().catch(() => null);
+        montrer(invalide, msg?.error || "Votre demande contient une valeur invalide.");
+        return;
+      }
       if (!res.ok) throw new Error(String(res.status));
       f.reset();
+      montrer(ok);
     } catch {
-      echec = true;
       fallbackMailto();
+      montrer(secours);
     } finally {
       if (btn) btn.disabled = false;
-      (echec ? secours : ok)?.classList.remove("hidden");
     }
   });
 </script>
