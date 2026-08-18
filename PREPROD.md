@@ -44,11 +44,14 @@ site. Quatre verrous, tous automatiques, tous vérifiés par `npm run verifier` 
 2. **`noindex` en balise meta sur chaque page**, dès que `SITE_URL` n'est pas
    `https://cfrq.ca`.
 3. **`robots.txt` en `Disallow: /`**, généré au build (`src/pages/robots.txt.ts`).
-   ⚠️ Verrou le plus faible : l'option **« Robots.txt géré »** d'AI Crawl Control
-   réécrit le `robots.txt` de la zone et y injecte un `User-agent: * / Allow: /`
-   **avant** le nôtre. À longueur de chemin égale, le moins restrictif gagne,
-   donc ce `Disallow: /` est neutralisé tant que cette option est active. D'où le
-   verrou n° 1, qu'aucun `robots.txt` ne peut annuler.
+   ⚠️ Verrou fragile, à ne pas prendre pour acquis : l'option **« Robots.txt
+   géré »** d'AI Crawl Control réécrit le `robots.txt` de la zone, sous-domaines
+   compris, et y injecte un `User-agent: * / Allow: /` **avant** le nôtre. À
+   longueur de chemin égale le moins restrictif gagne, donc ce `Disallow: /` est
+   neutralisé tant que l'option est active. *Elle a été désactivée le
+   2026-08-18, ce verrou fonctionne donc à nouveau* — mais il suffirait de la
+   réactiver pour le neutraliser sans avertissement, d'où le verrou n° 1, qu'aucun
+   `robots.txt` ne peut annuler.
 4. **Aucune mesure d'audience** : GTM et le bandeau de consentement ne se
    chargent qu'en production, donc les essais ne polluent pas les statistiques.
 
