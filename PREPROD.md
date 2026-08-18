@@ -67,20 +67,25 @@ git switch -c preview origin/preview
 
 ---
 
-## Configurer Cloudflare Pages
+## Configuration Cloudflare Pages (FAITE le 2026-08-18)
 
-Dans le tableau de bord Cloudflare : **Workers & Pages → Create → Pages →
-Connect to Git**, puis choisir le dépôt `J0seph021/website-cfrq`.
+Projet **`cfrq-preprod`** dans le compte Cloudflare `J.moffet@cfrq.ca`, connecté
+au dépôt `J0seph021/website-cfrq`. Adresses : **https://preview.cfrq.ca** et
+`cfrq-preprod.pages.dev`.
 
-**Réglages de build :**
+**Réglages en place :**
 
 | Champ | Valeur |
 |---|---|
-| Framework preset | Astro |
-| Build command | `npm run build` |
-| Build output directory | `dist` |
-| Root directory | `/` |
-| Production branch | **`preview`** |
+| Infrastructure prédéfinie | `Aucun` |
+| Commande de build | `npm run build` |
+| Répertoire de sortie | `dist` |
+| Répertoire racine | `/` |
+| Branche en production | **`preview`** |
+
+Le préréglage est laissé à `Aucun` volontairement : il ne sert qu'à préremplir
+les deux champs suivants, qui sont déjà remplis à la main. Un préréglage en moins
+est une source de surprise en moins si Cloudflare change ses valeurs par défaut.
 
 > La *production branch* du projet Cloudflare est bien `preview`, pas `main`.
 > C'est la branche que Cloudflare servira sur l'adresse principale du projet.
@@ -100,26 +105,20 @@ environnement *Production*) :
 verra le public. Le passer à `1` quand on veut retravailler l'espace client :
 c'est le seul réglage à changer, et il ne touche pas à la production.
 
-**Éviter les builds inutiles :** dans *Settings → Builds → Branch control*,
-mettre les *preview branches* à **None**. Sans ça, Cloudflare reconstruit aussi
-à chaque poussée sur `main`, qui n'a rien à faire là.
+**Contrôle de branche** (*Paramètres → Contrôle de branche*) : *Aperçu de la
+branche* est réglé sur **Aucun**. Seule `preview` déclenche un build ici ; une
+poussée sur `main` ne construit rien côté Cloudflare, elle part sur GitHub Pages.
 
 ---
 
-## Attacher preview.cfrq.ca
+## Le domaine preview.cfrq.ca
 
-⚠️ **Possible seulement une fois la zone Cloudflare active**, donc après la
-bascule des serveurs de noms (voir `MISE_EN_PROD.md`, étape 4.4). Tant que la
-zone est « En attente », Cloudflare ne peut pas créer le sous-domaine.
+Attaché le 2026-08-18. Cloudflare a créé tout seul l'enregistrement
+`CNAME preview → cfrq-preprod.pages.dev` dans la zone cfrq.ca. Aucun
+enregistrement existant n'a été touché.
 
-En attendant, le projet est accessible sur son adresse `*.pages.dev`, qui
-fonctionne immédiatement. Mettre alors `SITE_URL` à cette adresse-là : dans les
-deux cas la préproduction reste en `noindex`, puisque la seule adresse
-considérée comme production est `https://cfrq.ca`.
-
-Une fois la zone active : **projet Pages → Custom domains → Set up a custom
-domain → `preview.cfrq.ca`**. Cloudflare crée l'enregistrement DNS tout seul.
-Repasser ensuite `SITE_URL` à `https://preview.cfrq.ca`.
+Vérifié après déploiement : `robots.txt` en `Disallow: /`, `noindex` sur les
+pages, aucun GTM.
 
 ---
 
