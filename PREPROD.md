@@ -135,17 +135,53 @@ pages, aucun GTM.
 
 ---
 
-## Verrouiller l'accès (recommandé)
+## Verrouiller l'accès avec Cloudflare Access
 
-`noindex` empêche Google d'indexer, mais n'empêche personne d'ouvrir l'adresse.
-Pour une préproduction qui montre des travaux en cours, **Cloudflare Access**
-(gratuit jusqu'à 50 personnes) met une authentification par courriel devant le
-site : **Zero Trust → Access → Applications → Add an application → Self-hosted**,
-domaine `preview.cfrq.ca`, avec une règle qui n'autorise que les adresses
-`@cfrq.ca`.
+Le `noindex` empêche Google d'indexer, mais n'empêche personne d'ouvrir
+l'adresse. **Cloudflare Access** met une authentification par courriel devant la
+préproduction : ce qui n'est pas accessible ne peut être ni indexé, ni tombé sous
+les yeux d'un client au mauvais moment.
 
-C'est la protection la plus solide : ce qui n'est pas accessible ne peut pas
-être indexé, ni tomber sous les yeux d'un client au mauvais moment.
+Gratuit jusqu'à 50 personnes. **À savoir avant de commencer :** Cloudflare
+demande parfois d'enregistrer une carte pour activer Zero Trust, même sur le
+forfait gratuit. Rien n'est facturé sur le forfait Free, mais la demande peut
+surprendre.
+
+### Les étapes
+
+1. Dans Cloudflare, aller dans **Zero Trust** (barre latérale, ou
+   `one.dash.cloudflare.com`).
+2. Au premier passage, Cloudflare demande un **nom d'équipe**. Mettre `cfrq` :
+   ça donne `cfrq.cloudflareaccess.com`, l'adresse de la page de connexion.
+   Choisir le forfait **Free**.
+3. **Access → Applications → Add an application → Self-hosted**.
+4. **Application name** : `Préproduction CFRQ`.
+   **Session duration** : 1 semaine, pour ne pas se reconnecter sans cesse.
+5. **Public hostname** : sous-domaine `preview`, domaine `cfrq.ca`.
+6. **Next**, puis créer la règle :
+   - *Policy name* : `Équipe CFRQ`
+   - *Action* : **Allow**
+   - *Include* → **Emails ending in** → `@cfrq.ca`
+7. **Login methods** : laisser **One-time PIN**. Pas besoin de fournisseur
+   d'identité : Cloudflare envoie un code à 6 chiffres par courriel.
+8. **Save**.
+
+Ensuite, ouvrir `preview.cfrq.ca` demande un courriel `@cfrq.ca` puis le code
+reçu. Pour montrer la préproduction à quelqu'un d'externe, ajouter son adresse
+dans la règle avec *Include → Emails*.
+
+### Deux limites à connaître
+
+**L'adresse `cfrq-preprod.pages.dev` reste ouverte.** Access ne protège que le
+nom d'hôte déclaré. C'est justement pourquoi on garde en plus l'en-tête
+`X-Robots-Tag` et le `noindex` : ils couvrent les deux adresses, alors qu'Access
+n'en couvre qu'une. Les deux protections se complètent, il ne faut pas retirer
+l'une en installant l'autre.
+
+**Les contrôles automatiques ne passent plus.** Une fois Access en place,
+`curl` sur `preview.cfrq.ca` reçoit la page de connexion, pas le site. Sans
+conséquence ici : `verifier-en-ligne.mjs` interroge la production, pas la
+préproduction.
 
 ---
 
