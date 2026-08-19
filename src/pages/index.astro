@@ -6,6 +6,7 @@ import Footer from "../components/Footer.astro";
 import { site } from "../data/site";
 import { withBase } from "../lib/url";
 import { PUBLIER_ESPACE_CLIENT } from "../data/flags";
+import { FAQ } from "../data/faq";
 import TaxCalculator from "../components/TaxCalculator.tsx";
 
 import boiseSentier from "../assets/photos/boise-sentier.jpg";
@@ -78,7 +79,7 @@ const faq = [
   { q: "Qu'est-ce qu'un plan d'aménagement ?", parts: ["Un portrait de votre forêt (peuplements, potentiel, milieux à protéger) préparé par un ingénieur forestier, avec des scénarios adaptés à vos objectifs. C'est aussi la porte d'entrée vers l'aide financière."] },
   { q: "J'ai hérité d'un boisé et je n'y connais rien.", parts: ["Aucun problème. On accompagne les nouveaux propriétaires du début à la fin : visite terrain, plan, travaux et suivi. Aucune connaissance forestière requise de votre part."] },
   { q: "Faites-vous les plans ou aussi les travaux ?", parts: ["Les deux. Nos ingénieurs forestiers planifient et signent les plans et les rapports; nos techniciens organisent le chantier, supervisent les travaux sur le terrain et les vérifient, jusqu'au paiement des entrepreneurs."] },
-  { q: "Quelles régions desservez-vous ?", parts: ["La grande région de Québec et l'est du Québec : Québec (Capitale-Nationale), Portneuf, Charlevoix, Côte-Nord, Mauricie, Bois-Francs, Chaudière et Appalaches."] },
+  { q: "Quelles régions desservez-vous ?", parts: ["La grande région de Québec, la Rive-Sud et l'est du Québec : Québec (Capitale-Nationale), Portneuf, Charlevoix, Côte-Nord, Mauricie, Bois-Francs, Chaudière et Appalaches. En langage courant : ", { fort: "la région de Québec, la Beauce, Bellechasse, Lotbinière, Lévis, Thetford Mines et les Appalaches", vert: true }, "."] },
 ];
 
 const orgLd = {
@@ -138,14 +139,11 @@ const orgLd = {
 const faqLd = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  mainEntity: [
-    { "@type": "Question", name: "Combien coûte une première visite d'un conseiller forestier?", acceptedAnswer: { "@type": "Answer", text: "Contactez-nous pour connaître les modalités d'une visite-conseil. Un technicien forestier de CFRQ se déplace sur votre propriété pour évaluer votre boisé et discuter de vos objectifs." } },
-    { "@type": "Question", name: "Ai-je droit à de l'aide financière pour aménager mon boisé?", acceptedAnswer: { "@type": "Answer", text: "Si votre boisé fait plus de 4 hectares, oui, avec un plan d'aménagement forestier (PAF). Il donne accès au Programme d'aide à la mise en valeur des forêts privées (PAMVFP), au Programme de financement forestier et au remboursement des taxes foncières des producteurs forestiers reconnus." } },
-    { "@type": "Question", name: "Qu'est-ce qu'un plan d'aménagement forestier?", acceptedAnswer: { "@type": "Answer", text: "C'est un portrait de votre forêt (composition des peuplements, potentiel de production, milieux à protéger) préparé par un ingénieur forestier, avec des scénarios sylvicoles adaptés à vos objectifs. C'est aussi la porte d'entrée vers l'aide financière." } },
-    { "@type": "Question", name: "Je viens d'hériter d'un boisé et je n'y connais rien. Pouvez-vous m'aider?", acceptedAnswer: { "@type": "Answer", text: "Oui. CFRQ accompagne les nouveaux propriétaires du début à la fin : visite terrain, plan, travaux et suivi. Aucune connaissance forestière n'est requise de votre part." } },
-    { "@type": "Question", name: "Faites-vous seulement les plans ou aussi les travaux?", acceptedAnswer: { "@type": "Answer", text: "Les deux. Nos ingénieurs forestiers planifient et signent les plans et les rapports; nos techniciens organisent le chantier, supervisent les travaux sur le terrain et les vérifient, jusqu'au paiement des entrepreneurs." } },
-    { "@type": "Question", name: "Quelles régions desservez-vous?", acceptedAnswer: { "@type": "Answer", text: "La grande région de Québec et l'est du Québec : Capitale-Nationale (Québec), Portneuf, Charlevoix, Côte-Nord, Mauricie, Bois-Francs, Chaudière et Appalaches." } },
-  ],
+  mainEntity: FAQ.map((f) => ({
+    "@type": "Question",
+    name: f.question,
+    acceptedAnswer: { "@type": "Answer", text: f.reponse },
+  })),
 };
 
 const eyebrow = "text-[12.5px] font-semibold uppercase tracking-[0.18em]";
