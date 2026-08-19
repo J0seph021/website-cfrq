@@ -7,6 +7,7 @@ import { site } from "../data/site";
 import { withBase } from "../lib/url";
 import { PUBLIER_ESPACE_CLIENT } from "../data/flags";
 import { FAQ } from "../data/faq";
+import { zonesDesservies } from "../data/territoires";
 import TaxCalculator from "../components/TaxCalculator.tsx";
 
 import boiseSentier from "../assets/photos/boise-sentier.jpg";
@@ -102,16 +103,7 @@ const orgLd = {
     postalCode: "G2E 2H3",
     addressCountry: "CA",
   },
-  areaServed: [
-    { "@type": "AdministrativeArea", name: "Capitale-Nationale (Québec)" },
-    { "@type": "AdministrativeArea", name: "Portneuf" },
-    { "@type": "AdministrativeArea", name: "Charlevoix" },
-    { "@type": "AdministrativeArea", name: "Côte-Nord" },
-    { "@type": "AdministrativeArea", name: "Mauricie" },
-    { "@type": "AdministrativeArea", name: "Bois-Francs" },
-    { "@type": "AdministrativeArea", name: "Chaudière" },
-    { "@type": "AdministrativeArea", name: "Appalaches" },
-  ],
+  areaServed: zonesDesservies(site.regions),
   knowsAbout: [
     "Aménagement forestier",
     "Sylviculture",

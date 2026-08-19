@@ -74,3 +74,22 @@ export const SYNONYMES_TERRITOIRE: { courant: string; equivaut: string }[] = [
     equivaut: "MRC de Mékinac et secteur de La Mauricie",
   },
 ];
+
+/**
+ * `areaServed` pour schema.org, en un seul endroit.
+ *
+ * Réunit les deux vocabulaires : les huit régions telles que CFRQ les nomme
+ * (`site.regions`, le découpage des agences) et les MRC telles que Google et
+ * les propriétaires les nomment. Une recherche partant de « Chaudière » comme
+ * une recherche partant de « Bellechasse » tombe donc sur la même entreprise.
+ *
+ * Le suffixe « Québec, Canada » reprend la forme utilisée par la fiche
+ * d'établissement Google, pour que les deux déclarations se répondent.
+ */
+export function zonesDesservies(regions: readonly string[]) {
+  const noms = [...new Set([...regions, ...MRC_DESSERVIES])];
+  return noms.map((nom) => ({
+    "@type": "AdministrativeArea",
+    name: `${nom}, Québec, Canada`,
+  }));
+}
