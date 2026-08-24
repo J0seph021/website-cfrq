@@ -13,17 +13,23 @@ import { redirectionsHeritees } from './src/data/redirections-heritees.mjs';
 const SITE_URL = process.env.SITE_URL || 'https://cfrq.ca';
 const SITE_BASE = process.env.SITE_BASE || '/';
 
+// Seule cfrq.ca est de la production. Doit rester aligné sur estProduction()
+// dans src/data/flags.ts.
+const estProduction = SITE_URL === 'https://cfrq.ca';
+
 // L'espace client est terminé mais pas encore ouvert au public. `/espace-client`
-// existe quand même, dans les deux cas : avec PUBLIER_ESPACE_CLIENT=1 l'adresse
+// existe quand même, dans les deux cas : quand le portail est publié l'adresse
 // sert la vraie page de connexion (et le tableau de bord s'ajoute), sinon elle
 // sert la page qui explique ce que sera l'espace client et dit qu'il est en
 // construction. Le code du portail reste dans le dépôt (src/routes-differees/),
 // il n'est simplement pas publié.
-const publierEspaceClient = process.env.PUBLIER_ESPACE_CLIENT === '1';
-
-// Seule cfrq.ca est de la production. Doit rester aligné sur estProduction()
-// dans src/data/flags.ts.
-const estProduction = SITE_URL === 'https://cfrq.ca';
+//
+// La règle : ouvert partout SAUF sur cfrq.ca. La préproduction et le poste
+// local servent à retravailler le portail, ils le montrent donc d'office ;
+// seule la production attend l'ordre explicite PUBLIER_ESPACE_CLIENT=1, donné
+// dans .github/workflows/deploy.yml le jour de l'ouverture au public.
+// Doit rester aligné sur PUBLIER_ESPACE_CLIENT dans src/data/flags.ts.
+const publierEspaceClient = estProduction ? process.env.PUBLIER_ESPACE_CLIENT === '1' : true;
 
 /** Pages volontairement absentes du sitemap : redirections et pages noindex. */
 const horsSitemap = [/\/private-page\//, /\/service-aux-entrepreneurs-en-travaux-sylvicoles\//, /\/espace-client/];

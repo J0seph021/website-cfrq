@@ -11,14 +11,16 @@
 
 import { spawnSync } from 'node:child_process';
 
+// PUBLIER_ESPACE_CLIENT n'est pas repris ici : hors production le portail est
+// ouvert d'office (voir PUBLIER_ESPACE_CLIENT dans src/data/flags.ts). La
+// variable ne sert qu'à la production, où elle vit dans deploy.yml.
 const env = {
   ...process.env,
   SITE_URL: process.env.SITE_URL || 'https://preview.cfrq.ca',
   SITE_BASE: '/',
-  PUBLIER_ESPACE_CLIENT: process.env.PUBLIER_ESPACE_CLIENT || '0',
 };
 
-console.log(`Build de préproduction : ${env.SITE_URL} (espace client : ${env.PUBLIER_ESPACE_CLIENT === '1' ? 'publié' : 'masqué'})\n`);
+console.log(`Build de préproduction : ${env.SITE_URL} (espace client : publié)\n`);
 
 for (const [cmd, args] of [
   ['astro', ['build']],

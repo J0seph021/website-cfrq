@@ -13,11 +13,15 @@ import { join, posix } from 'node:path';
 import { FICHES_PRIVATE_PAGE } from '../src/data/redirections-heritees.mjs';
 
 const DIST = process.argv[2] || 'dist';
-const PUBLIER_ESPACE_CLIENT = process.env.PUBLIER_ESPACE_CLIENT === '1';
 const SITE_URL = process.env.SITE_URL || 'https://cfrq.ca';
 // Un build de preproduction (preview.cfrq.ca) doit etre integralement en
 // noindex : les controles d'indexation s'inversent donc selon la cible.
 const EST_PRODUCTION = SITE_URL === 'https://cfrq.ca';
+// Le portail est ouvert partout sauf sur cfrq.ca, ou il attend
+// PUBLIER_ESPACE_CLIENT=1. Meme regle que `publierEspaceClient` dans
+// astro.config.mjs et PUBLIER_ESPACE_CLIENT dans src/data/flags.ts : si elles
+// divergeaient, ce controle validerait un build qui n'existe pas.
+const PUBLIER_ESPACE_CLIENT = EST_PRODUCTION ? process.env.PUBLIER_ESPACE_CLIENT === '1' : true;
 
 const erreurs = [];
 const avertissements = [];

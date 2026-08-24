@@ -44,18 +44,31 @@ export function analytiqueActive(siteOrigin: string): boolean {
 
 /**
  * L'espace client existe et fonctionne, mais il n'est pas encore ouvert au
- * public : tant que PUBLIER_ESPACE_CLIENT ne vaut pas "1", la connexion et le
- * tableau de bord ne sont pas routés, et /espace-client sert à la place une
- * page qui explique l'espace client et annonce qu'il est en construction.
+ * public : tant que le portail n'est pas publié, la connexion et le tableau de
+ * bord ne sont pas routés, et /espace-client sert à la place une page qui
+ * explique l'espace client et annonce qu'il est en construction.
  *
  * Le bouton « Espace client » du menu et du pied de page, lui, reste toujours
  * visible : il mène à cette page-là avant l'ouverture, à la connexion après.
  * Ce drapeau ne masque donc plus que les sections des pages Accueil et
  * Services qui invitent à « accéder » au portail.
  *
- * Pour le retravailler en local :  PUBLIER_ESPACE_CLIENT=1 npm run dev
- * Pour le voir en préproduction : mettre la variable à "1" dans les variables
- * d'environnement du projet Cloudflare Pages.
- * Pour l'ouvrir au public : la mettre à "1" dans .github/workflows/deploy.yml.
+ * La règle : le portail est ouvert partout SAUF sur cfrq.ca. La préproduction
+ * (preview.cfrq.ca) et le poste local servent justement à le retravailler, ils
+ * le montrent donc d'office, sans réglage à faire dans le tableau de bord
+ * Cloudflare. Seule la production attend l'ordre explicite
+ * PUBLIER_ESPACE_CLIENT=1, donné dans .github/workflows/deploy.yml le jour de
+ * l'ouverture au public.
+ *
+ * Conséquence assumée : la préproduction ne montre plus exactement ce que voit
+ * le public, elle montre le site avec le portail ouvert. Pour contrôler le
+ * rendu public avant une mise en ligne, c'est le build de production qui fait
+ * foi (`npm run verifier` sur un build SITE_URL=https://cfrq.ca).
+ *
+ * Doit rester aligné sur `publierEspaceClient` dans astro.config.mjs, qui
+ * décide du routage, et sur scripts/verifier-build.mjs, qui le contrôle.
  */
-export const PUBLIER_ESPACE_CLIENT = process.env.PUBLIER_ESPACE_CLIENT === "1";
+const SITE_URL_COURANT = process.env.SITE_URL || SITE_PRODUCTION;
+export const PUBLIER_ESPACE_CLIENT = estProduction(SITE_URL_COURANT)
+  ? process.env.PUBLIER_ESPACE_CLIENT === "1"
+  : true;
