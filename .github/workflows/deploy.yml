@@ -36,9 +36,11 @@ jobs:
         env:
           SITE_URL: https://cfrq.ca
           SITE_BASE: /
-          # L'espace client n'est pas encore ouvert au public : ses pages ne
-          # sont pas construites et ses liens n'apparaissent nulle part.
-          # Pour l'ouvrir, passer cette variable à "1".
+          # L'espace client n'est pas encore ouvert au public : la connexion
+          # et le tableau de bord ne sont pas construits, et /espace-client
+          # sert la page qui explique le projet et annonce qu'il est en
+          # construction. Pour l'ouvrir, passer cette variable à "1" : les
+          # boutons du site basculent alors d'eux-mêmes vers la connexion.
           PUBLIER_ESPACE_CLIENT: "0"
       - name: Vérifier le rendu avant publication
         run: node scripts/verifier-build.mjs

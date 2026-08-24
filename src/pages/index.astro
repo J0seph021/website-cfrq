@@ -287,18 +287,27 @@ const btnVert = "inline-flex items-center gap-2 rounded-xl bg-cfrq-green font-bo
       </div>
     </section>
 
-    <!-- 3.7 ESPACE CLIENT, masquée tant que l'espace client n'est pas ouvert au public -->
-    {PUBLIER_ESPACE_CLIENT && (
+    <!-- 3.7 ESPACE CLIENT. Avant l'ouverture du portail, la section annonce le
+         projet et mène à la page qui l'explique ; une fois ouvert, elle invite
+         à s'y connecter. Voir PUBLIER_ESPACE_CLIENT dans data/flags.ts. -->
     <section class="mx-auto max-w-[1160px] px-[22px] pb-5 pt-[84px]">
       <div class="flex flex-wrap items-center justify-between gap-8 rounded-3xl border border-cfrq-green/[.18] p-[clamp(28px,4vw,48px)]" style="background:linear-gradient(140deg,#EAF4E0,#FFFFFF 65%)">
         <div class="flex-1 basis-[420px]">
-          <p class={`${eyebrow} text-cfrq-leaf`}>Espace client</p>
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
+            <p class={`${eyebrow} text-cfrq-leaf`}>Espace client</p>
+            {!PUBLIER_ESPACE_CLIENT && (
+              <span class="inline-flex items-center gap-1.5 rounded-full bg-cfrq-green px-2.5 py-[3px] text-[10.5px] font-bold uppercase tracking-[0.12em] text-[#123005]">
+                <span class="h-[6px] w-[6px] flex-none rounded-full bg-[#123005]" aria-hidden="true"></span>
+                En construction
+              </span>
+            )}
+          </div>
           <h2 class={`mt-3 font-display font-medium text-cfrq-deep text-[clamp(30px,4.5vw,42px)] leading-[1.05] tracking-[-0.015em]`}>Votre boisé, en ligne</h2>
           <p class="mt-4 max-w-[460px] text-[16.5px] leading-relaxed text-cfrq-ink/[.68]">
             Suivez l'avancement de vos projets, retrouvez vos documents et consultez les cartes de votre propriété, en tout temps.
           </p>
           <a href={withBase("/espace-client")} class="mt-6 inline-flex items-center gap-2 rounded-[11px] bg-cfrq-deep px-6 py-3.5 font-semibold text-cfrq-cream transition-colors hover:bg-cfrq-deep-2">
-            Accéder à l'espace client <span aria-hidden="true">→</span>
+            {PUBLIER_ESPACE_CLIENT ? "Accéder à l'espace client" : "Découvrir l'espace client"} <span aria-hidden="true">→</span>
           </a>
         </div>
         <div class="flex-1 basis-[280px] space-y-3">
@@ -314,7 +323,6 @@ const btnVert = "inline-flex items-center gap-2 rounded-xl bg-cfrq-green font-bo
         </div>
       </div>
     </section>
-    )}
 
     <!-- 3.8 REALISATIONS -->
     <section class="mx-auto max-w-[1160px] px-[22px] pb-5 pt-[84px]">
