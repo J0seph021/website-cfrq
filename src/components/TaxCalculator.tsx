@@ -303,8 +303,9 @@ export default function TaxCalculator() {
                 </>
               ) : (
                 <>
-                  Vos travaux couvrent vos taxes au complet. L'excédent de {cad.format(excedent)} n'est
-                  pas perdu : il se reporte sur les années suivantes, jusqu'à dix ans.
+                  Vos travaux couvrent vos taxes au complet. L'excédent de {cad.format(excedent)} se
+                  reporte sur les années suivantes, mais le crédit ne vaut que dix ans : ce qui n'a
+                  pas servi au bout du compte est annulé.
                 </>
               )}
             </p>
