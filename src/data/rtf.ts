@@ -36,8 +36,31 @@ export const ANNEE_GRILLE = 2026;
 /** Part des taxes foncières remboursable, une fois les dépenses au rendez-vous. */
 export const PART_REMBOURSABLE = 0.85;
 
-/** Une dépense excédentaire se reporte sur une période qui n'excède pas dix ans. */
+/**
+ * Report des dépenses excédentaires. Article 4 du règlement, dans sa version
+ * modifiée par L.Q. 2022, c. 3, a. 6 :
+ *
+ *   « Le producteur forestier reconnu qui, au cours d'une année civile donnée
+ *   [...] a réalisé des dépenses pour un montant supérieur à celui des taxes
+ *   foncières payées pendant cette période, peut reporter l'excédent au cours
+ *   des 10 années civiles QUI SUIVENT l'année donnée [...] Les excédents de
+ *   dépenses accumulées sont appliqués selon la règle de leur ancienneté. »
+ *
+ * Deux conséquences qu'il est facile de rater :
+ *
+ *   1. Ce sont dix années APRÈS celle de la dépense. Une dépense de l'année N
+ *      sert donc de l'année N à l'année N + 10, soit onze années civiles.
+ *      Au-delà, le solde est annulé, il ne se reporte pas plus loin.
+ *   2. L'ordre d'application est imposé : du plus ancien au plus récent.
+ */
 export const ANNEES_REPORT = 10;
+
+/**
+ * Horizon affiché par le calculateur. Plus long que le report lui-même, et
+ * volontairement : c'est ce qui permet de placer un traitement dans cinq ans et
+ * de montrer au propriétaire qu'il aura encore des crédits à ce moment-là.
+ */
+export const HORIZON_PROJECTION = 15;
 
 /** Superficie minimale à vocation forestière pour être producteur forestier reconnu. */
 export const SUPERFICIE_MINIMALE_HA = 4;
@@ -304,12 +327,18 @@ export type Projection = {
   totalRemboursement: number;
   totalTaxesNettes: number;
   /**
-   * Dépenses qui ne rapporteront jamais rien : le crédit vaut dix ans, et le
-   * solde qui n'a pas servi au terme du délai est annulé, pas reporté plus loin.
-   * C'est le chiffre qui justifie d'étaler les travaux plutôt que de tout faire
-   * la même année.
+   * Dépenses dont le délai de report s'est éteint pendant la projection : elles
+   * ne rapporteront plus jamais rien. C'est le chiffre qui justifie d'étaler les
+   * travaux plutôt que de tout faire la même année.
    */
   soldeAnnule: number;
+  /**
+   * Dépenses encore en réserve au bout de l'horizon dont le délai n'est PAS
+   * expiré : elles pourraient encore servir après la dernière année affichée.
+   * À ne pas confondre avec `soldeAnnule` : celles-là ne sont pas perdues, on
+   * ne voit simplement pas assez loin.
+   */
+  soldeEnVie: number;
 };
 
 /**
@@ -319,11 +348,15 @@ export type Projection = {
  * d'une année servent d'abord à couvrir les taxes de la même année, le surplus
  * est mis en réserve, et la réserve la plus ancienne est consommée en premier.
  *
- * Le crédit vaut dix ans. Une dépense engagée l'année N sert donc de l'année N
- * à l'année N + 9, et ce qui n'a pas servi au bout du compte est ANNULÉ : il ne
- * se reporte pas au-delà. C'est comptabilisé dans `soldeAnnule` plutôt que
- * silencieusement oublié, parce que c'est précisément ce chiffre qui dit au
- * propriétaire s'il aurait intérêt à étaler ses travaux.
+ * Le report court sur les dix années qui suivent celle de la dépense : une
+ * dépense engagée l'année N sert de l'année N à l'année N + 10, puis son solde
+ * est ANNULÉ. C'est comptabilisé dans `soldeAnnule` plutôt que silencieusement
+ * oublié, parce que c'est précisément ce chiffre qui dit au propriétaire s'il
+ * aurait intérêt à étaler ses travaux.
+ *
+ * L'horizon peut dépasser le délai de report, et c'est voulu : placer un
+ * traitement dans cinq ans et voir qu'il portera encore des crédits à l'année
+ * quinze est l'usage principal de cette projection.
  *
  * @param depensesParAnnee dépenses admissibles engagées à chaque année (index 0 = année 1)
  * @param taxesAnnee1 taxes foncières municipales et scolaires de la première année
@@ -334,7 +367,7 @@ export function projeter(
   depensesParAnnee: number[],
   taxesAnnee1: number,
   indexation: number,
-  horizon: number = ANNEES_REPORT
+  horizon: number = HORIZON_PROJECTION
 ): Projection {
   // Chaque poste de réserve garde son année d'origine : c'est elle qui décide
   // de la péremption, pas l'ordre d'utilisation.
@@ -346,11 +379,11 @@ export function projeter(
     const annee = i + 1;
     const taxes = taxesAnnee1 * Math.pow(1 + indexation, i);
 
-    // Le crédit vaut dix ans : une dépense de l'année N sert de N à N + 9, puis
-    // son solde est annulé. On le sort de la réserve avant de calculer l'année,
-    // sinon on ferait miroiter un report qui n'existe plus.
+    // Le report court sur les dix années QUI SUIVENT celle de la dépense : une
+    // dépense de l'année N sert donc de N à N + 10. On purge avant de calculer
+    // l'année, sinon on ferait miroiter un report qui n'existe plus.
     reserve = reserve.filter((r) => {
-      if (annee - r.annee < ANNEES_REPORT) return true;
+      if (annee - r.annee <= ANNEES_REPORT) return true;
       soldeAnnule += r.montant;
       return false;
     });
@@ -385,9 +418,14 @@ export function projeter(
     });
   }
 
-  // Au terme de l'horizon, ce qui reste en réserve ne servira plus : l'horizon
-  // par défaut est la durée de vie du crédit.
-  soldeAnnule += reserve.reduce((s, r) => s + r.montant, 0);
+  // Au terme de l'horizon, séparer ce qui est mort de ce qu'on ne voit
+  // simplement plus. Une dépense de la dernière année a encore dix ans devant
+  // elle : la déclarer annulée serait un mensonge par cadrage.
+  let soldeEnVie = 0;
+  for (const r of reserve) {
+    if (horizon - r.annee >= ANNEES_REPORT) soldeAnnule += r.montant;
+    else soldeEnVie += r.montant;
+  }
 
   return {
     annees,
@@ -395,5 +433,6 @@ export function projeter(
     totalRemboursement: annees.reduce((s, a) => s + a.remboursement, 0),
     totalTaxesNettes: annees.reduce((s, a) => s + a.taxesNettes, 0),
     soldeAnnule,
+    soldeEnVie,
   };
 }
