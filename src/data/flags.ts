@@ -44,8 +44,14 @@ export function analytiqueActive(siteOrigin: string): boolean {
 
 /**
  * L'espace client existe et fonctionne, mais il n'est pas encore ouvert au
- * public : ses pages ne sont pas routées et ses liens disparaissent du menu et
- * du pied de page tant que PUBLIER_ESPACE_CLIENT ne vaut pas "1".
+ * public : tant que PUBLIER_ESPACE_CLIENT ne vaut pas "1", la connexion et le
+ * tableau de bord ne sont pas routés, et /espace-client sert à la place une
+ * page qui explique l'espace client et annonce qu'il est en construction.
+ *
+ * Le bouton « Espace client » du menu et du pied de page, lui, reste toujours
+ * visible : il mène à cette page-là avant l'ouverture, à la connexion après.
+ * Ce drapeau ne masque donc plus que les sections des pages Accueil et
+ * Services qui invitent à « accéder » au portail.
  *
  * Pour le retravailler en local :  PUBLIER_ESPACE_CLIENT=1 npm run dev
  * Pour le voir en préproduction : mettre la variable à "1" dans les variables

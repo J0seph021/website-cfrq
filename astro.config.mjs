@@ -13,9 +13,12 @@ import { redirectionsHeritees } from './src/data/redirections-heritees.mjs';
 const SITE_URL = process.env.SITE_URL || 'https://cfrq.ca';
 const SITE_BASE = process.env.SITE_BASE || '/';
 
-// L'espace client est terminé mais pas encore ouvert au public : ses routes ne
-// sont injectées que si PUBLIER_ESPACE_CLIENT=1. Le code reste dans le dépôt
-// (src/routes-differees/), il n'est simplement pas publié.
+// L'espace client est terminé mais pas encore ouvert au public. `/espace-client`
+// existe quand même, dans les deux cas : avec PUBLIER_ESPACE_CLIENT=1 l'adresse
+// sert la vraie page de connexion (et le tableau de bord s'ajoute), sinon elle
+// sert la page qui explique ce que sera l'espace client et dit qu'il est en
+// construction. Le code du portail reste dans le dépôt (src/routes-differees/),
+// il n'est simplement pas publié.
 const publierEspaceClient = process.env.PUBLIER_ESPACE_CLIENT === '1';
 
 // Seule cfrq.ca est de la production. Doit rester aligné sur estProduction()
@@ -67,7 +70,12 @@ export default defineConfig({
       name: 'cfrq-routes-differees',
       hooks: {
         'astro:config:setup': ({ injectRoute }) => {
-          if (!publierEspaceClient) return;
+          if (!publierEspaceClient) {
+            // Portail fermé : l'adresse reste vivante, mais elle explique le
+            // projet au lieu d'offrir une connexion qui ne mènerait nulle part.
+            injectRoute({ pattern: '/espace-client', entrypoint: './src/routes-differees/espace-client/a-venir.astro' });
+            return;
+          }
           injectRoute({ pattern: '/espace-client', entrypoint: './src/routes-differees/espace-client/index.astro' });
           injectRoute({
             pattern: '/espace-client/tableau-de-bord',

@@ -2,7 +2,7 @@
 //
 // Ce script est le garde-fou de la mise en ligne : il échoue (code 1) si une
 // URL de l'ancien site WordPress tombe en 404, si un lien interne est cassé, si
-// l'espace client se retrouve publié par accident, ou s'il manque une balise
+// le portail client se retrouve publié par accident, ou s'il manque une balise
 // indispensable au référencement. Il tourne dans la CI (voir deploy.yml) juste
 // avant l'envoi vers GitHub Pages.
 //
@@ -98,18 +98,31 @@ for (const [url, html] of pages) {
   }
 }
 
-// --- 3. L'espace client ne doit pas fuiter ---------------------------------
+// --- 3. L'espace client : la vitrine oui, le portail non -------------------
+// Tant que PUBLIER_ESPACE_CLIENT ne vaut pas 1, /espace-client/ doit exister
+// mais servir uniquement la page « en construction » : ni page de connexion,
+// ni tableau de bord, ni lien vers eux.
 
-const fuites = [...pages.keys()].filter((u) => u.startsWith('/espace-client'));
+const pagesEspace = [...pages.keys()].filter((u) => u.startsWith('/espace-client'));
 if (!PUBLIER_ESPACE_CLIENT) {
-  for (const u of fuites) echec(`L'espace client n'est pas censé être publié, or ${u} est dans le build.`);
+  const vitrine = pages.get('/espace-client/');
+  if (!vitrine) {
+    echec("/espace-client/ est absente du build : le bouton « Espace client » du menu tomberait en 404.");
+  } else if (!/En construction/i.test(vitrine)) {
+    echec("/espace-client/ ne dit plus que l'espace client est en construction : le portail a-t-il pris sa place ?");
+  }
+  for (const u of pagesEspace.filter((u) => u !== '/espace-client/')) {
+    echec(`Le portail n'est pas censé être publié, or ${u} est dans le build.`);
+  }
   for (const [url, html] of pages) {
-    if (/href="[^"]*\/espace-client/.test(html)) {
-      echec(`${url} contient encore un lien vers l'espace client non publié.`);
+    if (/href="[^"]*\/espace-client\/tableau-de-bord/.test(html)) {
+      echec(`${url} contient un lien vers le tableau de bord, qui n'est pas publié.`);
     }
   }
-} else if (fuites.length === 0) {
-  echec("PUBLIER_ESPACE_CLIENT=1 mais aucune page /espace-client/ n'a été construite.");
+} else {
+  for (const u of ['/espace-client/', '/espace-client/tableau-de-bord/']) {
+    if (!pages.has(u)) echec(`PUBLIER_ESPACE_CLIENT=1 mais ${u} n'a pas été construite.`);
+  }
 }
 
 // --- 4. Fichiers indispensables à la mise en ligne -------------------------

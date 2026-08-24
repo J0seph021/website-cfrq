@@ -2,7 +2,7 @@
 import Logo from "./Logo.astro";
 import { withBase } from "../lib/url";
 import { site } from "../data/site";
-import { PUBLIER_ESPACE_CLIENT, analytiqueActive } from "../data/flags";
+import { analytiqueActive } from "../data/flags";
 
 // Le bouton de préférences n'a de sens que si un bandeau existe pour l'ouvrir.
 const mesureActive = analytiqueActive((Astro.site ?? new URL("https://cfrq.ca")).origin);
@@ -19,8 +19,9 @@ const explorer = [
   { label: "Territoire desservi", href: "/territoire-desservi" },
   { label: "Notre équipe", href: "/notre-equipe" },
   { label: "Demande de plants", href: "/demande-des-plants-non-subventionnes" },
-  // L'espace client n'apparaît qu'une fois ouvert au public (voir data/flags.ts).
-  ...(PUBLIER_ESPACE_CLIENT ? [{ label: "Espace client", href: "/espace-client" }] : []),
+  // Avant l'ouverture du portail, ce lien mène à la page qui explique l'espace
+  // client et annonce qu'il est en construction (routage dans astro.config.mjs).
+  { label: "Espace client", href: "/espace-client" },
 ];
 const regions = [
   "Québec",

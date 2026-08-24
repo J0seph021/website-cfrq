@@ -2,7 +2,7 @@
 //
 // Le script verifier-build.mjs contrôle le dossier `dist` avant publication.
 // Celui-ci contrôle ce que voit un visiteur : redirections effectives, codes
-// HTTP, certificat, sitemap servi, espace client bien inaccessible.
+// HTTP, certificat, sitemap servi, portail client bien fermé.
 //
 // Usage : node scripts/verifier-en-ligne.mjs [https://cfrq.ca]
 
@@ -95,10 +95,25 @@ for (const c of ['/services', '/amenagement', '/notre-equipe', '/contact', '/era
   } else ligne('ok', r.code, c, `→ ${r.final}`);
 }
 
-// --- 3. L'espace client doit rester fermé ----------------------------------
+// --- 3. L'espace client : la vitrine en ligne, le portail fermé ------------
+// /espace-client/ doit répondre : c'est la page qui explique l'espace client et
+// annonce qu'il est en construction, celle où mène le bouton du menu. Le
+// tableau de bord, lui, ne doit pas être joignable.
 
-console.log('\n=== ESPACE CLIENT (doit être introuvable) ===');
-for (const c of ['/espace-client/', '/espace-client/tableau-de-bord/']) {
+console.log('\n=== ESPACE CLIENT ===');
+const vitrine = await fetch(BASE + '/espace-client/', { redirect: 'manual' });
+const vitrineTexte = vitrine.status === 200 ? await vitrine.text() : '';
+if (vitrine.status !== 200) {
+  echec(`/espace-client/ répond ${vitrine.status} : le bouton « Espace client » du menu tombe dans le vide.`);
+  ligne('XX', vitrine.status, '/espace-client/', 'MANQUANTE');
+} else if (!/En construction/i.test(vitrineTexte)) {
+  echec("/espace-client/ ne dit plus que l'espace client est en construction : le portail est-il ouvert par erreur ?");
+  ligne('XX', vitrine.status, '/espace-client/', 'CONTENU INATTENDU');
+} else {
+  ligne('ok', vitrine.status, '/espace-client/', 'page « en construction », conforme');
+}
+
+for (const c of ['/espace-client/tableau-de-bord/']) {
   const r = await fetch(BASE + c, { redirect: 'manual' });
   if (r.status === 200) {
     echec(`${c} est accessible en ligne alors qu'il ne doit pas être publié.`);
