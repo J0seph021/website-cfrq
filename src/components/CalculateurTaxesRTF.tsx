@@ -4,6 +4,7 @@ import { withBase, withBaseAsset } from "../lib/url";
 import {
   ANNEE_GRILLE,
   ANNEES_REPORT,
+  HORIZON_PROJECTION,
   GROUPES,
   LIBELLE_QUANTITE,
   MAJORATION_FORET_FAUNE,
@@ -38,6 +39,10 @@ export default function CalculateurTaxesRTF() {
   const [foretFaune, setForetFaune] = useState(false);
   const [surFacture, setSurFacture] = useState(false);
   const [quantites, setQuantites] = useState<Record<string, number>>({});
+  // Annee de realisation de chaque traitement, 1 = cette annee. C'est ce qui
+  // permet de dire « ce traitement-la, on le fait dans cinq ans » et de montrer
+  // au proprietaire qu'il aura encore des credits a ce moment-la.
+  const [anneesTravaux, setAnneesTravaux] = useState<Record<string, number>>({});
 
   // Identification, pour que le rapport imprimé serve tel quel au dossier client.
   const [proprietaire, setProprietaire] = useState("");
@@ -51,6 +56,13 @@ export default function CalculateurTaxesRTF() {
 
   function poser(id: string, valeur: number) {
     setQuantites((prev) => ({ ...prev, [id]: valeur }));
+  }
+
+  const anneeDe = (id: string) => anneesTravaux[id] || 1;
+
+  function poserAnnee(id: string, valeur: number) {
+    const borne = Math.min(HORIZON_PROJECTION, Math.max(1, Math.round(valeur) || 1));
+    setAnneesTravaux((prev) => ({ ...prev, [id]: borne }));
   }
 
   /**
@@ -80,25 +92,29 @@ export default function CalculateurTaxesRTF() {
             groupeId: g.id,
             taux: t,
             quantite: quantites[t.id],
+            annee: anneeDe(t.id),
             montant: valeurLigne(t.id, quantites[t.id]),
           }))
       ),
-    [quantites, surFacture, foretFaune]
+    [quantites, anneesTravaux, surFacture, foretFaune]
   );
 
   const depenses = useMemo(() => lignes.reduce((s, l) => s + l.montant, 0), [lignes]);
 
   const projection = useMemo(() => {
-    // Les travaux retenus sont portés à l'année 1 ; les années suivantes vivent
-    // sur le report. C'est le scénario qui répond à la vraie question du
-    // propriétaire : « pendant combien d'années mes travaux paient-ils mes taxes ? »
-    const parAnnee = Array(ANNEES_REPORT).fill(0);
-    parAnnee[0] = depenses;
-    return projeter(parAnnee, taxesTotales, indexation / 100, ANNEES_REPORT);
-  }, [depenses, taxesTotales, indexation]);
+    // Chaque traitement tombe dans l'annee ou on prevoit le faire, et y ouvre
+    // son propre delai de report. Un traitement place a l'annee 5 porte donc
+    // des credits jusqu'a l'annee 15.
+    const parAnnee = Array(HORIZON_PROJECTION).fill(0);
+    for (const l of lignes) parAnnee[l.annee - 1] += l.montant;
+    return projeter(parAnnee, taxesTotales, indexation / 100, HORIZON_PROJECTION);
+  }, [lignes, taxesTotales, indexation]);
 
   const an1 = projection.annees[0];
   const anneesCouvertes = projection.annees.filter((a) => a.remboursement > 0.5).length;
+  // Les travaux peuvent tous etre reportes : dans ce cas l'annee 1 ne raconte
+  // rien, et c'est la premiere annee qui rapporte qu'il faut nommer.
+  const premiere = projection.annees.find((a) => a.remboursement > 0.5);
   const groupesUtilises = GROUPES.filter((g) => lignes.some((l) => l.groupeId === g.id));
 
   const aujourdhui = new Date().toLocaleDateString("fr-CA", {
@@ -272,6 +288,24 @@ export default function CalculateurTaxesRTF() {
                                 {t.surFacture && " · factures à l'appui possibles"}
                                 {t.note && ` · ${t.note}`}
                               </span>
+                              {q > 0 && (
+                                <label className="mt-1.5 flex items-center gap-1.5 text-[12px] text-cfrq-ink/70">
+                                  <span>Réalisé à l'année</span>
+                                  <input
+                                    type="number"
+                                    min={1}
+                                    max={HORIZON_PROJECTION}
+                                    step={1}
+                                    value={anneeDe(t.id)}
+                                    onChange={(e) => poserAnnee(t.id, Number(e.target.value))}
+                                    className="h-7 w-[52px] rounded-md border border-black/15 bg-white px-1.5 text-right text-[13px] outline-none focus:border-cfrq-green"
+                                    aria-label={`${t.nom} : année de réalisation`}
+                                  />
+                                  <span className="text-cfrq-ink/45">
+                                    {anneeDe(t.id) === 1 ? "cette année" : `dans ${anneeDe(t.id) - 1} ans`}
+                                  </span>
+                                </label>
+                              )}
                             </span>
                             <span className="mt-1 w-[86px] shrink-0 text-right text-[13.5px] font-medium text-cfrq-deep">
                               {montant > 0 ? cad.format(montant) : "—"}
@@ -385,13 +419,17 @@ export default function CalculateurTaxesRTF() {
         {/* --- Le chiffre qui compte --- */}
         <div className="mt-6 grid grid-cols-2 gap-3">
           <div className="rounded-xl bg-cfrq-tint p-4">
-            <div className="text-[12.5px] text-cfrq-leaf">Remboursement, année 1</div>
+            <div className="text-[12.5px] text-cfrq-leaf">
+              {premiere && premiere.annee > 1
+                ? `Premier remboursement, année ${premiere.annee}`
+                : "Remboursement, année 1"}
+            </div>
             <div className="mt-1 text-[28px] font-medium leading-none text-cfrq-deep">
-              {cad.format(an1?.remboursement ?? 0)}
+              {cad.format(premiere?.remboursement ?? an1?.remboursement ?? 0)}
             </div>
           </div>
           <div className="rounded-xl bg-cfrq-tint p-4">
-            <div className="text-[12.5px] text-cfrq-leaf">Sur {ANNEES_REPORT} ans</div>
+            <div className="text-[12.5px] text-cfrq-leaf">Sur {HORIZON_PROJECTION} ans</div>
             <div className="mt-1 text-[28px] font-medium leading-none text-cfrq-deep">
               {cad.format(projection.totalRemboursement)}
             </div>
@@ -408,25 +446,46 @@ export default function CalculateurTaxesRTF() {
           <p className="mt-4 text-[14px] leading-relaxed text-cfrq-deep">
             Les travaux retenus valent{" "}
             <strong className="font-medium">{cad.format(depenses)}</strong> de dépenses admissibles.
-            Vos taxes de l'année étant de {cad.format(taxesTotales)}, vous en utilisez{" "}
-            {cad.format(an1.utilise)} tout de suite et reportez {cad.format(an1.reporte)}.
-            {anneesCouvertes > 1 ? (
+            {an1.utilise > 0.5 ? (
               <>
-                {" "}Ces travaux couvrent une partie de vos taxes pendant{" "}
-                <strong className="font-medium">{anneesCouvertes} années</strong>.
+                {" "}Vos taxes de l'année étant de {cad.format(taxesTotales)}, vous en utilisez{" "}
+                {cad.format(an1.utilise)} tout de suite et reportez {cad.format(an1.reporte)}.
+              </>
+            ) : premiere ? (
+              <>
+                {" "}Comme ils sont prévus plus tard, le premier remboursement tombe à l'
+                <strong className="font-medium">année {premiere.annee}</strong>, soit dans{" "}
+                {premiere.annee - 1} ans. D'ici là, vos taxes restent à votre charge.
               </>
             ) : (
-              <> Ces travaux couvrent vos taxes pour l'année en cours.</>
+              <> Ils ne génèrent aucun remboursement dans l'horizon projeté.</>
             )}
+            {anneesCouvertes > 1 ? (
+              <>
+                {" "}Ils couvrent ensuite une partie de vos taxes pendant{" "}
+                <strong className="font-medium">{anneesCouvertes} années</strong>
+                {premiere && `, de l'année ${premiere.annee} à l'année ${premiere.annee + anneesCouvertes - 1}`}.
+              </>
+            ) : anneesCouvertes === 1 ? (
+              <> Ils couvrent vos taxes pour une année.</>
+            ) : null}
             {projection.soldeAnnule > 0.5 && (
               <>
                 {" "}Attention :{" "}
                 <strong className="font-medium">{cad.format(projection.soldeAnnule)}</strong> de
-                dépenses ne serviraient jamais. Le crédit vaut {ANNEES_REPORT} ans, et le solde qui
-                n'a pas été utilisé au terme du délai est annulé, pas reporté plus loin. Sur la
-                période, vos taxes ne peuvent absorber que {cad.format(projection.totalTaxes)} de
-                dépenses : étaler les travaux sur plusieurs années, pour que chacune ouvre son propre
-                délai de {ANNEES_REPORT} ans, en sauverait une partie.
+                dépenses ne serviraient jamais. Une dépense se reporte sur les {ANNEES_REPORT} années
+                qui suivent celle où elle est engagée, puis son solde est annulé : elle ne peut donc
+                être absorbée que par les taxes de sa propre fenêtre. Ici, vos taxes en absorbent{" "}
+                {cad.format(projection.totalRemboursement / PART_REMBOURSABLE)} sur les{" "}
+                {cad.format(depenses)} engagés. Repousser une partie des travaux de quelques années,
+                pour que chacun ouvre son propre délai, en sauverait une partie.
+              </>
+            )}
+            {projection.soldeEnVie > 0.5 && (
+              <>
+                {" "}Il resterait {cad.format(projection.soldeEnVie)} de dépenses encore réclamables
+                après l'année {HORIZON_PROJECTION} : leur délai de report n'est pas expiré, elles
+                continueraient simplement au-delà de ce tableau.
               </>
             )}
           </p>
@@ -441,6 +500,7 @@ export default function CalculateurTaxesRTF() {
                 <thead>
                   <tr className="border-b border-black/15 text-left text-cfrq-ink/60">
                     <th className="py-1.5 pr-2 font-medium">Traitement</th>
+                    <th className="py-1.5 px-2 text-right font-medium">Année</th>
                     <th className="py-1.5 px-2 text-right font-medium">Quantité</th>
                     <th className="py-1.5 px-2 text-right font-medium">Taux</th>
                     <th className="py-1.5 pl-2 text-right font-medium">Dépense</th>
@@ -452,6 +512,12 @@ export default function CalculateurTaxesRTF() {
                       <td className="py-1.5 pr-2 text-cfrq-deep">
                         {l.taux.nom}
                         <span className="block text-[11.5px] text-cfrq-ink/50">{l.groupe}</span>
+                      </td>
+                      <td className="py-1.5 px-2 text-right whitespace-nowrap text-cfrq-deep">
+                        {l.annee}
+                        <span className="block text-[11.5px] text-cfrq-ink/50">
+                          {l.annee === 1 ? "cette année" : `dans ${l.annee - 1} ans`}
+                        </span>
                       </td>
                       <td className="py-1.5 px-2 text-right whitespace-nowrap text-cfrq-deep">
                         {nombre.format(l.quantite)} {LIBELLE_QUANTITE[l.taux.unite]}
@@ -467,7 +533,7 @@ export default function CalculateurTaxesRTF() {
                 </tbody>
                 <tfoot>
                   <tr>
-                    <td colSpan={3} className="py-2 pr-2 text-right font-medium text-cfrq-deep">
+                    <td colSpan={4} className="py-2 pr-2 text-right font-medium text-cfrq-deep">
                       Dépenses admissibles
                     </td>
                     <td className="py-2 pl-2 text-right text-[15px] font-medium text-cfrq-deep">
@@ -495,11 +561,12 @@ export default function CalculateurTaxesRTF() {
         {/* --- Projection --- */}
         <section className="mt-7">
           <h4 className="text-[15px] font-medium text-cfrq-deep">
-            Vos taxes sur {ANNEES_REPORT} ans
+            Vos taxes sur {HORIZON_PROJECTION} ans
           </h4>
           <p className="mt-1 text-[12.5px] leading-relaxed text-cfrq-ink/65">
-            Les travaux sont portés à l'année 1 ; les années suivantes vivent sur le report. Taxes
-            indexées de {nombre.format(indexation)} % par année.
+            Chaque traitement tombe dans l'année où vous prévoyez le faire et y ouvre son propre
+            délai de report de {ANNEES_REPORT} ans. Taxes indexées de {nombre.format(indexation)} %
+            par année.
           </p>
           <div className="mt-2 overflow-x-auto">
             <table className="w-full border-collapse text-[12.5px]">
@@ -546,10 +613,20 @@ export default function CalculateurTaxesRTF() {
                 {projection.soldeAnnule > 0.5 && (
                   <tr className="text-cfrq-ink/70">
                     <td colSpan={3} className="py-1.5 pr-2">
-                      Solde annulé au terme des {ANNEES_REPORT} ans
+                      Solde annulé, délai de report expiré
                     </td>
                     <td colSpan={3} className="py-1.5 pl-2 text-right whitespace-nowrap font-medium">
                       {cad.format(projection.soldeAnnule)} de dépenses jamais utilisées
+                    </td>
+                  </tr>
+                )}
+                {projection.soldeEnVie > 0.5 && (
+                  <tr className="text-cfrq-ink/70">
+                    <td colSpan={3} className="py-1.5 pr-2">
+                      Encore réclamable après l'année {HORIZON_PROJECTION}
+                    </td>
+                    <td colSpan={3} className="py-1.5 pl-2 text-right whitespace-nowrap font-medium">
+                      {cad.format(projection.soldeEnVie)} de dépenses toujours vivantes
                     </td>
                   </tr>
                 )}
@@ -576,13 +653,13 @@ export default function CalculateurTaxesRTF() {
           </p>
           <p className="mt-2 text-[13px] leading-relaxed text-cfrq-ink/80">
             Si les dépenses d'une année dépassent les taxes de cette même année, l'excédent n'est pas
-            perdu tout de suite : il se reporte pour obtenir un remboursement à l'intérieur d'une
-            période qui n'excède pas {ANNEES_REPORT} ans. Le crédit a toutefois une fin : au terme de
-            ces {ANNEES_REPORT} ans, le solde qui n'a pas servi est annulé. C'est pourquoi il vaut
-            souvent mieux étaler les travaux sur plusieurs années que de tout concentrer sur une
-            seule. Depuis le 1<sup>er</sup> janvier 2022, le producteur peut aussi demander un
-            remboursement même si la valeur des travaux de l'année est inférieure au montant des
-            taxes.
+            perdu tout de suite : le producteur peut le reporter sur les {ANNEES_REPORT} années
+            civiles qui suivent l'année où la dépense a été engagée, les plus anciennes s'appliquant
+            en premier. Le crédit a toutefois une fin : passé ce délai, le solde qui n'a pas servi est
+            annulé. C'est pourquoi il vaut souvent mieux étaler les travaux sur plusieurs années que
+            de tout concentrer sur une seule, chaque année de travaux ouvrant son propre délai. Depuis
+            le 1<sup>er</sup> janvier 2022, le producteur peut aussi demander un remboursement même si
+            la valeur des travaux de l'année est inférieure au montant des taxes.
           </p>
           <p className="mt-2 text-[13px] leading-relaxed text-cfrq-ink/80">
             La demande se fait à Revenu Québec, dans la déclaration de revenus : partie C de l'annexe E
