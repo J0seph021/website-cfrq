@@ -49,7 +49,7 @@ site. Quatre verrous, tous automatiques, tous vérifiés par `npm run verifier` 
    compris, et y injecte un `User-agent: * / Allow: /` **avant** le nôtre. À
    longueur de chemin égale le moins restrictif gagne, donc ce `Disallow: /` est
    neutralisé tant que l'option est active. *Elle a été désactivée le
-   2026-08-18, ce verrou fonctionne donc à nouveau* — mais il suffirait de la
+   2026-08-18, ce verrou fonctionne donc à nouveau*, mais il suffirait de la
    réactiver pour le neutraliser sans avertissement, d'où le verrou n° 1, qu'aucun
    `robots.txt` ne peut annuler.
 4. **Aucune mesure d'audience** : GTM et le bandeau de consentement ne se
@@ -181,7 +181,7 @@ ajouter son adresse dans la politique avec *Include → E-mails*.
 Chemin dans l'interface : **Cloudflare One → Contrôles Access → Applications →
 Créer une nouvelle application → Auto-hébergée et privée → DNS public**.
 
-1. **Destinations, noms d'hôte publics** — deux lignes :
+1. **Destinations, noms d'hôte publics**, deux lignes :
    - sous-domaine `preview`, domaine `cfrq.ca`
    - sous-domaine **vide**, domaine `cfrq-preprod.pages.dev`
 

@@ -308,7 +308,7 @@ export default function CalculateurTaxesRTF() {
                               )}
                             </span>
                             <span className="mt-1 w-[86px] shrink-0 text-right text-[13.5px] font-medium text-cfrq-deep">
-                              {montant > 0 ? cad.format(montant) : "—"}
+                              {montant > 0 ? cad.format(montant) : ""}
                             </span>
                           </div>
                         );
