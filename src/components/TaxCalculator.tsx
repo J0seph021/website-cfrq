@@ -95,7 +95,7 @@ export default function TaxCalculator() {
       if (pafCoche) d["Plan d'aménagement forestier"] = cad.format(paf.total);
       for (const t of TRAVAUX_RAPIDES) {
         const q = quantites[t.id] || 0;
-        if (q > 0) d[t.libelle] = `${q} ${t.quantite} — ${cad.format(q * TAUX_PAR_ID[t.id].total)}`;
+        if (q > 0) d[t.libelle] = `${q} ${t.quantite}, ${cad.format(q * TAUX_PAR_ID[t.id].total)}`;
       }
       d["Dépenses admissibles saisies"] = cad.format(depenses);
       d["Remboursement estimé"] = cad.format(rembourse);
@@ -250,7 +250,7 @@ export default function TaxCalculator() {
                         aria-label={`${t.libelle}, en ${t.quantite}`}
                       />
                       <span className="mt-1 flex-1">
-                        {t.quantite} — {t.libelle}
+                        {t.quantite} · {t.libelle}
                         <span className="block text-[12.5px] text-cfrq-ink/60">
                           {cad.format(taux.total)}{taux.unite.replace("$", "")}
                         </span>
