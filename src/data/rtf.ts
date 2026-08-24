@@ -304,13 +304,12 @@ export type Projection = {
   totalRemboursement: number;
   totalTaxesNettes: number;
   /**
-   * Dépenses encore en réserve à la fin de l'horizon. Elles ne sont pas perdues
-   * pour autant : elles restent réclamables jusqu'à l'échéance de leur propre
-   * délai de report. Mais elles n'ont encore rien rapporté.
+   * Dépenses qui ne rapporteront jamais rien : le crédit vaut dix ans, et le
+   * solde qui n'a pas servi au terme du délai est annulé, pas reporté plus loin.
+   * C'est le chiffre qui justifie d'étaler les travaux plutôt que de tout faire
+   * la même année.
    */
-  reserveFinale: number;
-  /** Dépenses périmées en cours de route, faute d'avoir servi dans le délai. */
-  perdu: number;
+  soldeAnnule: number;
 };
 
 /**
@@ -319,8 +318,12 @@ export type Projection = {
  * Le modèle suit le règlement au plus près sans le caricaturer : les dépenses
  * d'une année servent d'abord à couvrir les taxes de la même année, le surplus
  * est mis en réserve, et la réserve la plus ancienne est consommée en premier.
- * Une dépense qui n'a pas trouvé preneur dans le délai de report est perdue et
- * comptabilisée comme telle, plutôt que silencieusement oubliée.
+ *
+ * Le crédit vaut dix ans. Une dépense engagée l'année N sert donc de l'année N
+ * à l'année N + 9, et ce qui n'a pas servi au bout du compte est ANNULÉ : il ne
+ * se reporte pas au-delà. C'est comptabilisé dans `soldeAnnule` plutôt que
+ * silencieusement oublié, parce que c'est précisément ce chiffre qui dit au
+ * propriétaire s'il aurait intérêt à étaler ses travaux.
  *
  * @param depensesParAnnee dépenses admissibles engagées à chaque année (index 0 = année 1)
  * @param taxesAnnee1 taxes foncières municipales et scolaires de la première année
@@ -337,18 +340,18 @@ export function projeter(
   // de la péremption, pas l'ordre d'utilisation.
   let reserve: { annee: number; montant: number }[] = [];
   const annees: AnneeProjection[] = [];
-  let perdu = 0;
+  let soldeAnnule = 0;
 
   for (let i = 0; i < horizon; i++) {
     const annee = i + 1;
     const taxes = taxesAnnee1 * Math.pow(1 + indexation, i);
 
-    // Une dépense de l'année N reste réclamable jusqu'à l'année N + 10. Passé
-    // ce délai, elle sort de la réserve : on la comptabilise comme perdue
-    // plutôt que de la laisser gonfler un report qui n'existe plus.
+    // Le crédit vaut dix ans : une dépense de l'année N sert de N à N + 9, puis
+    // son solde est annulé. On le sort de la réserve avant de calculer l'année,
+    // sinon on ferait miroiter un report qui n'existe plus.
     reserve = reserve.filter((r) => {
-      if (annee - r.annee <= ANNEES_REPORT) return true;
-      perdu += r.montant;
+      if (annee - r.annee < ANNEES_REPORT) return true;
+      soldeAnnule += r.montant;
       return false;
     });
 
@@ -382,12 +385,15 @@ export function projeter(
     });
   }
 
+  // Au terme de l'horizon, ce qui reste en réserve ne servira plus : l'horizon
+  // par défaut est la durée de vie du crédit.
+  soldeAnnule += reserve.reduce((s, r) => s + r.montant, 0);
+
   return {
     annees,
     totalTaxes: annees.reduce((s, a) => s + a.taxes, 0),
     totalRemboursement: annees.reduce((s, a) => s + a.remboursement, 0),
     totalTaxesNettes: annees.reduce((s, a) => s + a.taxesNettes, 0),
-    reserveFinale: reserve.reduce((s, r) => s + r.montant, 0),
-    perdu,
+    soldeAnnule,
   };
 }

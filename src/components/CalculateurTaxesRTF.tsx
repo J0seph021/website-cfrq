@@ -418,12 +418,15 @@ export default function CalculateurTaxesRTF() {
             ) : (
               <> Ces travaux couvrent vos taxes pour l'année en cours.</>
             )}
-            {projection.reserveFinale > 0.5 && (
+            {projection.soldeAnnule > 0.5 && (
               <>
-                {" "}Au bout de {ANNEES_REPORT} ans, il resterait{" "}
-                <strong className="font-medium">{cad.format(projection.reserveFinale)}</strong> de
-                dépenses jamais utilisées : vos travaux dépassent ce que vos taxes permettent d'aller
-                chercher. Les étaler sur plusieurs années en récupérerait davantage.
+                {" "}Attention :{" "}
+                <strong className="font-medium">{cad.format(projection.soldeAnnule)}</strong> de
+                dépenses ne serviraient jamais. Le crédit vaut {ANNEES_REPORT} ans, et le solde qui
+                n'a pas été utilisé au terme du délai est annulé, pas reporté plus loin. Sur la
+                période, vos taxes ne peuvent absorber que {cad.format(projection.totalTaxes)} de
+                dépenses : étaler les travaux sur plusieurs années, pour que chacune ouvre son propre
+                délai de {ANNEES_REPORT} ans, en sauverait une partie.
               </>
             )}
           </p>
@@ -540,6 +543,16 @@ export default function CalculateurTaxesRTF() {
                   </td>
                   <td className="py-2 pl-2" />
                 </tr>
+                {projection.soldeAnnule > 0.5 && (
+                  <tr className="text-cfrq-ink/70">
+                    <td colSpan={3} className="py-1.5 pr-2">
+                      Solde annulé au terme des {ANNEES_REPORT} ans
+                    </td>
+                    <td colSpan={3} className="py-1.5 pl-2 text-right whitespace-nowrap font-medium">
+                      {cad.format(projection.soldeAnnule)} de dépenses jamais utilisées
+                    </td>
+                  </tr>
+                )}
               </tfoot>
             </table>
           </div>
@@ -563,10 +576,13 @@ export default function CalculateurTaxesRTF() {
           </p>
           <p className="mt-2 text-[13px] leading-relaxed text-cfrq-ink/80">
             Si les dépenses d'une année dépassent les taxes de cette même année, l'excédent n'est pas
-            perdu : il se reporte pour obtenir un remboursement à l'intérieur d'une période qui
-            n'excède pas {ANNEES_REPORT} ans. Depuis le 1<sup>er</sup> janvier 2022, le producteur peut
-            aussi demander un remboursement même si la valeur des travaux de l'année est inférieure au
-            montant des taxes.
+            perdu tout de suite : il se reporte pour obtenir un remboursement à l'intérieur d'une
+            période qui n'excède pas {ANNEES_REPORT} ans. Le crédit a toutefois une fin : au terme de
+            ces {ANNEES_REPORT} ans, le solde qui n'a pas servi est annulé. C'est pourquoi il vaut
+            souvent mieux étaler les travaux sur plusieurs années que de tout concentrer sur une
+            seule. Depuis le 1<sup>er</sup> janvier 2022, le producteur peut aussi demander un
+            remboursement même si la valeur des travaux de l'année est inférieure au montant des
+            taxes.
           </p>
           <p className="mt-2 text-[13px] leading-relaxed text-cfrq-ink/80">
             La demande se fait à Revenu Québec, dans la déclaration de revenus : partie C de l'annexe E
