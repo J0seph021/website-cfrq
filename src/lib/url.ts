@@ -11,3 +11,15 @@ export function withBase(path = "/"): string {
   if (!p.endsWith("/")) p += "/";
   return `${base}${p}` || "/";
 }
+
+/**
+ * Même chose pour un fichier de `public/` (image, PDF), mais SANS slash final :
+ * une image n'est pas une page. `withBase` en ajouterait un et le fichier
+ * deviendrait introuvable, ce que `verifier-build.mjs` signale comme un lien
+ * interne cassé.
+ */
+export function withBaseAsset(path: string): string {
+  const base = RAW.replace(/\/$/, "");
+  const p = path.startsWith("/") ? path : `/${path}`;
+  return `${base}${p}`;
+}

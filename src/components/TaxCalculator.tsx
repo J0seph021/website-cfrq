@@ -1,11 +1,41 @@
 import { useMemo, useState } from "react";
 import { site } from "../data/site";
+import { withBase } from "../lib/url";
+import { ANNEE_GRILLE, PART_REMBOURSABLE, TAUX_PAR_ID, palierPAF } from "../data/rtf";
 
 const cad = new Intl.NumberFormat("fr-CA", {
   style: "currency",
   currency: "CAD",
   maximumFractionDigits: 0,
 });
+
+// « Faites vos calculs » : quatre travaux, pas quarante. Ce sont ceux qu'un
+// propriétaire reconnaît sans être ingénieur forestier et qui reviennent le
+// plus souvent dans nos dossiers. Le catalogue complet de la grille vit sur
+// /calculateur-taxes-foncieres, pour qui veut aller au fond.
+//
+// Le PAF n'est pas dans cette liste : son taux dépend de la superficie, il est
+// donc calculé à part, à partir du curseur.
+const TRAVAUX_RAPIDES = [
+  {
+    id: "chemin-construction",
+    libelle: "Construction de chemin d'accès",
+    quantite: "km",
+    pas: 0.1,
+  },
+  {
+    id: "jard-feuillus-man",
+    libelle: "Coupe de jardinage (feuillus d'ombre, manuel)",
+    quantite: "ha",
+    pas: 1,
+  },
+  {
+    id: "ec1-sepm-mec-15-19",
+    libelle: "1re éclaircie commerciale résineuse mécanisée, DHP 15,1 à 19 cm",
+    quantite: "ha",
+    pas: 1,
+  },
+] as const;
 
 // Endpoint de capture des leads (Edge Function du projet PlaniLogix). La fonction
 // ecrit dans planilogix.leads_web par connexion Postgres directe cote serveur;
@@ -27,9 +57,51 @@ export default function TaxCalculator() {
   // Vrai quand l'envoi a ECHOUE et qu'on est retombe sur le brouillon courriel :
   // le message affiche ne doit alors PAS promettre qu'on a recu la demande.
   const [secours, setSecours] = useState(false);
+  // « Faites vos calculs » : replié par défaut, pour ne pas noyer le visiteur
+  // qui veut juste voir un ordre de grandeur.
+  const [calculOuvert, setCalculOuvert] = useState(false);
+  const [pafCoche, setPafCoche] = useState(true);
+  const [quantites, setQuantites] = useState<Record<string, number>>({});
 
-  const annuel = useMemo(() => Math.round(taxes * 0.85), [taxes]);
+  const annuel = useMemo(() => Math.round(taxes * PART_REMBOURSABLE), [taxes]);
   const surCinq = annuel * 5;
+
+  const paf = useMemo(() => palierPAF(superficie), [superficie]);
+
+  // Dépenses admissibles portées par les travaux cochés. C'est ce total, et non
+  // les taxes, qui commande le remboursement quand il est le plus petit des deux.
+  const depenses = useMemo(() => {
+    const desTravaux = TRAVAUX_RAPIDES.reduce(
+      (somme, t) => somme + (quantites[t.id] || 0) * TAUX_PAR_ID[t.id].total,
+      0
+    );
+    return desTravaux + (pafCoche ? paf.total : 0);
+  }, [quantites, pafCoche, paf]);
+
+  // La règle du programme : 85 % du plus petit des deux montants. Faire des
+  // travaux au-delà des taxes ne rembourse pas davantage cette annee-la, mais
+  // l'excedent se reporte jusqu'a dix ans.
+  const utilise = Math.min(depenses, taxes);
+  const rembourse = Math.round(utilise * PART_REMBOURSABLE);
+  const excedent = Math.max(0, depenses - taxes);
+  const manque = Math.max(0, taxes - depenses);
+
+  // Ce que le visiteur a coche vaut de l'or pour la visite de terrain : on le
+  // transmet avec le lead plutot que de le laisser mourir dans le navigateur.
+  function detailsLead(): Record<string, string> | undefined {
+    const d: Record<string, string> = {};
+    if (lots) d["Numéro(s) de lot"] = lots;
+    if (calculOuvert && depenses > 0) {
+      if (pafCoche) d["Plan d'aménagement forestier"] = cad.format(paf.total);
+      for (const t of TRAVAUX_RAPIDES) {
+        const q = quantites[t.id] || 0;
+        if (q > 0) d[t.libelle] = `${q} ${t.quantite} — ${cad.format(q * TAUX_PAR_ID[t.id].total)}`;
+      }
+      d["Dépenses admissibles saisies"] = cad.format(depenses);
+      d["Remboursement estimé"] = cad.format(rembourse);
+    }
+    return Object.keys(d).length ? d : undefined;
+  }
 
   // Filet de secours: si la capture echoue (reseau), on ne perd pas le lead,
   // on bascule sur un courriel pre-rempli vers CFRQ.
@@ -62,7 +134,7 @@ export default function TaxCalculator() {
           courriel: email,
           nom: nom || undefined,
           municipalite: municipalite || undefined,
-          details: lots ? { "Numéro(s) de lot": lots } : undefined,
+          details: detailsLead(),
           superficie_ha: superficie,
           taxes_annuelles: taxes,
           potentiel_annuel: annuel,
@@ -119,25 +191,130 @@ export default function TaxCalculator() {
               aria-label="Taxes foncières annuelles"
             />
           </div>
+
+          <div className="mt-6 border-t border-black/10 pt-5">
+            <button
+              type="button"
+              onClick={() => setCalculOuvert((v) => !v)}
+              aria-expanded={calculOuvert}
+              className="flex w-full items-center justify-between text-left text-[15px] font-medium text-cfrq-leaf"
+            >
+              <span>Faites vos calculs</span>
+              <span aria-hidden="true" className="text-[13px]">{calculOuvert ? "−" : "+"}</span>
+            </button>
+            {!calculOuvert && (
+              <p className="mt-1.5 text-[13px] leading-relaxed text-cfrq-ink/60">
+                Ajoutez les travaux que vous envisagez et voyez ce qu'ils rapportent vraiment.
+              </p>
+            )}
+
+            {calculOuvert && (
+              <div className="mt-4">
+                <p className="mb-4 text-[13px] leading-relaxed text-cfrq-ink/65">
+                  Taux officiels {ANNEE_GRILLE} du ministère des Ressources naturelles et des Forêts.
+                </p>
+
+                <label className="mb-3 flex items-start gap-3 text-[14px] text-cfrq-deep">
+                  <input
+                    type="checkbox"
+                    checked={pafCoche}
+                    onChange={(e) => setPafCoche(e.target.checked)}
+                    className="mt-1 h-4 w-4 accent-cfrq-green"
+                  />
+                  <span className="flex-1">
+                    Plan d'aménagement forestier
+                    <span className="block text-[12.5px] text-cfrq-ink/60">
+                      {cad.format(paf.total)} pour un boisé de {superficie} ha
+                    </span>
+                  </span>
+                  <span className="whitespace-nowrap font-medium text-cfrq-deep">
+                    {cad.format(pafCoche ? paf.total : 0)}
+                  </span>
+                </label>
+
+                {TRAVAUX_RAPIDES.map((t) => {
+                  const taux = TAUX_PAR_ID[t.id];
+                  const q = quantites[t.id] || 0;
+                  return (
+                    <div key={t.id} className="mb-3 flex items-start gap-3 text-[14px] text-cfrq-deep">
+                      <input
+                        type="number"
+                        min={0}
+                        step={t.pas}
+                        value={q || ""}
+                        placeholder="0"
+                        onChange={(e) =>
+                          setQuantites((prev) => ({ ...prev, [t.id]: Number(e.target.value) || 0 }))
+                        }
+                        className="h-9 w-[70px] shrink-0 rounded-lg border border-black/15 bg-white px-2 text-right text-[15px] outline-none focus:border-cfrq-green"
+                        aria-label={`${t.libelle}, en ${t.quantite}`}
+                      />
+                      <span className="mt-1 flex-1">
+                        {t.quantite} — {t.libelle}
+                        <span className="block text-[12.5px] text-cfrq-ink/60">
+                          {cad.format(taux.total)}{taux.unite.replace("$", "")}
+                        </span>
+                      </span>
+                      <span className="mt-1 whitespace-nowrap font-medium text-cfrq-deep">
+                        {cad.format(q * taux.total)}
+                      </span>
+                    </div>
+                  );
+                })}
+
+                <div className="mt-4 flex items-baseline justify-between border-t border-black/10 pt-3">
+                  <span className="text-[15px] font-medium text-cfrq-deep">Dépenses admissibles</span>
+                  <span className="text-[19px] font-medium text-cfrq-deep">{cad.format(depenses)}</span>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="flex flex-col justify-between gap-5">
           <div className="grid grid-cols-2 gap-3">
             <div className="rounded-xl bg-cfrq-tint p-4">
-              <div className="text-[13px] text-cfrq-leaf">Potentiel maximal par année</div>
-              <div className="mt-1 text-3xl font-medium text-cfrq-deep">{cad.format(annuel)}</div>
+              <div className="text-[13px] text-cfrq-leaf">
+                {calculOuvert ? "Remboursement estimé" : "Potentiel maximal par année"}
+              </div>
+              <div className="mt-1 text-3xl font-medium text-cfrq-deep">
+                {cad.format(calculOuvert ? rembourse : annuel)}
+              </div>
             </div>
             <div className="rounded-xl bg-cfrq-tint p-4">
-              <div className="text-[13px] text-cfrq-leaf">Potentiel sur 5 ans</div>
-              <div className="mt-1 text-3xl font-medium text-cfrq-deep">{cad.format(surCinq)}</div>
+              <div className="text-[13px] text-cfrq-leaf">
+                {calculOuvert ? "Plafond de l'année" : "Potentiel sur 5 ans"}
+              </div>
+              <div className="mt-1 text-3xl font-medium text-cfrq-deep">
+                {cad.format(calculOuvert ? annuel : surCinq)}
+              </div>
             </div>
           </div>
 
-          <p className="text-[13px] leading-relaxed text-cfrq-deep/75">
-            Un plafond, pas un dû : ce montant suppose des travaux d'aménagement
-            admissibles. On établit lesquels, sur quelles superficies et pour combien
-            lors d'une visite de votre boisé.
-          </p>
+          {calculOuvert ? (
+            <p className="text-[13px] leading-relaxed text-cfrq-deep/75">
+              {depenses === 0 ? (
+                <>Ajoutez des travaux à gauche : sans dépense admissible, il n'y a rien à rembourser.</>
+              ) : manque > 0 ? (
+                <>
+                  Vos travaux valent {cad.format(depenses)} de dépenses admissibles, moins que vos{" "}
+                  {cad.format(taxes)} de taxes. Il vous manque {cad.format(manque)} de travaux pour
+                  aller chercher le plafond de {cad.format(annuel)}.
+                </>
+              ) : (
+                <>
+                  Vos travaux couvrent vos taxes au complet. L'excédent de {cad.format(excedent)} n'est
+                  pas perdu : il se reporte sur les années suivantes, jusqu'à dix ans.
+                </>
+              )}
+            </p>
+          ) : (
+            <p className="text-[13px] leading-relaxed text-cfrq-deep/75">
+              Un plafond, pas un dû : ce montant suppose des travaux d'aménagement
+              admissibles. On établit lesquels, sur quelles superficies et pour combien
+              lors d'une visite de votre boisé.
+            </p>
+          )}
 
           {envoye ? (
             secours ? (
@@ -222,7 +399,13 @@ export default function TaxCalculator() {
 
           <p className="text-[12.5px] leading-relaxed text-black/55">
             Estimation indicative. L'admissibilité réelle suppose un statut de producteur forestier
-            reconnu, un boisé de 4 ha ou plus, un plan d'aménagement et des dépenses admissibles.
+            reconnu, un boisé de 4 ha ou plus, un plan d'aménagement et des dépenses admissibles.{" "}
+            <a
+              href={withBase("/calculateur-taxes-foncieres")}
+              className="font-medium text-cfrq-leaf underline"
+            >
+              Tous les taux et un rapport imprimable →
+            </a>
           </p>
         </div>
       </div>
