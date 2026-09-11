@@ -118,12 +118,26 @@ environnement *Production*) :
 |---|---|
 | `SITE_URL` | `https://preview.cfrq.ca` |
 | `SITE_BASE` | `/` |
-| `PUBLIER_ESPACE_CLIENT` | `0` |
 | `NODE_VERSION` | `20` |
 
-`PUBLIER_ESPACE_CLIENT` à `0` fait que la préproduction montre exactement ce que
-verra le public. Le passer à `1` quand on veut retravailler l'espace client :
-c'est le seul réglage à changer, et il ne touche pas à la production.
+⚠️ `PUBLIER_ESPACE_CLIENT` **n'est plus lue ici** (2026-08-24). La règle vit
+maintenant dans le code : **l'espace client est ouvert partout sauf sur
+cfrq.ca** (`PUBLIER_ESPACE_CLIENT` dans `src/data/flags.ts`, `publierEspaceClient`
+dans `astro.config.mjs`). La préproduction montre donc le portail sans aucun
+réglage à faire dans ce tableau de bord, et la production reste fermée tant que
+`.github/workflows/deploy.yml` ne passe pas la variable à `1`.
+
+La variable est peut-être encore présente dans le projet Cloudflare, à `0` :
+elle est désormais sans effet et peut être supprimée. Tant qu'elle est là, elle
+ne rouvre ni ne referme rien, mais elle laisse croire le contraire.
+
+**Contrepartie assumée :** la préproduction ne montre plus exactement ce que
+verra le public, puisqu'elle montre le portail ouvert. Pour contrôler le rendu
+public avant une mise en ligne, c'est le build de production qui fait foi :
+
+```bash
+SITE_URL=https://cfrq.ca npm run build && npm run verifier
+```
 
 **Contrôle de branche** (*Paramètres → Contrôle de branche*) : *Aperçu de la
 branche* est réglé sur **Aucun**. Seule `preview` déclenche un build ici ; une
