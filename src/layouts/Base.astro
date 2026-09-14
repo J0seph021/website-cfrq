@@ -2,6 +2,7 @@
 import "@fontsource-variable/fraunces";
 import "@fontsource-variable/inter";
 import "../styles/global.css";
+import frauncesLatin from "@fontsource-variable/fraunces/files/fraunces-latin-wght-normal.woff2?url";
 import Analytique from "../components/Analytique.astro";
 import BanniereTemoins from "../components/BanniereTemoins.astro";
 import { analytiqueActive, estProduction } from "../data/flags";
@@ -13,7 +14,7 @@ interface Props {
   canonical?: string;
   /** Directive robots. Ex. "noindex, follow" pour les pages privées. */
   robots?: string;
-  /** Image Open Graph (chemin absolu ou relatif au site). */
+  /** Image Open Graph (chemin absolu ou relatif au site). Par défaut : og-cfrq.jpg. */
   ogImage?: string;
 }
 
@@ -22,7 +23,10 @@ const {
   description = "Des ingénieurs forestiers indépendants pour protéger, aménager et mettre en valeur votre boisé, partout au Québec.",
   canonical,
   robots,
-  ogImage,
+  // Image d'aperçu par défaut sur Facebook, LinkedIn, Messenger, Teams,
+  // iMessage et Slack. Sans elle, ces réseaux affichent un rectangle gris à la
+  // place du lien. Régénérable : node scripts/generer-og-image.mjs
+  ogImage = "/og-cfrq.jpg",
 } = Astro.props;
 
 // URL canonique absolue à partir de Astro.site (configuré dans astro.config.mjs).
@@ -51,12 +55,27 @@ const mesureActive = analytiqueActive(siteOrigin);
     {robotsFinal && <meta name="robots" content={robotsFinal} />}
     <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/favicon.svg`} />
 
+    {/* Les deux fontes réellement utilisées au premier écran. Sans ce
+        préchargement, le navigateur ne les découvre qu'après avoir lu la
+        feuille de style : le texte s'affiche d'abord en police système puis
+        saute (décalage de mise en page mesuré à 0,10 sur /notre-equipe/). */}
+    <link rel="preload" as="font" type="font/woff2" href={frauncesLatin} crossorigin />
+
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:locale" content="fr_CA" />
     {ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
+    {ogImageUrl && <meta property="og:image:width" content="1200" />}
+    {ogImageUrl && <meta property="og:image:height" content="630" />}
+    {ogImageUrl && <meta property="og:image:alt" content="Boisé privé du territoire desservi par CFRQ, avec le logo de CFRQ" />}
+    <meta property="og:site_name" content="CFRQ" />
+
+    <meta name="twitter:card" content={ogImageUrl ? "summary_large_image" : "summary"} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    {ogImageUrl && <meta name="twitter:image" content={ogImageUrl} />}
 
     <Analytique actif={mesureActive} />
 

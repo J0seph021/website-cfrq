@@ -5,12 +5,46 @@ import Footer from "../components/Footer.astro";
 import CalculateurTaxesRTF from "../components/CalculateurTaxesRTF.tsx";
 import { withBase } from "../lib/url";
 import { ANNEE_GRILLE } from "../data/rtf";
+import { SITE_PRODUCTION } from "../data/flags";
+
+// Les deux calculateurs sont des outils gratuits et publics : déclarés en
+// `WebApplication`, ils peuvent apparaître comme outil dans Google plutôt que
+// comme simple page de texte. Le fil d'Ariane les rattache à l'accueil.
+const ld = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": ["WebPage", "WebApplication"],
+      "@id": `${SITE_PRODUCTION}/calculateur-taxes-foncieres/#webpage`,
+      url: `${SITE_PRODUCTION}/calculateur-taxes-foncieres/`,
+      name: `Calculateur de remboursement des taxes foncières ${ANNEE_GRILLE}`,
+      description: `Tous les taux de la grille ${ANNEE_GRILLE} du MRNF, le calcul du remboursement des taxes foncières des producteurs forestiers reconnus et un rapport imprimable pour le propriétaire.`,
+      inLanguage: "fr-CA",
+      applicationCategory: "FinanceApplication",
+      browserRequirements: "Fonctionne dans tout navigateur récent, sans installation.",
+      isAccessibleForFree: true,
+      offers: { "@type": "Offer", price: "0", priceCurrency: "CAD" },
+      provider: { "@id": `${SITE_PRODUCTION}/#organization` },
+      publisher: { "@id": `${SITE_PRODUCTION}/#organization` },
+    },
+    {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Accueil", item: `${SITE_PRODUCTION}/` },
+        { "@type": "ListItem", position: 2, name: `Calculateur de remboursement des taxes foncières ${ANNEE_GRILLE}`, item: `${SITE_PRODUCTION}/calculateur-taxes-foncieres/` },
+      ],
+    },
+  ],
+};
 ---
 
 <Base
   title="Calculateur de remboursement des taxes foncières | CFRQ"
   description={`Tous les taux de la grille ${ANNEE_GRILLE} du MRNF, le calcul du remboursement des taxes foncières des producteurs forestiers reconnus et un rapport imprimable pour le propriétaire.`}
+  canonical="/calculateur-taxes-foncieres/"
 >
+  <script type="application/ld+json" set:html={JSON.stringify(ld)} slot="head" />
+
   <Header />
   <main id="contenu">
     <section class="bg-[#f4f5f2]">

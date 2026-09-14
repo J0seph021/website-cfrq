@@ -265,13 +265,13 @@ export default function WoodValueCalculator() {
                   className="h-12 w-full rounded-lg border border-black/15 bg-white px-4 text-[16px] outline-none focus:border-cfrq-green"
                   aria-label="Numéro ou numéros de lot (optionnel)" />
               </div>
-              <div className="flex flex-col gap-3 sm:flex-row">
+              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
                   placeholder="votre@courriel.ca"
-                  className="h-12 flex-1 rounded-lg border border-black/15 bg-white px-4 text-[16px] outline-none focus:border-cfrq-green"
+                  className="h-12 min-w-[220px] flex-1 rounded-lg border border-black/15 bg-white px-4 text-[16px] outline-none focus:border-cfrq-green"
                   aria-label="Votre adresse courriel" />
                 <button type="submit" disabled={envoi}
-                  className="h-12 rounded-lg bg-cfrq-green px-5 text-[15px] font-medium text-[#123005] transition-colors hover:bg-cfrq-green-hover disabled:cursor-not-allowed disabled:opacity-60">
+                  className="h-12 shrink-0 rounded-lg bg-cfrq-green px-5 text-[15px] font-medium text-[#123005] transition-colors hover:bg-cfrq-green-hover disabled:cursor-not-allowed disabled:opacity-60">
                   {envoi ? "Envoi..." : "Faire caractériser ma forêt"}
                 </button>
               </div>

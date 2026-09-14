@@ -3,12 +3,52 @@ import Base from "../layouts/Base.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import WoodValueCalculator from "../components/WoodValueCalculator.tsx";
+import { SITE_PRODUCTION } from "../data/flags";
+
+// Outil gratuit et public : déclaré en `WebApplication`, il peut apparaître
+// comme outil dans Google plutôt que comme simple page de texte. Le fil
+// d'Ariane le rattache à l'accueil.
+const ld = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": ["WebPage", "WebApplication"],
+      "@id": `${SITE_PRODUCTION}/calculateur-valeur-bois/#webpage`,
+      url: `${SITE_PRODUCTION}/calculateur-valeur-bois/`,
+      name: "Calculateur de valeur du bois",
+      description:
+        "Estimez la valeur nette du bois de votre forêt : la valeur marchande, moins le transport et la récolte.",
+      inLanguage: "fr-CA",
+      applicationCategory: "FinanceApplication",
+      browserRequirements: "Fonctionne dans tout navigateur récent, sans installation.",
+      isAccessibleForFree: true,
+      offers: { "@type": "Offer", price: "0", priceCurrency: "CAD" },
+      provider: { "@id": `${SITE_PRODUCTION}/#organization` },
+      publisher: { "@id": `${SITE_PRODUCTION}/#organization` },
+    },
+    {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Accueil", item: `${SITE_PRODUCTION}/` },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Calculateur de valeur du bois",
+          item: `${SITE_PRODUCTION}/calculateur-valeur-bois/`,
+        },
+      ],
+    },
+  ],
+};
 ---
 
 <Base
   title="Calculateur de valeur du bois | CFRQ"
   description="Estimez la valeur nette du bois de votre forêt : la valeur marchande, moins le transport et la récolte. Ajustez vos hypothèses et voyez ce qui vous revient vraiment."
+  canonical="/calculateur-valeur-bois/"
 >
+  <script type="application/ld+json" set:html={JSON.stringify(ld)} slot="head" />
+
   <Header />
   <main id="contenu">
     <section class="bg-[#f4f5f2]">

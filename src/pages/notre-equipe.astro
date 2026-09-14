@@ -247,7 +247,7 @@ const eyebrow = "text-[12.5px] font-semibold uppercase tracking-[0.18em]";
   <main id="contenu">
     <!-- HERO -->
     <section class="relative isolate overflow-hidden bg-[#16200f]">
-      <Image src={boiseSentier} alt="Vue sur un boisé privé et la vallée en arrière-plan" widths={[768, 1280, 1920]} sizes="100vw" loading="eager" class="absolute inset-0 -z-10 h-full w-full object-cover" />
+      <Image src={boiseSentier} alt="Vue sur un boisé privé et la vallée en arrière-plan" widths={[768, 1280, 1920]} sizes="100vw" quality={62} loading="eager" fetchpriority="high" class="absolute inset-0 -z-10 h-full w-full object-cover" />
       <div class="absolute inset-0 -z-10" style="background:linear-gradient(120deg,rgba(15,22,10,.9) 0%,rgba(15,22,10,.66) 55%,rgba(15,22,10,.3) 100%)"></div>
       <div class="mx-auto max-w-[1160px] px-[22px] py-[88px]">
         <div class="max-w-[640px]">
@@ -269,6 +269,7 @@ const eyebrow = "text-[12.5px] font-semibold uppercase tracking-[0.18em]";
         alt="L'équipe de CFRQ réunie en plein air"
         widths={[768, 1471]}
         sizes="(min-width: 1204px) 1116px, 100vw"
+        quality={72}
         class="aspect-[16/9] w-full rounded-[22px] border border-black/5 object-cover"
       />
     </section>
