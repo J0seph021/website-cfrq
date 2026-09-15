@@ -4,7 +4,7 @@ import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import CalculateurTaxesRTF from "../components/CalculateurTaxesRTF.tsx";
 import { withBase } from "../lib/url";
-import { ANNEE_GRILLE } from "../data/rtf";
+import { ANNEE_GRILLE, HORIZON_PROJECTION } from "../data/rtf";
 import { SITE_PRODUCTION } from "../data/flags";
 
 // Les deux calculateurs sont des outils gratuits et publics : déclarés en
@@ -18,7 +18,7 @@ const ld = {
       "@id": `${SITE_PRODUCTION}/calculateur-taxes-foncieres/#webpage`,
       url: `${SITE_PRODUCTION}/calculateur-taxes-foncieres/`,
       name: `Calculateur de remboursement des taxes foncières ${ANNEE_GRILLE}`,
-      description: `Tous les taux de la grille ${ANNEE_GRILLE} du MRNF, le calcul du remboursement des taxes foncières des producteurs forestiers reconnus et un rapport imprimable pour le propriétaire.`,
+      description: `Calculez gratuitement votre remboursement de taxes foncières avec les taux ${ANNEE_GRILLE} du MRNF, sur ${HORIZON_PROJECTION} ans, et repartez avec un rapport imprimable.`,
       inLanguage: "fr-CA",
       applicationCategory: "FinanceApplication",
       browserRequirements: "Fonctionne dans tout navigateur récent, sans installation.",
@@ -40,7 +40,7 @@ const ld = {
 
 <Base
   title="Calculateur de remboursement des taxes foncières | CFRQ"
-  description={`Tous les taux de la grille ${ANNEE_GRILLE} du MRNF, le calcul du remboursement des taxes foncières des producteurs forestiers reconnus et un rapport imprimable pour le propriétaire.`}
+  description={`Calculez gratuitement votre remboursement de taxes foncières avec les taux ${ANNEE_GRILLE} du MRNF, sur ${HORIZON_PROJECTION} ans, et repartez avec un rapport imprimable.`}
   canonical="/calculateur-taxes-foncieres/"
 >
   <script type="application/ld+json" set:html={JSON.stringify(ld)} slot="head" />
