@@ -1,5 +1,5 @@
 ---
-import { Image } from "astro:assets";
+import EnteteImage from "../../components/EnteteImage.astro";
 import Base from "../../layouts/Base.astro";
 import Logo from "../../components/Logo.astro";
 import { withBase } from "../../lib/url";
@@ -17,7 +17,7 @@ const linkClass = "text-cfrq-leaf underline-offset-2 hover:text-cfrq-green hover
   robots="noindex, follow"
 >
   <main id="contenu" class="relative flex min-h-screen items-center justify-center overflow-hidden px-5 py-10">
-    <Image src={boise} alt="" widths={[768, 1280, 1920]} sizes="100vw" class="absolute inset-0 -z-10 h-full w-full object-cover" />
+    <EnteteImage src={boise} alt="" ratioDesktop={2.9} class="absolute inset-0 -z-10 h-full w-full object-cover" />
     <div class="absolute inset-0 -z-10" style="background:linear-gradient(160deg,rgba(15,22,10,.92),rgba(20,51,26,.86))"></div>
 
     <div class="w-full max-w-[430px] rounded-[22px] bg-white px-9 py-10 shadow-[0_30px_70px_rgba(0,0,0,.4)]">

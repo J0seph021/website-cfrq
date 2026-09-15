@@ -1,0 +1,75 @@
+---
+/**
+ * Photo de fond d'un bandeau d'en-tête.
+ *
+ * Le bandeau est large et court en desktop, mais la photo source est en 4:3.
+ * Avec `object-cover`, le navigateur téléchargeait donc une image trois fois
+ * trop haute pour n'en afficher qu'une bande : sur /evaluation-forestiere/,
+ * 1,56 Mpx transférés pour 0,52 Mpx visibles. On sert maintenant au desktop
+ * une variante déjà recadrée en bandeau.
+ *
+ * En mobile le bandeau est au contraire presque carré ou en portrait : la
+ * photo 4:3 y est déjà plus petite que la boîte et `object-cover` l'agrandit.
+ * La recadrer coûterait des octets au lieu d'en économiser, donc le mobile
+ * garde la photo entière. Le voile sombre à 82 % rend l'agrandissement
+ * invisible.
+ *
+ * `ratioDesktop` doit rester inférieur ou égal au rapport réel du bandeau,
+ * sinon `object-cover` agrandit l'image. Rapports mesurés à 1440 px le
+ * 2026-09-15 :
+ *   accueil 2.08 · à-propos et notre-équipe 3.06 · territoire 3.58 · services 3.94
+ * À re-mesurer si un titre d'en-tête change de longueur.
+ */
+import { getImage } from "astro:assets";
+import type { ImageMetadata } from "astro";
+
+interface Props {
+  src: ImageMetadata;
+  alt?: string;
+  ratioDesktop?: number;
+  quality?: number;
+  class?: string;
+}
+
+const { src, alt = "", ratioDesktop = 2.9, quality = 62, class: classe = "" } = Astro.props;
+
+const LARGEURS_MOBILE = [414, 768];
+const LARGEURS_DESKTOP = [1280, 1920, 2560];
+
+const desktop = await Promise.all(
+  LARGEURS_DESKTOP.map((largeur) =>
+    getImage({
+      src,
+      width: largeur,
+      height: Math.round(largeur / ratioDesktop),
+      fit: "cover",
+      position: "center",
+      format: "webp",
+      quality,
+    }),
+  ),
+);
+
+const mobile = await Promise.all(
+  LARGEURS_MOBILE.map((largeur) => getImage({ src, width: largeur, format: "webp", quality })),
+);
+
+const srcsetDesktop = desktop.map((image, i) => `${image.src} ${LARGEURS_DESKTOP[i]}w`).join(", ");
+const srcsetMobile = mobile.map((image, i) => `${image.src} ${LARGEURS_MOBILE[i]}w`).join(", ");
+const repli = mobile[mobile.length - 1];
+---
+
+<picture class="contents">
+  <source media="(min-width: 768px)" srcset={srcsetDesktop} sizes="100vw" type="image/webp" />
+  <source srcset={srcsetMobile} sizes="100vw" type="image/webp" />
+  <img
+    src={repli.src}
+    alt={alt}
+    width={repli.attributes.width}
+    height={repli.attributes.height}
+    loading="eager"
+    fetchpriority="high"
+    decoding="async"
+    class={classe}
+  />
+</picture>
