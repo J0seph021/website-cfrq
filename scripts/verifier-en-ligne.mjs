@@ -6,9 +6,17 @@
 //
 // Usage : node scripts/verifier-en-ligne.mjs [https://cfrq.ca]
 
+import { readFileSync } from 'node:fs';
 import { redirectionsHeritees } from '../src/data/redirections-heritees.mjs';
 
 const BASE = (process.argv[2] || 'https://cfrq.ca').replace(/\/$/, '');
+
+// Ce qu'on doit trouver en ligne dépend de l'état du portail, et la source de vérité
+// est le workflow qui construit la production : c'est lui qui passe
+// PUBLIER_ESPACE_CLIENT à `astro build`. On le lit plutôt que d'exiger une variable
+// d'environnement, pour que le contrôle ne puisse pas diverger de ce qui a été publié.
+const workflow = readFileSync(new URL('../.github/workflows/deploy.yml', import.meta.url), 'utf8');
+const PORTAIL_OUVERT = /^\s*PUBLIER_ESPACE_CLIENT:\s*["']?1["']?\s*$/m.test(workflow);
 
 const erreurs = [];
 const echec = (m) => erreurs.push(m);
@@ -95,30 +103,58 @@ for (const c of ['/services', '/amenagement', '/notre-equipe', '/contact', '/era
   } else ligne('ok', r.code, c, `→ ${r.final}`);
 }
 
-// --- 3. L'espace client : la vitrine en ligne, le portail fermé ------------
-// /espace-client/ doit répondre : c'est la page qui explique l'espace client et
-// annonce qu'il est en construction, celle où mène le bouton du menu. Le
-// tableau de bord, lui, ne doit pas être joignable.
+// --- 3. L'espace client -----------------------------------------------------
+// Portail fermé : /espace-client/ sert la page « en construction » où mène le bouton
+// du menu, et le tableau de bord n'est pas joignable.
+// Portail ouvert : /espace-client/ sert la vraie connexion, le tableau de bord répond,
+// et ni l'une ni l'autre ne doit être indexable (ce sont des pages de dossier client).
 
-console.log('\n=== ESPACE CLIENT ===');
+console.log(`\n=== ESPACE CLIENT (portail ${PORTAIL_OUVERT ? 'OUVERT' : 'fermé'} selon deploy.yml) ===`);
+
 const vitrine = await fetch(BASE + '/espace-client/', { redirect: 'manual' });
 const vitrineTexte = vitrine.status === 200 ? await vitrine.text() : '';
+
 if (vitrine.status !== 200) {
   echec(`/espace-client/ répond ${vitrine.status} : le bouton « Espace client » du menu tombe dans le vide.`);
   ligne('XX', vitrine.status, '/espace-client/', 'MANQUANTE');
-} else if (!/En construction/i.test(vitrineTexte)) {
-  echec("/espace-client/ ne dit plus que l'espace client est en construction : le portail est-il ouvert par erreur ?");
-  ligne('XX', vitrine.status, '/espace-client/', 'CONTENU INATTENDU');
+} else if (!PORTAIL_OUVERT) {
+  if (!/En construction/i.test(vitrineTexte)) {
+    echec("/espace-client/ ne dit plus que l'espace client est en construction : le portail est-il ouvert par erreur ?");
+    ligne('XX', vitrine.status, '/espace-client/', 'CONTENU INATTENDU');
+  } else ligne('ok', vitrine.status, '/espace-client/', 'page « en construction », conforme');
 } else {
-  ligne('ok', vitrine.status, '/espace-client/', 'page « en construction », conforme');
+  // Le formulaire de connexion est monté par un script : on cherche ce que le HTML
+  // livré contient vraiment, le champ courriel et le bouton d'envoi du lien.
+  if (/En construction/i.test(vitrineTexte)) {
+    echec("/espace-client/ sert encore la page « en construction » alors que le portail est ouvert : la production a-t-elle été reconstruite ?");
+    ligne('XX', vitrine.status, '/espace-client/', 'ENCORE FERMÉE');
+  } else if (!/id="login-form"/.test(vitrineTexte)) {
+    echec("/espace-client/ ne contient pas le formulaire de connexion.");
+    ligne('XX', vitrine.status, '/espace-client/', 'SANS FORMULAIRE');
+  } else ligne('ok', vitrine.status, '/espace-client/', 'page de connexion, conforme');
 }
 
-for (const c of ['/espace-client/tableau-de-bord/']) {
-  const r = await fetch(BASE + c, { redirect: 'manual' });
-  if (r.status === 200) {
-    echec(`${c} est accessible en ligne alors qu'il ne doit pas être publié.`);
-    ligne('XX', r.status, c, 'PUBLIÉ PAR ERREUR');
-  } else ligne('ok', r.status, c, 'inaccessible, conforme');
+const tdb = await fetch(BASE + '/espace-client/tableau-de-bord/', { redirect: 'manual' });
+const tdbTexte = tdb.status === 200 ? await tdb.text() : '';
+if (!PORTAIL_OUVERT) {
+  if (tdb.status === 200) {
+    echec('/espace-client/tableau-de-bord/ est accessible en ligne alors qu\'il ne doit pas être publié.');
+    ligne('XX', tdb.status, '/espace-client/tableau-de-bord/', 'PUBLIÉ PAR ERREUR');
+  } else ligne('ok', tdb.status, '/espace-client/tableau-de-bord/', 'inaccessible, conforme');
+} else if (tdb.status !== 200) {
+  echec(`/espace-client/tableau-de-bord/ répond ${tdb.status} alors que le portail est ouvert : les clients ne peuvent pas entrer.`);
+  ligne('XX', tdb.status, '/espace-client/tableau-de-bord/', 'MANQUANTE');
+} else ligne('ok', tdb.status, '/espace-client/tableau-de-bord/', 'tableau de bord servi, conforme');
+
+// Un dossier client n'a rien à faire dans Google, portail ouvert ou non.
+if (PORTAIL_OUVERT) {
+  for (const [chemin, html] of [['/espace-client/', vitrineTexte], ['/espace-client/tableau-de-bord/', tdbTexte]]) {
+    if (!html) continue;
+    if (!/name="robots"[^>]*noindex/i.test(html)) {
+      echec(`${chemin} n'est pas en noindex : une page de dossier client peut se retrouver dans Google.`);
+      ligne('XX', 200, chemin, 'INDEXABLE');
+    } else ligne('ok', 200, chemin, 'noindex, conforme');
+  }
 }
 
 // --- 4. Fichiers de référencement ------------------------------------------
