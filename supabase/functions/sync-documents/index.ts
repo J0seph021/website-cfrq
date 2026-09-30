@@ -75,7 +75,10 @@ function json(body: unknown, status = 200) {
 }
 
 Deno.serve(async (req) => {
-  if (SYNC_SECRET && req.headers.get("x-sync-secret") !== SYNC_SECRET) {
+  // Refus par défaut : sans SYNC_SECRET configuré, personne ne passe. Avant, un secret
+  // absent faisait sauter la vérification, et la réponse (errFiles) expose des numéros
+  // de producteur et des noms de fichiers.
+  if (!SYNC_SECRET || req.headers.get("x-sync-secret") !== SYNC_SECRET) {
     return json({ error: "unauthorized" }, 401);
   }
   if (!PLANILOGIX_DB_URL || !PLANI_URL || !PLANI_STORAGE_KEY || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
