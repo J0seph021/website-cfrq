@@ -6,9 +6,18 @@ import CarteForet from "./CarteForet";
 import CalculateurValeurBois from "./CalculateurValeurBois";
 import FormulaireDemande, { DEMANDES, type ConfigDemande } from "./FormulaireDemande";
 import { BarreEmploye, ChoixClient, type Moi } from "./VueEmploye";
+import CompteNonRelie from "./DemandeAcces";
+import Bientot from "./Bientot";
 import { essencesArbres } from "../lib/foret/essences-mffp";
 
 type Row = Record<string, any>;
+
+// Version « dossiers » de l'espace client : documents, carte, propriétés, travaux et
+// bilan, fiables pour tous les clients. On cache ce qui n'est pas prêt pour tout le
+// monde (recommandations automatiques, calculateur de valeur du bois, achat du
+// Portrait, en attente de la revue OIFQ) et on l'annonce dans « Bientôt dans votre
+// espace ». Passer à false pour retrouver le tableau de bord complet.
+const MODE_DOSSIERS = true;
 export interface Dossier {
   producteur: Row | null;
   proprietes: Row[];
@@ -475,7 +484,7 @@ function DefinirMotDePasse({ onClose }: { onClose: () => void }) {
   );
 }
 
-export function DashboardView({ d, offre = null, onLogout, courriel = null, vueEmploye = false }: { d: Dossier; offre?: Offre; onLogout?: () => void; courriel?: string | null; vueEmploye?: boolean }) {
+export function DashboardView({ d, offre = null, onLogout, courriel = null, vueEmploye = false, apercu = false }: { d: Dossier; offre?: Offre; onLogout?: () => void; courriel?: string | null; vueEmploye?: boolean; apercu?: boolean }) {
   const nom = d.producteur?.nom ?? "Votre dossier";
   const [achatEnCours, setAchatEnCours] = useState<string | null>(null);
   const [pwdOuvert, setPwdOuvert] = useState(false);
@@ -750,7 +759,7 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
     { id: "plan", label: "Mon plan" },
     travauxTries.length > 0 ? { id: "travaux", label: "Mes travaux" } : null,
     { id: "documents", label: "Mes documents" },
-    { id: "portrait", label: "Mon Portrait" },
+    MODE_DOSSIERS ? { id: "bientot", label: "Bientôt" } : { id: "portrait", label: "Mon Portrait" },
   ].filter(Boolean) as { id: string; label: string }[];
 
   return (
@@ -943,7 +952,7 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
         </Reveal>
 
         {/* Ce que votre foret demande (sante) */}
-        {nbTraitementRec > 0 && (
+        {!MODE_DOSSIERS && nbTraitementRec > 0 && (
           <Reveal className="mt-10">
             <section className="rounded-2xl bg-white p-6">
               <h2 className="font-display text-xl font-medium text-cfrq-deep">Ce que votre forêt demande</h2>
@@ -1209,9 +1218,11 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
         {/* B3 : calculateur de valeur du bois — le CLIENT remplit ses hypothèses.
             Placé entre le bilan et les programmes : un net marginal/négatif enchaîne
             naturellement sur « Saviez-vous que » (les programmes font la différence). */}
-        <Reveal className="mt-10">
-          <CalculateurValeurBois peuplements={peuplements} syndicatGuid={d.producteur?.syndicat_guid ?? null} />
-        </Reveal>
+        {!MODE_DOSSIERS && (
+          <Reveal className="mt-10">
+            <CalculateurValeurBois peuplements={peuplements} syndicatGuid={d.producteur?.syndicat_guid ?? null} />
+          </Reveal>
+        )}
 
         {/* Leviers et programmes (en second temps) */}
         <Reveal className="mt-10">
@@ -1241,7 +1252,15 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
           </section>
         </Reveal>
 
+        {/* Bientôt dans votre espace : fonctionnalités à venir, « M'aviser quand c'est prêt » */}
+        {MODE_DOSSIERS && (
+          <Reveal className="mt-10">
+            <Bientot vueEmploye={vueEmploye} apercu={apercu} onNeutralise={setNoteEmploye} />
+          </Reveal>
+        )}
+
         {/* Votre Portrait des forets (releve patrimonial payant) */}
+        {!MODE_DOSSIERS && (
         <Reveal className="mt-10">
           <section id="portrait" className="scroll-mt-28 overflow-hidden rounded-2xl border border-cfrq-green/20 bg-gradient-to-br from-cfrq-tint to-white p-6 md:p-8">
             {paye && (
@@ -1307,6 +1326,7 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
             <p className="mt-5 text-[13.5px] text-black/55">Livré en PDF, taxes incluses. Une question, ou vous préférez commander de vive voix ? Appelez-nous au {site.tel}.</p>
           </section>
         </Reveal>
+        )}
 
         {/* Transmettre votre foret (succession) */}
         {(travauxCarte.length > 0 || d.documents.length > 0) && (
@@ -1437,53 +1457,6 @@ function ParcoursBar({ pourcentage }: { pourcentage: number }) {
  * aucune ligne : sans cet écran, la personne voyait un tableau de bord entièrement vide
  * sans savoir si elle s'était trompée, si son dossier était perdu, ou quoi faire.
  */
-function CompteNonRelie({ courriel, onDeconnexion }: { courriel: string | null; onDeconnexion: () => void }) {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-cfrq-cream px-5 py-10">
-      <div className="w-full max-w-[540px] rounded-3xl border border-black/[.07] bg-white p-[clamp(26px,5vw,42px)]">
-        <span className="inline-flex items-center gap-2 rounded-full bg-cfrq-tint px-3.5 py-[6px] text-[12px] font-bold uppercase tracking-[0.12em] text-cfrq-leaf">
-          <span className="h-[7px] w-[7px] flex-none rounded-full bg-cfrq-green" aria-hidden="true" />
-          Compte créé
-        </span>
-        <h1 className="mt-5 font-display text-[clamp(23px,4.5vw,30px)] font-medium leading-[1.15] text-cfrq-deep">
-          Il reste à relier votre espace à votre dossier forestier
-        </h1>
-        <p className="mt-4 text-[16px] leading-relaxed text-cfrq-ink/70">
-          Votre compte {courriel ? <strong className="font-semibold text-cfrq-deep">{courriel}</strong> : "est bien créé"} fonctionne.
-          Nous devons maintenant y rattacher le dossier de votre boisé, ce qu'un de nos ingénieurs forestiers
-          fait à la main pour être certain de vous donner le bon.
-        </p>
-        <p className="mt-3 text-[16px] leading-relaxed text-cfrq-ink/70">
-          Écrivez-nous ou appelez-nous, et nous ouvrirons votre espace. Vos documents et vos cartes
-          apparaîtront ici dès que ce sera fait.
-        </p>
-        <div className="mt-6 flex flex-wrap gap-2.5">
-          <a
-            href={site.telHref}
-            className="rounded-[10px] bg-cfrq-green px-5 py-3 text-[15px] font-semibold text-[#123005] transition-colors hover:bg-cfrq-green-hover"
-          >
-            Appeler le {site.tel}
-          </a>
-          <a
-            href={`mailto:${site.courriel}?subject=${encodeURIComponent("Relier mon espace client à mon dossier")}`}
-            className="rounded-[10px] border border-cfrq-green/40 px-5 py-3 text-[15px] font-semibold text-cfrq-leaf transition-colors hover:bg-cfrq-tint"
-          >
-            Écrire à {site.courriel}
-          </a>
-        </div>
-        <div className="mt-7 flex flex-wrap items-center justify-between gap-3 border-t border-black/[.07] pt-5">
-          <a href={withBase("/")} className="text-[14px] text-cfrq-leaf hover:text-cfrq-green">
-            ← Retour au site
-          </a>
-          <button onClick={onDeconnexion} className="rounded-full border border-black/15 px-3.5 py-2 text-[13px] text-cfrq-leaf transition-colors hover:bg-cfrq-tint">
-            Déconnexion
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default function EspaceClient() {
   const [loading, setLoading] = useState(true);
   const [d, setD] = useState<Dossier | null>(null);

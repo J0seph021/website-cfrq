@@ -26,6 +26,92 @@ export type Moi = {
 
 const nfEnt = new Intl.NumberFormat("fr-CA", { maximumFractionDigits: 0 });
 
+export type SuggestionDossier = { id: number; nom: string | null; no_prod: string | null; municipalite: string | null; a_compte: boolean; score: number };
+export type DemandeAccesEmploye = {
+  id: number;
+  courriel: string;
+  nom: string;
+  municipalite: string;
+  telephone: string | null;
+  no_producteur: string | null;
+  cree_le: string;
+  suggestions: SuggestionDossier[];
+};
+
+/* ------------------------------------------------------------------ */
+/* Demandes d'accès : un client s'est inscrit mais son compte n'est    */
+/* relié à aucun dossier. On relie à la main, jamais automatiquement.   */
+/* ------------------------------------------------------------------ */
+
+export function DemandesAccesVue({
+  demandes,
+  occupe,
+  onRelier,
+  onChercher,
+  onRefuser,
+}: {
+  demandes: DemandeAccesEmploye[];
+  occupe: number | null;
+  onRelier: (d: DemandeAccesEmploye, producteurId: number, nomDossier: string | null) => void;
+  onChercher: (d: DemandeAccesEmploye) => void;
+  onRefuser: (d: DemandeAccesEmploye) => void;
+}) {
+  if (demandes.length === 0) return null;
+  return (
+    <section className="mb-6 rounded-2xl border border-cfrq-green/30 bg-white p-5">
+      <h2 className="font-display text-[19px] font-medium text-cfrq-deep">
+        Demandes d'accès <span className="ml-1 rounded-full bg-cfrq-green px-2.5 py-0.5 align-middle text-[13px] font-semibold text-[#123005]">{demandes.length}</span>
+      </h2>
+      <p className="mt-1 text-[14px] text-cfrq-ink/60">
+        Ces clients ont créé leur compte. Reliez chacun à son dossier : il recevra un courriel l'avisant que son espace est prêt. Au moindre doute, appelez-le d'abord.
+      </p>
+      <ul className="mt-4 space-y-3">
+        {demandes.map((d) => (
+          <li key={d.id} className="rounded-xl border border-black/[.07] bg-cfrq-cream/50 p-4">
+            <div className="flex flex-wrap items-start justify-between gap-2">
+              <div className="min-w-0">
+                <p className="font-medium text-cfrq-deep">{d.nom} <span className="font-normal text-cfrq-ink/60">· {d.municipalite}</span></p>
+                <p className="mt-0.5 text-[13.5px] text-cfrq-ink/60">
+                  {[d.courriel, d.telephone, d.no_producteur ? `nº ${d.no_producteur}` : null,
+                    `reçue le ${new Date(d.cree_le).toLocaleDateString("fr-CA", { day: "numeric", month: "long" })}`].filter(Boolean).join(" · ")}
+                </p>
+              </div>
+              <button onClick={() => onRefuser(d)} disabled={occupe === d.id} className="text-[13px] text-cfrq-ink/50 underline-offset-2 hover:text-red-700 hover:underline">
+                Refuser
+              </button>
+            </div>
+            {d.suggestions.length > 0 ? (
+              <ul className="mt-3 space-y-2">
+                {d.suggestions.map((s) => (
+                  <li key={s.id} className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-white px-3.5 py-2.5">
+                    <span className="min-w-0 text-[14.5px]">
+                      <span className="font-medium text-cfrq-deep">{s.nom ?? "Dossier " + s.id}</span>
+                      <span className="text-cfrq-ink/55"> · {[s.no_prod, s.municipalite].filter(Boolean).join(" · ")}</span>
+                      {s.a_compte && <span className="ml-2 rounded-full bg-[#fff6dc] px-2 py-0.5 text-[12px] text-[#6b4e00]">a déjà un compte</span>}
+                    </span>
+                    <button
+                      onClick={() => onRelier(d, s.id, s.nom)}
+                      disabled={occupe === d.id}
+                      className="rounded-full bg-cfrq-green px-3.5 py-1.5 text-[13px] font-semibold text-[#123005] transition-colors hover:bg-cfrq-green-hover disabled:opacity-60"
+                    >
+                      {occupe === d.id ? "…" : "Relier"}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="mt-3 text-[14px] text-cfrq-ink/60">Aucun dossier ne ressemble à cette demande.</p>
+            )}
+            <button onClick={() => onChercher(d)} className="mt-2.5 text-[13.5px] font-medium text-cfrq-leaf underline-offset-2 hover:underline">
+              Chercher un autre dossier →
+            </button>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 /* ------------------------------------------------------------------ */
 /* Sélecteur de dossier (page pleine ou fenêtre modale).               */
 /* ------------------------------------------------------------------ */
@@ -49,6 +135,54 @@ export function ChoixClient({
   const [erreur, setErreur] = useState("");
   const [ouverture, setOuverture] = useState<number | null>(null);
   const champRef = useRef<HTMLInputElement>(null);
+  // Demandes d'accès en attente, et celle pour laquelle on cherche un dossier à la main.
+  const [demandes, setDemandes] = useState<DemandeAccesEmploye[]>([]);
+  const [demandeActive, setDemandeActive] = useState<DemandeAccesEmploye | null>(null);
+  const [occupe, setOccupe] = useState<number | null>(null);
+  const [annonce, setAnnonce] = useState("");
+
+  useEffect(() => {
+    supabase.rpc("portail_demandes_acces").then(({ data }) => {
+      if (Array.isArray(data)) setDemandes(data as DemandeAccesEmploye[]);
+    });
+  }, []);
+
+  async function relier(d: DemandeAccesEmploye, producteurId: number, nomDossier: string | null) {
+    if (occupe) return;
+    setOccupe(d.id);
+    setErreur("");
+    const { error } = await supabase.rpc("portail_relier_demande", { p_demande_id: d.id, p_producteur_id: producteurId });
+    if (error) {
+      setErreur("Le compte n'a pas pu être relié. Réessayez.");
+      setOccupe(null);
+      return;
+    }
+    const avis = await supabase.functions
+      .invoke("notifier-acces", { body: { type: "acces_pret", demande_id: d.id, origine: window.location.origin } })
+      .catch(() => ({ error: true }));
+    setDemandes((liste) => liste.filter((x) => x.id !== d.id));
+    setDemandeActive(null);
+    setOccupe(null);
+    setAnnonce(
+      `Compte ${d.courriel} relié au dossier ${nomDossier ?? producteurId}. ` +
+        (avis?.error ? "Le courriel au client n'a pas pu partir : prévenez-le vous-même. " : "Le client a été avisé par courriel. ") +
+        "Pensez à ajouter ce courriel à son dossier dans PlaniLogix.",
+    );
+  }
+
+  async function refuser(d: DemandeAccesEmploye) {
+    if (occupe || !window.confirm(`Refuser la demande de ${d.nom} ? Le client pourra en déposer une nouvelle.`)) return;
+    setOccupe(d.id);
+    await supabase.rpc("portail_refuser_demande", { p_demande_id: d.id });
+    setDemandes((liste) => liste.filter((x) => x.id !== d.id));
+    setOccupe(null);
+  }
+
+  function chercher(d: DemandeAccesEmploye) {
+    setDemandeActive(d);
+    setRecherche(d.nom.split(/\s+/).find((m) => m.length >= 3) ?? "");
+    champRef.current?.focus();
+  }
 
   useEffect(() => {
     champRef.current?.focus();
@@ -79,6 +213,11 @@ export function ChoixClient({
   }, [recherche]);
 
   async function ouvrir(c: ClientPortail) {
+    // En recherche pour une demande d'accès : cliquer un dossier le relie, sans l'ouvrir.
+    if (demandeActive) {
+      await relier(demandeActive, c.id, c.nom);
+      return;
+    }
     if (ouverture) return;
     setOuverture(c.id);
     const { error } = await supabase.rpc("portail_voir_client", { p_producteur_id: c.id });
@@ -94,6 +233,18 @@ export function ChoixClient({
 
   const liste = (
     <>
+      {annonce && (
+        <p className="mb-4 rounded-xl border border-cfrq-green/30 bg-cfrq-tint px-4 py-3 text-[14.5px] leading-relaxed text-cfrq-deep" role="status">
+          ✓ {annonce}
+        </p>
+      )}
+      <DemandesAccesVue demandes={demandes} occupe={occupe} onRelier={relier} onChercher={chercher} onRefuser={refuser} />
+      {demandeActive && (
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2 rounded-xl bg-[#fff6dc] px-4 py-3 text-[14px] text-[#6b4e00]">
+          <span>Choisissez ci-dessous le dossier à relier au compte de <strong>{demandeActive.nom}</strong> ({demandeActive.courriel}).</span>
+          <button onClick={() => setDemandeActive(null)} className="font-medium underline-offset-2 hover:underline">Annuler</button>
+        </div>
+      )}
       <div className="relative">
         <span aria-hidden className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-cfrq-ink/40">
           <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8">
