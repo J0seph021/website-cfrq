@@ -1,0 +1,11 @@
+---
+// Tableau de bord de l'espace client avec un dossier FICTIF (src/data/dossierDemo.ts).
+// Servi uniquement par le serveur de développement (astro.config.mjs), jamais publié :
+// permet de voir et tester l'écran sans compte ni connexion à Supabase.
+import Base from "../../layouts/Base.astro";
+import EspaceClientDemo from "../../components/EspaceClientDemo.tsx";
+---
+
+<Base title="Démo espace client | CFRQ" description="Démonstration locale du tableau de bord." robots="noindex, nofollow">
+  <EspaceClientDemo client:only="react" />
+</Base>

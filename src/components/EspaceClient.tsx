@@ -411,7 +411,7 @@ function titreEtDate(doc: Row): { titre: string; date: string | null } {
   const nom = String(doc.nom_document ?? "").trim();
   const mois = nom.match(DATE_MOIS);
   if (mois) return { titre: nom.replace(mois[0], "").trim() || titreGenerique(doc), date: mois[1] };
-  const { titre, date: annee } = titreEtDate(doc);
+  const annee = anneeDoc(doc);
   const sansAnnee = annee ? nom.replace(new RegExp(`\\s${annee}(?=\\s|$)`), "").trim() : nom;
   return { titre: sansAnnee || titreGenerique(doc), date: annee };
 }
