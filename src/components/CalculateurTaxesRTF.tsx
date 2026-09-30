@@ -124,7 +124,7 @@ export default function CalculateurTaxesRTF() {
   });
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start">
+    <div data-mesure-outil="taxes-foncieres" className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start">
       {/* ------------------------------ SÉLECTION ------------------------------ */}
       <div className="rtf-ecran-seulement min-w-0 rounded-2xl border border-black/5 bg-white p-6 shadow-sm">
         <h2 className="font-display text-[22px] font-medium text-cfrq-deep">Votre situation</h2>

@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { site } from "../data/site";
 import { MUNICIPALITES_TERRITOIRE } from "../data/municipalites";
+import { mesurerDemande } from "../lib/mesure";
 
 const cad = new Intl.NumberFormat("fr-CA", { style: "currency", currency: "CAD", maximumFractionDigits: 0 });
 const nf = new Intl.NumberFormat("fr-CA", { maximumFractionDigits: 0 });
@@ -118,10 +119,12 @@ export default function WoodValueCalculator() {
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       setEnvoye(true);
+      mesurerDemande("calculateur-valeur-bois", "serveur");
     } catch {
       fallbackMailto();
       setSecours(true);
       setEnvoye(true);
+      mesurerDemande("calculateur-valeur-bois", "secours");
     } finally {
       setEnvoi(false);
     }
@@ -135,7 +138,7 @@ export default function WoodValueCalculator() {
   );
 
   return (
-    <div className="rounded-2xl border border-black/5 bg-white p-6 shadow-sm sm:p-8">
+    <div data-mesure-outil="valeur-bois" className="rounded-2xl border border-black/5 bg-white p-6 shadow-sm sm:p-8">
       <div className="grid gap-8 md:grid-cols-2">
         {/* Entrées */}
         <div>

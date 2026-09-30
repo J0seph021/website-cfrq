@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { site } from "../data/site";
 import { withBase } from "../lib/url";
 import { ANNEE_GRILLE, PART_REMBOURSABLE, TAUX_PAR_ID, palierPAF } from "../data/rtf";
+import { mesurerDemande } from "../lib/mesure";
 
 const cad = new Intl.NumberFormat("fr-CA", {
   style: "currency",
@@ -145,17 +146,19 @@ export default function TaxCalculator() {
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       setEnvoye(true);
+      mesurerDemande("calculateur-taxes", "serveur");
     } catch {
       fallbackMailto();
       setSecours(true);
       setEnvoye(true);
+      mesurerDemande("calculateur-taxes", "secours");
     } finally {
       setEnvoi(false);
     }
   }
 
   return (
-    <div className="rounded-2xl border border-black/5 bg-white p-6 shadow-sm sm:p-8">
+    <div data-mesure-outil="taxes-accueil" className="rounded-2xl border border-black/5 bg-white p-6 shadow-sm sm:p-8">
       <div className="grid gap-8 md:grid-cols-2">
         <div>
           <div className="mb-6">

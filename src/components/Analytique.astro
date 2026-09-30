@@ -61,6 +61,31 @@ const { actif = false } = Astro.props;
 
         gtag("js", new Date());
         gtag("config", ID_MESURE);
+
+        // Conversions captées par délégation (liste complète dans
+        // src/lib/mesure.ts) : clics sur les liens tel: et mailto:, et première
+        // saisie dans un calculateur (attribut data-mesure-outil sur sa racine).
+        document.addEventListener("click", function (e) {
+          var lien = e.target instanceof Element ? e.target.closest('a[href^="tel:"], a[href^="mailto:"]') : null;
+          if (!lien) return;
+          var zone = lien.closest("header, footer");
+          gtag("event", lien.getAttribute("href").indexOf("tel:") === 0 ? "clic_telephone" : "clic_courriel", {
+            emplacement: zone ? zone.tagName.toLowerCase() : "page",
+          });
+        });
+        var outilsMesures = {};
+        document.addEventListener(
+          "input",
+          function (e) {
+            var racine = e.target instanceof Element ? e.target.closest("[data-mesure-outil]") : null;
+            if (!racine) return;
+            var outil = racine.getAttribute("data-mesure-outil");
+            if (outilsMesures[outil]) return;
+            outilsMesures[outil] = true;
+            gtag("event", "calculateur_utilise", { outil: outil });
+          },
+          true,
+        );
       </script>
 
       <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${ID_MESURE}`} />

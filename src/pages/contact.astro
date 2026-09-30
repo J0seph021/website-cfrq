@@ -169,6 +169,8 @@ const itineraire = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
 </Base>
 
 <script>
+  import { mesurerDemande } from "../lib/mesure";
+
   const ENDPOINT = "https://bpxzznykbikbqbvraqxj.supabase.co/functions/v1/capter-lead";
   const f = document.getElementById("contact-form") as HTMLFormElement | null;
   const ok = document.getElementById("contact-ok");
@@ -224,6 +226,7 @@ const itineraire = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
     } finally {
       if (btn) btn.disabled = false;
       (echec ? secours : ok)?.classList.remove("hidden");
+      mesurerDemande("visite-conseil", echec ? "secours" : "serveur");
     }
   });
 </script>

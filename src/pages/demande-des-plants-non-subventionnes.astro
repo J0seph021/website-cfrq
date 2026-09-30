@@ -131,6 +131,8 @@ const champ = "h-12 w-full rounded-[10px] border border-black/15 bg-white px-4 t
 </Base>
 
 <script>
+  import { mesurerDemande } from "../lib/mesure";
+
   const ENDPOINT = "https://bpxzznykbikbqbvraqxj.supabase.co/functions/v1/capter-lead";
   const f = document.getElementById("plants-form") as HTMLFormElement | null;
   const ok = document.getElementById("plants-ok");
@@ -227,9 +229,11 @@ const champ = "h-12 w-full rounded-[10px] border border-black/15 bg-white px-4 t
       if (!res.ok) throw new Error(String(res.status));
       f.reset();
       montrer(ok);
+      mesurerDemande("plants", "serveur");
     } catch {
       fallbackMailto();
       montrer(secours);
+      mesurerDemande("plants", "secours");
     } finally {
       if (btn) btn.disabled = false;
     }
