@@ -34,6 +34,7 @@ export type DemandeAccesEmploye = {
   municipalite: string;
   telephone: string | null;
   no_producteur: string | null;
+  lots?: string | null;
   cree_le: string;
   suggestions: SuggestionDossier[];
 };
@@ -72,7 +73,7 @@ export function DemandesAccesVue({
               <div className="min-w-0">
                 <p className="font-medium text-cfrq-deep">{d.nom} <span className="font-normal text-cfrq-ink/60">· {d.municipalite}</span></p>
                 <p className="mt-0.5 text-[13.5px] text-cfrq-ink/60">
-                  {[d.courriel, d.telephone, d.no_producteur ? `nº ${d.no_producteur}` : null,
+                  {[d.courriel, d.telephone, d.no_producteur ? `nº ${d.no_producteur}` : null, d.lots ? `lot(s) ${d.lots}` : null,
                     `reçue le ${new Date(d.cree_le).toLocaleDateString("fr-CA", { day: "numeric", month: "long" })}`].filter(Boolean).join(" · ")}
                 </p>
               </div>

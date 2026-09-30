@@ -8,8 +8,8 @@ import { supabase } from "../lib/supabaseClient";
 import { withBase } from "../lib/url";
 import { site } from "../data/site";
 
-export type ValeursAcces = { nom: string; municipalite: string; telephone: string; no_producteur: string };
-export type MaDemande = { id: number; statut: "en_attente" | "reliee" | "refusee"; nom: string; municipalite: string; telephone: string | null; no_producteur: string | null } | null;
+export type ValeursAcces = { nom: string; municipalite: string; telephone: string; no_producteur: string; lots: string };
+export type MaDemande = { id: number; statut: "en_attente" | "reliee" | "refusee"; nom: string; municipalite: string; telephone: string | null; no_producteur: string | null; lots?: string | null } | null;
 
 const champ =
   "h-12 w-full rounded-[10px] border border-black/15 bg-white px-4 text-[16px] outline-none transition-shadow focus:border-cfrq-green focus:shadow-[0_0_0_3px_rgba(90,189,42,.18)]";
@@ -29,7 +29,7 @@ export function FormulaireAcces({
 }) {
   const [v, setV] = useState<ValeursAcces>({
     nom: initial?.nom ?? "", municipalite: initial?.municipalite ?? "",
-    telephone: initial?.telephone ?? "", no_producteur: initial?.no_producteur ?? "",
+    telephone: initial?.telephone ?? "", no_producteur: initial?.no_producteur ?? "", lots: initial?.lots ?? "",
   });
   const maj = (k: keyof ValeursAcces) => (e: ChangeEvent<HTMLInputElement>) => setV({ ...v, [k]: e.target.value });
   const valide = v.nom.trim().length >= 2 && v.municipalite.trim().length >= 2;
@@ -46,6 +46,10 @@ export function FormulaireAcces({
       <label className="block">
         <span className="text-[14px] font-medium text-cfrq-deep">Municipalité où se trouve votre boisé</span>
         <input className={`mt-1.5 ${champ}`} value={v.municipalite} onChange={maj("municipalite")} required maxLength={120} />
+      </label>
+      <label className="block">
+        <span className="text-[14px] font-medium text-cfrq-deep">Numéro(s) de lot <span className="font-normal text-cfrq-ink/50">(facultatif, sur votre compte de taxes ou votre plan)</span></span>
+        <input className={`mt-1.5 ${champ}`} value={v.lots} onChange={maj("lots")} placeholder="Ex. : 5 833 738" maxLength={200} />
       </label>
       <label className="block">
         <span className="text-[14px] font-medium text-cfrq-deep">Téléphone <span className="font-normal text-cfrq-ink/50">(pour vous joindre au besoin)</span></span>
@@ -107,7 +111,7 @@ export default function CompteNonRelie({ courriel, onDeconnexion }: { courriel: 
     setEnvoi(true);
     setErreur("");
     const { error } = await supabase.rpc("portail_demander_acces", {
-      p_nom: v.nom, p_municipalite: v.municipalite, p_telephone: v.telephone || null, p_no_producteur: v.no_producteur || null,
+      p_nom: v.nom, p_municipalite: v.municipalite, p_telephone: v.telephone || null, p_no_producteur: v.no_producteur || null, p_lots: v.lots || null,
     });
     if (error) {
       setErreur("Votre demande n'a pas pu être envoyée. Réessayez, ou appelez-nous.");
@@ -153,7 +157,7 @@ export default function CompteNonRelie({ courriel, onDeconnexion }: { courriel: 
               </p>
             )}
             <FormulaireAcces
-              initial={demande ? { nom: demande.nom, municipalite: demande.municipalite, telephone: demande.telephone ?? "", no_producteur: demande.no_producteur ?? "" } : undefined}
+              initial={demande ? { nom: demande.nom, municipalite: demande.municipalite, telephone: demande.telephone ?? "", no_producteur: demande.no_producteur ?? "", lots: demande.lots ?? "" } : undefined}
               envoi={envoi}
               erreur={erreur}
               onEnvoyer={envoyer}
