@@ -8,6 +8,7 @@ import FormulaireDemande, { DEMANDES, type ConfigDemande } from "./FormulaireDem
 import { BarreEmploye, ChoixClient, type Moi } from "./VueEmploye";
 import CompteNonRelie from "./DemandeAcces";
 import Bientot from "./Bientot";
+import VisiteGuidee from "./VisiteGuidee";
 import { essencesArbres } from "../lib/foret/essences-mffp";
 
 type Row = Record<string, any>;
@@ -778,8 +779,9 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
               </a>
               <span className="hidden border-l border-black/10 pl-3 text-[14px] text-cfrq-ink/60 sm:inline">Espace client</span>
             </div>
-            <div className="flex items-center gap-3">
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-cfrq-green text-[13px] font-semibold text-[#123005]">{initiales}</span>
+            <div className="flex items-center gap-2 sm:gap-3">
+              <VisiteGuidee sansPeuplements={MODE_DOSSIERS} apercu={apercu} />
+              <span className="hidden h-9 w-9 items-center justify-center rounded-full bg-cfrq-green text-[13px] font-semibold text-[#123005] sm:flex">{initiales}</span>
               <button onClick={() => setPwdOuvert(true)} className="rounded-full border border-black/15 px-3.5 py-2 text-[13px] text-cfrq-leaf transition-colors hover:bg-cfrq-tint">
                 Mot de passe
               </button>
@@ -792,7 +794,7 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
           </div>
         </header>
         <nav aria-label="Sommaire" className="border-b border-black/10 bg-cfrq-cream/95 backdrop-blur">
-          <div className="mx-auto flex max-w-6xl gap-1.5 overflow-x-auto px-4 py-2">
+          <div data-visite="sommaire" className="mx-auto flex max-w-6xl gap-1.5 overflow-x-auto px-4 py-2">
             {sommaire.map((s) => (
               <a key={s.id} href={`#${s.id}`}
                 className="whitespace-nowrap rounded-full px-3 py-1.5 text-[13.5px] font-medium text-cfrq-leaf transition-colors hover:bg-cfrq-tint">
@@ -856,7 +858,7 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
               </a>
             </section>
 
-            <div className="rounded-3xl border border-black/5 bg-white p-5">
+            <div data-visite="ingenieur" className="rounded-3xl border border-black/5 bg-white p-5">
               <div className="flex items-center gap-3">
                 <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-cfrq-tint text-cfrq-leaf" aria-hidden>
                   <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.6">
@@ -912,7 +914,7 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
         {/* Carte interactive */}
         {d.carte?.geojson && (
           <Reveal className="mt-10">
-            <section id="foret" className="scroll-mt-28">
+            <section id="foret" data-visite="carte" className="scroll-mt-28">
               <div className="flex flex-wrap items-end justify-between gap-2">
                 <h2 className="font-display text-xl font-medium text-cfrq-deep">Votre forêt, lot par lot</h2>
                 <span className="text-[13px] text-black/50">
@@ -1124,7 +1126,7 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
         {/* Documents */}
         <Reveal className="mt-10">
           <section id="documents" className="scroll-mt-28">
-            <div className="flex flex-wrap items-end justify-between gap-2">
+            <div data-visite="documents" className="flex flex-wrap items-end justify-between gap-2">
               <h2 className="font-display text-xl font-medium text-cfrq-deep">Vos documents</h2>
               {docsHorsPaf.length > 0 && <span className="text-[13px] text-black/50">{docsHorsPaf.length} au total</span>}
             </div>
@@ -1172,7 +1174,7 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
             {rtfDocs.length > 0 && (
               <>
                 <div className="mt-8 flex flex-wrap items-end justify-between gap-2">
-                  <h3 className="font-display text-lg font-medium text-cfrq-deep">Vos rapports de taxes foncières</h3>
+                  <h3 data-visite="taxes" className="font-display text-lg font-medium text-cfrq-deep">Vos rapports de taxes foncières</h3>
                   <span className="text-[13px] text-black/50">{rtfDocs.length} au total</span>
                 </div>
                 <p className="mt-1 text-[14.5px] text-black/55">Le rapport annuel préparé par nos ingénieurs forestiers pour votre remboursement de taxes foncières : la pièce à remettre à votre comptable.</p>

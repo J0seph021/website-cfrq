@@ -1,0 +1,78 @@
+/* Habillage CFRQ des bulles de la visite guidée (driver.js), chargé avec elle. */
+.driver-popover.visite-cfrq {
+  font-family: "Inter Variable", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: #1b2417;
+  border-radius: 18px;
+  padding: 20px 20px 16px;
+  min-width: 270px;
+  max-width: min(340px, calc(100vw - 32px));
+  box-shadow: 0 12px 40px rgba(16, 36, 12, 0.28);
+}
+
+.visite-cfrq .driver-popover-title {
+  font-family: "Fraunces Variable", Georgia, serif;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.25;
+  color: #14331a;
+  padding-right: 22px;
+}
+
+.visite-cfrq .driver-popover-description {
+  font-size: 15px;
+  line-height: 1.55;
+  color: rgba(27, 36, 23, 0.72);
+}
+
+.visite-cfrq .driver-popover-close-btn {
+  width: 40px;
+  height: 40px;
+  font-size: 20px;
+  color: rgba(27, 36, 23, 0.35);
+}
+.visite-cfrq .driver-popover-close-btn:hover,
+.visite-cfrq .driver-popover-close-btn:focus {
+  color: #14331a;
+}
+
+.visite-cfrq .driver-popover-footer {
+  margin-top: 18px;
+  gap: 10px;
+}
+
+.visite-cfrq .driver-popover-progress-text {
+  font-size: 13px;
+  color: rgba(27, 36, 23, 0.5);
+  white-space: nowrap;
+}
+
+.visite-cfrq .driver-popover-footer-btn {
+  text-shadow: none;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  color: #2e7016;
+  background: #fff;
+}
+.visite-cfrq .driver-popover-footer-btn:hover,
+.visite-cfrq .driver-popover-footer-btn:focus {
+  background: #eaf4e0;
+}
+
+.visite-cfrq .driver-popover-next-btn {
+  border-color: #5abd2a;
+  background: #5abd2a;
+  color: #123005;
+}
+.visite-cfrq .driver-popover-next-btn:hover,
+.visite-cfrq .driver-popover-next-btn:focus {
+  background: #4ea523;
+}
+
+.visite-cfrq .driver-popover-navigation-btns button + button {
+  margin-left: 6px;
+}

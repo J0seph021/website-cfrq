@@ -67,7 +67,7 @@ export default function Bientot({
   }
 
   return (
-    <section id="bientot" className="scroll-mt-28 rounded-2xl border border-cfrq-green/20 bg-gradient-to-br from-cfrq-tint to-white p-6 md:p-8">
+    <section id="bientot" data-visite="bientot" className="scroll-mt-28 rounded-2xl border border-cfrq-green/20 bg-gradient-to-br from-cfrq-tint to-white p-6 md:p-8">
       <p className="text-[12.5px] font-semibold uppercase tracking-[0.14em] text-cfrq-leaf">Bientôt dans votre espace</p>
       <h2 className="mt-2 font-display text-xl font-medium text-cfrq-deep">Votre forêt, encore mieux comprise</h2>
       <p className="mt-2 max-w-2xl text-[15.5px] leading-relaxed text-cfrq-ink/75">

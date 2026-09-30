@@ -73,6 +73,9 @@ function couleurAppellations(features: any[]): { expr: any; legende: { nom: stri
     )
   ).sort();
   const legende = noms.map((nom, i) => ({ nom, couleur: PALETTE[i % PALETTE.length] }));
+  // Sans aucun peuplement (mode dossiers, ou client sans carte écoforestière), un
+  // « match » sans branche est refusé par MapLibre : couleur fixe à la place.
+  if (!legende.length) return { expr: "#9e9e9e", legende };
   const expr: any = ["match", ["coalesce", ["get", "appellation"], "Non classé"]];
   for (const { nom, couleur } of legende) expr.push(nom, couleur);
   expr.push("#9e9e9e"); // défaut
