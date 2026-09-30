@@ -295,7 +295,7 @@ const eyebrow = "text-[12.5px] font-semibold uppercase tracking-[0.18em]";
         </div>
         <div class="mt-[26px] grid gap-[18px] sm:grid-cols-2 lg:grid-cols-3">
           {g.membres.map((m) => (
-            <article class="overflow-hidden rounded-[20px] border border-black/5 bg-white">
+            <article id={m.id} class="scroll-mt-24 overflow-hidden rounded-[20px] border border-black/5 bg-white">
               {photos[m.id] ? (
                 <Image
                   src={photos[m.id]}
