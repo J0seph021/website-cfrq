@@ -393,12 +393,27 @@ function anneeDoc(doc: Row): string | null {
   const d = String(doc.date_document ?? "").match(/\b(19|20)\d{2}\b/)?.[0];
   return d ?? String(doc.nom_document ?? "").match(/\b(19|20)\d{2}\b/)?.[0] ?? null;
 }
-// Titre lisible : prescriptions et rapports sont nommés par un numéro cryptique en base.
-function titreDoc(doc: Row): string {
+// Repli quand un document n'a pas encore de nom en base.
+function titreGenerique(doc: Row): string {
   if (doc.type_document === "prescription") return "Prescription sylvicole";
   if (doc.type_document === "rapport") return "Rapport d'exécution";
   if (doc.type_document === "rtf") return "Rapport de taxes foncières";
-  return String(doc.nom_document ?? "Document");
+  return "Plan d'aménagement forestier";
+}
+
+const DATE_MOIS = /,\s((?:janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre) (?:19|20)\d{2})/;
+
+// Titre et date d'un document. Le nom en base porte déjà la date et ce qui le distingue
+// de ses voisins (« Rapport d'exécution, juillet 2024 », « Prescription sylvicole 2019
+// (version 2) », voir supabase/functions/sync-documents/nommer.ts) : on sort la date du
+// titre pour l'afficher dans la pastille, sans la répéter.
+function titreEtDate(doc: Row): { titre: string; date: string | null } {
+  const nom = String(doc.nom_document ?? "").trim();
+  const mois = nom.match(DATE_MOIS);
+  if (mois) return { titre: nom.replace(mois[0], "").trim() || titreGenerique(doc), date: mois[1] };
+  const { titre, date: annee } = titreEtDate(doc);
+  const sansAnnee = annee ? nom.replace(new RegExp(`\\s${annee}(?=\\s|$)`), "").trim() : nom;
+  return { titre: sansAnnee || titreGenerique(doc), date: annee };
 }
 
 /* ------------------------------------------------------------------ */
@@ -1024,14 +1039,14 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
                   </div>
                   <ul className="mt-5 grid gap-2 sm:grid-cols-2">
                     {pafDocs.map((doc) => {
-                      const annee = anneeDoc(doc);
+                      const { titre, date: annee } = titreEtDate(doc);
                       return (
                         <li key={doc.id}>
                           <button onClick={() => ouvrirDoc(doc.storage_path)} disabled={!doc.storage_path}
                             className="flex w-full items-center justify-between gap-3 rounded-xl border border-black/5 bg-white px-4 py-3 text-left transition-colors hover:border-cfrq-green/40 disabled:cursor-default">
                             <span className="flex items-center gap-2 font-medium text-cfrq-deep">
                               <span aria-hidden>📄</span>
-                              <span className={doc.storage_path ? "hover:underline" : ""}>{doc.nom_document}</span>
+                              <span className={doc.storage_path ? "hover:underline" : ""}>{titre}</span>
                             </span>
                             <span className="shrink-0 text-[13px] font-medium text-cfrq-leaf">{annee ?? "Ouvrir"}</span>
                           </button>
@@ -1103,7 +1118,7 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
               {docsHorsPaf.length > 0 ? (
                 <ul className="divide-y divide-black/5">
                   {(docsOuvert ? docsHorsPaf : docsHorsPaf.slice(0, LIMITE_DOCS)).map((doc) => {
-                    const annee = anneeDoc(doc);
+                    const { titre, date: annee } = titreEtDate(doc);
                     return (
                       <li key={doc.id}>
                         <button onClick={() => ouvrirDoc(doc.storage_path)} disabled={!doc.storage_path}
@@ -1111,7 +1126,7 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
                           <span className="flex items-center gap-2">
                             {doc.storage_path && <span aria-hidden>📄</span>}
                             <span className="flex flex-col">
-                              <span className={`font-medium text-cfrq-deep ${doc.storage_path ? "hover:underline" : ""}`}>{titreDoc(doc)}</span>
+                              <span className={`font-medium text-cfrq-deep ${doc.storage_path ? "hover:underline" : ""}`}>{titre}</span>
                               {doc.reference && <span className="text-[12.5px] text-black/45">nº {doc.reference}</span>}
                             </span>
                           </span>
@@ -1149,7 +1164,7 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
                 <div className="mt-4 rounded-2xl border border-black/5 bg-white p-6">
                   <ul className="divide-y divide-black/5">
                     {(rtfOuvert ? rtfDocs : rtfDocs.slice(0, LIMITE_RTF)).map((doc) => {
-                      const annee = anneeDoc(doc);
+                      const { titre, date: annee } = titreEtDate(doc);
                       return (
                         <li key={doc.id}>
                           <button onClick={() => ouvrirDoc(doc.storage_path)} disabled={!doc.storage_path}
@@ -1157,7 +1172,7 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
                             <span className="flex items-center gap-2">
                               {doc.storage_path && <span aria-hidden>📄</span>}
                               <span className="flex flex-col">
-                                <span className={`font-medium text-cfrq-deep ${doc.storage_path ? "hover:underline" : ""}`}>{titreDoc(doc)}</span>
+                                <span className={`font-medium text-cfrq-deep ${doc.storage_path ? "hover:underline" : ""}`}>{titre}</span>
                                 {doc.reference && <span className="text-[12.5px] text-black/45">nº {doc.reference}</span>}
                               </span>
                             </span>
