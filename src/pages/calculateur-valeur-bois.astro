@@ -44,7 +44,7 @@ const ld = {
 
 <Base
   title="Calculateur de valeur du bois | CFRQ"
-  description="Estimez ce que le bois de votre forêt vous rapporte vraiment : la valeur marchande, moins le transport et la récolte. Ajustez vos hypothèses."
+  description="Estimez ce que le bois de votre forêt vous rapporte vraiment, aux prix de votre région : la valeur marchande, moins la récolte et le transport. Ajustez vos hypothèses."
   canonical="/calculateur-valeur-bois/"
 >
   <script type="application/ld+json" set:html={JSON.stringify(ld)} slot="head" />
@@ -59,8 +59,9 @@ const ld = {
             Combien vaut vraiment le bois de votre forêt ?
           </h1>
           <p class="mt-4 text-[17px] leading-relaxed text-cfrq-ink/65">
-            Le prix affiché à l'usine n'est pas ce qui reste dans vos poches : il faut en retirer le transport et la récolte.
-            Entrez vos volumes, ajustez le coût de récolte selon votre type de coupe, et voyez la valeur nette, celle qui vous revient.
+            Le prix du marché n'est pas ce qui reste dans vos poches : il faut en retirer la récolte et, pour le bois livré à l'usine, le transport.
+            Choisissez votre région, entrez vos volumes par essence, ajustez le coût de récolte selon votre type de coupe,
+            et voyez la valeur nette, celle qui vous revient. Les prix sont ceux de votre syndicat, relevés sur prixbois.ca.
           </p>
         </div>
         <div class="mt-8">
