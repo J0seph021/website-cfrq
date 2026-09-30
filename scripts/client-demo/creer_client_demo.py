@@ -433,7 +433,8 @@ def vider():
 
 def creer():
     vider()
-    rest("POST", "producteurs", json=[{"id": PID, "nom": NOM, "no_prod": NO_PROD, "statut": "PRTF Oui", "type_proprio": "Particulier"}])
+    rest("POST", "producteurs", json=[{"id": PID, "nom": NOM, "no_prod": NO_PROD, "statut": "PRTF Oui", "type_proprio": "Particulier",
+                                     "nom_salutation": "Jean Tremblay"}])
     rest("POST", "proprietes", json=PROPRIETES)
     rest("POST", "lots", json=LOTS)
     rest("POST", "paf", json=PAF)

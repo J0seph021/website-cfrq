@@ -28,7 +28,7 @@ const features = [
 ];
 
 export const dossierDemo: Dossier = {
-  producteur: { id: 0, nom: "TREMBLAY JEAN", no_prod: "DEMO-2041", statut: "Producteur forestier reconnu", type_proprio: "Individu" },
+  producteur: { id: 0, nom: "TREMBLAY JEAN", nom_salutation: "Jean Tremblay", no_prod: "DEMO-2041", statut: "Producteur forestier reconnu", type_proprio: "Individu" },
   proprietes: [
     { id: 1, producteur_id: 0, no_propriete: "01", municipalite: "Saint-Raymond", mrc: "Portneuf", region: "Capitale-Nationale", superficie_totale: 42.6, superficie_boisee: null },
     { id: 2, producteur_id: 0, no_propriete: "02", municipalite: "Saint-Raymond", mrc: "Portneuf", region: "Capitale-Nationale", superficie_totale: 18.3, superficie_boisee: null },

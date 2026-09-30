@@ -390,6 +390,11 @@ function estProducteurReconnu(prod: Row | null): boolean {
 // Nom lisible pour la salutation: retire le suffixe légal (INC, ENR, LTÉE…),
 // met en casse de titre, mais préserve les sigles courts (ex. « AA »).
 // Les noms sources sont en majuscules (« GOFOREST INC », « VOYER JACQUES »).
+// Nom de société (compagnie à numéro, ferme, gestion…) : pas une personne à saluer.
+function estSociete(nom: string): boolean {
+  return /\b(inc|enr|lt[ée]e|s\.?e\.?n\.?c|cie|ferme|gestion|groupement|qu[ée]bec|canada|[ée]rabli[èe]re|soci[ée]t[ée]|immeubles|placements|entreprises?|succession)\b|\d{3,}/i.test(nom);
+}
+
 function nomAffiche(nom: string): string {
   const sansSuffixe = nom.replace(/\s*\b(inc|enr|ltée|ltee|senc|s\.e\.n\.c\.)\b\.?$/i, "").trim() || nom;
   return sansSuffixe
@@ -532,8 +537,12 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
     window.history.replaceState({}, "", window.location.pathname + "#portrait");
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
-  const initiales = nom.split(/\s+/).map((m: string) => m[0]).join("").slice(0, 2).toUpperCase();
-  const nomJoli = d.producteur ? nomAffiche(nom) : null;
+  // Salutation : le représentant du dossier (nom_salutation, tiré de PlaniLogix par
+  // scripts/noms-salutation.mjs), jamais le nom d'une société (« Bonjour, 3 Versants »).
+  // Sans lui, le nom du propriétaire seulement s'il ressemble à une personne.
+  const nomJoli: string | null =
+    d.producteur?.nom_salutation || (d.producteur && !estSociete(nom) ? nomAffiche(nom) : null);
+  const initiales = (nomJoli ?? nom).split(/\s+/).map((m: string) => m[0]).join("").slice(0, 2).toUpperCase();
 
   // Agregats reels
   const peuplements = useMemo(() => props(d.carte, "peuplement"), [d.carte]);
