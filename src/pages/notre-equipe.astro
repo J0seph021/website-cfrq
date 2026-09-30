@@ -73,7 +73,7 @@ const groupes: { cle: string; titre: string; intro: string; membres: Membre[] }[
   {
     cle: "direction",
     titre: "La direction et le bureau",
-    intro: "Ceux qui répondent au téléphone, montent les demandes d'aide financière et gardent vos dossiers sur les rails.",
+    intro: "Une équipe à votre écoute qui prépare vos demandes d'aide financière et assure le bon suivi de vos dossiers.",
     membres: [
       {
         id: "joseph-moffet",
@@ -257,7 +257,7 @@ const eyebrow = "text-[12.5px] font-semibold uppercase tracking-[0.18em]";
             Votre forestier de famille
           </h1>
           <p class="mt-5 max-w-[560px] text-[19px] leading-[1.55] text-[#dce2d2] text-pretty">
-            Des techniciens et des ingénieurs forestiers qui connaissent votre coin de pays. Celui ou celle qui se présente chez vous, c'est la même personne qui suivra votre boisé les années suivantes.
+            Nos techniciens et ingénieurs forestiers connaissent votre région et prennent le temps de découvrir votre boisé. La personne qui vous rencontre sur le terrain demeure votre interlocuteur au fil des années, pour un accompagnement personnalisé et continu.
           </p>
         </div>
       </div>
@@ -282,7 +282,7 @@ const eyebrow = "text-[12.5px] font-semibold uppercase tracking-[0.18em]";
         Nous avons tous un médecin de famille. Votre boisé, lui, mérite <em class="not-italic text-cfrq-leaf">un forestier de famille</em>.
       </p>
       <p class="mt-[26px] text-[17px] leading-[1.7] text-cfrq-ink/[.72]">
-        Votre forêt n'est pas un dossier parmi d'autres. La personne qui se déplace chez vous apprend votre terrain, vos objectifs et l'histoire de votre famille avec ce boisé, et c'est elle qui revient d'une visite à l'autre. On parle sans jargon, on répond au téléphone, et on vous dit franchement ce qui vaut la peine et ce qui peut attendre.
+        Votre forêt mérite un accompagnement personnalisé. La personne qui vous accompagne prend le temps de connaître votre terrain, vos objectifs et les liens qui unissent votre famille à ce boisé. Vous la retrouvez au fil des visites, pour un suivi fondé sur la confiance. Nous vous parlons simplement, restons disponibles et vous conseillons avec franchise sur les travaux à prioriser et ceux qui peuvent attendre.
       </p>
     </section>
 
@@ -295,7 +295,7 @@ const eyebrow = "text-[12.5px] font-semibold uppercase tracking-[0.18em]";
         </div>
         <div class="mt-[26px] grid gap-[18px] sm:grid-cols-2 lg:grid-cols-3">
           {g.membres.map((m) => (
-            <article class="overflow-hidden rounded-[20px] border border-black/5 bg-white">
+            <article id={m.id} class="scroll-mt-24 overflow-hidden rounded-[20px] border border-black/5 bg-white">
               {photos[m.id] ? (
                 <Image
                   src={photos[m.id]}
@@ -340,7 +340,7 @@ const eyebrow = "text-[12.5px] font-semibold uppercase tracking-[0.18em]";
           </div>
           <div>
             <p class="font-display text-[26px] font-medium text-cfrq-deep">Ing.f. et tech.f.</p>
-            <p class="mt-1.5 text-[14.5px] leading-relaxed text-cfrq-ink/70">Des techniciens sur le terrain, des ingénieurs forestiers qui signent vos plans et vos rapports.</p>
+            <p class="mt-1.5 text-[14.5px] leading-relaxed text-cfrq-ink/70">Des techniciens sur le terrain, des ingénieurs forestiers qui préparent et signent vos plans et vos rapports.</p>
           </div>
           <div>
             <p class="font-display text-[26px] font-medium text-cfrq-deep">Votre secteur</p>

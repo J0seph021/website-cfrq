@@ -113,7 +113,9 @@ function page(titre: string, corps: string): string {
     "<table role='presentation' width='480' cellpadding='0' cellspacing='0' border='0' class='cardbg' style='width:480px;max-width:100%;background-color:#ffffff;border-radius:16px;border:1px solid #dde4d5;'>" +
     "<tr><td style='background-color:#143d1a;height:5px;line-height:5px;font-size:0;border-radius:16px 16px 0 0;'>&nbsp;</td></tr>" +
     "<tr><td align='center' style='padding:30px 44px 0;'>" +
-    "<img src='https://j0seph021.github.io/website-cfrq/logo-courriel.png' width='150' height='53' alt='CFRQ' style='display:block;margin:0 auto;border:0;outline:none;'>" +
+    // cfrq.ca/logo-courriel.png : fichier de public/, donc URL stable (voir README).
+    // Surtout pas l'aperçu github.io, qui ne sert plus qu'une redirection vers ici.
+    "<img src='https://cfrq.ca/logo-courriel.png' width='150' height='53' alt='CFRQ' style='display:block;margin:0 auto;border:0;outline:none;'>" +
     "<div style='font-family:Arial,Helvetica,sans-serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#8ba07d;margin-top:11px;'>Espace client</div></td></tr>" +
     "<tr><td align='center' style='padding:24px 44px 0;'><h1 class='ink' style='font-family:Arial,Helvetica,sans-serif;font-size:21px;font-weight:bold;color:#143d1a;margin:0;'>" + titre + "</h1></td></tr>" +
     "<tr><td class='body' style='padding:16px 44px 4px;'>" + corps + "</td></tr>" +

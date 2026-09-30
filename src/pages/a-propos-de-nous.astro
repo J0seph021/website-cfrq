@@ -5,6 +5,7 @@ import Base from "../layouts/Base.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import { site } from "../data/site";
+import { AGENCES } from "../data/agences";
 import { withBase } from "../lib/url";
 import boiseMature from "../assets/photos/boise-mature.jpg";
 import photoEquipe from "../assets/photos/equipe.jpg";
@@ -25,7 +26,7 @@ const equipe = [...direction, ...foretPrivee];
 
 const valeurs = [
   { titre: "Un conseil indépendant", texte: "On recommande ce qui est bon pour votre forêt, pas pour un tiers. Vos objectifs passent avant tout." },
-  { titre: "Techniciens & ingénieurs forestiers", texte: "Des techniciens sur le terrain et des ingénieurs forestiers qui signent vos plans et rapports." },
+  { titre: "Techniciens & ingénieurs forestiers", texte: "Des techniciens sur le terrain et des ingénieurs forestiers qui préparent et signent vos plans et rapports." },
   { titre: "Du diagnostic aux travaux", texte: "Un seul interlocuteur, de la première visite jusqu'à la supervision des interventions." },
   { titre: "On maximise vos aides", texte: "On connaît les programmes et on monte les demandes avec vous, pour réduire vos coûts." },
 ];
@@ -96,10 +97,10 @@ const eyebrow = "text-[12.5px] font-semibold uppercase tracking-[0.18em]";
     <section class="mx-auto max-w-[900px] px-[22px] pb-5 pt-[84px]">
       <p class={`${eyebrow} text-cfrq-leaf`}>Notre mission</p>
       <p class="mt-4 font-display text-[clamp(24px,3.6vw,34px)] font-normal leading-[1.32] text-cfrq-deep text-pretty">
-        Rendre l'aménagement forestier <em class="not-italic text-cfrq-leaf">simple, accessible et payant</em> pour chaque propriétaire, qu'il possède un petit boisé de loisir ou une grande forêt productive.
+        Rendre l'aménagement forestier <em class="not-italic text-cfrq-leaf">simple, accessible et avantageux</em> pour chaque propriétaire, du petit boisé de loisir à la grande forêt productive.
       </p>
       <p class="mt-[26px] text-[17px] leading-[1.7] text-cfrq-ink/[.72]">
-        Depuis près de 30 ans, nos techniciens et ingénieurs forestiers accompagnent les propriétaires de la grande région de Québec. On va sur le terrain, on explique sans jargon, on signe des plans rigoureux et on supervise les travaux. Notre indépendance nous permet de toujours recommander ce qui sert vraiment votre forêt et vos objectifs.
+        Depuis 1996, nos techniciens et ingénieurs forestiers accompagnent les propriétaires de la grande région de Québec, de la visite sur le terrain à la supervision des travaux. Nous vous conseillons dans un langage clair et préparons des plans adaptés à votre boisé. Notre indépendance nous permet de recommander les interventions qui répondent aux besoins de votre forêt et à vos objectifs.
       </p>
     </section>
 
@@ -183,6 +184,19 @@ const eyebrow = "text-[12.5px] font-semibold uppercase tracking-[0.18em]";
               <li class="flex items-start gap-[11px]">
                 <span class="mt-[7px] h-[7px] w-[7px] flex-none rounded-full bg-cfrq-green"></span>
                 <span class="text-[15px] leading-[1.5] text-cfrq-ink">{a}</span>
+              </li>
+            ))}
+          </ul>
+          <p class="mt-6 border-t border-cfrq-green/[.18] pt-5 text-[12px] font-bold uppercase tracking-[0.14em] text-cfrq-leaf">Nos six agences d'accréditation</p>
+          <ul class="mt-3 space-y-2.5">
+            {AGENCES.map((a) => (
+              <li class="text-[14.5px] leading-[1.45]">
+                {a.url ? (
+                  <a href={a.url} target="_blank" rel="noopener" class="font-medium text-cfrq-deep underline decoration-cfrq-green/50 underline-offset-2 hover:decoration-cfrq-green">{a.nom}</a>
+                ) : (
+                  <span class="font-medium text-cfrq-deep">{a.nom}</span>
+                )}
+                <span class="block text-[13.5px] text-cfrq-ink/60">{a.territoire}</span>
               </li>
             ))}
           </ul>

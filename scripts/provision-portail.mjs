@@ -8,11 +8,19 @@
  *
  * Rien n'est envoyé au client : email_confirm=true ne déclenche aucun courriel.
  *
+ * Les comptes sont passés en argument, jamais écrits dans ce fichier. Le dépôt est
+ * PUBLIC : un mot de passe de client committé ici est lisible par n'importe qui, et
+ * l'historique Git en garde une copie même après suppression. Deux comptes de
+ * démonstration y sont restés du 2026-08-18 au 2026-09-15 ; leurs mots de passe ont
+ * dû être changés. Ne jamais remettre de valeur par défaut.
+ *
  * Usage :
- *   node --env-file=scripts/.env scripts/provision-portail.mjs
  *   node --env-file=scripts/.env scripts/provision-portail.mjs courriel@x.ca:3127:MotDePasse
  *     (chaque argument = courriel:producteur_id:mot_de_passe)
+ *   Le mot de passe peut être omis (courriel@x.ca:3127) : il est alors tiré au hasard
+ *   et affiché à la fin, ce qui évite les mots de passe devinables.
  */
+import { randomBytes } from "node:crypto";
 import { createClient } from "@supabase/supabase-js";
 
 const { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY } = process.env;
@@ -21,17 +29,26 @@ if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
   process.exit(1);
 }
 
-// Comptes par défaut de la démo. Surchargés si des arguments CLI sont fournis.
-const DEFAUTS = [
-  { email: "pierre.g@goforestinc.com", producteur_id: 644, password: "Goforest2026", label: "GoForest" },
-  { email: "anthony@meunerievicto.com", producteur_id: 3127, password: "ForetAA2026", label: "Forêt AA (Anthony)" },
-];
-
-const cli = process.argv.slice(2).map((a) => {
+const comptes = process.argv.slice(2).map((a) => {
   const [email, pid, password] = a.split(":");
-  return { email, producteur_id: Number(pid), password, label: email };
+  if (!email || !pid) {
+    console.error(`Argument invalide : « ${a} ». Attendu : courriel:producteur_id[:mot_de_passe]`);
+    process.exit(1);
+  }
+  // Sans mot de passe fourni, on en tire un au hasard plutôt que d'en laisser choisir
+  // un devinable. Il est affiché dans le récapitulatif final.
+  return {
+    email,
+    producteur_id: Number(pid),
+    password: password || randomBytes(12).toString("base64url"),
+    label: email,
+  };
 });
-const comptes = cli.length ? cli : DEFAUTS;
+
+if (comptes.length === 0) {
+  console.error("Aucun compte demandé. Usage : provision-portail.mjs courriel@x.ca:3127[:MotDePasse] ...");
+  process.exit(1);
+}
 
 const sb = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
   auth: { persistSession: false, autoRefreshToken: false },

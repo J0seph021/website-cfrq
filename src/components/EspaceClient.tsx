@@ -1414,6 +1414,61 @@ function ParcoursBar({ pourcentage }: { pourcentage: number }) {
 /* Wrapper: authentification + chargement des donnees (inchange).      */
 /* ------------------------------------------------------------------ */
 
+/**
+ * Compte créé mais pas encore rattaché à un dossier producteur.
+ *
+ * L'inscription est ouverte à tous, mais le lien compte <-> dossier se pose à la main
+ * (portal_users). Entre les deux, current_producteur_id() vaut null et la RLS ne rend
+ * aucune ligne : sans cet écran, la personne voyait un tableau de bord entièrement vide
+ * sans savoir si elle s'était trompée, si son dossier était perdu, ou quoi faire.
+ */
+function CompteNonRelie({ courriel, onDeconnexion }: { courriel: string | null; onDeconnexion: () => void }) {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-cfrq-cream px-5 py-10">
+      <div className="w-full max-w-[540px] rounded-3xl border border-black/[.07] bg-white p-[clamp(26px,5vw,42px)]">
+        <span className="inline-flex items-center gap-2 rounded-full bg-cfrq-tint px-3.5 py-[6px] text-[12px] font-bold uppercase tracking-[0.12em] text-cfrq-leaf">
+          <span className="h-[7px] w-[7px] flex-none rounded-full bg-cfrq-green" aria-hidden="true" />
+          Compte créé
+        </span>
+        <h1 className="mt-5 font-display text-[clamp(23px,4.5vw,30px)] font-medium leading-[1.15] text-cfrq-deep">
+          Il reste à relier votre espace à votre dossier forestier
+        </h1>
+        <p className="mt-4 text-[16px] leading-relaxed text-cfrq-ink/70">
+          Votre compte {courriel ? <strong className="font-semibold text-cfrq-deep">{courriel}</strong> : "est bien créé"} fonctionne.
+          Nous devons maintenant y rattacher le dossier de votre boisé, ce qu'un de nos ingénieurs forestiers
+          fait à la main pour être certain de vous donner le bon.
+        </p>
+        <p className="mt-3 text-[16px] leading-relaxed text-cfrq-ink/70">
+          Écrivez-nous ou appelez-nous, et nous ouvrirons votre espace. Vos documents et vos cartes
+          apparaîtront ici dès que ce sera fait.
+        </p>
+        <div className="mt-6 flex flex-wrap gap-2.5">
+          <a
+            href={site.telHref}
+            className="rounded-[10px] bg-cfrq-green px-5 py-3 text-[15px] font-semibold text-[#123005] transition-colors hover:bg-cfrq-green-hover"
+          >
+            Appeler le {site.tel}
+          </a>
+          <a
+            href={`mailto:${site.courriel}?subject=${encodeURIComponent("Relier mon espace client à mon dossier")}`}
+            className="rounded-[10px] border border-cfrq-green/40 px-5 py-3 text-[15px] font-semibold text-cfrq-leaf transition-colors hover:bg-cfrq-tint"
+          >
+            Écrire à {site.courriel}
+          </a>
+        </div>
+        <div className="mt-7 flex flex-wrap items-center justify-between gap-3 border-t border-black/[.07] pt-5">
+          <a href={withBase("/")} className="text-[14px] text-cfrq-leaf hover:text-cfrq-green">
+            ← Retour au site
+          </a>
+          <button onClick={onDeconnexion} className="rounded-full border border-black/15 px-3.5 py-2 text-[13px] text-cfrq-leaf transition-colors hover:bg-cfrq-tint">
+            Déconnexion
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function EspaceClient() {
   const [loading, setLoading] = useState(true);
   const [d, setD] = useState<Dossier | null>(null);
@@ -1506,6 +1561,13 @@ export default function EspaceClient() {
   // quel client il veut regarder.
   if (moi?.employe && !moi.producteur_id) {
     return <ChoixClient courriel={courriel} onDeconnexion={logout} />;
+  }
+
+  // Client dont le compte n'est pas encore relié à un dossier : on explique, plutôt
+  // que d'afficher un tableau de bord vide. On exige `moi` : si la RPC portail_moi a
+  // échoué, on laisse passer vers le tableau de bord (notifier, ne jamais bloquer).
+  if (moi && !moi.employe && moi.producteur_id == null) {
+    return <CompteNonRelie courriel={courriel} onDeconnexion={logout} />;
   }
 
   return (
