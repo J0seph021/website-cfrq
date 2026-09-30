@@ -21,6 +21,16 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Au niveau du job, pas de l'étape : le build ET la vérification doivent lire
+    # les mêmes valeurs (sinon verifier-build.mjs croit le portail fermé et bloque).
+    env:
+      SITE_URL: https://cfrq.ca
+      SITE_BASE: /
+      # Espace client ouvert au public le 2026-09-30 (version « dossiers »,
+      # voir src/data/espaceClient.ts) : /espace-client sert la connexion et
+      # le tableau de bord est construit. Remettre "0" referme le portail :
+      # /espace-client sert alors la page « en construction ».
+      PUBLIER_ESPACE_CLIENT: "1"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -33,14 +43,6 @@ jobs:
         run: npm ci
       - name: Build Astro
         run: npm run build
-        env:
-          SITE_URL: https://cfrq.ca
-          SITE_BASE: /
-          # Espace client ouvert au public le 2026-09-30 (version « dossiers »,
-          # voir src/data/espaceClient.ts) : /espace-client sert la connexion et
-          # le tableau de bord est construit. Remettre "0" referme le portail :
-          # /espace-client sert alors la page « en construction ».
-          PUBLIER_ESPACE_CLIENT: "1"
       - name: Vérifier le rendu avant publication
         run: node scripts/verifier-build.mjs
       - name: Upload artifact
