@@ -49,12 +49,12 @@ export const SYNONYMES_TERRITOIRE: { courant: string; equivaut: string }[] = [
   {
     courant: "Chaudière",
     equivaut:
-      "nom de l'agence de mise en valeur des forêts privées; en langage courant, la Beauce, Bellechasse, Lotbinière et Lévis",
+      "nom de l'agence de mise en valeur des forêts privées; en langage courant, la Beauce (La Nouvelle-Beauce, Beauce-Centre, Beauce-Sartigan), Lotbinière et la MRC des Appalaches, autour de Thetford Mines",
   },
   {
     courant: "Appalaches",
     equivaut:
-      "nom de l'agence de mise en valeur des forêts privées; en langage courant, la MRC des Appalaches et le secteur de Thetford Mines",
+      "nom de l'agence de mise en valeur des forêts privées; en langage courant, Bellechasse, Les Etchemins, Montmagny, L'Islet et Lévis. Attention : la MRC des Appalaches (Thetford Mines) relève de l'agence de la Chaudière, pas de celle-ci",
   },
   {
     courant: "Bois-Francs",
