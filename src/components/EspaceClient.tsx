@@ -594,9 +594,11 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
   // Salutation selon l'heure
   const salutation = new Date().getHours() < 18 ? "Bonjour" : "Bonsoir";
 
-  // Heros: cascade biodiversite -> superficie boisee -> proprietes
+  // Heros: cascade biodiversite -> superficie boisee -> proprietes. En mode dossiers,
+  // les peuplements (et leurs essences) restent reserves au Portrait : on part de la
+  // superficie boisee.
   const heros = useMemo(() => {
-    if (nbEssences >= 8) {
+    if (!MODE_DOSSIERS && nbEssences >= 8) {
       return {
         valeur: nbEssences, decimals: 0, mot: nbEssences > 1 ? "essences d'arbres" : "essence d'arbre",
         avant: "Votre forêt abrite",
@@ -622,12 +624,14 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
     { valeur: superficieTotale, decimals: 1, suffixe: " ha", label: "Superficie totale" },
     { valeur: d.proprietes.length, decimals: 0, suffixe: "", label: d.proprietes.length > 1 ? "Propriétés" : "Propriété" },
     { valeur: d.lots.length, decimals: 0, suffixe: "", label: "Lots boisés" },
-    { valeur: nbPeuplements, decimals: 0, suffixe: "", label: "Peuplements recensés" },
+    MODE_DOSSIERS
+      ? { valeur: d.documents.length, decimals: 0, suffixe: "", label: d.documents.length > 1 ? "Documents au dossier" : "Document au dossier" }
+      : { valeur: nbPeuplements, decimals: 0, suffixe: "", label: "Peuplements recensés" },
   ].filter((r) => r.valeur > 0);
 
   // Parcours (jalons reels)
   const jalons = [
-    { fait: nbPeuplements > 0, label: "Portrait écoforestier au dossier" },
+    ...(MODE_DOSSIERS ? [] : [{ fait: nbPeuplements > 0, label: "Portrait écoforestier au dossier" }]),
     { fait: aPaf, label: "Plan d'aménagement au dossier" },
     { fait: travauxCarte.length > 0, label: travauxCarte.length > 0 ? `${travauxCarte.length} travaux réalisés` : "Travaux réalisés" },
     { fait: prescriptions.length > 0, label: prescriptions.length > 0 ? `${prescriptions.length} prescriptions au dossier` : "Prescriptions" },
@@ -638,7 +642,7 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
 
   // Prochaine meilleure action (unique)
   const action = useMemo(() => {
-    if (nbPrioHaute > 0) {
+    if (!MODE_DOSSIERS && nbPrioHaute > 0) {
       return {
         titre: "La prochaine étape pour votre forêt",
         sous: `Vos forestiers ont repéré ${nfEnt.format(nbPrioHaute)} peuplements prioritaires (priorité 1 et 2) qui gagneraient à recevoir des travaux bénéfiques à leur santé. Votre ingénieur forestier peut vous expliquer lesquels, simplement.`,
@@ -873,7 +877,7 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
         </div>
 
         {/* Narration biodiversite / sante */}
-        {(nbEssences >= 4 || nbAppellations >= 4) && (
+        {!MODE_DOSSIERS && (nbEssences >= 4 || nbAppellations >= 4) && (
           <Reveal className="mt-8">
             <div className="rounded-2xl bg-cfrq-tint p-6 md:p-8">
               <p className="font-display text-xl leading-relaxed text-cfrq-ink md:text-2xl">
@@ -911,10 +915,12 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
             <section id="foret" className="scroll-mt-28">
               <div className="flex flex-wrap items-end justify-between gap-2">
                 <h2 className="font-display text-xl font-medium text-cfrq-deep">Votre forêt, lot par lot</h2>
-                <span className="text-[13px] text-black/50">Touchez un peuplement pour voir le détail</span>
+                <span className="text-[13px] text-black/50">
+                  {MODE_DOSSIERS ? "Touchez une zone de travaux pour ouvrir ses documents" : "Touchez un peuplement pour voir le détail"}
+                </span>
               </div>
               <div className="mt-4">
-                <CarteForet data={d.carte.geojson} bbox={d.carte.bbox} documents={d.documents} />
+                <CarteForet data={d.carte.geojson} bbox={d.carte.bbox} documents={d.documents} sansPeuplements={MODE_DOSSIERS} />
               </div>
             </section>
           </Reveal>
