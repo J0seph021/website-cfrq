@@ -1,0 +1,362 @@
+---
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import EnteteImage from "../../components/EnteteImage.astro";
+import Base from "../../layouts/Base.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import { site } from "../../data/site";
+import { withBase } from "../../lib/url";
+import { SITE_PRODUCTION } from "../../data/flags";
+import { AGENCES } from "../../data/agences";
+import { SECTEURS, FAMILLES, PROFIL, ancre, type Secteur, type FamilleTravaux } from "../../data/secteurs";
+
+import erabliere from "../../assets/photos/erabliere.jpg";
+import recolteBois from "../../assets/photos/recolte-bois.jpg";
+import recolteHiver from "../../assets/photos/recolte-hiver.jpg";
+import plantationErables from "../../assets/photos/plantation-erables.jpg";
+import peuplement from "../../assets/photos/peuplement.jpg";
+import planAmenagement from "../../assets/photos/plan-amenagement.jpg";
+
+import phSimonProulx from "../../assets/photos/equipe/simon-proulx.jpg";
+import phChristianDumont from "../../assets/photos/equipe/christian-dumont.jpg";
+import phJeanBenoitGirard from "../../assets/photos/equipe/jean-benoit-girard.jpg";
+import phAlexandreBouillon from "../../assets/photos/equipe/alexandre-bouillon.jpg";
+import phCamayBoisvert from "../../assets/photos/equipe/camay-boisvert.jpg";
+import phCedricMaheu from "../../assets/photos/equipe/cedric-maheu.jpg";
+import phAnnReneeRheaume from "../../assets/photos/equipe/ann-renee-rheaume.jpg";
+import phLouisChabot from "../../assets/photos/equipe/louis-chabot.jpg";
+import phMathieuJolibois from "../../assets/photos/equipe/mathieu-jolibois.jpg";
+import phFrankOlivierSoucy from "../../assets/photos/equipe/frank-olivier-soucy.jpg";
+import phPierreCadorette from "../../assets/photos/equipe/pierre-cadorette.jpg";
+import phGabrielleKellyPoulin from "../../assets/photos/equipe/gabrielle-kelly-poulin.jpg";
+
+export function getStaticPaths() {
+  return SECTEURS.map((s) => ({ params: { secteur: s.slug }, props: { secteur: s } }));
+}
+
+interface Props {
+  secteur: Secteur;
+}
+const { secteur } = Astro.props;
+const dominante = secteur.travaux[0];
+const principaux = secteur.travaux.slice(0, 4);
+// Secteurs voisins : même région, ou même équipe quand le secteur est seul
+// dans sa région (Mauricie, Côte-Nord).
+const memeRegion = SECTEURS.filter((s) => s.region === secteur.region && s.slug !== secteur.slug);
+const autres = memeRegion.length ? memeRegion : SECTEURS.filter((s) => s.rive === secteur.rive && s.slug !== secteur.slug);
+const DANS_REGION: Record<Secteur["region"], string> = {
+  "Capitale-Nationale": "dans la Capitale-Nationale",
+  "Chaudière-Appalaches": "en Chaudière-Appalaches",
+  "Centre-du-Québec": "au Centre-du-Québec",
+  Mauricie: "en Mauricie",
+  "Côte-Nord": "sur la Côte-Nord",
+};
+const titreAutres = memeRegion.length ? `Ailleurs ${DANS_REGION[secteur.region]}` : `Nos autres secteurs sur la ${secteur.rive}`;
+const agence = AGENCES.find((a) => a.nom === secteur.agence);
+const Dans = secteur.dans.charAt(0).toUpperCase() + secteur.dans.slice(1);
+
+// La photo d'en-tête suit le travail le plus fréquent du secteur.
+const photos: Record<FamilleTravaux, ImageMetadata> = {
+  recolte: recolteBois,
+  feuillus: erabliere,
+  recuperation: recolteHiver,
+  eclaircieCom: peuplement,
+  eclairciePrecom: peuplement,
+  reboisement: plantationErables,
+  degagement: plantationErables,
+  paf: planAmenagement,
+};
+
+// Membres de l'équipe, tels que présentés sur /notre-equipe/ (mêmes ancres).
+const EQUIPE: Record<string, { nom: string; titre: string; role: string; photo: ImageMetadata }> = {
+  "simon-proulx": { nom: "Simon Proulx", titre: "ing.f.", role: "Ingénieur forestier, surtout dans la région de Québec", photo: phSimonProulx },
+  "christian-dumont": { nom: "Christian Dumont", titre: "tech.f.", role: "Technicien forestier, installé dans Portneuf", photo: phChristianDumont },
+  "jean-benoit-girard": { nom: "Jean-Benoît Girard", titre: "tech.f.", role: "Technicien forestier, préparation des récoltes", photo: phJeanBenoitGirard },
+  "alexandre-bouillon": { nom: "Alexandre Bouillon", titre: "tech.f.", role: "Technicien forestier, région de Québec", photo: phAlexandreBouillon },
+  "camay-boisvert": { nom: "Camay Boisvert", titre: "ing.f.", role: "Ingénieure forestière, Bois-Francs et Chaudière-Appalaches", photo: phCamayBoisvert },
+  "cedric-maheu": { nom: "Cédric Maheu", titre: "ing.f.", role: "Ingénieur forestier, Beauceron d'origine", photo: phCedricMaheu },
+  "ann-renee-rheaume": { nom: "Ann-Renée Rhéaume", titre: "tech.f.", role: "Technicienne forestière, acéricultrice et productrice forestière", photo: phAnnReneeRheaume },
+  "louis-chabot": { nom: "Louis Chabot", titre: "tech.f.", role: "Technicien forestier, passionné d'acériculture", photo: phLouisChabot },
+  "mathieu-jolibois": { nom: "Mathieu Jolibois", titre: "tech.f.", role: "Technicien forestier, Bois-Francs et Chaudière-Appalaches", photo: phMathieuJolibois },
+  "frank-olivier-soucy": { nom: "Frank-Olivier Soucy", titre: "tech.f.", role: "Technicien forestier, originaire des Bois-Francs", photo: phFrankOlivierSoucy },
+  "pierre-cadorette": { nom: "Pierre Cadorette", titre: "tech.f.", role: "Technicien forestier, avec CFRQ depuis sa fondation", photo: phPierreCadorette },
+  "gabrielle-kelly-poulin": { nom: "Gabrielle Kelly-Poulin", titre: "tech.f.", role: "Technicienne forestière, Appalaches", photo: phGabrielleKellyPoulin },
+};
+
+const titre = `Ingénieur forestier ${secteur.dans} | CFRQ`;
+// Description Google : on nomme deux municipalités connues du secteur si la
+// longueur le permet (environ 160 caractères), sinon on les retire.
+const [c1, c2] = secteur.travaux.map((f) => FAMILLES[f].court);
+const suite = `Nos ingénieurs forestiers y travaillent déjà : ${c1}${c2 ? `, ${c2}` : ""}, aide financière.`;
+const [v1, v2] = secteur.vedettes;
+const description = [
+  v2 ? `Boisé ${secteur.dans}, à ${v1} ou à ${v2} ? ${suite}` : "",
+  `Boisé ${secteur.dans} ? ${suite}`,
+  `Boisé ${secteur.dans} ? Nos ingénieurs et techniciens forestiers y travaillent déjà. Visite-conseil sans engagement.`,
+].find((d) => d && d.length <= 160)!;
+
+const exemples = secteur.municipalites.length > 2 ? `, à ${secteur.vedettes[0]}, à ${secteur.vedettes[1]} ou ailleurs ${secteur.dans}` : ` ${secteur.dans}`;
+
+const faq = [
+  {
+    q: `Ai-je droit à de l'aide financière pour mon boisé ${secteur.dans} ?`,
+    r: `Si votre boisé fait au moins 4 hectares, un plan d'aménagement forestier préparé par un ingénieur forestier vous permet d'être reconnu producteur forestier. Ce statut ouvre l'accès au Programme d'aide à la mise en valeur des forêts privées, géré ${secteur.dans} par l'${secteur.agence}, et au remboursement de 85 % des taxes foncières admissibles. CFRQ est accrédité par cette agence et monte le dossier pour vous.`,
+  },
+  {
+    q: `Faut-il un permis pour couper des arbres ${secteur.dans} ?`,
+    r: `Souvent, oui. Selon la municipalité et la MRC, l'abattage d'arbres peut exiger un permis, et parfois une prescription signée par un ingénieur forestier. Nous vérifions la réglementation qui s'applique à votre propriété et préparons les documents demandés avant les travaux.`,
+  },
+  {
+    q: `Ma municipalité n'est pas dans la liste. Vous déplacez-vous quand même ?`,
+    r: `Oui. La liste montre les municipalités où nous avons déjà des dossiers, pas les limites de notre territoire. Un membre de notre équipe vient marcher votre boisé avec vous, et la visite-conseil est sans engagement.`,
+  },
+];
+
+const urlPage = `${SITE_PRODUCTION}/ingenieur-forestier/${secteur.slug}/`;
+const ld = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": `${urlPage}#webpage`,
+      url: urlPage,
+      name: titre,
+      description,
+      inLanguage: "fr-CA",
+      about: { "@id": `${SITE_PRODUCTION}/#organization` },
+    },
+    {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Accueil", item: `${SITE_PRODUCTION}/` },
+        { "@type": "ListItem", position: 2, name: "Ingénieur forestier par secteur", item: `${SITE_PRODUCTION}/ingenieur-forestier/` },
+        { "@type": "ListItem", position: 3, name: secteur.nom, item: urlPage },
+      ],
+    },
+    {
+      "@type": "Service",
+      "@id": `${urlPage}#service`,
+      name: `Ingénieur forestier ${secteur.dans}`,
+      serviceType: "Services d'ingénieur forestier en forêt privée",
+      provider: { "@id": `${SITE_PRODUCTION}/#organization` },
+      areaServed: [
+        { "@type": "AdministrativeArea", name: `${secteur.etiquette}, ${secteur.region}, Québec, Canada` },
+        ...secteur.municipalites.map((m) => ({ "@type": "City", name: `${m.nom}, Québec, Canada` })),
+      ],
+      hasOfferCatalog: {
+        "@type": "OfferCatalog",
+        name: `Travaux forestiers ${secteur.dans}`,
+        itemListElement: secteur.travaux.map((f) => ({ "@type": "Offer", itemOffered: { "@type": "Service", name: FAMILLES[f].titre } })),
+      },
+    },
+  ],
+};
+
+const eyebrow = "text-[12.5px] font-semibold uppercase tracking-[0.18em]";
+const lien = "font-medium text-cfrq-deep underline decoration-cfrq-green/50 underline-offset-2 hover:decoration-cfrq-green";
+---
+
+<Base title={titre} description={description} canonical={`/ingenieur-forestier/${secteur.slug}/`}>
+  <script type="application/ld+json" set:html={JSON.stringify(ld)} slot="head" />
+
+  <Header />
+  <main id="contenu">
+    <!-- HERO -->
+    <section class="relative isolate overflow-hidden bg-[#16200f]">
+      <EnteteImage src={photos[dominante]} alt={`Boisé privé : ${FAMILLES[dominante].titre.toLowerCase()}`} ratioDesktop={3} class="absolute inset-0 -z-10 h-full w-full object-cover" />
+      <div class="absolute inset-0 -z-10" style="background:linear-gradient(120deg,rgba(15,22,10,.9) 0%,rgba(15,22,10,.68) 55%,rgba(15,22,10,.32) 100%)"></div>
+      <div class="mx-auto max-w-[1160px] px-[22px] py-[84px]">
+        <div class="max-w-[680px]">
+          <nav aria-label="Fil d'Ariane" class="text-[13px] text-[#c9d2bc]">
+            <a href={withBase("/ingenieur-forestier")} class="hover:underline">Par secteur</a>
+            <span class="px-1.5">/</span>
+            <span>{secteur.region}</span>
+          </nav>
+          <h1 class="mt-3 font-display font-medium text-cfrq-cream text-[clamp(34px,5.5vw,52px)] leading-[1.05] tracking-[-0.02em] text-balance">
+            Ingénieur forestier {secteur.dans}
+          </h1>
+          <p class="mt-4 text-[19px] leading-[1.5] text-[#dce2d2] text-pretty">
+            Un boisé {secteur.dans} ? Notre équipe d'ingénieurs et de techniciens forestiers y travaille déjà : plan d'aménagement, travaux, récolte et aide financière.
+          </p>
+          <div class="mt-7 flex flex-wrap items-center gap-4">
+            <a href={withBase("/contact")} class="inline-flex items-center rounded-xl bg-cfrq-green px-6 py-3.5 text-[16px] font-bold text-[#123005] transition-colors hover:bg-[#6ecb3e]">Réserver une visite-conseil</a>
+            <a href={site.telHref} class="text-[16px] font-semibold text-cfrq-cream hover:underline">{site.tel}</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- REPÈRES -->
+    <section class="border-b border-black/5 bg-white">
+      <div class="mx-auto grid max-w-[1160px] gap-6 px-[22px] py-9 sm:grid-cols-3">
+        <div>
+          <p class="font-display text-[28px] font-medium leading-tight text-cfrq-deep">Déjà sur place</p>
+          <p class="mt-2 text-[14.5px] leading-snug text-cfrq-ink/70">Notre équipe {secteur.rive} travaille déjà {secteur.dans}.</p>
+        </div>
+        <div>
+          <p class="font-display text-[28px] font-medium leading-tight text-cfrq-deep">Depuis {site.depuis}</p>
+          <p class="mt-2 text-[14.5px] leading-snug text-cfrq-ink/70">à accompagner les propriétaires de boisés privés</p>
+        </div>
+        <div>
+          <p class="font-display text-[28px] font-medium leading-tight text-cfrq-deep">Accrédité</p>
+          <p class="mt-2 text-[14.5px] leading-snug text-cfrq-ink/70">par les six agences régionales, dont l'{secteur.agence}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TRAVAUX -->
+    <section class="mx-auto grid max-w-[1160px] gap-12 px-[22px] py-[72px] md:grid-cols-[1.3fr_1fr]">
+      <div>
+        <p class={`${eyebrow} text-cfrq-leaf`}>Nos travaux</p>
+        <h2 class="mt-3 font-display text-[clamp(26px,3.6vw,34px)] font-medium leading-[1.1] text-cfrq-deep text-balance">Ce qu'on fait {secteur.dans}</h2>
+        <p class="mt-5 text-[17px] leading-[1.7] text-cfrq-ink/[.78]">
+          {Dans}, {PROFIL[dominante]} Voici les travaux qui reviennent le plus souvent dans nos dossiers.
+        </p>
+        <ul class="mt-7 grid gap-4 sm:grid-cols-2">
+          {principaux.map((f) => (
+            <li class="rounded-[16px] border border-black/5 bg-white p-5">
+              <h3 class="font-display text-[18px] font-medium text-cfrq-deep">
+                <a href={withBase(FAMILLES[f].lien)} class="hover:underline">{FAMILLES[f].titre}</a>
+              </h3>
+              <p class="mt-2 text-[15px] leading-[1.6] text-cfrq-ink/70">{FAMILLES[f].texte}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <aside class="space-y-6">
+        <div class="rounded-[18px] border border-cfrq-green/[.14] bg-[#eef2e6] p-6">
+          <h2 class="font-display text-[19px] font-medium text-cfrq-deep">Les boisés {secteur.dans}</h2>
+          <p class="mt-3 text-[15px] leading-[1.6] text-cfrq-ink">{secteur.contexte}</p>
+        </div>
+        <div class="rounded-[18px] bg-cfrq-deep p-6 text-cfrq-cream">
+          <h2 class="font-display text-[19px] font-medium">Aménager, ce n'est pas couper à blanc</h2>
+          <p class="mt-2 text-[15px] leading-relaxed text-cfrq-cream/80">
+            C'est prendre soin de votre forêt pour qu'elle reste en santé, prenne de la valeur et se transmette. On part de vos objectifs, pas d'une recette.
+          </p>
+          <a href={withBase("/contact")} class="mt-4 inline-flex rounded-[11px] bg-cfrq-green px-5 py-3 text-[15px] font-semibold text-[#123005] transition-colors hover:bg-cfrq-green-hover">
+            Réserver une visite-conseil
+          </a>
+        </div>
+      </aside>
+    </section>
+
+    <!-- MUNICIPALITÉS -->
+    <section class="border-t border-black/5 bg-white/60">
+      <div class="mx-auto max-w-[1160px] px-[22px] py-[64px]">
+        <p class={`${eyebrow} text-cfrq-leaf`}>Où nous travaillons</p>
+        <h2 class="mt-3 font-display text-[clamp(26px,3.6vw,34px)] font-medium leading-[1.1] text-cfrq-deep text-balance">
+          {secteur.municipalites.length > 1 ? `Les municipalités où nous travaillons ${secteur.dans}` : `Nos travaux ${secteur.dans}`}
+        </h2>
+        <p class="mt-4 max-w-[680px] text-[16px] leading-[1.65] text-cfrq-ink/70">
+          Vous cherchez un ingénieur forestier{exemples} ? Voici les municipalités où notre équipe a déjà des dossiers, et les travaux qu'on y fait le plus souvent.
+        </p>
+        <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {secteur.municipalites.map((m) => (
+            <div id={ancre(m.nom)} class="scroll-mt-28 rounded-[16px] border border-black/5 bg-white p-5">
+              <h3 class="font-display text-[17.5px] font-medium text-cfrq-deep">{m.nom}</h3>
+              <ul class="mt-3 flex flex-wrap gap-1.5">
+                {(m.travaux.length ? m.travaux.slice(0, 3).map((f) => FAMILLES[f].court) : ["visites-conseils"]).map((t) => (
+                  <li class="rounded-full bg-[#eef2e6] px-2.5 py-1 text-[12.5px] font-medium text-[#2e6b1e]">{t}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+        <p class="mt-5 text-[13px] leading-[1.55] text-cfrq-ink/50">
+          Municipalités où CFRQ a préparé des prescriptions sylvicoles, des plans d'aménagement ou des visites-conseils, en ordre alphabétique. Votre municipalité n'y est pas ? On se déplace partout dans le secteur.
+        </p>
+      </div>
+    </section>
+
+    <!-- ÉQUIPE -->
+    <section class="mx-auto max-w-[1160px] px-[22px] py-[64px]">
+      <p class={`${eyebrow} text-cfrq-leaf`}>Votre équipe</p>
+      <h2 class="mt-3 font-display text-[clamp(26px,3.6vw,34px)] font-medium leading-[1.1] text-cfrq-deep text-balance">Les gens qui viennent marcher votre boisé</h2>
+      <p class="mt-4 max-w-[640px] text-[16px] leading-[1.65] text-cfrq-ink/70">
+        Notre équipe {secteur.rive} couvre ce secteur et se déplace d'une municipalité à l'autre selon vos besoins.
+      </p>
+      <div class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {secteur.equipe.map((id) => {
+          const m = EQUIPE[id];
+          return (
+            <a href={withBase(`/notre-equipe`) + `#${id}`} class="group flex items-center gap-4 rounded-[16px] border border-black/5 bg-white p-4 transition-colors hover:border-cfrq-green/40">
+              <Image src={m.photo} alt={`${m.nom}, ${m.titre}`} widths={[128]} sizes="64px" class="h-16 w-16 flex-none rounded-full object-cover" />
+              <div>
+                <p class="font-display text-[16.5px] font-medium text-cfrq-deep group-hover:underline">{m.nom}, {m.titre}</p>
+                <p class="mt-1 text-[13.5px] leading-snug text-cfrq-ink/65">{m.role}</p>
+              </div>
+            </a>
+          );
+        })}
+      </div>
+    </section>
+
+    <!-- AIDE FINANCIÈRE ET FAQ -->
+    <section class="border-t border-black/5 bg-white/60">
+      <div class="mx-auto grid max-w-[1160px] gap-12 px-[22px] py-[72px] md:grid-cols-[1fr_1.2fr]">
+        <div>
+          <p class={`${eyebrow} text-cfrq-leaf`}>Aide financière</p>
+          <h2 class="mt-3 font-display text-[clamp(26px,3.6vw,34px)] font-medium leading-[1.1] text-cfrq-deep text-balance">Des programmes existent. On vous montre lesquels.</h2>
+          <p class="mt-5 text-[16px] leading-[1.7] text-cfrq-ink/[.78]">
+            {Dans}, l'aide aux travaux en forêt privée passe par
+            {agence?.url ? <a href={agence.url} target="_blank" rel="noopener" class={lien}>l'{secteur.agence}</a> : <span>l'{secteur.agence}</span>}.
+            CFRQ y est accrédité : on prépare le plan, on monte les demandes et on s'occupe de la paperasse.
+          </p>
+          <ul class="mt-6 space-y-3">
+            <li class="flex items-start gap-3 text-[15px] leading-snug">
+              <span class="mt-[7px] h-[7px] w-[7px] flex-none rounded-full bg-cfrq-green"></span>
+              <span>Estimez votre <a href={withBase("/calculateur-taxes-foncieres")} class={lien}>remboursement de taxes foncières</a>.</span>
+            </li>
+            <li class="flex items-start gap-3 text-[15px] leading-snug">
+              <span class="mt-[7px] h-[7px] w-[7px] flex-none rounded-full bg-cfrq-green"></span>
+              <span>Estimez la <a href={withBase("/calculateur-valeur-bois")} class={lien}>valeur du bois de votre boisé</a>.</span>
+            </li>
+          </ul>
+        </div>
+
+        <div>
+          <h2 class="font-display text-[22px] font-medium text-cfrq-deep">Questions fréquentes</h2>
+          <div class="mt-5 divide-y divide-black/10 border-y border-black/10">
+            {faq.map((item) => (
+              <details class="group py-4">
+                <summary class="flex cursor-pointer list-none items-start justify-between gap-4 text-[16px] font-medium text-cfrq-deep">
+                  {item.q}
+                  <span class="mt-0.5 flex-none text-cfrq-leaf transition-transform group-open:rotate-45" aria-hidden="true">+</span>
+                </summary>
+                <p class="mt-3 text-[15px] leading-[1.65] text-cfrq-ink/75">{item.r}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- AILLEURS -->
+    <section class="mx-auto max-w-[1160px] px-[22px] py-[56px]">
+      <h2 class="font-display text-[22px] font-medium text-cfrq-deep">{titreAutres}</h2>
+      <div class="mt-5 flex flex-wrap gap-2.5">
+        {autres.map((s) => (
+          <a href={withBase(`/ingenieur-forestier/${s.slug}`)} class="rounded-full border border-cfrq-green/25 bg-white px-4 py-[9px] text-[14.5px] font-medium text-cfrq-deep transition-colors hover:border-cfrq-green">{s.nom}</a>
+        ))}
+        <a href={withBase("/ingenieur-forestier")} class="rounded-full border border-dashed border-cfrq-green/40 bg-[#eef2e6] px-4 py-[9px] text-[14.5px] font-semibold text-[#2e6b1e] hover:border-cfrq-green">Tous les secteurs →</a>
+      </div>
+    </section>
+
+    <!-- CTA FINAL -->
+    <section class="mx-auto max-w-[1160px] px-[22px] pb-[72px]">
+      <div class="flex flex-wrap items-center justify-between gap-6 rounded-3xl px-[clamp(30px,5vw,52px)] py-[clamp(30px,5vw,52px)] text-cfrq-cream" style="background:linear-gradient(140deg,#1D4011,#14331A)">
+        <div class="flex-1 basis-[380px]">
+          <h2 class="font-display text-[clamp(28px,4vw,40px)] font-medium leading-[1.08] text-balance">Un projet pour votre boisé {secteur.dans} ?</h2>
+          <p class="mt-3 max-w-[440px] text-[17px] leading-[1.55] text-cfrq-cream/[.82]">Une visite-conseil, c'est le meilleur point de départ. Sans engagement.</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-3.5 md:flex-none">
+          <a href={withBase("/contact")} class="inline-flex items-center rounded-xl bg-cfrq-green px-[26px] py-[15px] text-[16px] font-bold text-[#123005] transition-colors hover:bg-[#6ecb3e]">Réserver une visite-conseil</a>
+          <p class="text-[16px] text-cfrq-cream/85">ou&nbsp;<a href={site.telHref} class="font-semibold text-white hover:underline">{site.tel}</a></p>
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Base>

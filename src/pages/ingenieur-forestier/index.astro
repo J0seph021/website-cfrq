@@ -6,22 +6,18 @@ import Footer from "../../components/Footer.astro";
 import { site } from "../../data/site";
 import { withBase } from "../../lib/url";
 import { SITE_PRODUCTION } from "../../data/flags";
-import { PAGES_MUNICIPALES, ORDRE_MRC, MRC_INFO } from "../../data/pagesMunicipales";
+import { SECTEURS, REGIONS, ancre } from "../../data/secteurs";
 import territoire from "../../assets/photos/territoire.jpg";
 
-// Page d'entrée des pages par municipalité : elle leur donne un lien depuis le
-// pied de page (donc depuis toutes les pages du site), ce qui permet à Google
-// de les découvrir sans dépendre du seul sitemap.
-const groupes = ORDRE_MRC.map((mrc) => ({
-  mrc,
-  etiquette: mrc === "Québec" ? "Agglomération de Québec" : `MRC de ${mrc}`,
-  region: MRC_INFO[mrc].region,
-  pages: PAGES_MUNICIPALES.filter((p) => p.mrc === mrc).sort((a, b) => a.nom.localeCompare(b.nom, "fr")),
-})).filter((g) => g.pages.length > 0);
+// Page d'entrée des pages par secteur : elle leur donne un lien depuis le pied
+// de page (donc depuis toutes les pages du site), ce qui permet à Google de
+// les découvrir sans dépendre du seul sitemap. Chaque municipalité pointe vers
+// son ancre dans la page de son secteur.
+const groupes = REGIONS.map((region) => ({ region, secteurs: SECTEURS.filter((s) => s.region === region) })).filter((g) => g.secteurs.length);
 
 const titre = "Ingénieur forestier près de chez vous | CFRQ";
 const description =
-  "Un ingénieur forestier dans votre municipalité, de Québec à Portneuf et à la Mauricie : les travaux que CFRQ y réalise et l'équipe qui s'y déplace.";
+  "De Québec à la Beauce et aux Bois-Francs : les travaux forestiers de CFRQ par secteur, les municipalités où l'on travaille et l'équipe qui s'y déplace.";
 
 const url = `${SITE_PRODUCTION}/ingenieur-forestier/`;
 const ld = {
@@ -32,16 +28,16 @@ const ld = {
       "@type": "BreadcrumbList",
       itemListElement: [
         { "@type": "ListItem", position: 1, name: "Accueil", item: `${SITE_PRODUCTION}/` },
-        { "@type": "ListItem", position: 2, name: "Ingénieur forestier par municipalité", item: url },
+        { "@type": "ListItem", position: 2, name: "Ingénieur forestier par secteur", item: url },
       ],
     },
     {
       "@type": "ItemList",
-      itemListElement: groupes.flatMap((g) => g.pages).map((p, i) => ({
+      itemListElement: SECTEURS.map((s, i) => ({
         "@type": "ListItem",
         position: i + 1,
-        name: `Ingénieur forestier à ${p.nom}`,
-        url: `${SITE_PRODUCTION}/ingenieur-forestier/${p.slug}/`,
+        name: `Ingénieur forestier ${s.dans}`,
+        url: `${SITE_PRODUCTION}/ingenieur-forestier/${s.slug}/`,
       })),
     },
   ],
@@ -56,49 +52,50 @@ const eyebrow = "text-[12.5px] font-semibold uppercase tracking-[0.18em]";
   <Header />
   <main id="contenu">
     <section class="relative isolate overflow-hidden bg-[#16200f]">
-      <EnteteImage src={territoire} alt="Forêt privée de la région de Québec" ratioDesktop={3.4} class="absolute inset-0 -z-10 h-full w-full object-cover" />
+      <EnteteImage src={territoire} alt="Forêt privée du territoire desservi par CFRQ" ratioDesktop={3.4} class="absolute inset-0 -z-10 h-full w-full object-cover" />
       <div class="absolute inset-0 -z-10" style="background:linear-gradient(120deg,rgba(15,22,10,.9) 0%,rgba(15,22,10,.62) 60%,rgba(15,22,10,.28) 100%)"></div>
       <div class="mx-auto max-w-[1160px] px-[22px] py-[84px]">
         <div class="max-w-[660px]">
-          <p class={`${eyebrow} tracking-[0.2em] text-cfrq-green-light`}>Par municipalité</p>
+          <p class={`${eyebrow} tracking-[0.2em] text-cfrq-green-light`}>Par secteur</p>
           <h1 class="mt-3 font-display font-medium text-cfrq-cream text-[clamp(34px,5.5vw,52px)] leading-[1.05] tracking-[-0.02em] text-balance">
             Un ingénieur forestier près de chez vous
           </h1>
           <p class="mt-5 max-w-[560px] text-[19px] leading-[1.55] text-[#dce2d2] text-pretty">
-            Choisissez la municipalité de votre boisé : vous verrez les travaux qu'on y fait déjà et l'équipe qui s'y déplace.
+            Choisissez le secteur de votre boisé : vous verrez les travaux qu'on y fait, les municipalités où l'on travaille et l'équipe qui s'y déplace.
           </p>
         </div>
       </div>
     </section>
 
-    <section class="mx-auto max-w-[1160px] px-[22px] py-[64px]">
-      <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {groupes.map((g) => (
-          <div class="rounded-2xl border border-black/5 bg-white p-6">
-            <p class="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#7e8c6a]">{g.region}</p>
-            <h2 class="mt-1.5 font-display text-[21px] font-medium text-cfrq-deep">{g.etiquette}</h2>
-            <ul class="mt-4 space-y-2">
-              {g.pages.map((p) => (
-                <li class="flex items-baseline justify-between gap-3">
-                  <a href={withBase(`/ingenieur-forestier/${p.slug}`)} class="text-[15.5px] font-medium text-cfrq-deep underline decoration-cfrq-green/40 underline-offset-2 hover:decoration-cfrq-green">{p.nom}</a>
-                  <span class="flex-none text-[13px] text-cfrq-ink/50">{p.dossiers} dossiers</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
-        <div class="flex items-center rounded-2xl border border-dashed border-cfrq-green/40 bg-[#eef2e6] p-6">
-          <p class="text-[14.5px] leading-[1.6] text-[#2e6b1e]">
-            Votre municipalité n'est pas dans la liste ? Nous desservons <a href={withBase("/territoire-desservi")} class="font-semibold underline">huit régions</a>, de Charlevoix aux Appalaches. <a href={withBase("/contact")} class="font-semibold underline">Écrivez-nous</a>, on vient voir votre boisé.
-          </p>
+    {groupes.map((g) => (
+      <section class="mx-auto max-w-[1160px] px-[22px] pt-[56px] last-of-type:pb-4">
+        <h2 class="font-display text-[clamp(24px,3.4vw,30px)] font-medium text-cfrq-deep">{g.region}</h2>
+        <div class="mt-5 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          {g.secteurs.map((s) => (
+            <div class="rounded-2xl border border-black/5 bg-white p-6">
+              <h3 class="font-display text-[20px] font-medium">
+                <a href={withBase(`/ingenieur-forestier/${s.slug}`)} class="text-cfrq-deep underline decoration-cfrq-green/40 underline-offset-4 hover:decoration-cfrq-green">{s.nom}</a>
+              </h3>
+              <p class="mt-3 text-[13.5px] leading-[1.7] text-cfrq-ink/65">
+                {s.municipalites.map((m, i) => (
+                  <Fragment>
+                    <a href={withBase(`/ingenieur-forestier/${s.slug}`) + `#${ancre(m.nom)}`} class="hover:text-cfrq-deep hover:underline">{m.nom}</a>{i < s.municipalites.length - 1 ? " · " : ""}
+                  </Fragment>
+                ))}
+              </p>
+            </div>
+          ))}
         </div>
-      </div>
-      <p class="mt-6 text-[13px] leading-[1.55] text-cfrq-ink/50">
-        Nombre de dossiers : prescriptions sylvicoles, plans d'aménagement et visites-conseils préparés par CFRQ pour des boisés situés dans la municipalité, selon notre base de données.
+      </section>
+    ))}
+
+    <section class="mx-auto max-w-[1160px] px-[22px] pt-[48px]">
+      <p class="rounded-2xl border border-dashed border-cfrq-green/40 bg-[#eef2e6] p-6 text-[14.5px] leading-[1.6] text-[#2e6b1e]">
+        Votre municipalité n'est pas dans la liste ? Ces listes montrent les endroits où nous avons déjà des dossiers, pas les limites de notre <a href={withBase("/territoire-desservi")} class="font-semibold underline">territoire</a>. <a href={withBase("/contact")} class="font-semibold underline">Écrivez-nous</a>, on vient voir votre boisé.
       </p>
     </section>
 
-    <section class="mx-auto max-w-[1160px] px-[22px] pb-[84px]">
+    <section class="mx-auto max-w-[1160px] px-[22px] py-[64px]">
       <div class="rounded-3xl px-[clamp(34px,5vw,56px)] py-[clamp(34px,5vw,56px)] text-center text-cfrq-cream" style="background:linear-gradient(140deg,#1D4011,#14331A)">
         <h2 class="font-display text-[clamp(28px,4.5vw,44px)] font-medium leading-[1.06] text-balance">Votre boisé mérite une visite</h2>
         <p class="mx-auto mt-4 max-w-[520px] text-[18px] leading-[1.55] text-cfrq-cream/[.82]">Un membre de notre équipe se déplace pour une visite-conseil, sans engagement.</p>

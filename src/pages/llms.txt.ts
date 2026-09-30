@@ -26,7 +26,7 @@ import { services } from "../data/services";
 import { MUNICIPALITES_TERRITOIRE } from "../data/municipalites";
 import { MRC_DESSERVIES, SYNONYMES_TERRITOIRE } from "../data/territoires";
 import { FAQ } from "../data/faq";
-import { PAGES_MUNICIPALES, FAMILLES, travauxTries } from "../data/pagesMunicipales";
+import { SECTEURS, FAMILLES } from "../data/secteurs";
 
 /** Les liens pointent toujours vers la production, jamais vers une copie. */
 const url = (chemin: string) => `${SITE_PRODUCTION}${chemin}`;
@@ -89,11 +89,11 @@ Liste tirée de la base de clients de CFRQ. Elle documente des mandats réelleme
 
 ${MUNICIPALITES_TERRITOIRE.join(", ")}.
 
-### Pages par municipalité
+### Pages par secteur
 
-Une page par municipalité décrit les travaux que CFRQ y a réalisés, d'après sa base de données.
+Une page par secteur (MRC ou région) décrit les travaux que CFRQ y réalise et nomme les municipalités où l'équipe a déjà des dossiers.
 
-${PAGES_MUNICIPALES.map((p) => `- ${p.nom} (${p.mrc === "Québec" ? "agglomération de Québec" : `MRC de ${p.mrc}`}) : ${p.dossiers} dossiers forestiers depuis ${p.depuis}, surtout : ${travauxTries(p).slice(0, 2).map(([f]) => FAMILLES[f].titre.toLowerCase()).join(" ; ")}. ${url(`/ingenieur-forestier/${p.slug}/`)}`).join("\n")}
+${SECTEURS.map((s) => `- ${s.nom} (${s.etiquette}) : surtout ${s.travaux.slice(0, 3).map((f) => FAMILLES[f].court).join(", ")}. Municipalités : ${s.municipalites.map((m) => m.nom).join(", ")}. ${url(`/ingenieur-forestier/${s.slug}/`)}`).join("\n")}
 
 ## Services
 
@@ -123,7 +123,7 @@ ${FAQ.map((f) => `### ${f.question}\n\n${f.reponse}`).join("\n\n")}
 - Accueil : ${url("/")}
 - Services : ${url("/services/")}
 - Territoire desservi : ${url("/territoire-desservi/")}
-- Ingénieur forestier par municipalité : ${url("/ingenieur-forestier/")}
+- Ingénieur forestier par secteur : ${url("/ingenieur-forestier/")}
 - À propos de nous : ${url("/a-propos-de-nous/")}
 - Notre équipe : ${url("/notre-equipe/")}
 - Contact et demande de visite-conseil : ${url("/contact/")}

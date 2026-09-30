@@ -7,7 +7,7 @@ import Footer from "../components/Footer.astro";
 import { site } from "../data/site";
 import { zonesDesservies } from "../data/territoires";
 import { withBase } from "../lib/url";
-import { PAGES_MUNICIPALES } from "../data/pagesMunicipales";
+import { SECTEURS } from "../data/secteurs";
 import territoire from "../assets/photos/territoire.jpg";
 
 const regions = [
@@ -117,17 +117,17 @@ const eyebrow = "text-[12.5px] font-semibold uppercase tracking-[0.18em]";
       </div>
     </section>
 
-    <!-- PAR MUNICIPALITÉ -->
+    <!-- PAR SECTEUR -->
     <section class="mx-auto max-w-[1160px] px-[22px] pt-16">
       <div class="max-w-[620px]">
-        <p class={`${eyebrow} text-cfrq-leaf`}>Par municipalité</p>
+        <p class={`${eyebrow} text-cfrq-leaf`}>Par secteur</p>
         <h2 class="mt-3.5 font-display font-medium text-cfrq-deep text-[clamp(26px,3.8vw,34px)] leading-[1.08] tracking-[-0.015em] text-balance">Les travaux qu'on fait près de chez vous</h2>
       </div>
       <div class="mt-6 flex flex-wrap gap-2.5">
-        {PAGES_MUNICIPALES.map((p) => (
+        {SECTEURS.map((p) => (
           <a href={withBase(`/ingenieur-forestier/${p.slug}`)} class="rounded-full border border-cfrq-green/25 bg-white px-4 py-[9px] text-[14.5px] font-medium text-cfrq-deep transition-colors hover:border-cfrq-green">{p.nom}</a>
         ))}
-        <a href={withBase("/ingenieur-forestier")} class="rounded-full border border-dashed border-cfrq-green/40 bg-[#eef2e6] px-4 py-[9px] text-[14.5px] font-semibold text-[#2e6b1e] hover:border-cfrq-green">Toutes les municipalités →</a>
+        <a href={withBase("/ingenieur-forestier")} class="rounded-full border border-dashed border-cfrq-green/40 bg-[#eef2e6] px-4 py-[9px] text-[14.5px] font-semibold text-[#2e6b1e] hover:border-cfrq-green">Tous les secteurs →</a>
       </div>
     </section>
 
