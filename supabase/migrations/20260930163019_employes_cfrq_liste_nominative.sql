@@ -1,4 +1,5 @@
--- Employé = une personne nommée sur la liste, plus « toute adresse @cfrq.ca ».
+-- Employé = une personne nommée sur la liste employes_cfrq, et non plus
+-- « toute adresse @cfrq.ca ».
 -- Avant : n'importe quel compte @cfrq.ca confirmé ouvrait les dossiers de tous les
 -- clients, y compris un compte créé sur la boîte partagée cfrq@cfrq.ca (identité
 -- partagée, donc journal d'accès inutilisable). La confirmation du courriel reste
