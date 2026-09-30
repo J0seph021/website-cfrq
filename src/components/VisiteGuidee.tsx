@@ -1,5 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
+// Styles importés d'office : un import() de CSS à la demande est référencé par le
+// build d'Astro sans que le fichier soit émis (404 en ligne, visite muette).
+import "driver.js/dist/driver.css";
+import "../styles/visite-guidee.css";
 
 // Visite guidée de l'espace client : un mot d'accueil, puis des bulles posées sur
 // les repères de la page (attributs data-visite). Elle s'ouvre seule à la première
@@ -7,7 +11,7 @@ import { supabase } from "../lib/supabaseClient";
 //
 // « Déjà vue » est noté dans les métadonnées du compte Supabase (suit le client
 // d'un appareil à l'autre) et dans le navigateur (repli si l'écriture échoue).
-// driver.js n'est chargé qu'au lancement de la visite.
+// Le code de driver.js n'est chargé qu'au lancement de la visite.
 
 const CLE_LOCALE = "cfrq-visite-guidee";
 
@@ -63,11 +67,13 @@ function etapes(sansPeuplements: boolean): Etape[] {
 }
 
 async function lancer(sansPeuplements: boolean, apercu: boolean) {
-  const [{ driver }] = await Promise.all([
-    import("driver.js"),
-    import("driver.js/dist/driver.css"),
-    import("../styles/visite-guidee.css"),
-  ]);
+  let driver: typeof import("driver.js").driver;
+  try {
+    ({ driver } = await import("driver.js"));
+  } catch (e) {
+    console.error("[visite] chargement impossible :", e);
+    return;
+  }
   // Une étape dont le repère est absent (pas de carte, pas de travaux…) est sautée.
   const steps = etapes(sansPeuplements)
     .map((e) => ({ e, el: document.querySelector(`[data-visite="${e.cle}"]`) }))
