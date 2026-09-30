@@ -10,15 +10,12 @@ import CompteNonRelie from "./DemandeAcces";
 import Bientot from "./Bientot";
 import VisiteGuidee from "./VisiteGuidee";
 import { essencesArbres } from "../lib/foret/essences-mffp";
+import { MODE_DOSSIERS } from "../data/espaceClient";
 
 type Row = Record<string, any>;
 
-// Version « dossiers » de l'espace client : documents, carte, propriétés, travaux et
-// bilan, fiables pour tous les clients. On cache ce qui n'est pas prêt pour tout le
-// monde (recommandations automatiques, calculateur de valeur du bois, achat du
-// Portrait, en attente de la revue OIFQ) et on l'annonce dans « Bientôt dans votre
-// espace ». Passer à false pour retrouver le tableau de bord complet.
-const MODE_DOSSIERS = true;
+// Version « dossiers » de l'espace client : voir src/data/espaceClient.ts (partagé
+// avec la page Services, qui ne doit pas dire le Relevé disponible avant l'heure).
 export interface Dossier {
   producteur: Row | null;
   proprietes: Row[];
