@@ -5,6 +5,7 @@ export const site = {
   tel: "367 777-0555",
   telHref: "tel:+13677770555",
   courriel: "cfrq@cfrq.ca",
+  facebook: "https://www.facebook.com/profile.php?id=100064152754285",
   adresse: {
     ligne1: "6021, boul. Wilfrid-Hamel, bureau 200",
     ville: "L'Ancienne-Lorette (Québec)",
