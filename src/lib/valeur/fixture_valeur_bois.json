@@ -295,5 +295,123 @@
         "cout_recolte_pct": null
       }
     }
+  },
+  {
+    "name": "prix au chemin (bord de route) : transport non rededuit",
+    "peuplements": [
+      {
+        "composition": {
+          "SAB": 60.0,
+          "EPN": 20.0,
+          "ERS": 40.0,
+          "PET": 25.0
+        },
+        "superficie_ha": 2.5
+      }
+    ],
+    "prix_resolu": {
+      "SAB": {
+        "sciage": 86.81,
+        "pate": 55.41,
+        "sciage_bord_route": false,
+        "pate_bord_route": false
+      },
+      "EPN": {
+        "sciage": 87.65,
+        "pate": 55.41,
+        "sciage_bord_route": false,
+        "pate_bord_route": false
+      },
+      "ERS": {
+        "sciage": 135.87,
+        "pate": 43.0,
+        "sciage_bord_route": false,
+        "pate_bord_route": true
+      },
+      "PET": {
+        "sciage": 64.22,
+        "pate": 25.0,
+        "sciage_bord_route": false,
+        "pate_bord_route": true
+      }
+    },
+    "params": {
+      "ratio_resineux_sciage": 0.7,
+      "transport_m3": 15,
+      "cout_recolte_m3": 28
+    },
+    "expected": {
+      "volumes": {
+        "total_m3": 362.5,
+        "sciage_m3": 140.0,
+        "pate_m3": 222.5,
+        "par_essence": [
+          {
+            "code": "SAB",
+            "nom": "Sapin baumier",
+            "classe": "resineux",
+            "m3": 150.0,
+            "sciage_m3": 105.0,
+            "pate_m3": 45.0
+          },
+          {
+            "code": "ERS",
+            "nom": "Érable à sucre",
+            "classe": "feuillu",
+            "m3": 100.0,
+            "sciage_m3": 0.0,
+            "pate_m3": 100.0
+          },
+          {
+            "code": "PET",
+            "nom": "Peuplier faux-tremble",
+            "classe": "feuillu",
+            "m3": 62.5,
+            "sciage_m3": 0.0,
+            "pate_m3": 62.5
+          },
+          {
+            "code": "EPN",
+            "nom": "Épinette noire",
+            "classe": "resineux",
+            "m3": 50.0,
+            "sciage_m3": 35.0,
+            "pate_m3": 15.0
+          }
+        ]
+      },
+      "valeur": {
+        "brut": 21370.0,
+        "transport": 3000.0,
+        "recolte": 10150.0,
+        "net": 8220.0,
+        "prix_manquants": [],
+        "par_essence": [
+          {
+            "code": "EPN",
+            "brut": 3899.0
+          },
+          {
+            "code": "ERS",
+            "brut": 4300.0
+          },
+          {
+            "code": "PET",
+            "brut": 1563.0
+          },
+          {
+            "code": "SAB",
+            "brut": 11609.0
+          }
+        ]
+      },
+      "params": {
+        "ratio_resineux_sciage": 0.7,
+        "ratio_feuillu_sciage": 0.0,
+        "transport_m3": 15,
+        "cout_recolte_m3": 28,
+        "cout_recolte_pct": null
+      }
+    }
   }
 ]

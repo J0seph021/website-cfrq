@@ -77,7 +77,13 @@ export const NOM_ESSENCE: Record<string, string> = {
 };
 // <<< GENERE:NOM_ESSENCE
 
-export type PrixEssence = { sciage: number | null; pate: number | null };
+// `*_bord_route` : VRAI quand le prix vient d'un prix « au chemin » (bord de route), donc
+// déjà net du transport ; le transport ne se déduit alors pas une seconde fois (miroir de
+// valeur_peuplements en Python). La pâte feuillue est dans ce cas partout.
+export type PrixEssence = {
+  sciage: number | null; pate: number | null;
+  sciage_bord_route?: boolean; pate_bord_route?: boolean;
+};
 export type Peuplement = { composition: Record<string, number>; superficie_ha: number };
 export type Params = {
   ratio_resineux_sciage?: number;
@@ -146,6 +152,8 @@ export function valeurPeuplements(
   const parEssVol: Resultat["volumes"]["par_essence"] = [];
   const parEssVal: Resultat["valeur"]["par_essence"] = [];
   let totM3 = 0, totSci = 0, totPate = 0, brut = 0;
+  // Volume vendu PRIX USINE : le seul auquel il reste un transport à payer.
+  let m3ATransporter = 0;
   const manquants: string[] = [];
 
   for (const code of codes) {
@@ -162,6 +170,8 @@ export function valeurPeuplements(
     const b = vSci * (pSci ?? 0) + vPate * (pPate ?? 0);
 
     totM3 += v; totSci += vSci; totPate += vPate; brut += b;
+    if (!pr.sciage_bord_route) m3ATransporter += vSci;
+    if (!pr.pate_bord_route) m3ATransporter += vPate;
     parEssVol.push({
       code, nom: NOM_ESSENCE[code] ?? code, classe: cl,
       m3: r(v, 1), sciage_m3: r(vSci, 1), pate_m3: r(vPate, 1),
@@ -169,8 +179,9 @@ export function valeurPeuplements(
     parEssVal.push({ code, brut: r(b, 0) });
   }
 
-  // 2. Net = brut - transport - récolte (peut être négatif).
-  const transport = p.transport_m3 * totM3;
+  // 2. Net = brut - transport - récolte (peut être négatif). Le transport ne porte que
+  //    sur le volume vendu PRIX USINE (m3ATransporter), comme en Python.
+  const transport = p.transport_m3 * m3ATransporter;
   const recolte = p.cout_recolte_pct !== null ? p.cout_recolte_pct * brut : p.cout_recolte_m3 * totM3;
   const net = brut - transport - recolte;
 
