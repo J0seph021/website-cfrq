@@ -4,159 +4,237 @@
   "prix": {
    "BOG": {
     "sciage": 81.73,
-    "pate": 130.0
+    "pate": 29.55,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "BOJ": {
     "sciage": 105.77,
-    "pate": 130.0
+    "pate": 43.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "BOP": {
     "sciage": 81.73,
-    "pate": 130.0
+    "pate": 29.55,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CAC": {
     "sciage": 67.31,
-    "pate": 45.45
+    "pate": 43.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CET": {
-    "sciage": 96.15,
-    "pate": 45.45
+    "sciage": 91.35,
+    "pate": 43.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CHB": {
     "sciage": 134.62,
-    "pate": 130.0
+    "pate": 43.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CHG": {
     "sciage": 134.62,
-    "pate": 130.0
+    "pate": 43.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CHR": {
     "sciage": 134.62,
-    "pate": 52.88
+    "pate": 43.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "EPB": {
-    "sciage": 117.92,
-    "pate": 55.5
+    "sciage": 87.65,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "EPN": {
-    "sciage": 117.92,
-    "pate": 55.5
+    "sciage": 87.65,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "EPO": {
-    "sciage": 208.7,
-    "pate": 55.5
+    "sciage": 80.35,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "EPR": {
-    "sciage": 117.92,
-    "pate": 55.5
+    "sciage": 87.65,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "ERA": {
-    "sciage": 81.73,
-    "pate": 38.46
+    "sciage": 76.92,
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ERR": {
-    "sciage": 81.73,
-    "pate": 38.46
+    "sciage": 76.92,
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ERS": {
-    "sciage": 134.62,
-    "pate": 43.27
+    "sciage": 135.87,
+    "pate": 43.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "FRA": {
-    "sciage": 115.38,
-    "pate": 48.08
+    "sciage": 112.98,
+    "pate": 43.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "FRN": {
     "sciage": 52.88,
-    "pate": 52.88
+    "pate": 43.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "FRP": {
-    "sciage": 115.38,
-    "pate": 48.08
+    "sciage": 112.98,
+    "pate": 43.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "HEG": {
     "sciage": 48.08,
-    "pate": 33.66
+    "pate": 33.66,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "MEH": {
-    "sciage": 113.04,
-    "pate": 110.44
+    "sciage": 72.73,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "MEL": {
-    "sciage": 113.04,
-    "pate": 110.44
+    "sciage": 72.73,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "NOC": {
-    "sciage": 88.94,
-    "pate": 45.45
+    "sciage": 86.54,
+    "pate": 43.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ORA": {
     "sciage": 43.27,
-    "pate": 38.46
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ORR": {
     "sciage": 43.27,
-    "pate": 38.46
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ORT": {
     "sciage": 43.27,
-    "pate": 38.46
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "OSV": {
     "sciage": 45.45,
-    "pate": 45.45
+    "pate": 43.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PEB": {
-    "sciage": 29.55,
-    "pate": 29.55
+    "sciage": 26.0,
+    "pate": 26.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PED": {
-    "sciage": 76.92,
-    "pate": 95.0
+    "sciage": 64.22,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PEG": {
-    "sciage": 76.92,
-    "pate": 95.0
+    "sciage": 64.22,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PEH": {
-    "sciage": 76.92,
-    "pate": 95.0
+    "sciage": 64.22,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PET": {
-    "sciage": 76.92,
-    "pate": 95.0
+    "sciage": 64.22,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PIB": {
-    "sciage": 108.49,
-    "pate": 55.5
+    "sciage": 96.36,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PIG": {
-    "sciage": 89.13,
-    "pate": 55.5
+    "sciage": 72.73,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PIR": {
-    "sciage": 75.47,
-    "pate": 55.5
+    "sciage": 70.91,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PIS": {
-    "sciage": 83.37,
-    "pate": 26.96
+    "sciage": 54.34,
+    "pate": 26.91,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PRU": {
-    "sciage": 96.23,
-    "pate": 39.13
+    "sciage": 81.82,
+    "pate": 13.89,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "SAB": {
-    "sciage": 118.75,
-    "pate": 55.5
+    "sciage": 86.81,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "THO": {
-    "sciage": 113.21,
-    "pate": 104.97
+    "sciage": 89.8,
+    "pate": 34.38,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "TIL": {
     "sciage": 57.69,
-    "pate": 33.66
+    "pate": 33.66,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    }
   }
  },
@@ -165,159 +243,237 @@
   "prix": {
    "BOG": {
     "sciage": 81.73,
-    "pate": 130.0
+    "pate": 29.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "BOJ": {
     "sciage": 105.77,
-    "pate": 130.0
+    "pate": 29.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "BOP": {
     "sciage": 81.73,
-    "pate": 130.0
+    "pate": 29.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CAC": {
     "sciage": 67.31,
-    "pate": 45.45
+    "pate": 29.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CET": {
-    "sciage": 96.15,
-    "pate": 45.45
+    "sciage": 91.35,
+    "pate": 29.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CHB": {
     "sciage": 134.62,
-    "pate": 130.0
+    "pate": 29.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CHG": {
     "sciage": 134.62,
-    "pate": 130.0
+    "pate": 29.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CHR": {
     "sciage": 134.62,
-    "pate": 52.88
+    "pate": 29.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "EPB": {
-    "sciage": 117.92,
-    "pate": 55.5
+    "sciage": 87.65,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "EPN": {
-    "sciage": 117.92,
-    "pate": 55.5
+    "sciage": 87.65,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "EPO": {
-    "sciage": 208.7,
-    "pate": 55.5
+    "sciage": 80.35,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "EPR": {
-    "sciage": 117.92,
-    "pate": 55.5
+    "sciage": 87.65,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "ERA": {
-    "sciage": 81.73,
-    "pate": 38.46
+    "sciage": 76.92,
+    "pate": 29.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ERR": {
-    "sciage": 81.73,
-    "pate": 38.46
+    "sciage": 76.92,
+    "pate": 29.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ERS": {
-    "sciage": 134.62,
-    "pate": 43.27
+    "sciage": 135.87,
+    "pate": 29.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "FRA": {
-    "sciage": 115.38,
-    "pate": 48.08
+    "sciage": 112.98,
+    "pate": 29.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "FRN": {
     "sciage": 52.88,
-    "pate": 52.88
+    "pate": 29.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "FRP": {
-    "sciage": 115.38,
-    "pate": 48.08
+    "sciage": 112.98,
+    "pate": 29.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "HEG": {
     "sciage": 48.08,
-    "pate": 33.66
+    "pate": 29.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "MEH": {
-    "sciage": 113.04,
-    "pate": 110.44
+    "sciage": 72.73,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "MEL": {
-    "sciage": 113.04,
-    "pate": 110.44
+    "sciage": 72.73,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "NOC": {
-    "sciage": 88.94,
-    "pate": 45.45
+    "sciage": 86.54,
+    "pate": 29.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ORA": {
     "sciage": 43.27,
-    "pate": 38.46
+    "pate": 29.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ORR": {
     "sciage": 43.27,
-    "pate": 38.46
+    "pate": 29.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ORT": {
     "sciage": 43.27,
-    "pate": 38.46
+    "pate": 29.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "OSV": {
     "sciage": 45.45,
-    "pate": 45.45
+    "pate": 29.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PEB": {
-    "sciage": 29.55,
-    "pate": 29.55
+    "sciage": 26.0,
+    "pate": 26.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PED": {
-    "sciage": 76.92,
-    "pate": 95.0
+    "sciage": 64.22,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PEG": {
-    "sciage": 76.92,
-    "pate": 95.0
+    "sciage": 64.22,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PEH": {
-    "sciage": 76.92,
-    "pate": 95.0
+    "sciage": 64.22,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PET": {
-    "sciage": 76.92,
-    "pate": 95.0
+    "sciage": 64.22,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PIB": {
-    "sciage": 108.49,
-    "pate": 55.5
+    "sciage": 96.36,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PIG": {
-    "sciage": 89.13,
-    "pate": 55.5
+    "sciage": 72.73,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PIR": {
-    "sciage": 75.47,
-    "pate": 55.5
+    "sciage": 70.91,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PIS": {
-    "sciage": 83.37,
-    "pate": 26.96
+    "sciage": 54.34,
+    "pate": 26.91,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PRU": {
-    "sciage": 96.23,
-    "pate": 39.13
+    "sciage": 81.82,
+    "pate": 13.89,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "SAB": {
-    "sciage": 118.75,
-    "pate": 55.5
+    "sciage": 86.81,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "THO": {
-    "sciage": 113.21,
-    "pate": 104.97
+    "sciage": 89.8,
+    "pate": 34.38,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "TIL": {
     "sciage": 57.69,
-    "pate": 33.66
+    "pate": 29.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    }
   }
  },
@@ -325,160 +481,238 @@
   "syndicat": "Bas-Saint-Laurent",
   "prix": {
    "BOG": {
-    "sciage": 101.54,
-    "pate": 130.0
+    "sciage": 93.75,
+    "pate": 29.55,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "BOJ": {
-    "sciage": 83.08,
-    "pate": 130.0
+    "sciage": 74.04,
+    "pate": 51.7,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "BOP": {
-    "sciage": 101.54,
-    "pate": 130.0
+    "sciage": 93.75,
+    "pate": 29.55,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CAC": {
     "sciage": 67.31,
-    "pate": 45.45
+    "pate": 45.45,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CET": {
-    "sciage": 96.15,
-    "pate": 45.45
+    "sciage": 91.35,
+    "pate": 45.45,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CHB": {
     "sciage": 134.62,
-    "pate": 65.0
+    "pate": 51.7,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CHG": {
     "sciage": 134.62,
-    "pate": 65.0
+    "pate": 51.7,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CHR": {
     "sciage": 134.62,
-    "pate": 52.88
+    "pate": 51.7,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "EPB": {
-    "sciage": 117.92,
-    "pate": 55.5
+    "sciage": 85.03,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "EPN": {
-    "sciage": 117.92,
-    "pate": 55.5
+    "sciage": 85.03,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "EPO": {
-    "sciage": 195.65,
-    "pate": 55.5
+    "sciage": 72.0,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "EPR": {
-    "sciage": 117.92,
-    "pate": 55.5
+    "sciage": 85.03,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "ERA": {
-    "sciage": 67.31,
-    "pate": 38.46
+    "sciage": 70.0,
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ERR": {
-    "sciage": 67.31,
-    "pate": 38.46
+    "sciage": 70.0,
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ERS": {
     "sciage": 83.08,
-    "pate": 43.27
+    "pate": 43.27,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "FRA": {
-    "sciage": 115.38,
-    "pate": 48.08
+    "sciage": 112.98,
+    "pate": 48.08,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "FRN": {
     "sciage": 52.88,
-    "pate": 52.88
+    "pate": 51.7,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "FRP": {
-    "sciage": 115.38,
-    "pate": 48.08
+    "sciage": 112.98,
+    "pate": 48.08,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "HEG": {
     "sciage": 51.54,
-    "pate": 33.66
+    "pate": 33.66,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "MEH": {
-    "sciage": 71.0,
-    "pate": 110.44
+    "sciage": 69.0,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "MEL": {
-    "sciage": 71.0,
-    "pate": 110.44
+    "sciage": 69.0,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "NOC": {
-    "sciage": 88.94,
-    "pate": 45.45
+    "sciage": 86.54,
+    "pate": 45.45,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ORA": {
     "sciage": 43.27,
-    "pate": 38.46
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ORR": {
     "sciage": 43.27,
-    "pate": 38.46
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ORT": {
     "sciage": 43.27,
-    "pate": 38.46
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "OSV": {
     "sciage": 45.45,
-    "pate": 45.45
+    "pate": 45.45,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PEB": {
-    "sciage": 29.55,
-    "pate": 29.55
+    "sciage": 26.0,
+    "pate": 26.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PED": {
-    "sciage": 135.0,
-    "pate": 65.0
+    "sciage": 64.22,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PEG": {
-    "sciage": 135.0,
-    "pate": 65.0
+    "sciage": 64.22,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PEH": {
-    "sciage": 135.0,
-    "pate": 65.0
+    "sciage": 64.22,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PET": {
-    "sciage": 135.0,
-    "pate": 65.0
+    "sciage": 64.22,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PIB": {
-    "sciage": 108.49,
-    "pate": 55.5
+    "sciage": 104.55,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PIG": {
-    "sciage": 108.7,
-    "pate": 55.5
+    "sciage": 77.0,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PIR": {
     "sciage": 71.0,
-    "pate": 55.5
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PIS": {
-    "sciage": 83.37,
-    "pate": 26.96
+    "sciage": 54.34,
+    "pate": 26.91,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PRU": {
-    "sciage": 98.12,
-    "pate": 39.13
+    "sciage": 94.55,
+    "pate": 13.89,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "SAB": {
-    "sciage": 117.92,
-    "pate": 55.5
+    "sciage": 85.07,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "THO": {
-    "sciage": 173.91,
-    "pate": 173.91
+    "sciage": 82.81,
+    "pate": 34.38,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "TIL": {
     "sciage": 57.69,
-    "pate": 33.66
+    "pate": 33.66,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    }
   }
  },
@@ -487,159 +721,237 @@
   "prix": {
    "BOG": {
     "sciage": 86.54,
-    "pate": 130.0
+    "pate": 29.55,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "BOJ": {
     "sciage": 105.77,
-    "pate": 130.0
+    "pate": 43.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "BOP": {
     "sciage": 86.54,
-    "pate": 130.0
+    "pate": 29.55,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CAC": {
     "sciage": 67.31,
-    "pate": 45.45
+    "pate": 43.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CET": {
     "sciage": 211.53,
-    "pate": 45.45
+    "pate": 43.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CHB": {
     "sciage": 134.62,
-    "pate": 134.62
+    "pate": 43.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CHG": {
     "sciage": 134.62,
-    "pate": 134.62
+    "pate": 43.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CHR": {
     "sciage": 134.62,
-    "pate": 52.88
+    "pate": 43.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "EPB": {
-    "sciage": 132.61,
-    "pate": 55.5
+    "sciage": 86.16,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "EPN": {
-    "sciage": 132.61,
-    "pate": 55.5
+    "sciage": 86.16,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "EPO": {
-    "sciage": 163.04,
-    "pate": 55.5
+    "sciage": 80.52,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "EPR": {
-    "sciage": 132.61,
-    "pate": 55.5
+    "sciage": 86.16,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "ERA": {
     "sciage": 91.34,
-    "pate": 38.46
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ERR": {
     "sciage": 91.34,
-    "pate": 38.46
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ERS": {
     "sciage": 125.0,
-    "pate": 43.27
+    "pate": 43.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "FRA": {
     "sciage": 100.96,
-    "pate": 48.08
+    "pate": 43.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "FRN": {
     "sciage": 52.88,
-    "pate": 52.88
+    "pate": 43.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "FRP": {
     "sciage": 100.96,
-    "pate": 48.08
+    "pate": 43.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "HEG": {
     "sciage": 33.66,
-    "pate": 33.66
+    "pate": 33.66,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "MEH": {
-    "sciage": 173.91,
-    "pate": 112.17
+    "sciage": 73.61,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "MEL": {
-    "sciage": 173.91,
-    "pate": 112.17
+    "sciage": 73.61,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "NOC": {
-    "sciage": 88.94,
-    "pate": 45.45
+    "sciage": 86.54,
+    "pate": 43.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ORA": {
     "sciage": 38.46,
-    "pate": 38.46
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ORR": {
     "sciage": 38.46,
-    "pate": 38.46
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ORT": {
     "sciage": 38.46,
-    "pate": 38.46
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "OSV": {
     "sciage": 45.45,
-    "pate": 45.45
+    "pate": 43.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PEB": {
-    "sciage": 29.55,
-    "pate": 29.55
+    "sciage": 26.0,
+    "pate": 26.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PED": {
-    "sciage": 137.5,
-    "pate": 142.0
+    "sciage": 68.4,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PEG": {
-    "sciage": 137.5,
-    "pate": 142.0
+    "sciage": 68.4,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PEH": {
-    "sciage": 137.5,
-    "pate": 142.0
+    "sciage": 68.4,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PET": {
-    "sciage": 137.5,
-    "pate": 142.0
+    "sciage": 68.4,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PIB": {
-    "sciage": 108.49,
-    "pate": 55.5
+    "sciage": 97.72,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PIG": {
-    "sciage": 141.31,
-    "pate": 55.5
+    "sciage": 66.12,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PIR": {
-    "sciage": 73.58,
-    "pate": 55.5
+    "sciage": 69.97,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PIS": {
-    "sciage": 47.17,
-    "pate": 26.96
+    "sciage": 45.45,
+    "pate": 26.91,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PRU": {
-    "sciage": 106.23,
-    "pate": 39.13
+    "sciage": 81.47,
+    "pate": 13.89,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "SAB": {
-    "sciage": 119.57,
-    "pate": 55.5
+    "sciage": 82.81,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "THO": {
-    "sciage": 109.72,
-    "pate": 102.83
+    "sciage": 71.12,
+    "pate": 34.38,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "TIL": {
     "sciage": 33.66,
-    "pate": 33.66
+    "pate": 33.66,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    }
   }
  },
@@ -648,159 +960,237 @@
   "prix": {
    "BOG": {
     "sciage": 81.73,
-    "pate": 130.0
+    "pate": 29.55,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "BOJ": {
     "sciage": 105.77,
-    "pate": 130.0
+    "pate": 50.48,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "BOP": {
     "sciage": 81.73,
-    "pate": 130.0
+    "pate": 29.55,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CAC": {
     "sciage": 76.93,
-    "pate": 45.45
+    "pate": 45.45,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CET": {
     "sciage": 86.54,
-    "pate": 45.45
+    "pate": 45.45,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CHB": {
     "sciage": 134.62,
-    "pate": 130.0
+    "pate": 50.48,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CHG": {
     "sciage": 134.62,
-    "pate": 130.0
+    "pate": 50.48,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CHR": {
     "sciage": 134.62,
-    "pate": 52.88
+    "pate": 50.48,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "EPB": {
-    "sciage": 117.92,
-    "pate": 55.5
+    "sciage": 91.15,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "EPN": {
-    "sciage": 117.92,
-    "pate": 55.5
+    "sciage": 91.15,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "EPO": {
-    "sciage": 208.7,
-    "pate": 55.5
+    "sciage": 80.35,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "EPR": {
-    "sciage": 117.92,
-    "pate": 55.5
+    "sciage": 91.15,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "ERA": {
     "sciage": 76.92,
-    "pate": 38.46
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ERR": {
     "sciage": 76.92,
-    "pate": 38.46
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ERS": {
     "sciage": 139.42,
-    "pate": 43.27
+    "pate": 43.27,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "FRA": {
     "sciage": 100.96,
-    "pate": 48.08
+    "pate": 48.08,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "FRN": {
     "sciage": 52.88,
-    "pate": 52.88
+    "pate": 50.48,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "FRP": {
     "sciage": 100.96,
-    "pate": 48.08
+    "pate": 48.08,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "HEG": {
     "sciage": 48.08,
-    "pate": 33.66
+    "pate": 33.66,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "MEH": {
-    "sciage": 152.17,
-    "pate": 110.44
+    "sciage": 73.63,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "MEL": {
-    "sciage": 152.17,
-    "pate": 110.44
+    "sciage": 73.63,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "NOC": {
-    "sciage": 91.35,
-    "pate": 45.45
+    "sciage": 88.94,
+    "pate": 45.45,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ORA": {
     "sciage": 43.27,
-    "pate": 38.46
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ORR": {
     "sciage": 43.27,
-    "pate": 38.46
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ORT": {
     "sciage": 43.27,
-    "pate": 38.46
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "OSV": {
     "sciage": 45.45,
-    "pate": 45.45
+    "pate": 45.45,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PEB": {
-    "sciage": 29.55,
-    "pate": 29.55
+    "sciage": 26.0,
+    "pate": 26.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PED": {
-    "sciage": 67.31,
-    "pate": 95.0
+    "sciage": 61.85,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PEG": {
-    "sciage": 67.31,
-    "pate": 95.0
+    "sciage": 61.85,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PEH": {
-    "sciage": 67.31,
-    "pate": 95.0
+    "sciage": 61.85,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PET": {
-    "sciage": 67.31,
-    "pate": 95.0
+    "sciage": 61.85,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PIB": {
-    "sciage": 108.49,
-    "pate": 55.5
+    "sciage": 95.45,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PIG": {
-    "sciage": 83.96,
-    "pate": 55.5
+    "sciage": 75.45,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PIR": {
-    "sciage": 130.43,
-    "pate": 55.5
+    "sciage": 72.26,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PIS": {
-    "sciage": 119.57,
-    "pate": 26.96
+    "sciage": 63.23,
+    "pate": 26.91,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PRU": {
-    "sciage": 96.7,
-    "pate": 39.13
+    "sciage": 80.48,
+    "pate": 13.89,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "SAB": {
-    "sciage": 117.92,
-    "pate": 55.5
+    "sciage": 87.27,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "THO": {
-    "sciage": 70.75,
-    "pate": 93.4
+    "sciage": 68.19,
+    "pate": 34.38,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "TIL": {
     "sciage": 57.69,
-    "pate": 33.66
+    "pate": 33.66,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    }
   }
  },
@@ -808,160 +1198,238 @@
   "syndicat": "Côte-du-Sud",
   "prix": {
    "BOG": {
-    "sciage": 81.73,
-    "pate": 130.0
+    "sciage": 79.55,
+    "pate": 29.55,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "BOJ": {
-    "sciage": 108.65,
-    "pate": 130.0
+    "sciage": 86.54,
+    "pate": 51.7,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "BOP": {
-    "sciage": 81.73,
-    "pate": 130.0
+    "sciage": 79.55,
+    "pate": 29.55,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CAC": {
     "sciage": 67.31,
-    "pate": 45.45
+    "pate": 45.45,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CET": {
-    "sciage": 96.15,
-    "pate": 45.45
+    "sciage": 91.35,
+    "pate": 45.45,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CHB": {
     "sciage": 134.62,
-    "pate": 54.95
+    "pate": 53.75,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CHG": {
     "sciage": 134.62,
-    "pate": 54.95
+    "pate": 53.75,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CHR": {
     "sciage": 134.62,
-    "pate": 52.88
+    "pate": 52.88,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "EPB": {
-    "sciage": 121.74,
-    "pate": 55.5
+    "sciage": 89.95,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "EPN": {
-    "sciage": 121.74,
-    "pate": 55.5
+    "sciage": 89.95,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "EPO": {
-    "sciage": 158.7,
-    "pate": 55.5
+    "sciage": 84.37,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "EPR": {
-    "sciage": 121.74,
-    "pate": 55.5
+    "sciage": 89.95,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "ERA": {
     "sciage": 125.0,
-    "pate": 38.46
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ERR": {
     "sciage": 125.0,
-    "pate": 38.46
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ERS": {
     "sciage": 147.5,
-    "pate": 43.27
+    "pate": 43.27,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "FRA": {
     "sciage": 211.54,
-    "pate": 48.08
+    "pate": 48.08,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "FRN": {
     "sciage": 52.88,
-    "pate": 52.88
+    "pate": 52.88,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "FRP": {
     "sciage": 211.54,
-    "pate": 48.08
+    "pate": 48.08,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "HEG": {
     "sciage": 59.0,
-    "pate": 33.66
+    "pate": 33.66,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "MEH": {
-    "sciage": 108.7,
-    "pate": 110.44
+    "sciage": 72.73,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "MEL": {
-    "sciage": 108.7,
-    "pate": 110.44
+    "sciage": 72.73,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "NOC": {
-    "sciage": 88.94,
-    "pate": 45.45
+    "sciage": 86.54,
+    "pate": 45.45,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ORA": {
     "sciage": 43.27,
-    "pate": 38.46
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ORR": {
     "sciage": 43.27,
-    "pate": 38.46
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ORT": {
     "sciage": 43.27,
-    "pate": 38.46
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "OSV": {
     "sciage": 45.45,
-    "pate": 45.45
+    "pate": 45.45,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PEB": {
-    "sciage": 29.55,
-    "pate": 29.55
+    "sciage": 26.0,
+    "pate": 26.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PED": {
-    "sciage": 145.0,
-    "pate": 54.95
+    "sciage": 71.36,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PEG": {
-    "sciage": 145.0,
-    "pate": 54.95
+    "sciage": 71.36,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PEH": {
-    "sciage": 145.0,
-    "pate": 54.95
+    "sciage": 71.36,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PET": {
-    "sciage": 145.0,
-    "pate": 54.95
+    "sciage": 71.36,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PIB": {
-    "sciage": 115.57,
-    "pate": 55.5
+    "sciage": 115.91,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PIG": {
-    "sciage": 89.13,
-    "pate": 55.5
+    "sciage": 72.73,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PIR": {
-    "sciage": 75.47,
-    "pate": 55.5
+    "sciage": 73.78,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PIS": {
-    "sciage": 83.37,
-    "pate": 26.96
+    "sciage": 54.34,
+    "pate": 26.91,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PRU": {
-    "sciage": 94.34,
-    "pate": 39.13
+    "sciage": 90.91,
+    "pate": 13.89,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "SAB": {
-    "sciage": 121.74,
-    "pate": 55.5
+    "sciage": 89.95,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "THO": {
-    "sciage": 103.77,
-    "pate": 122.06
+    "sciage": 97.56,
+    "pate": 34.38,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "TIL": {
     "sciage": 57.69,
-    "pate": 33.66
+    "pate": 33.66,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    }
   }
  },
@@ -970,159 +1438,237 @@
   "prix": {
    "BOG": {
     "sciage": 81.73,
-    "pate": 130.0
+    "pate": 29.55,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "BOJ": {
     "sciage": 105.77,
-    "pate": 130.0
+    "pate": 50.48,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "BOP": {
     "sciage": 81.73,
-    "pate": 130.0
+    "pate": 29.55,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CAC": {
     "sciage": 76.93,
-    "pate": 45.45
+    "pate": 45.45,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CET": {
     "sciage": 86.54,
-    "pate": 45.45
+    "pate": 45.45,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CHB": {
     "sciage": 134.62,
-    "pate": 130.0
+    "pate": 50.48,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CHG": {
     "sciage": 134.62,
-    "pate": 130.0
+    "pate": 50.48,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CHR": {
     "sciage": 134.62,
-    "pate": 52.88
+    "pate": 50.48,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "EPB": {
-    "sciage": 117.92,
-    "pate": 55.5
+    "sciage": 91.15,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "EPN": {
-    "sciage": 117.92,
-    "pate": 55.5
+    "sciage": 91.15,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "EPO": {
-    "sciage": 208.7,
-    "pate": 55.5
+    "sciage": 80.35,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "EPR": {
-    "sciage": 117.92,
-    "pate": 55.5
+    "sciage": 91.15,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "ERA": {
     "sciage": 76.92,
-    "pate": 38.46
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ERR": {
     "sciage": 76.92,
-    "pate": 38.46
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ERS": {
     "sciage": 139.42,
-    "pate": 43.27
+    "pate": 43.27,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "FRA": {
     "sciage": 100.96,
-    "pate": 48.08
+    "pate": 48.08,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "FRN": {
     "sciage": 52.88,
-    "pate": 52.88
+    "pate": 50.48,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "FRP": {
     "sciage": 100.96,
-    "pate": 48.08
+    "pate": 48.08,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "HEG": {
     "sciage": 48.08,
-    "pate": 33.66
+    "pate": 33.66,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "MEH": {
-    "sciage": 152.17,
-    "pate": 110.44
+    "sciage": 73.63,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "MEL": {
-    "sciage": 152.17,
-    "pate": 110.44
+    "sciage": 73.63,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "NOC": {
-    "sciage": 91.35,
-    "pate": 45.45
+    "sciage": 88.94,
+    "pate": 45.45,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ORA": {
     "sciage": 43.27,
-    "pate": 38.46
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ORR": {
     "sciage": 43.27,
-    "pate": 38.46
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ORT": {
     "sciage": 43.27,
-    "pate": 38.46
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "OSV": {
     "sciage": 45.45,
-    "pate": 45.45
+    "pate": 45.45,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PEB": {
-    "sciage": 29.55,
-    "pate": 29.55
+    "sciage": 26.0,
+    "pate": 26.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PED": {
-    "sciage": 67.31,
-    "pate": 95.0
+    "sciage": 61.85,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PEG": {
-    "sciage": 67.31,
-    "pate": 95.0
+    "sciage": 61.85,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PEH": {
-    "sciage": 67.31,
-    "pate": 95.0
+    "sciage": 61.85,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PET": {
-    "sciage": 67.31,
-    "pate": 95.0
+    "sciage": 61.85,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PIB": {
-    "sciage": 108.49,
-    "pate": 55.5
+    "sciage": 95.45,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PIG": {
-    "sciage": 83.96,
-    "pate": 55.5
+    "sciage": 75.45,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PIR": {
-    "sciage": 130.43,
-    "pate": 55.5
+    "sciage": 72.26,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PIS": {
-    "sciage": 119.57,
-    "pate": 26.96
+    "sciage": 63.23,
+    "pate": 26.91,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PRU": {
-    "sciage": 96.7,
-    "pate": 39.13
+    "sciage": 80.48,
+    "pate": 13.89,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "SAB": {
-    "sciage": 117.92,
-    "pate": 55.5
+    "sciage": 87.27,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "THO": {
-    "sciage": 70.75,
-    "pate": 93.4
+    "sciage": 68.19,
+    "pate": 34.38,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "TIL": {
     "sciage": 57.69,
-    "pate": 33.66
+    "pate": 33.66,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    }
   }
  },
@@ -1131,159 +1677,237 @@
   "prix": {
    "BOG": {
     "sciage": 76.92,
-    "pate": 130.0
+    "pate": 29.55,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "BOJ": {
     "sciage": 103.85,
-    "pate": 130.0
+    "pate": 45.37,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "BOP": {
     "sciage": 76.92,
-    "pate": 130.0
+    "pate": 29.55,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CAC": {
     "sciage": 67.31,
-    "pate": 45.45
+    "pate": 45.37,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CET": {
     "sciage": 94.23,
-    "pate": 45.45
+    "pate": 45.37,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CHB": {
     "sciage": 141.82,
-    "pate": 130.0
+    "pate": 45.37,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CHG": {
     "sciage": 141.82,
-    "pate": 130.0
+    "pate": 45.37,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CHR": {
     "sciage": 115.38,
-    "pate": 52.88
+    "pate": 45.37,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "EPB": {
-    "sciage": 50.94,
-    "pate": 55.5
+    "sciage": 49.09,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "EPN": {
-    "sciage": 50.94,
-    "pate": 55.5
+    "sciage": 49.09,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "EPO": {
-    "sciage": 208.7,
-    "pate": 55.5
+    "sciage": 80.35,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "EPR": {
-    "sciage": 50.94,
-    "pate": 55.5
+    "sciage": 49.09,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "ERA": {
     "sciage": 90.39,
-    "pate": 38.46
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ERR": {
     "sciage": 90.39,
-    "pate": 38.46
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ERS": {
     "sciage": 153.85,
-    "pate": 43.27
+    "pate": 43.27,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "FRA": {
     "sciage": 80.77,
-    "pate": 48.08
+    "pate": 45.37,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "FRN": {
     "sciage": 52.88,
-    "pate": 52.88
+    "pate": 45.37,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "FRP": {
     "sciage": 80.77,
-    "pate": 48.08
+    "pate": 45.37,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "HEG": {
     "sciage": 48.08,
-    "pate": 33.66
+    "pate": 33.66,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "MEH": {
-    "sciage": 113.04,
-    "pate": 110.44
+    "sciage": 72.73,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "MEL": {
-    "sciage": 113.04,
-    "pate": 110.44
+    "sciage": 72.73,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "NOC": {
-    "sciage": 88.94,
-    "pate": 45.45
+    "sciage": 86.54,
+    "pate": 45.37,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ORA": {
     "sciage": 43.27,
-    "pate": 38.46
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ORR": {
     "sciage": 43.27,
-    "pate": 38.46
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ORT": {
     "sciage": 43.27,
-    "pate": 38.46
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "OSV": {
     "sciage": 45.45,
-    "pate": 45.45
+    "pate": 45.37,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PEB": {
-    "sciage": 29.55,
-    "pate": 29.55
+    "sciage": 26.0,
+    "pate": 26.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PED": {
-    "sciage": 76.92,
-    "pate": 95.0
+    "sciage": 64.22,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PEG": {
-    "sciage": 76.92,
-    "pate": 95.0
+    "sciage": 64.22,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PEH": {
-    "sciage": 76.92,
-    "pate": 95.0
+    "sciage": 64.22,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PET": {
-    "sciage": 76.92,
-    "pate": 95.0
+    "sciage": 64.22,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PIB": {
-    "sciage": 102.36,
-    "pate": 55.5
+    "sciage": 98.63,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PIG": {
-    "sciage": 75.47,
-    "pate": 55.5
+    "sciage": 72.73,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PIR": {
-    "sciage": 67.83,
-    "pate": 55.5
+    "sciage": 67.71,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PIS": {
-    "sciage": 83.37,
-    "pate": 26.96
+    "sciage": 54.34,
+    "pate": 26.91,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PRU": {
-    "sciage": 61.32,
-    "pate": 39.13
+    "sciage": 59.09,
+    "pate": 13.89,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "SAB": {
-    "sciage": 50.94,
-    "pate": 55.5
+    "sciage": 49.09,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "THO": {
-    "sciage": 91.89,
-    "pate": 104.97
+    "sciage": 88.55,
+    "pate": 34.38,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "TIL": {
     "sciage": 59.38,
-    "pate": 33.66
+    "pate": 33.66,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    }
   }
  },
@@ -1291,160 +1915,238 @@
   "syndicat": "Région de Québec",
   "prix": {
    "BOG": {
-    "sciage": 81.73,
-    "pate": 130.0
+    "sciage": 74.04,
+    "pate": 29.55,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "BOJ": {
     "sciage": 105.77,
-    "pate": 130.0
+    "pate": 40.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "BOP": {
-    "sciage": 81.73,
-    "pate": 130.0
+    "sciage": 74.04,
+    "pate": 29.55,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CAC": {
     "sciage": 62.5,
-    "pate": 45.45
+    "pate": 40.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CET": {
-    "sciage": 105.77,
-    "pate": 45.45
+    "sciage": 115.38,
+    "pate": 40.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CHB": {
-    "sciage": 149.04,
-    "pate": 130.0
+    "sciage": 173.08,
+    "pate": 40.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CHG": {
-    "sciage": 149.04,
-    "pate": 130.0
+    "sciage": 173.08,
+    "pate": 40.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CHR": {
     "sciage": 144.23,
-    "pate": 52.88
+    "pate": 40.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "EPB": {
-    "sciage": 109.91,
-    "pate": 55.5
+    "sciage": 86.16,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "EPN": {
-    "sciage": 109.91,
-    "pate": 55.5
+    "sciage": 86.16,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "EPO": {
-    "sciage": 208.7,
-    "pate": 55.5
+    "sciage": 82.36,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "EPR": {
-    "sciage": 109.91,
-    "pate": 55.5
+    "sciage": 86.16,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "ERA": {
-    "sciage": 81.73,
-    "pate": 38.46
+    "sciage": 76.92,
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ERR": {
-    "sciage": 81.73,
-    "pate": 38.46
+    "sciage": 76.92,
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ERS": {
-    "sciage": 134.62,
-    "pate": 43.27
+    "sciage": 125.0,
+    "pate": 40.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "FRA": {
-    "sciage": 139.42,
-    "pate": 48.08
+    "sciage": 134.62,
+    "pate": 40.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "FRN": {
     "sciage": 52.88,
-    "pate": 52.88
+    "pate": 40.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "FRP": {
-    "sciage": 139.42,
-    "pate": 48.08
+    "sciage": 134.62,
+    "pate": 40.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "HEG": {
     "sciage": 40.87,
-    "pate": 33.66
+    "pate": 33.66,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "MEH": {
-    "sciage": 61.32,
-    "pate": 110.44
+    "sciage": 60.76,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "MEL": {
-    "sciage": 61.32,
-    "pate": 110.44
+    "sciage": 60.76,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "NOC": {
-    "sciage": 84.14,
-    "pate": 45.45
+    "sciage": 81.73,
+    "pate": 40.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ORA": {
     "sciage": 43.27,
-    "pate": 38.46
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ORR": {
     "sciage": 43.27,
-    "pate": 38.46
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ORT": {
     "sciage": 43.27,
-    "pate": 38.46
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "OSV": {
     "sciage": 45.45,
-    "pate": 45.45
+    "pate": 40.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PEB": {
-    "sciage": 29.55,
-    "pate": 29.55
+    "sciage": 26.0,
+    "pate": 26.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PED": {
-    "sciage": 125.0,
-    "pate": 95.0
+    "sciage": 65.0,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PEG": {
-    "sciage": 125.0,
-    "pate": 95.0
+    "sciage": 65.0,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PEH": {
-    "sciage": 125.0,
-    "pate": 95.0
+    "sciage": 65.0,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PET": {
-    "sciage": 125.0,
-    "pate": 95.0
+    "sciage": 65.0,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PIB": {
-    "sciage": 108.49,
-    "pate": 55.5
+    "sciage": 96.36,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PIG": {
-    "sciage": 78.3,
-    "pate": 55.5
+    "sciage": 72.0,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PIR": {
-    "sciage": 157.6,
-    "pate": 55.5
+    "sciage": 71.41,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PIS": {
-    "sciage": 83.37,
-    "pate": 26.96
+    "sciage": 54.34,
+    "pate": 26.91,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PRU": {
-    "sciage": 75.47,
-    "pate": 39.13
+    "sciage": 80.27,
+    "pate": 13.89,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "SAB": {
-    "sciage": 108.49,
-    "pate": 55.5
+    "sciage": 86.36,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "THO": {
-    "sciage": 115.09,
-    "pate": 107.11
+    "sciage": 82.81,
+    "pate": 34.38,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "TIL": {
-    "sciage": 43.27,
-    "pate": 33.66
+    "sciage": 36.05,
+    "pate": 33.66,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    }
   }
  },
@@ -1453,159 +2155,237 @@
   "prix": {
    "BOG": {
     "sciage": 81.73,
-    "pate": 130.0
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "BOJ": {
     "sciage": 105.77,
-    "pate": 130.0
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "BOP": {
     "sciage": 81.73,
-    "pate": 130.0
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CAC": {
     "sciage": 67.31,
-    "pate": 45.45
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CET": {
-    "sciage": 96.15,
-    "pate": 45.45
+    "sciage": 91.35,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CHB": {
     "sciage": 134.62,
-    "pate": 130.0
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CHG": {
     "sciage": 134.62,
-    "pate": 130.0
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CHR": {
     "sciage": 134.62,
-    "pate": 52.88
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "EPB": {
-    "sciage": 117.92,
-    "pate": 55.5
+    "sciage": 87.65,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "EPN": {
-    "sciage": 117.92,
-    "pate": 55.5
+    "sciage": 87.65,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "EPO": {
-    "sciage": 208.7,
-    "pate": 55.5
+    "sciage": 80.35,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "EPR": {
-    "sciage": 117.92,
-    "pate": 55.5
+    "sciage": 87.65,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "ERA": {
-    "sciage": 81.73,
-    "pate": 38.46
+    "sciage": 76.92,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ERR": {
-    "sciage": 81.73,
-    "pate": 38.46
+    "sciage": 76.92,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ERS": {
-    "sciage": 134.62,
-    "pate": 43.27
+    "sciage": 135.87,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "FRA": {
-    "sciage": 115.38,
-    "pate": 48.08
+    "sciage": 112.98,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "FRN": {
     "sciage": 52.88,
-    "pate": 52.88
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "FRP": {
-    "sciage": 115.38,
-    "pate": 48.08
+    "sciage": 112.98,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "HEG": {
     "sciage": 48.08,
-    "pate": 33.66
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "MEH": {
-    "sciage": 113.04,
-    "pate": 110.44
+    "sciage": 72.73,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "MEL": {
-    "sciage": 113.04,
-    "pate": 110.44
+    "sciage": 72.73,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "NOC": {
-    "sciage": 88.94,
-    "pate": 45.45
+    "sciage": 86.54,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ORA": {
     "sciage": 43.27,
-    "pate": 38.46
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ORR": {
     "sciage": 43.27,
-    "pate": 38.46
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ORT": {
     "sciage": 43.27,
-    "pate": 38.46
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "OSV": {
     "sciage": 45.45,
-    "pate": 45.45
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PEB": {
-    "sciage": 29.55,
-    "pate": 29.55
+    "sciage": 26.0,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PED": {
-    "sciage": 76.92,
-    "pate": 95.0
+    "sciage": 64.22,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PEG": {
-    "sciage": 76.92,
-    "pate": 95.0
+    "sciage": 64.22,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PEH": {
-    "sciage": 76.92,
-    "pate": 95.0
+    "sciage": 64.22,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PET": {
-    "sciage": 76.92,
-    "pate": 95.0
+    "sciage": 64.22,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PIB": {
-    "sciage": 108.49,
-    "pate": 55.5
+    "sciage": 96.36,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PIG": {
-    "sciage": 89.13,
-    "pate": 55.5
+    "sciage": 72.73,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PIR": {
-    "sciage": 75.47,
-    "pate": 55.5
+    "sciage": 70.91,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PIS": {
-    "sciage": 83.37,
-    "pate": 26.96
+    "sciage": 54.34,
+    "pate": 26.91,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PRU": {
-    "sciage": 96.23,
-    "pate": 39.13
+    "sciage": 81.82,
+    "pate": 13.89,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "SAB": {
-    "sciage": 118.75,
-    "pate": 55.5
+    "sciage": 86.81,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "THO": {
-    "sciage": 113.21,
-    "pate": 104.97
+    "sciage": 89.8,
+    "pate": 34.38,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "TIL": {
     "sciage": 57.69,
-    "pate": 33.66
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    }
   }
  },
@@ -1614,159 +2394,237 @@
   "prix": {
    "BOG": {
     "sciage": 96.15,
-    "pate": 130.0
+    "pate": 29.55,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "BOJ": {
     "sciage": 115.38,
-    "pate": 130.0
+    "pate": 45.1,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "BOP": {
     "sciage": 96.15,
-    "pate": 130.0
+    "pate": 29.55,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CAC": {
-    "sciage": 67.31,
-    "pate": 45.45
+    "sciage": 57.69,
+    "pate": 45.1,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CET": {
-    "sciage": 100.96,
-    "pate": 45.45
+    "sciage": 91.34,
+    "pate": 45.1,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CHB": {
     "sciage": 134.62,
-    "pate": 130.0
+    "pate": 45.1,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CHG": {
     "sciage": 134.62,
-    "pate": 130.0
+    "pate": 45.1,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "CHR": {
     "sciage": 134.62,
-    "pate": 52.88
+    "pate": 45.1,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "EPB": {
-    "sciage": 130.43,
-    "pate": 55.5
+    "sciage": 89.09,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "EPN": {
-    "sciage": 130.43,
-    "pate": 55.5
+    "sciage": 89.09,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "EPO": {
-    "sciage": 239.13,
-    "pate": 55.5
+    "sciage": 84.37,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "EPR": {
-    "sciage": 130.43,
-    "pate": 55.5
+    "sciage": 89.09,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "ERA": {
     "sciage": 103.36,
-    "pate": 38.46
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ERR": {
     "sciage": 103.36,
-    "pate": 38.46
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ERS": {
     "sciage": 144.23,
-    "pate": 43.27
+    "pate": 43.27,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "FRA": {
-    "sciage": 129.81,
-    "pate": 48.08
+    "sciage": 134.62,
+    "pate": 45.1,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "FRN": {
     "sciage": 52.88,
-    "pate": 52.88
+    "pate": 45.1,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "FRP": {
-    "sciage": 129.81,
-    "pate": 48.08
+    "sciage": 134.62,
+    "pate": 45.1,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "HEG": {
     "sciage": 57.69,
-    "pate": 33.66
+    "pate": 33.66,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "MEH": {
-    "sciage": 141.31,
-    "pate": 55.5
+    "sciage": 66.12,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "MEL": {
-    "sciage": 141.31,
-    "pate": 55.5
+    "sciage": 66.12,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "NOC": {
     "sciage": 88.94,
-    "pate": 45.45
+    "pate": 45.1,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ORA": {
     "sciage": 57.69,
-    "pate": 38.46
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ORR": {
     "sciage": 57.69,
-    "pate": 38.46
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "ORT": {
     "sciage": 57.69,
-    "pate": 38.46
+    "pate": 38.46,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "OSV": {
     "sciage": 45.45,
-    "pate": 45.45
+    "pate": 45.1,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PEB": {
-    "sciage": 29.55,
-    "pate": 29.55
+    "sciage": 26.0,
+    "pate": 26.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PED": {
-    "sciage": 67.31,
-    "pate": 95.0
+    "sciage": 64.53,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PEG": {
-    "sciage": 67.31,
-    "pate": 95.0
+    "sciage": 64.53,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PEH": {
-    "sciage": 67.31,
-    "pate": 95.0
+    "sciage": 64.53,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PET": {
-    "sciage": 67.31,
-    "pate": 95.0
+    "sciage": 64.53,
+    "pate": 25.0,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    },
    "PIB": {
-    "sciage": 108.49,
-    "pate": 55.5
+    "sciage": 95.45,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PIG": {
-    "sciage": 190.21,
-    "pate": 55.5
+    "sciage": 80.52,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PIR": {
-    "sciage": 55.66,
-    "pate": 55.5
+    "sciage": 62.27,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PIS": {
-    "sciage": 47.17,
-    "pate": 26.96
+    "sciage": 45.45,
+    "pate": 26.91,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "PRU": {
-    "sciage": 98.12,
-    "pate": 39.13
+    "sciage": 88.18,
+    "pate": 13.89,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "SAB": {
-    "sciage": 126.42,
-    "pate": 55.5
+    "sciage": 89.09,
+    "pate": 55.41,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "THO": {
-    "sciage": 114.15,
-    "pate": 102.83
+    "sciage": 104.11,
+    "pate": 34.38,
+    "sciage_bord_route": false,
+    "pate_bord_route": false
    },
    "TIL": {
-    "sciage": 52.88,
-    "pate": 33.66
+    "sciage": 57.69,
+    "pate": 33.66,
+    "sciage_bord_route": false,
+    "pate_bord_route": true
    }
   }
  }
