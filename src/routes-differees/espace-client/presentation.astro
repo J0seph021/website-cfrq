@@ -1,0 +1,258 @@
+---
+// Page publique servie à /espace-client QUAND le portail est ouvert
+// (PUBLIER_ESPACE_CLIENT=1) : elle explique ce qu'est l'espace client avant d'y
+// entrer, pour les clients comme pour les propriétaires qui ne le sont pas
+// encore. La connexion est à /espace-client/connexion (voir astro.config.mjs).
+// Portail fermé : a-venir.astro prend cette adresse à sa place.
+//
+// Le contenu décrit la version « dossiers » (src/data/espaceClient.ts) : rien
+// de ce qui est annoncé « Bientôt » dans le portail n'est promis comme disponible.
+import Base from "../../layouts/Base.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import { site } from "../../data/site";
+import { withBase } from "../../lib/url";
+
+const connexion = withBase("/espace-client/connexion");
+const inscription = `${connexion}?mode=inscription`;
+
+const atouts = [
+  {
+    titre: "La carte de votre forêt",
+    texte:
+      "Les limites de vos propriétés, vos travaux réalisés, vos prescriptions et vos cours d'eau, sur photo aérienne. Touchez une zone de travaux pour ouvrir ses documents.",
+  },
+  {
+    titre: "Vos documents signés",
+    texte:
+      "Plans d'aménagement, prescriptions, rapports d'exécution : à ouvrir en tout temps, sans fouiller dans vos vieux courriels.",
+  },
+  {
+    titre: "Vos rapports de taxes foncières",
+    texte:
+      "Le rapport annuel préparé par nos ingénieurs forestiers pour votre remboursement de taxes, prêt à remettre à votre comptable.",
+  },
+  {
+    titre: "Vos travaux réalisés",
+    texte:
+      "Ce qui a été fait dans votre boisé, année par année, avec la superficie traitée et les documents qui s'y rattachent.",
+  },
+  {
+    titre: "Les investissements dans votre forêt",
+    texte:
+      "La valeur des travaux réalisés chez vous et la part financée par les programmes d'aide que nous mobilisons pour vous.",
+  },
+  {
+    titre: "Une ligne directe avec nous",
+    texte:
+      "Une terre à ajouter, un lot que vous songez à acheter, un accès à donner à un proche ou à votre comptable : vos demandes partent d'un clic.",
+  },
+];
+
+const bientot = [
+  { titre: "La valeur de votre forêt", texte: "Ce que vaut votre boisé aujourd'hui, et comment ce capital grandit avec le temps et les bons travaux." },
+  { titre: "Votre Portrait des forêts", texte: "Carbone, faune, potentiel acéricole, fiscalité : des relevés sur mesure pour votre boisé." },
+  { titre: "Le suivi de vos travaux en cours", texte: "Où en sont vos travaux, de la prescription jusqu'à la fin du chantier." },
+];
+
+const etapes = [
+  {
+    titre: "Créez votre compte",
+    texte: "Avec votre courriel, en une minute. Pas de mot de passe à retenir si vous préférez : on vous envoie un lien de connexion.",
+  },
+  {
+    titre: "On le relie à votre dossier",
+    texte: "Dites-nous votre nom et la municipalité de votre boisé (vos numéros de lot aident, si vous les avez). Notre équipe relie votre compte à votre dossier et vous écrit dès que c'est fait.",
+  },
+  {
+    titre: "Retrouvez votre forêt",
+    texte: "Votre carte, vos documents et vos travaux vous attendent, sur ordinateur comme sur téléphone.",
+  },
+];
+
+// Aperçu illustratif (données d'exemple, aucun vrai client).
+const apercuReperes = [
+  { valeur: "62,8 ha", label: "Superficie" },
+  { valeur: "2", label: "Propriétés" },
+  { valeur: "10", label: "Documents" },
+];
+const apercuDocs = [
+  { titre: "Plan d'aménagement forestier", annee: "2021" },
+  { titre: "Prescription sylvicole", annee: "2025" },
+  { titre: "Rapport de taxes foncières", annee: "2025" },
+];
+
+const eyebrow = "text-[12.5px] font-semibold uppercase tracking-[0.18em]";
+const lienSouligne = "font-semibold text-cfrq-deep underline underline-offset-2";
+const boutonPrincipal =
+  "inline-flex items-center justify-center gap-2 rounded-[11px] bg-cfrq-green px-6 py-3.5 text-[15.5px] font-semibold text-[#123005] transition-colors hover:bg-cfrq-green-hover";
+const boutonSecondaire =
+  "inline-flex items-center justify-center gap-2 rounded-[11px] border border-cfrq-deep/25 bg-white px-6 py-3.5 text-[15.5px] font-semibold text-cfrq-deep transition-colors hover:bg-cfrq-tint";
+---
+
+<Base
+  title="Espace client | CFRQ"
+  description="L'espace client CFRQ réunit vos documents signés, la carte de votre boisé et vos travaux réalisés, en ligne et en tout temps. Réservé aux clients de CFRQ."
+>
+  <Header />
+  <main id="contenu">
+    <!-- EN-TÊTE : ce que c'est, et comment entrer, dès le premier écran -->
+    <section style="background:linear-gradient(160deg,#EAF4E0,#F7F5EE 60%)">
+      <div class="mx-auto flex max-w-[1160px] flex-wrap items-center gap-x-14 gap-y-10 px-[22px] pb-16 pt-16">
+        <div class="flex-[1.2] basis-[440px]">
+          <p class={`${eyebrow} text-cfrq-leaf`}>Espace client</p>
+          <h1 class="mt-3 font-display font-medium text-cfrq-deep text-[clamp(34px,5.5vw,50px)] leading-[1.04] tracking-[-0.02em] text-balance">
+            Votre boisé, en ligne
+          </h1>
+          <p class="mt-5 max-w-[560px] text-[17.5px] leading-[1.55] text-cfrq-ink/70">
+            Le dossier de votre forêt, accessible en tout temps : vos documents signés, la carte de
+            votre propriété et vos travaux réalisés, réunis dans une seule page qui vous appartient.
+          </p>
+          <div class="mt-7 flex flex-wrap gap-3" data-espace-actions>
+            <a href={connexion} class={boutonPrincipal} data-cta-principal>
+              <span data-cta-texte>Me connecter</span> <span aria-hidden="true">→</span>
+            </a>
+            <a href={inscription} class={boutonSecondaire} data-cta-inscription>Créer mon compte</a>
+          </div>
+          <p class="mt-4 text-[14px] text-cfrq-ink/55">
+            Réservé aux clients de CFRQ. Gratuit, sur ordinateur comme sur téléphone.
+          </p>
+        </div>
+
+        <!-- Aperçu : un tableau de bord d'exemple, pour montrer sans promettre -->
+        <div class="flex-1 basis-[320px]" aria-hidden="true">
+          <div class="rounded-[20px] border border-black/5 bg-white p-6 shadow-[0_28px_50px_-30px_rgba(20,51,26,.55)]">
+            <div class="flex items-center justify-between">
+              <span class="font-display text-[20px] font-medium text-cfrq-deep">Bonjour, Jean</span>
+              <span class="font-mono text-[11px] text-cfrq-ink/40">exemple</span>
+            </div>
+            <div class="mt-4 grid grid-cols-3 gap-2">
+              {apercuReperes.map((r) => (
+                <div class="rounded-xl bg-cfrq-tint px-3 py-2.5">
+                  <div class="text-[11.5px] text-cfrq-ink/55">{r.label}</div>
+                  <div class="mt-0.5 font-display text-[19px] font-medium text-cfrq-deep">{r.valeur}</div>
+                </div>
+              ))}
+            </div>
+            <p class="mt-5 text-[11.5px] font-bold uppercase tracking-[0.12em] text-cfrq-leaf">Vos documents</p>
+            <ul class="mt-2 divide-y divide-black/5">
+              {apercuDocs.map((doc) => (
+                <li class="flex items-center justify-between gap-3 py-2.5 text-[14px]">
+                  <span class="flex items-center gap-2 font-medium text-cfrq-deep"><span>📄</span>{doc.titre}</span>
+                  <span class="rounded-full bg-cfrq-tint px-2.5 py-0.5 text-[12px] font-medium text-cfrq-leaf">{doc.annee}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CE QU'ON Y TROUVE -->
+    <section class="mx-auto max-w-[1160px] px-[22px] pb-4 pt-[60px]">
+      <h2 class="font-display text-[clamp(26px,3.6vw,34px)] font-medium leading-[1.1] tracking-[-0.015em] text-cfrq-deep text-balance">
+        Ce que vous y trouverez
+      </h2>
+      <p class="mt-3 max-w-[620px] text-[16.5px] leading-relaxed text-cfrq-ink/65">
+        Tout ce que nos ingénieurs forestiers produisent pour vous, rassemblé au même endroit
+        plutôt qu'éparpillé entre les courriels, les cartes papier et les classeurs.
+      </p>
+      <ul class="mt-8 grid gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
+        {atouts.map((a) => (
+          <li class="h-full rounded-2xl border border-black/5 bg-white p-6">
+            <span class="mb-3.5 block h-[9px] w-[9px] rounded-full bg-cfrq-green" aria-hidden="true"></span>
+            <h3 class="font-display text-[19.5px] font-medium leading-snug text-cfrq-deep">{a.titre}</h3>
+            <p class="mt-2 text-[14.5px] leading-relaxed text-cfrq-ink/65">{a.texte}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <!-- BIENTÔT : ce qui s'en vient, dit comme tel -->
+    <section class="mx-auto max-w-[1160px] px-[22px] pb-4 pt-[52px]">
+      <div class="rounded-3xl border border-cfrq-green/20 p-[clamp(26px,4vw,44px)]" style="background:linear-gradient(140deg,#EAF4E0,#FFFFFF 66%)">
+        <p class={`${eyebrow} text-cfrq-leaf`}>Bientôt dans votre espace</p>
+        <h2 class="mt-2 font-display text-[clamp(24px,3.4vw,32px)] font-medium leading-[1.1] tracking-[-0.015em] text-cfrq-deep">
+          Et ce n'est qu'un début
+        </h2>
+        <div class="mt-6 grid gap-3.5 md:grid-cols-3">
+          {bientot.map((b) => (
+            <div class="rounded-2xl bg-white/80 p-5">
+              <h3 class="font-display text-[18px] font-medium text-cfrq-deep">{b.titre}</h3>
+              <p class="mt-1.5 text-[14px] leading-relaxed text-cfrq-ink/65">{b.texte}</p>
+            </div>
+          ))}
+        </div>
+        <p class="mt-5 max-w-[640px] text-[15px] leading-relaxed text-cfrq-ink/65">
+          Dans votre espace, un clic sur « M'aviser quand c'est prêt » et nous vous écrivons le jour
+          de leur sortie.
+        </p>
+      </div>
+    </section>
+
+    <!-- COMMENT Y ACCÉDER -->
+    <section class="mx-auto max-w-[1160px] px-[22px] pb-4 pt-[52px]">
+      <h2 class="font-display text-[clamp(24px,3.4vw,32px)] font-medium leading-[1.1] tracking-[-0.015em] text-cfrq-deep">
+        Comment y accéder
+      </h2>
+      <ol class="mt-6 grid gap-3.5 md:grid-cols-3">
+        {etapes.map((e, i) => (
+          <li class="rounded-2xl bg-cfrq-tint p-6">
+            <span class="flex h-8 w-8 items-center justify-center rounded-full bg-cfrq-green font-display text-[16px] font-medium text-[#123005]">{i + 1}</span>
+            <h3 class="mt-3.5 font-display text-[19px] font-medium text-cfrq-deep">{e.titre}</h3>
+            <p class="mt-2 text-[14.5px] leading-relaxed text-cfrq-ink/70">{e.texte}</p>
+          </li>
+        ))}
+      </ol>
+      <div class="mt-7 flex flex-wrap items-center gap-3">
+        <a href={inscription} class={boutonPrincipal}>Créer mon compte <span aria-hidden="true">→</span></a>
+        <a href={connexion} class={boutonSecondaire}>J'ai déjà un compte</a>
+      </div>
+    </section>
+
+    <!-- PAS ENCORE CLIENT : l'espace client se mérite par une visite -->
+    <section class="mx-auto max-w-[1160px] px-[22px] pb-[70px] pt-[52px]">
+      <div class="rounded-3xl bg-cfrq-deep p-[clamp(28px,4.5vw,52px)] text-cfrq-cream">
+        <h2 class="font-display text-[clamp(26px,3.6vw,36px)] font-medium leading-[1.1] tracking-[-0.015em]">
+          Pas encore client de CFRQ ?
+        </h2>
+        <p class="mt-4 max-w-[640px] text-[16.5px] leading-[1.6] text-cfrq-cream/80">
+          L'espace client est réservé aux propriétaires dont nous accompagnons le boisé. Tout
+          commence par une visite-conseil : on fait le tour de votre forêt avec vous, sans
+          engagement. Vos documents et la carte de votre boisé rejoindront ensuite votre espace.
+        </p>
+        <div class="mt-7 flex flex-wrap items-center gap-x-6 gap-y-3">
+          <a href={withBase("/contact")} class={boutonPrincipal}>Prendre rendez-vous <span aria-hidden="true">→</span></a>
+          <a href={site.telHref} class="text-[15.5px] font-semibold text-cfrq-cream underline underline-offset-2">ou appelez-nous au {site.tel}</a>
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Base>
+
+<script>
+  import { withBase } from "../../lib/url";
+
+  // Retour d'un courriel de connexion (jetons dans l'adresse) : c'est la page de
+  // connexion qui sait les traiter. Supabase renvoie ici quand une adresse de
+  // retour n'est pas reconnue (adresse du site par défaut).
+  const connexion = withBase("/espace-client/connexion");
+  if (/access_token|refresh_token|error_description/.test(location.hash) || /[?&](code|token_hash)=/.test(location.search)) {
+    location.replace(connexion + location.search + location.hash);
+  } else {
+    // Déjà connecté : le bouton principal ouvre directement l'espace. Pas de
+    // redirection automatique, pour que la page reste consultable.
+    let connecte = false;
+    try { connecte = !!localStorage.getItem("cfrq-auth"); } catch { /* navigation privée */ }
+    if (connecte) {
+      const principal = document.querySelector<HTMLAnchorElement>("[data-cta-principal]");
+      const texte = document.querySelector("[data-cta-texte]");
+      if (principal && texte) {
+        principal.href = withBase("/espace-client/tableau-de-bord");
+        texte.textContent = "Ouvrir mon espace";
+      }
+      document.querySelector("[data-cta-inscription]")?.classList.add("hidden");
+    }
+  }
+</script>

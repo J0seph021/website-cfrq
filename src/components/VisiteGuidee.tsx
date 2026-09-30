@@ -59,6 +59,16 @@ function etapes(sansPeuplements: boolean): Etape[] {
       texte: "De nouveaux outils s'en viennent. Touchez « M'aviser quand c'est prêt » sous ceux qui vous intéressent : nous vous écrirons le jour de leur sortie.",
     },
     {
+      cle: "demandes",
+      titre: "Une demande à nous faire ?",
+      texte: "Une terre absente de votre espace, un lot que vous songez à acheter, un accès à donner à un proche ou à votre banque : choisissez, et notre équipe fait le suivi avec vous.",
+    },
+    {
+      cle: "motdepasse", cote: "bottom",
+      titre: "Votre mot de passe",
+      texte: "Vous préférez un mot de passe au lien reçu par courriel ? Choisissez-le ici, en tout temps : vous pourrez ensuite vous connecter des deux façons.",
+    },
+    {
       cle: "revoir", cote: "bottom",
       titre: "Revoir la visite",
       texte: "Ce bouton relance la visite en tout temps. Bonne découverte !",

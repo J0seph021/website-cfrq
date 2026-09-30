@@ -130,6 +130,9 @@ Deno.serve(async (req) => {
         "Votre espace client est prêt",
         "<p style='" + P + "'>Bonjour,</p>" +
         "<p style='" + P + "'>Nous avons relié votre compte (" + esc(d.courriel) + ") à votre dossier forestier. Vos documents, la carte de votre forêt et vos travaux réalisés vous attendent.</p>" +
+        // /espace-client/ : la présentation mène à « Me connecter » (ou « Ouvrir mon
+        // espace » si la session est déjà ouverte). Adresse stable, quelle que soit
+        // la version publiée du site.
         bouton(lienPortail, "Ouvrir mon espace") +
         "<p style='font-family:Arial,Helvetica,sans-serif;font-size:12.5px;line-height:1.55;color:#98a390;margin:14px 0 0;'>Une question ? Répondez à ce courriel ou appelez-nous au 367 777-0555.</p>",
       ));

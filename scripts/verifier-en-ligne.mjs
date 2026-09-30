@@ -106,8 +106,9 @@ for (const c of ['/services', '/amenagement', '/notre-equipe', '/contact', '/era
 // --- 3. L'espace client -----------------------------------------------------
 // Portail fermé : /espace-client/ sert la page « en construction » où mène le bouton
 // du menu, et le tableau de bord n'est pas joignable.
-// Portail ouvert : /espace-client/ sert la vraie connexion, le tableau de bord répond,
-// et ni l'une ni l'autre ne doit être indexable (ce sont des pages de dossier client).
+// Portail ouvert : /espace-client/ présente l'espace et mène à la connexion
+// (/espace-client/connexion/), le tableau de bord répond ; la connexion et le
+// tableau de bord ne doivent pas être indexables (pages de dossier client).
 
 console.log(`\n=== ESPACE CLIENT (portail ${PORTAIL_OUVERT ? 'OUVERT' : 'fermé'} selon deploy.yml) ===`);
 
@@ -123,15 +124,27 @@ if (vitrine.status !== 200) {
     ligne('XX', vitrine.status, '/espace-client/', 'CONTENU INATTENDU');
   } else ligne('ok', vitrine.status, '/espace-client/', 'page « en construction », conforme');
 } else {
-  // Le formulaire de connexion est monté par un script : on cherche ce que le HTML
-  // livré contient vraiment, le champ courriel et le bouton d'envoi du lien.
   if (/En construction/i.test(vitrineTexte)) {
     echec("/espace-client/ sert encore la page « en construction » alors que le portail est ouvert : la production a-t-elle été reconstruite ?");
     ligne('XX', vitrine.status, '/espace-client/', 'ENCORE FERMÉE');
-  } else if (!/id="login-form"/.test(vitrineTexte)) {
-    echec("/espace-client/ ne contient pas le formulaire de connexion.");
-    ligne('XX', vitrine.status, '/espace-client/', 'SANS FORMULAIRE');
-  } else ligne('ok', vitrine.status, '/espace-client/', 'page de connexion, conforme');
+  } else if (!/href="[^"]*\/espace-client\/connexion\//.test(vitrineTexte)) {
+    echec("/espace-client/ ne mène pas à la connexion (/espace-client/connexion/).");
+    ligne('XX', vitrine.status, '/espace-client/', 'SANS LIEN DE CONNEXION');
+  } else ligne('ok', vitrine.status, '/espace-client/', 'page de présentation, conforme');
+}
+
+// Le formulaire de connexion est monté par un script : on cherche ce que le HTML
+// livré contient vraiment.
+const connexion = PORTAIL_OUVERT ? await fetch(BASE + '/espace-client/connexion/', { redirect: 'manual' }) : null;
+const connexionTexte = connexion?.status === 200 ? await connexion.text() : '';
+if (connexion) {
+  if (connexion.status !== 200) {
+    echec(`/espace-client/connexion/ répond ${connexion.status} alors que le portail est ouvert : personne ne peut se connecter.`);
+    ligne('XX', connexion.status, '/espace-client/connexion/', 'MANQUANTE');
+  } else if (!/id="login-form"/.test(connexionTexte)) {
+    echec("/espace-client/connexion/ ne contient pas le formulaire de connexion.");
+    ligne('XX', connexion.status, '/espace-client/connexion/', 'SANS FORMULAIRE');
+  } else ligne('ok', connexion.status, '/espace-client/connexion/', 'page de connexion, conforme');
 }
 
 const tdb = await fetch(BASE + '/espace-client/tableau-de-bord/', { redirect: 'manual' });
@@ -148,7 +161,7 @@ if (!PORTAIL_OUVERT) {
 
 // Un dossier client n'a rien à faire dans Google, portail ouvert ou non.
 if (PORTAIL_OUVERT) {
-  for (const [chemin, html] of [['/espace-client/', vitrineTexte], ['/espace-client/tableau-de-bord/', tdbTexte]]) {
+  for (const [chemin, html] of [['/espace-client/connexion/', connexionTexte], ['/espace-client/tableau-de-bord/', tdbTexte]]) {
     if (!html) continue;
     if (!/name="robots"[^>]*noindex/i.test(html)) {
       echec(`${chemin} n'est pas en noindex : une page de dossier client peut se retrouver dans Google.`);

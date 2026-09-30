@@ -124,8 +124,19 @@ if (!PUBLIER_ESPACE_CLIENT) {
     }
   }
 } else {
-  for (const u of ['/espace-client/', '/espace-client/tableau-de-bord/']) {
+  // Portail ouvert : la présentation, la connexion et le tableau de bord.
+  for (const u of ['/espace-client/', '/espace-client/connexion/', '/espace-client/tableau-de-bord/']) {
     if (!pages.has(u)) echec(`PUBLIER_ESPACE_CLIENT=1 mais ${u} n'a pas été construite.`);
+  }
+  const presentation = pages.get('/espace-client/') ?? '';
+  if (/En construction/i.test(presentation)) {
+    echec("/espace-client/ sert encore la page « en construction » alors que le portail est ouvert.");
+  }
+  if (!/href="[^"]*\/espace-client\/connexion\//.test(presentation)) {
+    echec("/espace-client/ ne mène pas à la connexion (/espace-client/connexion/).");
+  }
+  if (!/id="login-form"/.test(pages.get('/espace-client/connexion/') ?? '')) {
+    echec("/espace-client/connexion/ ne contient pas le formulaire de connexion.");
   }
 }
 

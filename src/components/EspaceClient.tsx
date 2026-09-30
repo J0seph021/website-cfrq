@@ -788,7 +788,7 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
             <div className="flex items-center gap-2 sm:gap-3">
               <VisiteGuidee sansPeuplements={MODE_DOSSIERS} apercu={apercu} />
               <span className="hidden h-9 w-9 items-center justify-center rounded-full bg-cfrq-green text-[13px] font-semibold text-[#123005] sm:flex">{initiales}</span>
-              <button onClick={() => setPwdOuvert(true)} className="rounded-full border border-black/15 px-3.5 py-2 text-[13px] text-cfrq-leaf transition-colors hover:bg-cfrq-tint">
+              <button data-visite="motdepasse" onClick={() => setPwdOuvert(true)} className="rounded-full border border-black/15 px-3.5 py-2 text-[13px] text-cfrq-leaf transition-colors hover:bg-cfrq-tint">
                 Mot de passe
               </button>
               {onLogout && (
@@ -1357,7 +1357,7 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
 
         {/* Demandes à CFRQ (F2/F6 ajouter une terre, F3 terre convoitée, F4 inviter un tiers) */}
         <Reveal className="mt-10">
-          <section className="rounded-2xl border border-black/5 bg-white p-6 md:p-8">
+          <section data-visite="demandes" className="rounded-2xl border border-black/5 bg-white p-6 md:p-8">
             <h2 className="font-display text-xl font-medium text-cfrq-deep">Une demande à nous faire ?</h2>
             <p className="mt-2 max-w-2xl text-[15.5px] leading-relaxed text-cfrq-ink/75">
               Notre équipe s'occupe du reste. Choisissez ce dont vous avez besoin et nous ferons le suivi avec vous.
@@ -1484,7 +1484,7 @@ export default function EspaceClient() {
     let alive = true;
     (async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) { window.location.replace(withBase("/espace-client")); return; }
+      if (!session) { window.location.replace(withBase("/espace-client/connexion")); return; }
       setCourriel(session.user?.email ?? null);
       const [prod, proprietes, lots, paf, travaux, docs, carte, bilan, offreRes, moiRes] = await Promise.all([
         supabase.from("producteurs").select("*").maybeSingle(),
@@ -1517,7 +1517,7 @@ export default function EspaceClient() {
       setLoading(false);
     })();
     const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => {
-      if (!s) window.location.replace(withBase("/espace-client"));
+      if (!s) window.location.replace(withBase("/espace-client/connexion"));
     });
     return () => { alive = false; sub.subscription.unsubscribe(); };
   }, []);
@@ -1540,7 +1540,7 @@ export default function EspaceClient() {
     // session repart du dossier de la personne, jamais de celui d'un client.
     if (moi?.vue_employe) await supabase.rpc("portail_quitter_client");
     await supabase.auth.signOut();
-    window.location.replace(withBase("/espace-client"));
+    window.location.replace(withBase("/espace-client/connexion"));
   }
 
   async function quitterVue() {

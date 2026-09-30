@@ -66,9 +66,10 @@ const linkClass = "text-cfrq-leaf underline-offset-2 hover:text-cfrq-green hover
         </p>
       </div>
 
-      <a href={withBase("/")} class="mt-[22px] block text-center text-[14px] text-cfrq-leaf hover:text-cfrq-green">
-        ← Retour au site
-      </a>
+      <p class="mt-[22px] flex flex-wrap justify-center gap-x-5 gap-y-1 text-center text-[14px]">
+        <a href={withBase("/espace-client")} class="text-cfrq-leaf hover:text-cfrq-green">Qu'est-ce que l'espace client ?</a>
+        <a href={withBase("/")} class="text-cfrq-leaf hover:text-cfrq-green">← Retour au site</a>
+      </p>
     </div>
 
     <p class="absolute inset-x-0 bottom-[18px] text-center text-[12px] text-cfrq-cream/55">
@@ -89,7 +90,7 @@ const linkClass = "text-cfrq-leaf underline-offset-2 hover:text-cfrq-green hover
   const retourAvecJeton = location.hash.includes("access_token");
 
   const dashboardPath = withBase("/espace-client/tableau-de-bord");
-  const loginPath = withBase("/espace-client");
+  const loginPath = withBase("/espace-client/connexion");
   // URLs absolues calculées au runtime: fonctionne en local, en préproduction
   // GitHub Pages et sur cfrq.ca sans reconfiguration.
   const dashboardUrl = new URL(dashboardPath, location.origin).href;
@@ -253,6 +254,11 @@ const linkClass = "text-cfrq-leaf underline-offset-2 hover:text-cfrq-green hover
   supabase.auth.onAuthStateChange((event) => {
     if (event === "PASSWORD_RECOVERY") setMode("nouveau-mdp");
   });
+
+  // Arrivée depuis la page de présentation : « Créer mon compte » ouvre directement
+  // l'inscription (?mode=inscription), « par mot de passe » le formulaire (?mode=mdp).
+  const modeDemande = new URLSearchParams(location.search).get("mode");
+  if (!retourAvecJeton && (modeDemande === "inscription" || modeDemande === "mdp")) setMode(modeDemande);
 
   // Déjà connecté (et pas en train de réinitialiser) -> tableau de bord.
   if (!retourAvecJeton) {

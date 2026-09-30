@@ -17,22 +17,28 @@ const SITE_BASE = process.env.SITE_BASE || '/';
 // dans src/data/flags.ts.
 const estProduction = SITE_URL === 'https://cfrq.ca';
 
-// L'espace client est terminé mais pas encore ouvert au public. `/espace-client`
-// existe quand même, dans les deux cas : quand le portail est publié l'adresse
-// sert la vraie page de connexion (et le tableau de bord s'ajoute), sinon elle
-// sert la page qui explique ce que sera l'espace client et dit qu'il est en
-// construction. Le code du portail reste dans le dépôt (src/routes-differees/),
-// il n'est simplement pas publié.
+// L'espace client. `/espace-client` existe dans les deux cas : portail publié,
+// l'adresse présente l'espace client (page publique et indexable) et mène à la
+// connexion (/espace-client/connexion) puis au tableau de bord ; portail fermé,
+// elle sert la page qui dit qu'il est en construction. Le code du portail reste
+// dans le dépôt (src/routes-differees/), il n'est simplement pas publié.
 //
 // La règle : ouvert partout SAUF sur cfrq.ca. La préproduction et le poste
 // local servent à retravailler le portail, ils le montrent donc d'office ;
 // seule la production attend l'ordre explicite PUBLIER_ESPACE_CLIENT=1, donné
-// dans .github/workflows/deploy.yml le jour de l'ouverture au public.
+// dans .github/workflows/deploy.yml (ouvert au public le 2026-09-30).
 // Doit rester aligné sur PUBLIER_ESPACE_CLIENT dans src/data/flags.ts.
 const publierEspaceClient = estProduction ? process.env.PUBLIER_ESPACE_CLIENT === '1' : true;
 
-/** Pages volontairement absentes du sitemap : redirections et pages noindex. */
-const horsSitemap = [/\/private-page\//, /\/service-aux-entrepreneurs-en-travaux-sylvicoles\//, /\/espace-client/];
+/** Pages volontairement absentes du sitemap : redirections et pages noindex.
+ *  De l'espace client, seule la présentation y figure, et seulement portail ouvert
+ *  (la connexion et le tableau de bord sont en noindex, la page « en construction » aussi). */
+const horsSitemap = [
+  /\/private-page\//,
+  /\/service-aux-entrepreneurs-en-travaux-sylvicoles\//,
+  /\/espace-client\/.+/,
+  ...(publierEspaceClient ? [] : [/\/espace-client\/$/]),
+];
 
 export default defineConfig({
   site: SITE_URL,
@@ -87,7 +93,10 @@ export default defineConfig({
             injectRoute({ pattern: '/espace-client', entrypoint: './src/routes-differees/espace-client/a-venir.astro' });
             return;
           }
-          injectRoute({ pattern: '/espace-client', entrypoint: './src/routes-differees/espace-client/index.astro' });
+          // Portail ouvert : /espace-client présente l'espace (vendeur, pour les
+          // clients comme pour les autres) et mène à la connexion, à part.
+          injectRoute({ pattern: '/espace-client', entrypoint: './src/routes-differees/espace-client/presentation.astro' });
+          injectRoute({ pattern: '/espace-client/connexion', entrypoint: './src/routes-differees/espace-client/index.astro' });
           injectRoute({
             pattern: '/espace-client/tableau-de-bord',
             entrypoint: './src/routes-differees/espace-client/tableau-de-bord.astro',
