@@ -15,6 +15,7 @@
  */
 import pg from "npm:pg@8";
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { nommerDocuments } from "./nommer.ts";
 
 const {
   PLANILOGIX_DB_URL,
@@ -54,13 +55,6 @@ HAVING max(maj_le) > $2::timestamptz
 ORDER BY max(maj_le) ASC, producteur_id ASC
 LIMIT $4`;
 
-function nomLisible(tcode: string, no: string | null, annee: unknown) {
-  if (tcode === "prs") return `Prescription ${no ?? ""}`.trim();
-  if (tcode === "rap") return `Rapport d'exécution ${no ?? ""}`.trim();
-  if (tcode === "rtf") return `Rapport de taxes foncières${annee ? " " + String(annee).replace(/\.0$/, "") : ""}`;
-  return `Plan d'aménagement forestier${annee ? " " + String(annee).replace(/\.0$/, "") : ""}`;
-}
-
 function safeName(name: string) {
   return name
     .normalize("NFKD").replace(/[^\x00-\x7F]/g, "")
@@ -75,7 +69,10 @@ function json(body: unknown, status = 200) {
 }
 
 Deno.serve(async (req) => {
-  if (SYNC_SECRET && req.headers.get("x-sync-secret") !== SYNC_SECRET) {
+  // Refus par défaut : sans SYNC_SECRET configuré, personne ne passe. Avant, un secret
+  // absent faisait sauter la vérification, et la réponse (errFiles) expose des numéros
+  // de producteur et des noms de fichiers.
+  if (!SYNC_SECRET || req.headers.get("x-sync-secret") !== SYNC_SECRET) {
     return json({ error: "unauthorized" }, 401);
   }
   if (!PLANILOGIX_DB_URL || !PLANI_URL || !PLANI_STORAGE_KEY || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
@@ -116,11 +113,15 @@ Deno.serve(async (req) => {
       if (Date.now() - started > timeBudget) break;
       const id = b.producteur_id;
       const { rows: docs } = await pgc.query(SQL_DOCS, [id, TYPES]);
+      // Noms calculés sur l'ensemble des documents du producteur : distincts entre eux.
+      const noms = nommerDocuments(docs.map((r) => ({
+        code: r.sp_type_code, fichier: safeName(r.nom_fichier), annee: r.sp_annee,
+      })));
 
       await site.from("documents").delete()
         .eq("producteur_id", id).in("type_document", ["prescription", "rapport", "paf", "rtf"]);
 
-      for (const r of docs) {
+      for (const [k, r] of docs.entries()) {
         const meta = META[r.sp_type_code];
         if (!meta) continue;
         try {
@@ -136,7 +137,7 @@ Deno.serve(async (req) => {
             producteur_id: id,
             type_document: meta.type,
             reference: r.no_prescription,
-            nom_document: nomLisible(r.sp_type_code, r.no_prescription, r.sp_annee),
+            nom_document: noms[k],
             storage_path: dest,
             taille: `${Math.round(r.taille_octets / 1024)} Ko`,
             date_document: r.sp_annee ? String(r.sp_annee).replace(/\.0$/, "") : null,

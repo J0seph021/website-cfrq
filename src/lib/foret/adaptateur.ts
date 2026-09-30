@@ -142,9 +142,11 @@ export type Secteur = { bbox: [number, number, number, number]; n: number };
 // Sert à cadrer la carte sur la forêt du client même quand ses lots sont très
 // dispersés (ex. GoForest : 2 secteurs à ~65 km ; à l'échelle de tout, les
 // peuplements deviennent invisibles). Retour trié par nombre de peuplements.
-export function secteursPeuplements(features: any[], seuilM = 6000): Secteur[] {
+// `couche` permet de regrouper autre chose (les propriétés, quand la carte est
+// affichée sans peuplements).
+export function secteursPeuplements(features: any[], seuilM = 6000, couche = "peuplement"): Secteur[] {
   const items = (features ?? [])
-    .filter((f) => f?.properties?.couche === "peuplement")
+    .filter((f) => f?.properties?.couche === couche)
     .map((f) => bboxGeom(f.geometry))
     .filter(Boolean) as [number, number, number, number][];
   if (!items.length) return [];

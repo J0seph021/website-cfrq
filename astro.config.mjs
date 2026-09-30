@@ -75,7 +75,12 @@ export default defineConfig({
     {
       name: 'cfrq-routes-differees',
       hooks: {
-        'astro:config:setup': ({ injectRoute }) => {
+        'astro:config:setup': ({ injectRoute, command }) => {
+          // Démo du tableau de bord avec un dossier fictif : serveur de développement
+          // seulement, jamais dans un build (ni preview.cfrq.ca, ni cfrq.ca).
+          if (command === 'dev') {
+            injectRoute({ pattern: '/espace-client/demo', entrypoint: './src/routes-differees/espace-client/demo.astro' });
+          }
           if (!publierEspaceClient) {
             // Portail fermé : l'adresse reste vivante, mais elle explique le
             // projet au lieu d'offrir une connexion qui ne mènerait nulle part.

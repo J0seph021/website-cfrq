@@ -6,9 +6,16 @@ import CarteForet from "./CarteForet";
 import CalculateurValeurBois from "./CalculateurValeurBois";
 import FormulaireDemande, { DEMANDES, type ConfigDemande } from "./FormulaireDemande";
 import { BarreEmploye, ChoixClient, type Moi } from "./VueEmploye";
+import CompteNonRelie from "./DemandeAcces";
+import Bientot from "./Bientot";
+import VisiteGuidee from "./VisiteGuidee";
 import { essencesArbres } from "../lib/foret/essences-mffp";
+import { MODE_DOSSIERS } from "../data/espaceClient";
 
 type Row = Record<string, any>;
+
+// Version « dossiers » de l'espace client : voir src/data/espaceClient.ts (partagé
+// avec la page Services, qui ne doit pas dire le Relevé disponible avant l'heure).
 export interface Dossier {
   producteur: Row | null;
   proprietes: Row[];
@@ -380,6 +387,11 @@ function estProducteurReconnu(prod: Row | null): boolean {
 // Nom lisible pour la salutation: retire le suffixe légal (INC, ENR, LTÉE…),
 // met en casse de titre, mais préserve les sigles courts (ex. « AA »).
 // Les noms sources sont en majuscules (« GOFOREST INC », « VOYER JACQUES »).
+// Nom de société (compagnie à numéro, ferme, gestion…) : pas une personne à saluer.
+function estSociete(nom: string): boolean {
+  return /\b(inc|enr|lt[ée]e|s\.?e\.?n\.?c|cie|ferme|gestion|groupement|qu[ée]bec|canada|[ée]rabli[èe]re|soci[ée]t[ée]|immeubles|placements|entreprises?|succession)\b|\d{3,}/i.test(nom);
+}
+
 function nomAffiche(nom: string): string {
   const sansSuffixe = nom.replace(/\s*\b(inc|enr|ltée|ltee|senc|s\.e\.n\.c\.)\b\.?$/i, "").trim() || nom;
   return sansSuffixe
@@ -393,12 +405,27 @@ function anneeDoc(doc: Row): string | null {
   const d = String(doc.date_document ?? "").match(/\b(19|20)\d{2}\b/)?.[0];
   return d ?? String(doc.nom_document ?? "").match(/\b(19|20)\d{2}\b/)?.[0] ?? null;
 }
-// Titre lisible : prescriptions et rapports sont nommés par un numéro cryptique en base.
-function titreDoc(doc: Row): string {
+// Repli quand un document n'a pas encore de nom en base.
+function titreGenerique(doc: Row): string {
   if (doc.type_document === "prescription") return "Prescription sylvicole";
   if (doc.type_document === "rapport") return "Rapport d'exécution";
   if (doc.type_document === "rtf") return "Rapport de taxes foncières";
-  return String(doc.nom_document ?? "Document");
+  return "Plan d'aménagement forestier";
+}
+
+const DATE_MOIS = /,\s((?:janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre) (?:19|20)\d{2})/;
+
+// Titre et date d'un document. Le nom en base porte déjà la date et ce qui le distingue
+// de ses voisins (« Rapport d'exécution, juillet 2024 », « Prescription sylvicole 2019
+// (version 2) », voir supabase/functions/sync-documents/nommer.ts) : on sort la date du
+// titre pour l'afficher dans la pastille, sans la répéter.
+function titreEtDate(doc: Row): { titre: string; date: string | null } {
+  const nom = String(doc.nom_document ?? "").trim();
+  const mois = nom.match(DATE_MOIS);
+  if (mois) return { titre: nom.replace(mois[0], "").trim() || titreGenerique(doc), date: mois[1] };
+  const annee = anneeDoc(doc);
+  const sansAnnee = annee ? nom.replace(new RegExp(`\\s${annee}(?=\\s|$)`), "").trim() : nom;
+  return { titre: sansAnnee || titreGenerique(doc), date: annee };
 }
 
 /* ------------------------------------------------------------------ */
@@ -460,7 +487,7 @@ function DefinirMotDePasse({ onClose }: { onClose: () => void }) {
   );
 }
 
-export function DashboardView({ d, offre = null, onLogout, courriel = null, vueEmploye = false }: { d: Dossier; offre?: Offre; onLogout?: () => void; courriel?: string | null; vueEmploye?: boolean }) {
+export function DashboardView({ d, offre = null, onLogout, courriel = null, vueEmploye = false, apercu = false }: { d: Dossier; offre?: Offre; onLogout?: () => void; courriel?: string | null; vueEmploye?: boolean; apercu?: boolean }) {
   const nom = d.producteur?.nom ?? "Votre dossier";
   const [achatEnCours, setAchatEnCours] = useState<string | null>(null);
   const [pwdOuvert, setPwdOuvert] = useState(false);
@@ -507,8 +534,12 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
     window.history.replaceState({}, "", window.location.pathname + "#portrait");
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
-  const initiales = nom.split(/\s+/).map((m: string) => m[0]).join("").slice(0, 2).toUpperCase();
-  const nomJoli = d.producteur ? nomAffiche(nom) : null;
+  // Salutation : le représentant du dossier (nom_salutation, tiré de PlaniLogix par
+  // scripts/noms-salutation.mjs), jamais le nom d'une société (« Bonjour, 3 Versants »).
+  // Sans lui, le nom du propriétaire seulement s'il ressemble à une personne.
+  const nomJoli: string | null =
+    d.producteur?.nom_salutation || (d.producteur && !estSociete(nom) ? nomAffiche(nom) : null);
+  const initiales = (nomJoli ?? nom).split(/\s+/).map((m: string) => m[0]).join("").slice(0, 2).toUpperCase();
 
   // Agregats reels
   const peuplements = useMemo(() => props(d.carte, "peuplement"), [d.carte]);
@@ -570,9 +601,11 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
   // Salutation selon l'heure
   const salutation = new Date().getHours() < 18 ? "Bonjour" : "Bonsoir";
 
-  // Heros: cascade biodiversite -> superficie boisee -> proprietes
+  // Heros: cascade biodiversite -> superficie boisee -> proprietes. En mode dossiers,
+  // les peuplements (et leurs essences) restent reserves au Portrait : on part de la
+  // superficie boisee.
   const heros = useMemo(() => {
-    if (nbEssences >= 8) {
+    if (!MODE_DOSSIERS && nbEssences >= 8) {
       return {
         valeur: nbEssences, decimals: 0, mot: nbEssences > 1 ? "essences d'arbres" : "essence d'arbre",
         avant: "Votre forêt abrite",
@@ -598,12 +631,14 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
     { valeur: superficieTotale, decimals: 1, suffixe: " ha", label: "Superficie totale" },
     { valeur: d.proprietes.length, decimals: 0, suffixe: "", label: d.proprietes.length > 1 ? "Propriétés" : "Propriété" },
     { valeur: d.lots.length, decimals: 0, suffixe: "", label: "Lots boisés" },
-    { valeur: nbPeuplements, decimals: 0, suffixe: "", label: "Peuplements recensés" },
+    MODE_DOSSIERS
+      ? { valeur: d.documents.length, decimals: 0, suffixe: "", label: d.documents.length > 1 ? "Documents au dossier" : "Document au dossier" }
+      : { valeur: nbPeuplements, decimals: 0, suffixe: "", label: "Peuplements recensés" },
   ].filter((r) => r.valeur > 0);
 
   // Parcours (jalons reels)
   const jalons = [
-    { fait: nbPeuplements > 0, label: "Portrait écoforestier au dossier" },
+    ...(MODE_DOSSIERS ? [] : [{ fait: nbPeuplements > 0, label: "Portrait écoforestier au dossier" }]),
     { fait: aPaf, label: "Plan d'aménagement au dossier" },
     { fait: travauxCarte.length > 0, label: travauxCarte.length > 0 ? `${travauxCarte.length} travaux réalisés` : "Travaux réalisés" },
     { fait: prescriptions.length > 0, label: prescriptions.length > 0 ? `${prescriptions.length} prescriptions au dossier` : "Prescriptions" },
@@ -614,7 +649,7 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
 
   // Prochaine meilleure action (unique)
   const action = useMemo(() => {
-    if (nbPrioHaute > 0) {
+    if (!MODE_DOSSIERS && nbPrioHaute > 0) {
       return {
         titre: "La prochaine étape pour votre forêt",
         sous: `Vos forestiers ont repéré ${nfEnt.format(nbPrioHaute)} peuplements prioritaires (priorité 1 et 2) qui gagneraient à recevoir des travaux bénéfiques à leur santé. Votre ingénieur forestier peut vous expliquer lesquels, simplement.`,
@@ -735,7 +770,7 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
     { id: "plan", label: "Mon plan" },
     travauxTries.length > 0 ? { id: "travaux", label: "Mes travaux" } : null,
     { id: "documents", label: "Mes documents" },
-    { id: "portrait", label: "Mon Portrait" },
+    MODE_DOSSIERS ? { id: "bientot", label: "Bientôt" } : { id: "portrait", label: "Mon Portrait" },
   ].filter(Boolean) as { id: string; label: string }[];
 
   return (
@@ -750,8 +785,9 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
               </a>
               <span className="hidden border-l border-black/10 pl-3 text-[14px] text-cfrq-ink/60 sm:inline">Espace client</span>
             </div>
-            <div className="flex items-center gap-3">
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-cfrq-green text-[13px] font-semibold text-[#123005]">{initiales}</span>
+            <div className="flex items-center gap-2 sm:gap-3">
+              <VisiteGuidee sansPeuplements={MODE_DOSSIERS} apercu={apercu} />
+              <span className="hidden h-9 w-9 items-center justify-center rounded-full bg-cfrq-green text-[13px] font-semibold text-[#123005] sm:flex">{initiales}</span>
               <button onClick={() => setPwdOuvert(true)} className="rounded-full border border-black/15 px-3.5 py-2 text-[13px] text-cfrq-leaf transition-colors hover:bg-cfrq-tint">
                 Mot de passe
               </button>
@@ -764,7 +800,7 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
           </div>
         </header>
         <nav aria-label="Sommaire" className="border-b border-black/10 bg-cfrq-cream/95 backdrop-blur">
-          <div className="mx-auto flex max-w-6xl gap-1.5 overflow-x-auto px-4 py-2">
+          <div data-visite="sommaire" className="mx-auto flex max-w-6xl gap-1.5 overflow-x-auto px-4 py-2">
             {sommaire.map((s) => (
               <a key={s.id} href={`#${s.id}`}
                 className="whitespace-nowrap rounded-full px-3 py-1.5 text-[13.5px] font-medium text-cfrq-leaf transition-colors hover:bg-cfrq-tint">
@@ -828,7 +864,7 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
               </a>
             </section>
 
-            <div className="rounded-3xl border border-black/5 bg-white p-5">
+            <div data-visite="ingenieur" className="rounded-3xl border border-black/5 bg-white p-5">
               <div className="flex items-center gap-3">
                 <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-cfrq-tint text-cfrq-leaf" aria-hidden>
                   <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.6">
@@ -849,7 +885,7 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
         </div>
 
         {/* Narration biodiversite / sante */}
-        {(nbEssences >= 4 || nbAppellations >= 4) && (
+        {!MODE_DOSSIERS && (nbEssences >= 4 || nbAppellations >= 4) && (
           <Reveal className="mt-8">
             <div className="rounded-2xl bg-cfrq-tint p-6 md:p-8">
               <p className="font-display text-xl leading-relaxed text-cfrq-ink md:text-2xl">
@@ -884,13 +920,15 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
         {/* Carte interactive */}
         {d.carte?.geojson && (
           <Reveal className="mt-10">
-            <section id="foret" className="scroll-mt-28">
+            <section id="foret" data-visite="carte" className="scroll-mt-28">
               <div className="flex flex-wrap items-end justify-between gap-2">
                 <h2 className="font-display text-xl font-medium text-cfrq-deep">Votre forêt, lot par lot</h2>
-                <span className="text-[13px] text-black/50">Touchez un peuplement pour voir le détail</span>
+                <span className="text-[13px] text-black/50">
+                  {MODE_DOSSIERS ? "Touchez une zone de travaux pour ouvrir ses documents" : "Touchez un peuplement pour voir le détail"}
+                </span>
               </div>
               <div className="mt-4">
-                <CarteForet data={d.carte.geojson} bbox={d.carte.bbox} documents={d.documents} />
+                <CarteForet data={d.carte.geojson} bbox={d.carte.bbox} documents={d.documents} sansPeuplements={MODE_DOSSIERS} />
               </div>
             </section>
           </Reveal>
@@ -928,7 +966,7 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
         </Reveal>
 
         {/* Ce que votre foret demande (sante) */}
-        {nbTraitementRec > 0 && (
+        {!MODE_DOSSIERS && nbTraitementRec > 0 && (
           <Reveal className="mt-10">
             <section className="rounded-2xl bg-white p-6">
               <h2 className="font-display text-xl font-medium text-cfrq-deep">Ce que votre forêt demande</h2>
@@ -1024,14 +1062,14 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
                   </div>
                   <ul className="mt-5 grid gap-2 sm:grid-cols-2">
                     {pafDocs.map((doc) => {
-                      const annee = anneeDoc(doc);
+                      const { titre, date: annee } = titreEtDate(doc);
                       return (
                         <li key={doc.id}>
                           <button onClick={() => ouvrirDoc(doc.storage_path)} disabled={!doc.storage_path}
                             className="flex w-full items-center justify-between gap-3 rounded-xl border border-black/5 bg-white px-4 py-3 text-left transition-colors hover:border-cfrq-green/40 disabled:cursor-default">
                             <span className="flex items-center gap-2 font-medium text-cfrq-deep">
                               <span aria-hidden>📄</span>
-                              <span className={doc.storage_path ? "hover:underline" : ""}>{doc.nom_document}</span>
+                              <span className={doc.storage_path ? "hover:underline" : ""}>{titre}</span>
                             </span>
                             <span className="shrink-0 text-[13px] font-medium text-cfrq-leaf">{annee ?? "Ouvrir"}</span>
                           </button>
@@ -1094,7 +1132,7 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
         {/* Documents */}
         <Reveal className="mt-10">
           <section id="documents" className="scroll-mt-28">
-            <div className="flex flex-wrap items-end justify-between gap-2">
+            <div data-visite="documents" className="flex flex-wrap items-end justify-between gap-2">
               <h2 className="font-display text-xl font-medium text-cfrq-deep">Vos documents</h2>
               {docsHorsPaf.length > 0 && <span className="text-[13px] text-black/50">{docsHorsPaf.length} au total</span>}
             </div>
@@ -1103,7 +1141,7 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
               {docsHorsPaf.length > 0 ? (
                 <ul className="divide-y divide-black/5">
                   {(docsOuvert ? docsHorsPaf : docsHorsPaf.slice(0, LIMITE_DOCS)).map((doc) => {
-                    const annee = anneeDoc(doc);
+                    const { titre, date: annee } = titreEtDate(doc);
                     return (
                       <li key={doc.id}>
                         <button onClick={() => ouvrirDoc(doc.storage_path)} disabled={!doc.storage_path}
@@ -1111,7 +1149,7 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
                           <span className="flex items-center gap-2">
                             {doc.storage_path && <span aria-hidden>📄</span>}
                             <span className="flex flex-col">
-                              <span className={`font-medium text-cfrq-deep ${doc.storage_path ? "hover:underline" : ""}`}>{titreDoc(doc)}</span>
+                              <span className={`font-medium text-cfrq-deep ${doc.storage_path ? "hover:underline" : ""}`}>{titre}</span>
                               {doc.reference && <span className="text-[12.5px] text-black/45">nº {doc.reference}</span>}
                             </span>
                           </span>
@@ -1142,14 +1180,14 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
             {rtfDocs.length > 0 && (
               <>
                 <div className="mt-8 flex flex-wrap items-end justify-between gap-2">
-                  <h3 className="font-display text-lg font-medium text-cfrq-deep">Vos rapports de taxes foncières</h3>
+                  <h3 data-visite="taxes" className="font-display text-lg font-medium text-cfrq-deep">Vos rapports de taxes foncières</h3>
                   <span className="text-[13px] text-black/50">{rtfDocs.length} au total</span>
                 </div>
                 <p className="mt-1 text-[14.5px] text-black/55">Le rapport annuel préparé par nos ingénieurs forestiers pour votre remboursement de taxes foncières : la pièce à remettre à votre comptable.</p>
                 <div className="mt-4 rounded-2xl border border-black/5 bg-white p-6">
                   <ul className="divide-y divide-black/5">
                     {(rtfOuvert ? rtfDocs : rtfDocs.slice(0, LIMITE_RTF)).map((doc) => {
-                      const annee = anneeDoc(doc);
+                      const { titre, date: annee } = titreEtDate(doc);
                       return (
                         <li key={doc.id}>
                           <button onClick={() => ouvrirDoc(doc.storage_path)} disabled={!doc.storage_path}
@@ -1157,7 +1195,7 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
                             <span className="flex items-center gap-2">
                               {doc.storage_path && <span aria-hidden>📄</span>}
                               <span className="flex flex-col">
-                                <span className={`font-medium text-cfrq-deep ${doc.storage_path ? "hover:underline" : ""}`}>{titreDoc(doc)}</span>
+                                <span className={`font-medium text-cfrq-deep ${doc.storage_path ? "hover:underline" : ""}`}>{titre}</span>
                                 {doc.reference && <span className="text-[12.5px] text-black/45">nº {doc.reference}</span>}
                               </span>
                             </span>
@@ -1194,9 +1232,11 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
         {/* B3 : calculateur de valeur du bois — le CLIENT remplit ses hypothèses.
             Placé entre le bilan et les programmes : un net marginal/négatif enchaîne
             naturellement sur « Saviez-vous que » (les programmes font la différence). */}
-        <Reveal className="mt-10">
-          <CalculateurValeurBois peuplements={peuplements} syndicatGuid={d.producteur?.syndicat_guid ?? null} />
-        </Reveal>
+        {!MODE_DOSSIERS && (
+          <Reveal className="mt-10">
+            <CalculateurValeurBois peuplements={peuplements} syndicatGuid={d.producteur?.syndicat_guid ?? null} />
+          </Reveal>
+        )}
 
         {/* Leviers et programmes (en second temps) */}
         <Reveal className="mt-10">
@@ -1226,7 +1266,15 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
           </section>
         </Reveal>
 
+        {/* Bientôt dans votre espace : fonctionnalités à venir, « M'aviser quand c'est prêt » */}
+        {MODE_DOSSIERS && (
+          <Reveal className="mt-10">
+            <Bientot vueEmploye={vueEmploye} apercu={apercu} onNeutralise={setNoteEmploye} />
+          </Reveal>
+        )}
+
         {/* Votre Portrait des forets (releve patrimonial payant) */}
+        {!MODE_DOSSIERS && (
         <Reveal className="mt-10">
           <section id="portrait" className="scroll-mt-28 overflow-hidden rounded-2xl border border-cfrq-green/20 bg-gradient-to-br from-cfrq-tint to-white p-6 md:p-8">
             {paye && (
@@ -1292,6 +1340,7 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
             <p className="mt-5 text-[13.5px] text-black/55">Livré en PDF, taxes incluses. Une question, ou vous préférez commander de vive voix ? Appelez-nous au {site.tel}.</p>
           </section>
         </Reveal>
+        )}
 
         {/* Transmettre votre foret (succession) */}
         {(travauxCarte.length > 0 || d.documents.length > 0) && (
@@ -1422,53 +1471,6 @@ function ParcoursBar({ pourcentage }: { pourcentage: number }) {
  * aucune ligne : sans cet écran, la personne voyait un tableau de bord entièrement vide
  * sans savoir si elle s'était trompée, si son dossier était perdu, ou quoi faire.
  */
-function CompteNonRelie({ courriel, onDeconnexion }: { courriel: string | null; onDeconnexion: () => void }) {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-cfrq-cream px-5 py-10">
-      <div className="w-full max-w-[540px] rounded-3xl border border-black/[.07] bg-white p-[clamp(26px,5vw,42px)]">
-        <span className="inline-flex items-center gap-2 rounded-full bg-cfrq-tint px-3.5 py-[6px] text-[12px] font-bold uppercase tracking-[0.12em] text-cfrq-leaf">
-          <span className="h-[7px] w-[7px] flex-none rounded-full bg-cfrq-green" aria-hidden="true" />
-          Compte créé
-        </span>
-        <h1 className="mt-5 font-display text-[clamp(23px,4.5vw,30px)] font-medium leading-[1.15] text-cfrq-deep">
-          Il reste à relier votre espace à votre dossier forestier
-        </h1>
-        <p className="mt-4 text-[16px] leading-relaxed text-cfrq-ink/70">
-          Votre compte {courriel ? <strong className="font-semibold text-cfrq-deep">{courriel}</strong> : "est bien créé"} fonctionne.
-          Nous devons maintenant y rattacher le dossier de votre boisé, ce qu'un de nos ingénieurs forestiers
-          fait à la main pour être certain de vous donner le bon.
-        </p>
-        <p className="mt-3 text-[16px] leading-relaxed text-cfrq-ink/70">
-          Écrivez-nous ou appelez-nous, et nous ouvrirons votre espace. Vos documents et vos cartes
-          apparaîtront ici dès que ce sera fait.
-        </p>
-        <div className="mt-6 flex flex-wrap gap-2.5">
-          <a
-            href={site.telHref}
-            className="rounded-[10px] bg-cfrq-green px-5 py-3 text-[15px] font-semibold text-[#123005] transition-colors hover:bg-cfrq-green-hover"
-          >
-            Appeler le {site.tel}
-          </a>
-          <a
-            href={`mailto:${site.courriel}?subject=${encodeURIComponent("Relier mon espace client à mon dossier")}`}
-            className="rounded-[10px] border border-cfrq-green/40 px-5 py-3 text-[15px] font-semibold text-cfrq-leaf transition-colors hover:bg-cfrq-tint"
-          >
-            Écrire à {site.courriel}
-          </a>
-        </div>
-        <div className="mt-7 flex flex-wrap items-center justify-between gap-3 border-t border-black/[.07] pt-5">
-          <a href={withBase("/")} className="text-[14px] text-cfrq-leaf hover:text-cfrq-green">
-            ← Retour au site
-          </a>
-          <button onClick={onDeconnexion} className="rounded-full border border-black/15 px-3.5 py-2 text-[13px] text-cfrq-leaf transition-colors hover:bg-cfrq-tint">
-            Déconnexion
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default function EspaceClient() {
   const [loading, setLoading] = useState(true);
   const [d, setD] = useState<Dossier | null>(null);

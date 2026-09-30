@@ -16,6 +16,9 @@ interface Props {
   bbox?: Bbox | null;
   /** Documents du producteur (table public.documents), pour lier les PDF au clic. */
   documents?: Doc[];
+  /** Version « dossiers » de l'espace client : pas de peuplements (réservés au
+   *  Portrait), donc ni leur couche, ni leur légende, ni le capital forestier. */
+  sansPeuplements?: boolean;
 }
 
 // Couches affichables, dans l'ordre d'empilement (du bas vers le haut).
@@ -70,13 +73,26 @@ function couleurAppellations(features: any[]): { expr: any; legende: { nom: stri
     )
   ).sort();
   const legende = noms.map((nom, i) => ({ nom, couleur: PALETTE[i % PALETTE.length] }));
+  // Sans aucun peuplement (mode dossiers, ou client sans carte écoforestière), un
+  // « match » sans branche est refusé par MapLibre : couleur fixe à la place.
+  if (!legende.length) return { expr: "#9e9e9e", legende };
   const expr: any = ["match", ["coalesce", ["get", "appellation"], "Non classé"]];
   for (const { nom, couleur } of legende) expr.push(nom, couleur);
   expr.push("#9e9e9e"); // défaut
   return { expr, legende };
 }
 
-export default function CarteForet({ data, bbox, documents = [] }: Props) {
+export default function CarteForet({ data: donneesBrutes, bbox, documents = [], sansPeuplements = false }: Props) {
+  // En mode sans peuplements, on les retire de la donnée elle-même : rien ne peut
+  // alors les dessiner, les colorer ou les ouvrir au clic.
+  const data = useMemo<FeatureCollection>(
+    () =>
+      sansPeuplements
+        ? { ...donneesBrutes, features: (donneesBrutes?.features ?? []).filter((f) => f?.properties?.couche !== "peuplement") }
+        : donneesBrutes,
+    [donneesBrutes, sansPeuplements]
+  );
+  const couches = sansPeuplements ? COUCHES.filter((c) => c.id !== "peuplement") : COUCHES;
   const conteneur = useRef<HTMLDivElement>(null);
   const enveloppe = useRef<HTMLDivElement>(null);
   const carte = useRef<maplibregl.Map | null>(null);
@@ -95,7 +111,10 @@ export default function CarteForet({ data, bbox, documents = [] }: Props) {
 
   // Secteurs de forêt (regroupement des peuplements par proximité) : sert à cadrer
   // la carte sur la forêt et à naviguer quand les lots sont dispersés (« lot par lot »).
-  const secteurs = useMemo<Secteur[]>(() => secteursPeuplements(data?.features ?? []), [data]);
+  const secteurs = useMemo<Secteur[]>(
+    () => secteursPeuplements(data?.features ?? [], 6000, sansPeuplements ? "propriete" : "peuplement"),
+    [data, sansPeuplements]
+  );
   const secteursRef = useRef(secteurs);
   secteursRef.current = secteurs;
   const [secteurActif, setSecteurActif] = useState(0);
@@ -381,6 +400,7 @@ export default function CarteForet({ data, bbox, documents = [] }: Props) {
           C'est l'accroche commerciale du focus group — elle ne doit jamais être
           enfouie dans un panneau repliable (personne ne la trouvait). Pastille
           unique et compacte pour ne pas chevaucher les contrôles de coin sur mobile. */}
+      {!sansPeuplements && (
       <button
         onClick={() => setCapital((v) => !v)}
         aria-pressed={capital}
@@ -395,6 +415,7 @@ export default function CarteForet({ data, bbox, documents = [] }: Props) {
         Capital forestier
         {capital && <span aria-hidden className="text-cfrq-green">✓</span>}
       </button>
+      )}
 
       {/* Sortie de plein écran (bas-centre en plein écran : ne masque pas la bascule de vue). */}
       {pleinEcran && (
@@ -415,7 +436,7 @@ export default function CarteForet({ data, bbox, documents = [] }: Props) {
               Couches <span aria-hidden className="text-black/40">✕</span>
             </button>
             <div className="space-y-1">
-              {COUCHES.map((c) => (
+              {couches.map((c) => (
                 <label key={c.id} className="flex cursor-pointer items-center gap-2 text-black/70">
                   <input type="checkbox" checked={visibles[c.id]} onChange={() => basculer(c.id)} className="accent-cfrq-green" />
                   <span className="inline-flex items-center gap-1.5">
@@ -471,7 +492,11 @@ export default function CarteForet({ data, bbox, documents = [] }: Props) {
         <div className="absolute bottom-8 left-2 max-w-[240px] sm:bottom-3 sm:left-3">
           <div className="flex items-start gap-2 rounded-xl bg-cfrq-deep/90 px-3 py-2 text-[12.5px] leading-snug text-white shadow-lg backdrop-blur">
             <span aria-hidden className="mt-px">👆</span>
-            <span>Cliquez un peuplement pour voir son détail : essences, volume, traitement recommandé.</span>
+            <span>
+              {sansPeuplements
+                ? "Cliquez une zone de travaux ou une prescription pour voir ce qui a été fait et ouvrir ses documents."
+                : "Cliquez un peuplement pour voir son détail : essences, volume, traitement recommandé."}
+            </span>
             <button onClick={() => setAstuce(false)} aria-label="Fermer l'astuce"
               className="ml-0.5 shrink-0 leading-none text-white/60 hover:text-white">✕</button>
           </div>
@@ -490,7 +515,7 @@ export default function CarteForet({ data, bbox, documents = [] }: Props) {
                 key={i}
                 onClick={() => cadrerSecteur(i)}
                 aria-pressed={i === secteurActif}
-                title={`${s.n} peuplement${s.n > 1 ? "s" : ""}`}
+                title={sansPeuplements ? `Secteur ${i + 1}` : `${s.n} peuplement${s.n > 1 ? "s" : ""}`}
                 className={`min-w-[26px] rounded-full px-2 py-1 transition-colors ${i === secteurActif ? "bg-cfrq-green text-[#123005]" : "text-cfrq-deep/70 hover:bg-black/5"}`}
               >
                 {i + 1}
