@@ -232,7 +232,7 @@ function htmlRelance(l: Lead): string {
     para("Et voici ce que peu de gens savent. Ces travaux ne sortent pas seulement de votre poche, car plusieurs aides existent et se combinent. Des budgets de subventions financent directement une partie des travaux. Et comme producteur forestier reconnu, vous récupérez en plus une large part de vos taxes foncières, jusqu'à 85 %, selon les travaux admissibles. Résultat : vous améliorez votre propre forêt, et une grande partie de la facture est couverte.") +
     callout +
     para("La reconnaissance de producteur, les demandes de subvention, l'admissibilité, la paperasse des programmes : c'est nous qui nous en occupons. Vous, vous profitez de votre boisé.") +
-    para("La suite ne vous engage à rien : un de nos ingénieurs ou techniciens vient marcher votre boisé avec vous. On regarde vos arbres, on repère les possibilités, et on vous remet un portrait clair et chiffré de ce que votre forêt peut devenir, subventions et remboursement de taxes compris.") +
+    para("La suite ne vous engage à rien : un de nos ingénieurs forestiers ou techniciens forestiers vient marcher votre boisé avec vous. On regarde vos arbres, on repère les possibilités, et on vous remet un portrait clair et chiffré de ce que votre forêt peut devenir, subventions et remboursement de taxes compris.") +
     bouton +
     foot("Un propriétaire sur deux consulte un ingénieur forestier avant de décider quoi que ce soit sur son boisé. Depuis 1996, plus de 3000 nous ont fait confiance pour le leur. Au plaisir de marcher le vôtre."));
 }
@@ -368,12 +368,12 @@ function htmlConfirmation(source: string, nom: string): string {
   if (source === "calculateur-valeur-bois") {
     return coquille("Demande reçue", "On a bien reçu votre demande",
       para(bonjour) +
-      para("Merci ! Vous avez demandé une caractérisation de votre forêt suite à votre estimation de la valeur du bois. Un de nos ingénieurs ou techniciens forestiers vous recontacte <strong>sous un jour ouvrable</strong> pour valider vos vrais chiffres sur le terrain, sans engagement.") +
+      para("Merci ! Vous avez demandé une caractérisation de votre forêt suite à votre estimation de la valeur du bois. On vous revient rapidement pour valider vos vrais chiffres sur le terrain, sans engagement.") +
       para("Pour une réponse immédiate, appelez-nous au <strong style='color:#141414;'>367 777-0555</strong>."));
   }
   return coquille("Demande reçue", "On a bien reçu votre demande",
     para(bonjour) +
-    para("Merci pour votre demande de visite-conseil. Un de nos ingénieurs ou techniciens forestiers vous recontacte <strong>sous un jour ouvrable</strong> pour planifier votre visite, sans engagement.") +
+    para("Merci pour votre demande de visite-conseil. On vous revient rapidement pour planifier votre visite, sans engagement.") +
     para("Pour une réponse immédiate, appelez-nous au <strong style='color:#141414;'>367 777-0555</strong>."));
 }
 
