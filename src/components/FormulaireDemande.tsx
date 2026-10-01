@@ -34,11 +34,14 @@ export type ConfigDemande = {
 type Props = {
   config: ConfigDemande;
   courriel?: string | null;   // courriel du client connecté (préremplissage)
+  // Nom à saluer dans le courriel de confirmation : le représentant du dossier,
+  // jamais le nom d'une société (« Bonjour 3 Versants »). Absent : « Bonjour, ».
+  salutation?: string | null;
   identite?: Record<string, any>; // Producteur / No prod / producteur_id -> details
   onClose: () => void;
 };
 
-export default function FormulaireDemande({ config, courriel, identite, onClose }: Props) {
+export default function FormulaireDemande({ config, courriel, salutation, identite, onClose }: Props) {
   const [valeurs, setValeurs] = useState<Record<string, string>>({});
   const [website, setWebsite] = useState(""); // honeypot
   const [envoi, setEnvoi] = useState(false);
@@ -87,7 +90,7 @@ export default function FormulaireDemande({ config, courriel, identite, onClose 
         body: JSON.stringify({
           source: config.source,
           courriel: courrielVal,
-          nom: valeurs.nom || identite?.["Producteur"] || undefined,
+          nom: valeurs.nom || salutation || undefined,
           telephone: valeurs.telephone || undefined,
           municipalite: valeurs.municipalite || undefined,
           message: valeurs.message || undefined,

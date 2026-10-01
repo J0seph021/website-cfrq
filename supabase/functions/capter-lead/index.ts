@@ -328,6 +328,27 @@ function quantitesDepuisDetails(d: Record<string, unknown> | null): Record<strin
 // saisit separement pour alimenter les colonnes A et B du classeur.
 type Prospect = { courriel: string; nom: string; prenom: string; nomFamille: string; telephone: string; municipalite: string; message: string; details: Record<string, unknown> | null; quantites: Quantites | null };
 
+// Demandes faites depuis l'espace client (FormulaireDemande) : ce sont des
+// clients, pas des prospects. Sans ce tableau, elles tombaient dans la branche
+// par defaut et le client recevait « Merci pour votre demande de visite-conseil ».
+const DEMANDES_ESPACE: Record<string, { quoi: string; sujet: string; texte: string }> = {
+  "espace-ajouter-terre": {
+    quoi: "ajouter une terre",
+    sujet: "Votre demande d'ajout de terre a bien été reçue",
+    texte: "Merci ! On a bien reçu votre demande d'ajout d'une terre à votre dossier. Notre équipe l'ajoute à votre espace client et vous revient rapidement.",
+  },
+  "espace-terre-convoitee": {
+    quoi: "portrait d'une terre convoitée",
+    sujet: "Votre demande de portrait a bien été reçue",
+    texte: "Merci ! On a bien reçu votre demande de portrait pour la terre qui vous intéresse. Notre équipe le prépare et vous recontacte rapidement.",
+  },
+  "espace-inviter-tiers": {
+    quoi: "donner accès à un tiers",
+    sujet: "Votre demande d'accès pour un tiers a bien été reçue",
+    texte: "Merci ! On a bien reçu votre demande de donner accès à votre espace client à une autre personne. Notre équipe organise cet accès et vous confirme dès qu'il est prêt.",
+  },
+};
+
 function htmlConfirmation(source: string, nom: string): string {
   const para = (t: string) => "<p style='" + P + "'>" + t + "</p>";
   const bonjour = nom ? "Bonjour " + esc(nom) + "," : "Bonjour,";
@@ -336,6 +357,13 @@ function htmlConfirmation(source: string, nom: string): string {
       para(bonjour) +
       para("Merci ! On a bien reçu votre demande de plants. On vous revient rapidement pour confirmer les disponibilités et les prochaines étapes.") +
       para("Rappel : des frais de transport de 24 $ le sac (50 plants) s'appliquent à la réception. Une question ? <strong style='color:#141414;'>367 777-0555</strong>."));
+  }
+  const espace = DEMANDES_ESPACE[source];
+  if (espace) {
+    return coquille("Demande reçue", "On a bien reçu votre demande",
+      para(bonjour) +
+      para(espace.texte) +
+      para("Pour une réponse immédiate, appelez-nous au <strong style='color:#141414;'>367 777-0555</strong>."));
   }
   if (source === "calculateur-valeur-bois") {
     return coquille("Demande reçue", "On a bien reçu votre demande",
@@ -353,7 +381,9 @@ function htmlNotifProspect(source: string, d: Prospect, excel = ""): string {
   const li = (k: string, v: string) =>
     "<tr><td style='padding:3px 14px 3px 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#5F655E;vertical-align:top;'>" + k +
     "</td><td style='padding:3px 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#141414;font-weight:bold;'>" + v + "</td></tr>";
-  const titre = source === "plants" ? "Nouvelle demande de plants"
+  const espace = DEMANDES_ESPACE[source];
+  const titre = espace ? "Espace client : " + espace.quoi
+    : source === "plants" ? "Nouvelle demande de plants"
     : source === "calculateur-valeur-bois" ? "Nouveau lead au calculateur de valeur du bois"
     : "Nouvelle demande de visite-conseil";
   let rows = li("Courriel", esc(d.courriel));
@@ -375,7 +405,9 @@ function htmlNotifProspect(source: string, d: Prospect, excel = ""): string {
       ";border-left:4px solid " + (rate ? "#c0392b" : "#5ABD2A") + ";padding:12px 16px;'>" + esc(excel) + "</p>"
     : "";
   return coquille("Notification interne", titre,
-    "<p style='" + P + "'>Un nouveau prospect vient d'être capturé depuis le site (" + esc(source) + ").</p>" + table + msg + bandeau +
+    "<p style='" + P + "'>" + (espace
+      ? "Un client vient de faire une demande depuis son espace client."
+      : "Un nouveau prospect vient d'être capturé depuis le site (" + esc(source) + ").") + "</p>" + table + msg + bandeau +
     "<p style='" + FOOT + "'>Visible dans PlaniLogix (planilogix.leads_web).</p>");
 }
 
@@ -494,11 +526,14 @@ async function envoyerProspect(source: string, d: Prospect): Promise<void> {
     }
   }
 
-  const sujet = source === "plants" ? "Votre demande de plants a bien été reçue"
+  const espace = DEMANDES_ESPACE[source];
+  const sujet = espace ? espace.sujet
+    : source === "plants" ? "Votre demande de plants a bien été reçue"
     : source === "calculateur-valeur-bois" ? "Votre demande de caractérisation a bien été reçue"
     : "Votre demande de visite-conseil a bien été reçue";
   await envoyer(access, d.courriel, sujet, htmlConfirmation(source, d.nom)).catch((e) => console.error("confirmation:", (e as Error).message));
-  const sujetNotif = (source === "plants" ? "Nouveau lead plants : "
+  const sujetNotif = (espace ? "Espace client, " + espace.quoi + " : "
+    : source === "plants" ? "Nouveau lead plants : "
     : source === "calculateur-valeur-bois" ? "Nouveau lead valeur du bois : "
     : "Nouveau lead visite-conseil : ") + d.courriel;
   await envoyer(access, LEADS_NOTIFY, sujetNotif, htmlNotifProspect(source, d, excel)).catch((e) => console.error("notif:", (e as Error).message));

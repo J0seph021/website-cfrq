@@ -1392,6 +1392,7 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
         <FormulaireDemande
           config={demande}
           courriel={courriel}
+          salutation={nomJoli}
           identite={{
             Producteur: d.producteur?.nom,
             "No prod": d.producteur?.no_prod,
