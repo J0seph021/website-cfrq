@@ -5,6 +5,7 @@ import prixMeta from "../lib/valeur/prix_meta.json";
 import { site } from "../data/site";
 import { MUNICIPALITES_TERRITOIRE } from "../data/municipalites";
 import { mesurerDemande } from "../lib/mesure";
+import { useTurnstile } from "../lib/useTurnstile";
 
 const cad = new Intl.NumberFormat("fr-CA", { style: "currency", currency: "CAD", maximumFractionDigits: 0 });
 const nf = new Intl.NumberFormat("fr-CA", { maximumFractionDigits: 0 });
@@ -82,6 +83,7 @@ export default function WoodValueCalculator() {
   const [municipalite, setMunicipalite] = useState("");
   const [lots, setLots] = useState("");
   const [website, setWebsite] = useState(""); // honeypot anti-spam (reste vide)
+  const turnstile = useTurnstile("calculateur-valeur-bois");
   const [envoi, setEnvoi] = useState(false);
   const [envoye, setEnvoye] = useState(false);
   // Vrai quand l'envoi a ECHOUE et qu'on est retombe sur le brouillon courriel :
@@ -150,6 +152,7 @@ export default function WoodValueCalculator() {
           },
           source: "calculateur-valeur-bois",
           website, // honeypot
+          turnstile: await turnstile.jeton(),
         }),
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -161,6 +164,7 @@ export default function WoodValueCalculator() {
       setEnvoye(true);
       mesurerDemande("calculateur-valeur-bois", "secours");
     } finally {
+      turnstile.renouveler();
       setEnvoi(false);
     }
   }
@@ -349,15 +353,20 @@ export default function WoodValueCalculator() {
                   className="h-12 w-full rounded-lg border border-black/15 bg-white px-4 text-[16px] outline-none focus:border-cfrq-green"
                   aria-label="Numéro ou numéros de lot (optionnel)" />
               </div>
-              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-                <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
-                  placeholder="votre@courriel.ca"
-                  className="h-12 min-w-[220px] rounded-lg border border-black/15 bg-white px-4 text-[16px] outline-none focus:border-cfrq-green sm:flex-1"
-                  aria-label="Votre adresse courriel" />
-                <button type="submit" disabled={envoi}
-                  className="h-12 shrink-0 rounded-lg bg-cfrq-green px-5 text-[15px] font-medium text-[#123005] transition-colors hover:bg-cfrq-green-hover disabled:cursor-not-allowed disabled:opacity-60">
-                  {envoi ? "Envoi..." : "Faire caractériser ma forêt"}
-                </button>
+              {/* Widget Turnstile regroupé avec la ligne d'envoi : invisible, il ne
+                  doit pas ajouter un écart de plus dans le gap du formulaire. */}
+              <div className="flex flex-col">
+                <div ref={turnstile.ref} className="data-[turnstile=visible]:mb-3" />
+                <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                  <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
+                    placeholder="votre@courriel.ca"
+                    className="h-12 min-w-[220px] rounded-lg border border-black/15 bg-white px-4 text-[16px] outline-none focus:border-cfrq-green sm:flex-1"
+                    aria-label="Votre adresse courriel" />
+                  <button type="submit" disabled={envoi}
+                    className="h-12 shrink-0 rounded-lg bg-cfrq-green px-5 text-[15px] font-medium text-[#123005] transition-colors hover:bg-cfrq-green-hover disabled:cursor-not-allowed disabled:opacity-60">
+                    {envoi ? "Envoi..." : "Faire caractériser ma forêt"}
+                  </button>
+                </div>
               </div>
             </form>
           )}

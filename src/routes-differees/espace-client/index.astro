@@ -42,6 +42,7 @@ const linkClass = "text-cfrq-leaf underline-offset-2 hover:text-cfrq-green hover
           <p id="aide-mdp" class="mt-1.5 hidden text-[12.5px] text-cfrq-ink/55">8 caractères ou plus.</p>
         </div>
 
+        <div id="connexion-turnstile" class="data-[turnstile=visible]:mt-4"></div>
         <button id="btn" type="submit" class="mt-5 w-full rounded-[10px] bg-cfrq-green px-6 py-[15px] text-[16px] font-bold text-[#123005] transition-colors hover:bg-cfrq-green-hover disabled:opacity-60">
           Envoyer le lien
         </button>
@@ -81,6 +82,7 @@ const linkClass = "text-cfrq-leaf underline-offset-2 hover:text-cfrq-green hover
 <script>
   import { supabase } from "../../lib/supabaseClient";
   import { withBase } from "../../lib/url";
+  import { monterTurnstile } from "../../lib/turnstile";
 
   type Mode = "magique" | "mdp" | "inscription" | "nouveau-mdp";
 
@@ -114,6 +116,12 @@ const linkClass = "text-cfrq-leaf underline-offset-2 hover:text-cfrq-green hover
   const noteMagique = $("note-magique");
 
   let mode: Mode = "magique";
+
+  // Jeton Turnstile exigé par Supabase Auth (réglage CAPTCHA du projet) pour
+  // tout ce qui envoie un courriel ou vérifie un mot de passe : lien magique,
+  // connexion, création de compte, mot de passe oublié. Un jeton ne sert
+  // qu'une fois, d'où le renouvellement après chaque appel.
+  const garde = monterTurnstile($("connexion-turnstile"), "espace-client-connexion");
 
   const show = (el: HTMLElement, on: boolean) => el.classList.toggle("hidden", !on);
   function setMsg(text = "", ton: "info" | "erreur" = "info") {
@@ -185,7 +193,11 @@ const linkClass = "text-cfrq-leaf underline-offset-2 hover:text-cfrq-green hover
     const email = courrielEl.value.trim();
     if (!email) { setMsg("Entrez d'abord votre courriel.", "erreur"); courrielEl.focus(); return; }
     btn.disabled = true;
-    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: loginUrl });
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: loginUrl,
+      captchaToken: await garde.jeton(),
+    });
+    garde.renouveler();
     btn.disabled = false;
     if (error) { setMsg("Une erreur est survenue. Réessayez.", "erreur"); return; }
     setMsg("Lien de réinitialisation envoyé. Vérifiez vos courriels (et les indésirables).");
@@ -197,19 +209,28 @@ const linkClass = "text-cfrq-leaf underline-offset-2 hover:text-cfrq-green hover
     const mdp = mdpEl.value;
     btn.disabled = true;
     setMsg("");
+    let jetonConsomme = false;
+    const captchaToken = () => {
+      jetonConsomme = true;
+      return garde.jeton();
+    };
 
     try {
       if (mode === "magique") {
         if (!email) { setMsg("Entrez votre courriel.", "erreur"); return; }
         const { error } = await supabase.auth.signInWithOtp({
           email,
-          options: { shouldCreateUser: true, emailRedirectTo: dashboardUrl },
+          options: { shouldCreateUser: true, emailRedirectTo: dashboardUrl, captchaToken: await captchaToken() },
         });
         if (error) throw error;
         setMsg("Lien envoyé. Ouvrez votre courriel (et les indésirables) pour vous connecter.");
       } else if (mode === "mdp") {
         if (!email || !mdp) { setMsg("Entrez votre courriel et votre mot de passe.", "erreur"); return; }
-        const { error } = await supabase.auth.signInWithPassword({ email, password: mdp });
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password: mdp,
+          options: { captchaToken: await captchaToken() },
+        });
         if (error) throw error;
         location.href = dashboardPath;
         return;
@@ -219,7 +240,7 @@ const linkClass = "text-cfrq-leaf underline-offset-2 hover:text-cfrq-green hover
         const { data, error } = await supabase.auth.signUp({
           email,
           password: mdp,
-          options: { emailRedirectTo: dashboardUrl },
+          options: { emailRedirectTo: dashboardUrl, captchaToken: await captchaToken() },
         });
         if (error) throw error;
         if (data.session) { location.href = dashboardPath; return; }
@@ -234,6 +255,7 @@ const linkClass = "text-cfrq-leaf underline-offset-2 hover:text-cfrq-green hover
     } catch (err: any) {
       setMsg(messageErreur(err?.message), "erreur");
     } finally {
+      if (jetonConsomme) garde.renouveler();
       btn.disabled = false;
     }
   });
@@ -245,6 +267,7 @@ const linkClass = "text-cfrq-leaf underline-offset-2 hover:text-cfrq-green hover
     if (m.includes("already registered") || m.includes("already been registered"))
       return "Ce courriel a déjà un compte. Connectez-vous plutôt.";
     if (m.includes("rate limit") || m.includes("too many")) return "Trop de tentatives. Patientez un moment.";
+    if (m.includes("captcha")) return "La vérification anti-robot a échoué. Rechargez la page et réessayez.";
     if (m.includes("password")) return "Mot de passe invalide (au moins 8 caractères).";
     return "Une erreur est survenue. Réessayez.";
   }

@@ -97,6 +97,7 @@ const itineraire = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
               </div>
             </div>
             <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" class="hidden" />
+            <div id="contact-turnstile" class="data-[turnstile=visible]:mt-4"></div>
             <button type="submit" class="mt-[22px] w-full rounded-xl bg-cfrq-green px-6 py-4 text-[16px] font-bold text-[#123005] transition-colors hover:bg-cfrq-green-hover disabled:opacity-60">
               Demander une visite-conseil
             </button>
@@ -170,11 +171,13 @@ const itineraire = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
 
 <script>
   import { mesurerDemande } from "../lib/mesure";
+  import { monterTurnstile } from "../lib/turnstile";
 
   const ENDPOINT = "https://bpxzznykbikbqbvraqxj.supabase.co/functions/v1/capter-lead";
   const f = document.getElementById("contact-form") as HTMLFormElement | null;
   const ok = document.getElementById("contact-ok");
   const secours = document.getElementById("contact-secours");
+  const garde = monterTurnstile(document.getElementById("contact-turnstile")!, "visite-conseil");
   f?.addEventListener("submit", async (e) => {
     e.preventDefault();
     if (!f.reportValidity()) return;
@@ -216,6 +219,7 @@ const itineraire = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
           message: v("message"),
           details: { "Besoin": v("besoin") },
           website: v("website"),
+          turnstile: await garde.jeton(),
         }),
       });
       if (!res.ok) throw new Error(String(res.status));
@@ -224,6 +228,7 @@ const itineraire = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
       echec = true;
       fallbackMailto();
     } finally {
+      garde.renouveler();
       if (btn) btn.disabled = false;
       (echec ? secours : ok)?.classList.remove("hidden");
       mesurerDemande("visite-conseil", echec ? "secours" : "serveur");

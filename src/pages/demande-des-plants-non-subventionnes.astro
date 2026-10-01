@@ -110,6 +110,7 @@ const champ = "h-12 w-full rounded-[10px] border border-black/15 bg-white px-4 t
           </label>
 
           <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" class="hidden" />
+          <div id="plants-turnstile" class="data-[turnstile=visible]:mt-4"></div>
           <button type="submit" class="mt-5 rounded-xl bg-cfrq-green px-7 py-[15px] text-[16px] font-bold text-[#123005] transition-colors hover:bg-cfrq-green-hover disabled:opacity-60">
             Envoyer ma demande
           </button>
@@ -132,12 +133,13 @@ const champ = "h-12 w-full rounded-[10px] border border-black/15 bg-white px-4 t
 
 <script>
   import { mesurerDemande } from "../lib/mesure";
-
+  import { monterTurnstile } from "../lib/turnstile";
   const ENDPOINT = "https://bpxzznykbikbqbvraqxj.supabase.co/functions/v1/capter-lead";
   const f = document.getElementById("plants-form") as HTMLFormElement | null;
   const ok = document.getElementById("plants-ok");
   const secours = document.getElementById("plants-secours");
   const invalide = document.getElementById("plants-invalide");
+  const garde = monterTurnstile(document.getElementById("plants-turnstile")!, "plants");
 
   const bandeaux = [ok, secours, invalide];
   const montrer = (cible: HTMLElement | null, texte?: string) => {
@@ -216,6 +218,7 @@ const champ = "h-12 w-full rounded-[10px] border border-black/15 bg-white px-4 t
           quantites: { ...quantites, ERR: 0 },
           details,
           website: v("website"),
+          turnstile: await garde.jeton(),
         }),
       });
       // Un 400 est un refus de validation : le repeter a l'utilisateur, un
@@ -235,6 +238,7 @@ const champ = "h-12 w-full rounded-[10px] border border-black/15 bg-white px-4 t
       montrer(secours);
       mesurerDemande("plants", "secours");
     } finally {
+      garde.renouveler();
       if (btn) btn.disabled = false;
     }
   });

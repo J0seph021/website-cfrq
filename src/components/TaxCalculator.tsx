@@ -3,6 +3,7 @@ import { site } from "../data/site";
 import { withBase } from "../lib/url";
 import { ANNEE_GRILLE, PART_REMBOURSABLE, TAUX_PAR_ID, palierPAF } from "../data/rtf";
 import { mesurerDemande } from "../lib/mesure";
+import { useTurnstile } from "../lib/useTurnstile";
 
 const cad = new Intl.NumberFormat("fr-CA", {
   style: "currency",
@@ -53,6 +54,7 @@ export default function TaxCalculator() {
   const [lots, setLots] = useState("");
   const [email, setEmail] = useState("");
   const [website, setWebsite] = useState(""); // honeypot anti-spam (reste vide)
+  const turnstile = useTurnstile("calculateur-taxes");
   const [envoi, setEnvoi] = useState(false);
   const [envoye, setEnvoye] = useState(false);
   // Vrai quand l'envoi a ECHOUE et qu'on est retombe sur le brouillon courriel :
@@ -142,6 +144,7 @@ export default function TaxCalculator() {
           potentiel_5ans: surCinq,
           source: "calculateur-taxes",
           website, // honeypot
+          turnstile: await turnstile.jeton(),
         }),
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -153,6 +156,7 @@ export default function TaxCalculator() {
       setEnvoye(true);
       mesurerDemande("calculateur-taxes", "secours");
     } finally {
+      turnstile.renouveler();
       setEnvoi(false);
     }
   }
@@ -390,13 +394,18 @@ export default function TaxCalculator() {
                   aria-label="Votre adresse courriel"
                 />
               </div>
-              <button
-                type="submit"
-                disabled={envoi}
-                className="h-12 rounded-lg bg-cfrq-green px-5 text-[15px] font-medium text-[#123005] transition-colors hover:bg-cfrq-green-hover disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {envoi ? "Envoi..." : "Recevoir mon estimation détaillée"}
-              </button>
+              {/* Widget Turnstile et bouton regroupés : invisible, le widget ne
+                  doit pas ajouter un écart de plus dans le gap du formulaire. */}
+              <div className="flex flex-col">
+                <div ref={turnstile.ref} className="data-[turnstile=visible]:mb-3" />
+                <button
+                  type="submit"
+                  disabled={envoi}
+                  className="h-12 rounded-lg bg-cfrq-green px-5 text-[15px] font-medium text-[#123005] transition-colors hover:bg-cfrq-green-hover disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {envoi ? "Envoi..." : "Recevoir mon estimation détaillée"}
+                </button>
+              </div>
             </form>
           )}
 

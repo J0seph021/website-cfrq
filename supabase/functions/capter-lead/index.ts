@@ -8,6 +8,8 @@
 // Les demandes de plants (source=plants) sont en plus reportees dans le
 // classeur SharePoint « Demande Feuillus.xlsx » via l'API Excel de Graph :
 // best-effort, le resultat est annonce dans la notification interne.
+// Anti-robot : jeton Cloudflare Turnstile valide avant tout envoi de courriel
+// (voir verifierHumain).
 import postgres from "https://deno.land/x/postgresjs@v3.4.5/mod.js";
 
 const cors = {
@@ -36,6 +38,45 @@ const M365_CLIENT_SECRET = Deno.env.get("M365_CLIENT_SECRET") || "";
 const M365_SENDER = Deno.env.get("M365_SENDER") || "cfrq@cfrq.ca";
 const LEADS_NOTIFY = Deno.env.get("LEADS_NOTIFY_EMAIL") || M365_SENDER;
 const LOGO = "https://bpxzznykbikbqbvraqxj.supabase.co/storage/v1/object/public/medias-publics/logo-courriel.png";
+
+// --- Turnstile (Cloudflare) --------------------------------------------------
+// Chaque formulaire du site joint un jeton `turnstile` qui prouve qu'un humain
+// l'a envoye ; on le fait valider par Cloudflare. Sans cela, un robot qui
+// appelle la fonction directement fait partir des courriels de confirmation
+// depuis cfrq@cfrq.ca vers n'importe quelle adresse : le pot de miel ne
+// l'arrete pas (il ne remplit pas le formulaire) et la limite par IP se
+// contourne en changeant d'IP.
+// Sans secret TURNSTILE_SECRET_KEY : aucune verification (comportement d'avant).
+const TURNSTILE_SECRET = Deno.env.get("TURNSTILE_SECRET_KEY") || "";
+// Transition : tant que cfrq.ca sert l'ancien JS, qui n'envoie aucun jeton, une
+// demande SANS jeton passe encore ; une demande AVEC jeton doit etre valide.
+// A passer a true des que la production envoie le jeton : c'est seulement
+// alors que les robots sont arretes.
+const JETON_OBLIGATOIRE = false;
+const ROBOT =
+  "La vérification anti-robot a échoué. Rechargez la page et réessayez, ou écrivez-nous à cfrq@cfrq.ca.";
+
+async function verifierHumain(jeton: string, ip: string): Promise<boolean> {
+  if (!TURNSTILE_SECRET) return true;
+  if (!jeton) return !JETON_OBLIGATOIRE;
+  try {
+    const form = new URLSearchParams({ secret: TURNSTILE_SECRET, response: jeton });
+    if (ip) form.set("remoteip", ip);
+    const r = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+      method: "POST",
+      body: form,
+      signal: AbortSignal.timeout(5000),
+    });
+    const d = await r.json();
+    if (d.success !== true) console.warn("turnstile refuse:", (d["error-codes"] ?? []).join(","));
+    return d.success === true;
+  } catch (e) {
+    // Cloudflare injoignable : on ne perd pas un vrai prospect pour une panne
+    // chez eux. Le pot de miel et la limite par IP restent en place.
+    console.error("turnstile injoignable:", (e as Error).message);
+    return true;
+  }
+}
 
 async function graphToken(): Promise<string> {
   const r = await fetch(`https://login.microsoftonline.com/${M365_TENANT}/oauth2/v2.0/token`, {
@@ -426,6 +467,12 @@ Deno.serve(async (req) => {
   let body: Record<string, unknown>;
   try { body = await req.json(); } catch { return json({ ok: false, error: "Corps JSON invalide" }, 400); }
 
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "";
+
+  // Avant le pot de miel : un jeton invalide doit recevoir un vrai refus, ce
+  // qui permet aussi de tester la verification sans rien enregistrer.
+  if (!(await verifierHumain(String(body.turnstile ?? ""), ip))) return json({ ok: false, error: ROBOT }, 403);
+
   if (body.website || body.hp) return json({ ok: true });
 
   const courriel = String(body.courriel ?? "").trim().toLowerCase();
@@ -437,7 +484,6 @@ Deno.serve(async (req) => {
   const referrer = req.headers.get("referer")?.slice(0, 500) ?? null;
   const userAgent = req.headers.get("user-agent")?.slice(0, 500) ?? null;
 
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "";
   let ipHash: string | null = null;
   if (ip) {
     const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(ip + "|cfrq-leads-web"));
