@@ -49,11 +49,18 @@ const LOGO = "https://bpxzznykbikbqbvraqxj.supabase.co/storage/v1/object/public/
 // contourne en changeant d'IP.
 // Sans secret TURNSTILE_SECRET_KEY : aucune verification (comportement d'avant).
 const TURNSTILE_SECRET = Deno.env.get("TURNSTILE_SECRET_KEY") || "";
-// Transition : tant que cfrq.ca sert l'ancien JS, qui n'envoie aucun jeton, une
-// demande SANS jeton passe encore ; une demande AVEC jeton doit etre valide.
-// A passer a true des que la production envoie le jeton : c'est seulement
-// alors que les robots sont arretes.
-const JETON_OBLIGATOIRE = false;
+// Une demande sans jeton est refusee depuis le 2026-10-01, date ou cfrq.ca a
+// commence a l'envoyer. A false, elle passerait (utile seulement pendant une
+// transition, quand la production sert encore un JS qui n'envoie rien).
+const JETON_OBLIGATOIRE = true;
+// Hotes ou le widget « Site CFRQ » est autorise : cfrq.ca et ses sous-domaines
+// (www, preview), plus l'adresse Pages de la preproduction.
+const HOTES_PERMIS = /(^|\.)cfrq\.ca$|^cfrq-preprod\.pages\.dev$/;
+// Cloudflare accepte un meme jeton plusieurs fois (constate le 2026-10-01 a 3 s
+// et a 60 s d'ecart, contrairement a sa documentation) : on borne au moins la
+// fenetre de reutilisation. Le widget renouvelle de lui-meme un jeton expire,
+// donc un vrai visiteur envoie toujours un defi resolu il y a moins de 5 min.
+const AGE_MAX_MS = 6 * 60 * 1000;
 const ROBOT =
   "La vérification anti-robot a échoué. Rechargez la page et réessayez, ou écrivez-nous à cfrq@cfrq.ca.";
 
@@ -69,9 +76,17 @@ async function verifierHumain(jeton: string, ip: string): Promise<boolean> {
       signal: AbortSignal.timeout(5000),
     });
     const d = await r.json();
-    if (d.success !== true) console.warn("turnstile refuse:", (d["error-codes"] ?? []).join(","));
-    else console.log("turnstile ok:", d.hostname, d.action, d.challenge_ts);
-    return d.success === true;
+    if (d.success !== true) {
+      console.warn("turnstile refuse:", (d["error-codes"] ?? []).join(","));
+      return false;
+    }
+    const age = Date.now() - Date.parse(String(d.challenge_ts ?? ""));
+    if (!HOTES_PERMIS.test(String(d.hostname ?? "")) || !(age < AGE_MAX_MS)) {
+      console.warn("turnstile refuse: hote", d.hostname, "defi vieux de", Math.round(age / 1000), "s");
+      return false;
+    }
+    console.log("turnstile ok:", d.hostname, d.action, d.challenge_ts);
+    return true;
   } catch (e) {
     // Cloudflare injoignable : on ne perd pas un vrai prospect pour une panne
     // chez eux. Le pot de miel et la limite par IP restent en place.
