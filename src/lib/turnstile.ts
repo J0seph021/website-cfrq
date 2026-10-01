@@ -22,7 +22,7 @@
  * Supabase Auth). **Vide = protection inactive** : aucun script Cloudflare
  * n'est chargé et les formulaires envoient un jeton vide.
  */
-export const CLE_SITE_TURNSTILE = "";
+export const CLE_SITE_TURNSTILE = "0x4AAAAAAFLR5Wium7BNUkHH";
 
 // Clé de test de Cloudflare, qui réussit toujours sans rien afficher. Le widget
 // réel refuse les noms d'hôte locaux ; en local on prend donc celle-ci. Son
