@@ -9,6 +9,10 @@
 //   { type: "acces_pret", demande_id, origine } employé, après portail_relier_demande :
 //       écrit au client que son espace est prêt. Refusé si l'appelant n'est pas
 //       employé (portail_moi lu AVEC SON JETON, jamais avec la clé de service).
+//   { type: "invitation", partage_id, origine } titulaire d'un dossier, après
+//       portail_partager : écrit au tiers qu'il a maintenant accès. Le droit et la
+//       limite d'un envoi par heure sont vérifiés par portail_invitation_a_envoyer,
+//       appelée AVEC LE JETON du titulaire.
 //
 // Les champs saisis par le client sont échappés avant d'entrer dans le HTML.
 // Envoi par Microsoft Graph depuis cfrq@cfrq.ca, comme send-email.
@@ -86,13 +90,26 @@ function ligne(cle: string, val: unknown): string {
   return val ? "<tr><td style='padding:4px 12px 4px 0;color:#7a8572;font-size:14px;'>" + cle + "</td><td style='padding:4px 0;color:#1b2417;font-size:14px;font-weight:bold;'>" + esc(val) + "</td></tr>" : "";
 }
 
+// « TREMBLAY JEAN » -> « Tremblay Jean », « GOFOREST INC » -> « Goforest » : les noms
+// PlaniLogix sont en majuscules. Même règle que nomAffiche() dans EspaceClient.tsx.
+function nomLisible(nom: string | null | undefined): string {
+  const n = String(nom ?? "").trim();
+  if (!n) return "";
+  const sansSuffixe = n.replace(/\s*\b(inc|enr|ltée|ltee|senc|s\.e\.n\.c\.)\b\.?$/i, "").trim() || n;
+  return sansSuffixe.split(/\s+/)
+    .map((m) => (m.length <= 2 ? m.toUpperCase() : m.charAt(0).toUpperCase() + m.slice(1).toLowerCase()))
+    .join(" ");
+}
+
+const PETIT = "font-family:Arial,Helvetica,sans-serif;font-size:12.5px;line-height:1.55;color:#98a390;margin:14px 0 0;";
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
   const auth = req.headers.get("Authorization") ?? "";
   if (!auth.startsWith("Bearer ")) return json({ error: "connexion requise" }, 401);
   if (!M365_TENANT || !M365_CLIENT_ID || !M365_CLIENT_SECRET) return json({ error: "courriel non configuré" }, 500);
 
-  let corps: { type?: string; demande_id?: number; origine?: string };
+  let corps: { type?: string; demande_id?: number; partage_id?: number; origine?: string };
   try { corps = await req.json(); } catch { return json({ error: "requête invalide" }, 400); }
   const origine = ORIGINES.includes(String(corps.origine)) ? String(corps.origine) : "https://cfrq.ca";
   const lienPortail = `${origine}/espace-client/`;
@@ -134,8 +151,32 @@ Deno.serve(async (req) => {
         // espace » si la session est déjà ouverte). Adresse stable, quelle que soit
         // la version publiée du site.
         bouton(lienPortail, "Ouvrir mon espace") +
-        "<p style='font-family:Arial,Helvetica,sans-serif;font-size:12.5px;line-height:1.55;color:#98a390;margin:14px 0 0;'>Une question ? Répondez à ce courriel ou appelez-nous au 367 777-0555.</p>",
+        "<p style='" + PETIT + "'>Une question ? Répondez à ce courriel ou appelez-nous au 367 777-0555.</p>",
       ));
+      return json({ ok: true });
+    }
+
+    if (corps.type === "invitation") {
+      const id = Number(corps.partage_id);
+      const { data: inv, error } = await moi.rpc("portail_invitation_a_envoyer", { p_id: id });
+      if (error) return json({ error: "réservé au titulaire du dossier" }, 403);
+      if (!inv?.ok) return json({ ok: false, deja_envoyee: true }, 429);
+      // Le représentant du dossier (« Jean Tremblay »), sinon le nom du dossier.
+      const qui = inv.dossier_salutation || nomLisible(inv.dossier_nom) || "Un client de CFRQ";
+      try {
+        await envoyer(inv.courriel, `${qui} vous donne accès à son dossier forestier`, page(
+          "Un dossier forestier vous est ouvert",
+          "<p style='" + P + "'>Bonjour " + esc(inv.nom) + ",</p>" +
+          "<p style='" + P + "'><strong>" + esc(qui) + "</strong> vous a donné accès à son espace client CFRQ. Vous pourrez y consulter la carte de sa forêt, ses propriétés, les travaux réalisés et les documents de son dossier forestier.</p>" +
+          "<p style='" + P + "'>Pour y entrer, connectez-vous avec cette adresse : <strong>" + esc(inv.courriel) + "</strong>. Pas besoin de mot de passe : entrez votre adresse et nous vous enverrons un lien de connexion.</p>" +
+          bouton(`${origine}/espace-client/connexion/`, "Ouvrir l'espace client") +
+          "<p style='" + PETIT + "'>Cet accès est en consultation seulement, et " + esc(qui) + " peut le retirer en tout temps. Vous ne vous attendiez pas à ce courriel ? Ignorez-le, ou écrivez-nous en répondant à ce message.</p>",
+        ));
+      } catch (e) {
+        // Libère la limite d'une heure : le titulaire pourra réessayer tout de suite.
+        await moi.rpc("portail_invitation_echouee", { p_id: id });
+        throw e;
+      }
       return json({ ok: true });
     }
     return json({ error: "type inconnu" }, 400);

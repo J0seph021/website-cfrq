@@ -1,5 +1,6 @@
 // Formulaire de demande envoyé à CFRQ (F2/F6 « Ajouter une terre »,
-// F3 « Voir une terre convoitée », F4 « Inviter un tiers »). Réutilise l'Edge
+// F3 « Voir une terre convoitée »). F4 « Inviter un tiers » ne passe plus par
+// CFRQ : le client donne et retire lui-même les accès (PartageAcces.tsx). Réutilise l'Edge
 // Function publique capter-lead (branche générique -> capter_prospect_web ->
 // planilogix.leads_web), avec honeypot et repli mailto. Aucun changement DB.
 // Pas de widget Turnstile ici : le client a déjà passé la vérification à la
@@ -184,7 +185,7 @@ export default function FormulaireDemande({ config, courriel, salutation, identi
   );
 }
 
-// Configurations des trois demandes du focus group (F2/F6, F3, F4).
+// Configurations des demandes du focus group (F2/F6, F3).
 export const DEMANDES: Record<string, ConfigDemande> = {
   ajouterTerre: {
     source: "espace-ajouter-terre",
@@ -209,19 +210,6 @@ export const DEMANDES: Record<string, ConfigDemande> = {
       { nom: "no_lot", label: "Numéro de lot convoité", requis: true, placeholder: "ex. 5 123 456" },
       { nom: "municipalite", label: "Municipalité", placeholder: "où se situe la terre" },
       { nom: "message", label: "Contexte", type: "textarea", placeholder: "achat, vente, négociation en cours…" },
-    ],
-  },
-  inviterTiers: {
-    source: "espace-inviter-tiers",
-    titre: "Donner accès à un tiers",
-    intro: "Vous souhaitez qu'un co-propriétaire ou votre institution financière puisse consulter le portrait de votre forêt ? Indiquez-nous qui et nous organiserons l'accès.",
-    submitLabel: "Envoyer la demande",
-    merci: "Demande reçue. Nous organiserons l'accès pour cette personne et vous confirmerons.",
-    champs: [
-      { nom: "nom_tiers", label: "Nom du tiers", requis: true, placeholder: "personne ou institution" },
-      { nom: "courriel_tiers", label: "Courriel du tiers", type: "email", placeholder: "pour lui donner accès" },
-      { nom: "relation", label: "Lien avec vous", type: "select", options: ["Co-propriétaire", "Conjoint(e)", "Institution financière / banque", "Notaire / comptable", "Autre"] },
-      { nom: "message", label: "Précisions", type: "textarea", placeholder: "ce que le tiers doit pouvoir consulter" },
     ],
   },
 };

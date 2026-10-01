@@ -24,6 +24,7 @@ const DEMANDES_DEMO: DemandeAccesEmploye[] = [
 
 const ONGLETS = [
   { cle: "tableau", titre: "Tableau de bord" },
+  { cle: "invite", titre: "Personne invitée" },
   { cle: "non_relie", titre: "Compte non relié" },
   { cle: "employe", titre: "Vue employé : demandes d'accès" },
 ] as const;
@@ -46,6 +47,18 @@ export default function EspaceClientDemo() {
       </div>
 
       {onglet === "tableau" && <DashboardView d={dossierDemo} courriel="demo@exemple.test" apercu />}
+
+      {/* Le dossier de Jean Tremblay, vu par une personne à qui il l'a partagé et qui a
+          aussi son propre dossier : sélecteur de dossier, lecture seule. */}
+      {onglet === "invite" && (
+        <DashboardView
+          d={dossierDemo} courriel="marie.tremblay@exemple.test" apercu role="invite"
+          dossiers={[
+            { id: 0, nom: "TREMBLAY JEAN", no_prod: "DEMO-2041", role: "invite" },
+            { id: -1, nom: "LAROCHE MARIE", no_prod: "DEMO-3310", role: "titulaire" },
+          ]}
+        />
+      )}
 
       {onglet === "non_relie" && (
         <div className="flex min-h-screen items-start justify-center bg-cfrq-cream px-5 py-10">

@@ -17,11 +17,18 @@ export type ClientPortail = {
   a_compte: boolean;
 };
 
+// Rôle dans le dossier affiché : le sien (titulaire), celui qu'un titulaire a
+// partagé avec la personne (invite), ou celui qu'un employé consulte.
+export type RoleDossier = "titulaire" | "invite" | "employe";
+export type DossierAccessible = { id: number; nom: string | null; no_prod: string | null; role: "titulaire" | "invite" };
+
 export type Moi = {
   employe: boolean;
   producteur_id: number | null;
   vue_employe: boolean;
   client: { id: number; nom: string | null; no_prod: string | null } | null;
+  role?: RoleDossier | null;
+  dossiers?: DossierAccessible[];
 };
 
 const nfEnt = new Intl.NumberFormat("fr-CA", { maximumFractionDigits: 0 });

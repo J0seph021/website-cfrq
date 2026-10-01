@@ -59,9 +59,14 @@ function etapes(sansPeuplements: boolean): Etape[] {
       texte: "De nouveaux outils s'en viennent. Touchez « M'aviser quand c'est prêt » sous ceux qui vous intéressent : nous vous écrirons le jour de leur sortie.",
     },
     {
+      cle: "partage",
+      titre: "Partagez votre espace",
+      texte: "Donnez accès à un co-propriétaire, un proche, votre banque ou votre notaire, en quelques secondes. Vous voyez toujours qui a accès, et vous retirez un accès d'un clic.",
+    },
+    {
       cle: "demandes",
       titre: "Une demande à nous faire ?",
-      texte: "Une terre absente de votre espace, un lot que vous songez à acheter, un accès à donner à un proche ou à votre banque : choisissez, et notre équipe fait le suivi avec vous.",
+      texte: "Une terre absente de votre espace, ou un lot que vous songez à acheter : choisissez, et notre équipe fait le suivi avec vous.",
     },
     {
       cle: "motdepasse", cote: "bottom",

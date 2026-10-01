@@ -13,6 +13,13 @@
 -- documents/{son producteur_id}/... Aucune règle d'écriture pour les clients :
 -- seules les fonctions serveur (clé de service) écrivent.
 --
+-- Mis à jour le 2026-10-01 : le titulaire d'un dossier peut le partager lui-même
+-- (partages_acces, par courriel confirmé) et une personne qui a accès à plusieurs
+-- dossiers choisit celui qu'elle regarde (portal_dossier_actif). Voir
+-- migrations/20261001150000_partages_acces.sql. Les règles des lots et des PAF
+-- passent par proprietes_visibles(), calculée une fois par requête
+-- (migrations/20261001152000_lots_paf_rls_une_evaluation.sql).
+--
 -- Pour vérifier que rien n'a bougé :
 --   select schemaname, tablename, policyname, roles, cmd, qual
 --   from pg_policies where schemaname in ('public','storage','portrait');
@@ -34,11 +41,11 @@ create policy "proprietaire lit ses documents" on public.documents
 
 create policy "proprietaire lit ses lots" on public.lots
   as permissive for select to authenticated
-  using (peut_voir_propriete(propriete_id));
+  using (propriete_id = any ((select public.proprietes_visibles())::integer[]));
 
 create policy "proprietaire lit ses paf" on public.paf
   as permissive for select to authenticated
-  using (peut_voir_propriete(propriete_id));
+  using (propriete_id = any ((select public.proprietes_visibles())::integer[]));
 
 create policy params_lecture on public.params_valeur_bois
   as permissive for select to authenticated
@@ -65,6 +72,7 @@ create policy "client lit ses documents" on storage.objects
 -- Tables avec RLS active et AUCUNE règle (donc fermées à l'API, lues seulement par
 -- des fonctions SECURITY DEFINER ou la clé de service) : portal_users,
 -- portal_vue_employe, portal_acces_employe, employes_cfrq, sync_state, prix_bois*,
+-- partages_acces, portal_dossier_actif, demandes_acces, interets_fonctionnalites,
 -- portrait.releves, portrait.releve_items, portrait.evenements_stripe.
 -- Buckets : documents et releves, tous deux privés (public = false).
 
@@ -79,13 +87,28 @@ AS $function$
   select coalesce(
     -- Vue employé (expire après 12 h).
     public.portail_vue_employe_active(),
+    -- Dossier choisi par une personne qui a accès à plusieurs dossiers, tant qu'il
+    -- lui est ouvert : un accès retiré referme le dossier sur-le-champ.
+    (select a.producteur_id
+       from public.portal_dossier_actif a
+      where a.user_id = (select auth.uid())
+        and (a.producteur_id = public.portail_dossier_titulaire()
+             or public.partage_actif(a.producteur_id))),
     -- Cas normal : le client voit son propre dossier.
-    (select pu.producteur_id
-       from public.portal_users pu
-      where pu.user_id = (select auth.uid())
-        and pu.actif = true)
+    public.portail_dossier_titulaire(),
+    -- Tiers : le dossier qu'un titulaire lui a partagé (le plus récent s'il y en a
+    -- plusieurs ; les autres se choisissent dans l'en-tête).
+    (select s.producteur_id
+       from public.partages_acces s
+      where s.courriel = (select public.courriel_confirme())
+        and s.revoque_le is null
+      order by s.cree_le desc
+      limit 1)
   );
 $function$;
+
+-- proprietes_visibles() : les propriétés du dossier affiché (producteur ou
+-- propriétaire légal), pour les règles des lots et des PAF.
 
 CREATE OR REPLACE FUNCTION public.peut_voir_propriete(p_id integer)
  RETURNS boolean

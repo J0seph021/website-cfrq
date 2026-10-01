@@ -5,9 +5,10 @@ import { site } from "../data/site";
 import CarteForet from "./CarteForet";
 import CalculateurValeurBois from "./CalculateurValeurBois";
 import FormulaireDemande, { DEMANDES, type ConfigDemande } from "./FormulaireDemande";
-import { BarreEmploye, ChoixClient, type Moi } from "./VueEmploye";
+import { BarreEmploye, ChoixClient, type DossierAccessible, type Moi, type RoleDossier } from "./VueEmploye";
 import CompteNonRelie from "./DemandeAcces";
 import Bientot from "./Bientot";
+import PartageAcces from "./PartageAcces";
 import VisiteGuidee from "./VisiteGuidee";
 import { essencesArbres } from "../lib/foret/essences-mffp";
 import { MODE_DOSSIERS } from "../data/espaceClient";
@@ -487,11 +488,20 @@ function DefinirMotDePasse({ onClose }: { onClose: () => void }) {
   );
 }
 
-export function DashboardView({ d, offre = null, onLogout, courriel = null, vueEmploye = false, apercu = false }: { d: Dossier; offre?: Offre; onLogout?: () => void; courriel?: string | null; vueEmploye?: boolean; apercu?: boolean }) {
+export function DashboardView({
+  d, offre = null, onLogout, courriel = null, vueEmploye = false, apercu = false, role = "titulaire", dossiers = [],
+}: {
+  d: Dossier; offre?: Offre; onLogout?: () => void; courriel?: string | null; vueEmploye?: boolean; apercu?: boolean;
+  // « invite » : dossier qu'un titulaire a partagé avec cette personne (lecture seule).
+  role?: RoleDossier | null;
+  // Dossiers ouverts à la personne (le sien, ceux qu'on lui a partagés) : sélecteur si plus d'un.
+  dossiers?: DossierAccessible[];
+}) {
   const nom = d.producteur?.nom ?? "Votre dossier";
+  const invite = role === "invite";
   const [achatEnCours, setAchatEnCours] = useState<string | null>(null);
   const [pwdOuvert, setPwdOuvert] = useState(false);
-  const [demande, setDemande] = useState<ConfigDemande | null>(null); // F2/F3/F4/F6
+  const [demande, setDemande] = useState<ConfigDemande | null>(null); // F2/F3/F6
   // Message des actions neutralisées quand un employé regarde le dossier d'un client.
   const [noteEmploye, setNoteEmploye] = useState("");
 
@@ -539,7 +549,18 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
   // Sans lui, le nom du propriétaire seulement s'il ressemble à une personne.
   const nomJoli: string | null =
     d.producteur?.nom_salutation || (d.producteur && !estSociete(nom) ? nomAffiche(nom) : null);
-  const initiales = (nomJoli ?? nom).split(/\s+/).map((m: string) => m[0]).join("").slice(0, 2).toUpperCase();
+  // Une personne invitée : l'initiale de son courriel, pas celles du propriétaire.
+  const initiales = invite
+    ? (courriel ?? "?").slice(0, 1).toUpperCase()
+    : (nomJoli ?? nom).split(/\s+/).map((m: string) => m[0]).join("").slice(0, 2).toUpperCase();
+  const [choixDossier, setChoixDossier] = useState(false);
+  async function changerDossier(id: number) {
+    if (apercu) return;
+    setChoixDossier(true);
+    const { error } = await supabase.rpc("portail_choisir_dossier", { p_producteur_id: id });
+    if (error) { setChoixDossier(false); return; }
+    window.location.reload();
+  }
 
   // Agregats reels
   const peuplements = useMemo(() => props(d.carte, "peuplement"), [d.carte]);
@@ -771,6 +792,7 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
     travauxTries.length > 0 ? { id: "travaux", label: "Mes travaux" } : null,
     { id: "documents", label: "Mes documents" },
     MODE_DOSSIERS ? { id: "bientot", label: "Bientôt" } : { id: "portrait", label: "Mon Portrait" },
+    invite ? null : { id: "acces", label: "Partage" },
   ].filter(Boolean) as { id: string; label: string }[];
 
   return (
@@ -812,9 +834,29 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
       </div>
 
       <div className="mx-auto max-w-6xl px-5 py-8">
-        {/* Salutation */}
+        {/* Plusieurs dossiers ouverts (le sien et un dossier partagé, ou deux dossiers
+            partagés) : on choisit celui qu'on regarde. Le choix est gardé en base. */}
+        {!vueEmploye && dossiers.length > 1 && (
+          <label className="mb-5 flex flex-wrap items-center gap-2 text-[14px] text-cfrq-ink/65">
+            Dossier affiché
+            <select
+              value={d.producteur?.id ?? ""}
+              disabled={choixDossier}
+              onChange={(e) => changerDossier(Number(e.target.value))}
+              className="max-w-full rounded-full border border-black/15 bg-white px-3.5 py-1.5 text-[14px] font-medium text-cfrq-deep outline-none focus:border-cfrq-green disabled:opacity-60"
+            >
+              {dossiers.map((x) => (
+                <option key={x.id} value={x.id}>
+                  {nomAffiche(x.nom ?? "Dossier")}{x.role === "invite" ? " (partagé avec vous)" : " (votre dossier)"}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
+
+        {/* Salutation : une personne invitée n'est pas saluée du nom du propriétaire. */}
         <div className="flex flex-wrap items-center gap-2.5">
-          <h1 className="font-display text-[clamp(24px,6vw,30px)] font-medium text-cfrq-deep">{salutation}{nomJoli ? `, ${nomJoli}` : ""}</h1>
+          <h1 className="font-display text-[clamp(24px,6vw,30px)] font-medium text-cfrq-deep">{salutation}{nomJoli && !invite ? `, ${nomJoli}` : ""}</h1>
           {d.producteur?.no_prod && (
             <span className="rounded-full bg-cfrq-green/[.18] px-3 py-1 text-[13px] font-medium text-cfrq-leaf">{d.producteur.no_prod}</span>
           )}
@@ -822,7 +864,13 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
             <span className="rounded-full bg-cfrq-tint px-3 py-1 text-[13px] font-medium text-cfrq-leaf">Producteur forestier reconnu</span>
           )}
         </div>
-        <p className="mt-1 text-[15px] text-cfrq-ink/55">Voici votre forêt, à jour.</p>
+        {invite ? (
+          <p className="mt-1 text-[15px] text-cfrq-ink/55">
+            Vous consultez le dossier forestier que {nomJoli ?? nomAffiche(nom)} a partagé avec vous. Consultation seulement.
+          </p>
+        ) : (
+          <p className="mt-1 text-[15px] text-cfrq-ink/55">Voici votre forêt, à jour.</p>
+        )}
 
         {/* Poste de commande : heros patrimonial + prochaine etape + ingenieur */}
         <div className="mt-6 flex flex-wrap gap-[18px]">
@@ -1273,8 +1321,8 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
           </Reveal>
         )}
 
-        {/* Votre Portrait des forets (releve patrimonial payant) */}
-        {!MODE_DOSSIERS && (
+        {/* Votre Portrait des forets (releve patrimonial payant). Pas pour une personne invitée. */}
+        {!MODE_DOSSIERS && !invite && (
         <Reveal className="mt-10">
           <section id="portrait" className="scroll-mt-28 overflow-hidden rounded-2xl border border-cfrq-green/20 bg-gradient-to-br from-cfrq-tint to-white p-6 md:p-8">
             {paye && (
@@ -1342,8 +1390,8 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
         </Reveal>
         )}
 
-        {/* Transmettre votre foret (succession) */}
-        {(travauxCarte.length > 0 || d.documents.length > 0) && (
+        {/* Transmettre votre foret (succession) : s'adresse au propriétaire seulement. */}
+        {!invite && (travauxCarte.length > 0 || d.documents.length > 0) && (
           <Reveal className="mt-10">
             <section className="rounded-2xl bg-cfrq-deep p-6 text-cfrq-cream md:p-8">
               <h2 className="font-display text-xl font-medium">Transmettre votre forêt</h2>
@@ -1355,18 +1403,25 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
           </Reveal>
         )}
 
-        {/* Demandes à CFRQ (F2/F6 ajouter une terre, F3 terre convoitée, F4 inviter un tiers) */}
+        {/* Qui a accès : le titulaire partage lui-même son espace (F4), sans passer par CFRQ. */}
+        {!invite && (
+          <Reveal className="mt-10">
+            <PartageAcces vueEmploye={vueEmploye} apercu={apercu} onNeutralise={setNoteEmploye} />
+          </Reveal>
+        )}
+
+        {/* Demandes à CFRQ (F2/F6 ajouter une terre, F3 terre convoitée). Pas pour une personne invitée. */}
+        {!invite && (
         <Reveal className="mt-10">
           <section data-visite="demandes" className="rounded-2xl border border-black/5 bg-white p-6 md:p-8">
             <h2 className="font-display text-xl font-medium text-cfrq-deep">Une demande à nous faire ?</h2>
             <p className="mt-2 max-w-2xl text-[15.5px] leading-relaxed text-cfrq-ink/75">
               Notre équipe s'occupe du reste. Choisissez ce dont vous avez besoin et nous ferons le suivi avec vous.
             </p>
-            <div className="mt-5 grid gap-3 sm:grid-cols-3">
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
               {[
                 { cfg: DEMANDES.ajouterTerre, icone: "➕", titre: "Ajouter une terre", desc: "Une terre absente de votre espace ? On l'ajoute à votre dossier." },
                 { cfg: DEMANDES.terreConvoitee, icone: "🔍", titre: "Portrait d'une terre convoitée", desc: "Un lot que vous songez à acheter ? On en prépare le portrait." },
-                { cfg: DEMANDES.inviterTiers, icone: "👥", titre: "Donner accès à un tiers", desc: "Co-propriétaire, banque… on organise l'accès." },
               ].map((b) => (
                 <button key={b.cfg.source} onClick={() => setDemande(b.cfg)}
                   className="flex flex-col items-start rounded-xl border border-black/5 bg-cfrq-tint/50 p-4 text-left transition-colors hover:border-cfrq-green/40 hover:bg-cfrq-tint">
@@ -1378,6 +1433,7 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
             </div>
           </section>
         </Reveal>
+        )}
       </div>
 
       {/* Actions neutralisées en vue employé */}
@@ -1387,7 +1443,7 @@ export function DashboardView({ d, offre = null, onLogout, courriel = null, vueE
         </div>
       )}
 
-      {/* Modal de demande (F2/F3/F4/F6) */}
+      {/* Modal de demande (F2/F3/F6) */}
       {demande && (
         <FormulaireDemande
           config={demande}
@@ -1575,7 +1631,10 @@ export default function EspaceClient() {
 
   return (
     <>
-      <DashboardView d={d} offre={offre} onLogout={logout} courriel={courriel} vueEmploye={!!moi?.vue_employe} />
+      <DashboardView
+        d={d} offre={offre} onLogout={logout} courriel={courriel} vueEmploye={!!moi?.vue_employe}
+        role={moi?.role ?? "titulaire"} dossiers={moi?.dossiers ?? []}
+      />
       {moi?.employe && (
         <>
           {/* Place réservée sous la barre fixe, sinon elle masque la fin de la page. */}
