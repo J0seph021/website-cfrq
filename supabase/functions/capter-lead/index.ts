@@ -8,8 +8,9 @@
 // Les demandes de plants (source=plants) sont en plus reportees dans le
 // classeur SharePoint « Demande Feuillus.xlsx » via l'API Excel de Graph :
 // best-effort, le resultat est annonce dans la notification interne.
-// Anti-robot : jeton Cloudflare Turnstile valide avant tout envoi de courriel
-// (voir verifierHumain).
+// Anti-robot : jeton Cloudflare Turnstile (formulaires publics) ou session de
+// l'espace client, valide avant tout envoi de courriel (voir verifierHumain et
+// courrielDeSession).
 import postgres from "https://deno.land/x/postgresjs@v3.4.5/mod.js";
 
 const cors = {
@@ -75,6 +76,33 @@ async function verifierHumain(jeton: string, ip: string): Promise<boolean> {
     // chez eux. Le pot de miel et la limite par IP restent en place.
     console.error("turnstile injoignable:", (e as Error).message);
     return true;
+  }
+}
+
+// --- Session de l'espace client -----------------------------------------------
+// Les demandes faites depuis l'espace client n'affichent pas de widget : le
+// client a deja passe Turnstile a la connexion. Il envoie plutot sa session,
+// que Supabase Auth du projet « Releves forestiers » (autre projet que celui-ci)
+// doit confirmer. Les courriels partent alors a l'adresse du compte, jamais a
+// celle du corps de la requete.
+const PORTAIL_URL = "https://sfzcslpbysabsiszcpqm.supabase.co";
+// Cle publishable du portail : publique par conception, la meme que dans le site.
+const PORTAIL_CLE = "sb_publishable_aD3nhUKl1LJCCeYC6YSHYQ_5ImGu7r1";
+
+/** Courriel du compte si la session est valide, null sinon. */
+async function courrielDeSession(jwt: string): Promise<string | null> {
+  try {
+    const r = await fetch(PORTAIL_URL + "/auth/v1/user", {
+      headers: { apikey: PORTAIL_CLE, Authorization: "Bearer " + jwt },
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!r.ok) return null;
+    const u = await r.json();
+    return typeof u?.email === "string" ? u.email.toLowerCase() : null;
+  } catch (e) {
+    // Refus : le client retombe sur le brouillon courriel du formulaire.
+    console.error("session portail injoignable:", (e as Error).message);
+    return null;
   }
 }
 
@@ -469,13 +497,19 @@ Deno.serve(async (req) => {
 
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "";
 
-  // Avant le pot de miel : un jeton invalide doit recevoir un vrai refus, ce
+  // Avant le pot de miel : une preuve invalide doit recevoir un vrai refus, ce
   // qui permet aussi de tester la verification sans rien enregistrer.
-  if (!(await verifierHumain(String(body.turnstile ?? ""), ip))) return json({ ok: false, error: ROBOT }, 403);
+  let courrielSession: string | null = null;
+  if (body.session) {
+    courrielSession = await courrielDeSession(String(body.session));
+    if (!courrielSession) return json({ ok: false, error: ROBOT }, 403);
+  } else if (!(await verifierHumain(String(body.turnstile ?? ""), ip))) {
+    return json({ ok: false, error: ROBOT }, 403);
+  }
 
   if (body.website || body.hp) return json({ ok: true });
 
-  const courriel = String(body.courriel ?? "").trim().toLowerCase();
+  const courriel = (courrielSession ?? String(body.courriel ?? "")).trim().toLowerCase();
   const emailOk = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(courriel) && courriel.length <= 254;
   if (!emailOk) return json({ ok: false, error: "Courriel invalide" }, 400);
 

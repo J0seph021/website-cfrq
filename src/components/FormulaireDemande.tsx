@@ -2,9 +2,12 @@
 // F3 « Voir une terre convoitée », F4 « Inviter un tiers »). Réutilise l'Edge
 // Function publique capter-lead (branche générique -> capter_prospect_web ->
 // planilogix.leads_web), avec honeypot et repli mailto. Aucun changement DB.
+// Pas de widget Turnstile ici : le client a déjà passé la vérification à la
+// connexion. On envoie plutôt sa session, que capter-lead fait confirmer par
+// Supabase Auth avant d'envoyer quoi que ce soit.
 import { useEffect, useState } from "react";
 import { site } from "../data/site";
-import { useTurnstile } from "../lib/useTurnstile";
+import { supabase } from "../lib/supabaseClient";
 
 const LEADS_ENDPOINT =
   import.meta.env.PUBLIC_LEADS_ENDPOINT ||
@@ -38,7 +41,6 @@ type Props = {
 export default function FormulaireDemande({ config, courriel, identite, onClose }: Props) {
   const [valeurs, setValeurs] = useState<Record<string, string>>({});
   const [website, setWebsite] = useState(""); // honeypot
-  const turnstile = useTurnstile("espace-client-demande");
   const [envoi, setEnvoi] = useState(false);
   const [envoye, setEnvoye] = useState(false);
   // Vrai quand l'envoi a ECHOUE et qu'on est retombe sur le brouillon courriel :
@@ -78,6 +80,7 @@ export default function FormulaireDemande({ config, courriel, identite, onClose 
     if (!courrielVal) return;
     setEnvoi(true);
     try {
+      const { data: { session } } = await supabase.auth.getSession();
       const res = await fetch(LEADS_ENDPOINT, {
         method: "POST",
         headers: { "content-type": "application/json" },
@@ -90,7 +93,7 @@ export default function FormulaireDemande({ config, courriel, identite, onClose 
           message: valeurs.message || undefined,
           details: construireDetails(),
           website,
-          turnstile: await turnstile.jeton(),
+          session: session?.access_token,
         }),
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -100,7 +103,6 @@ export default function FormulaireDemande({ config, courriel, identite, onClose 
       setSecours(true);
       setEnvoye(true);
     } finally {
-      turnstile.renouveler();
       setEnvoi(false);
     }
   }
@@ -165,15 +167,10 @@ export default function FormulaireDemande({ config, courriel, identite, onClose 
               </label>
             ))}
 
-            {/* Widget Turnstile et bouton regroupés : invisible, le widget ne
-                doit pas ajouter un écart de plus dans le gap du formulaire. */}
-            <div className="mt-1 flex flex-col">
-              <div ref={turnstile.ref} className="data-[turnstile=visible]:mb-3" />
-              <button type="submit" disabled={envoi}
-                className="rounded-lg bg-cfrq-green px-5 py-2.5 text-[14.5px] font-medium text-[#123005] transition-colors hover:bg-cfrq-green-hover disabled:opacity-60">
-                {envoi ? "Envoi…" : config.submitLabel}
-              </button>
-            </div>
+            <button type="submit" disabled={envoi}
+              className="mt-1 rounded-lg bg-cfrq-green px-5 py-2.5 text-[14.5px] font-medium text-[#123005] transition-colors hover:bg-cfrq-green-hover disabled:opacity-60">
+              {envoi ? "Envoi…" : config.submitLabel}
+            </button>
             <p className="text-[12px] leading-snug text-black/50">
               Votre demande est transmise à l'équipe CFRQ, qui fera le suivi avec vous. Aucune donnée n'est publiée.
             </p>
