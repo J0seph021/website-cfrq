@@ -70,6 +70,7 @@ async function verifierHumain(jeton: string, ip: string): Promise<boolean> {
     });
     const d = await r.json();
     if (d.success !== true) console.warn("turnstile refuse:", (d["error-codes"] ?? []).join(","));
+    else console.log("turnstile ok:", d.hostname, d.action, d.challenge_ts);
     return d.success === true;
   } catch (e) {
     // Cloudflare injoignable : on ne perd pas un vrai prospect pour une panne
