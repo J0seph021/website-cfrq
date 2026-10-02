@@ -54,6 +54,23 @@ jamais dépasser la limite d'exécution. Un retard se draine sur plusieurs passa
    select vault.create_secret('<même-valeur-que-SYNC_SECRET>', 'sync_documents_secret');
    ```
 
+## Rapprochement source / portail (v17)
+
+Le filigrane ne voit que les producteurs dont un document a bougé, jamais celui qui en
+**perd** un. À chaque passage, la fonction compare donc tout `centre_doc_fichier` au
+portail :
+
+- un document que la source rattache à un **autre** producteur est retiré de l'ancien
+  espace (ex. PAF de Serge Fournier classé sous le N° de « Serge et Jean », corrigé dans le
+  centre doc) ; au-delà de 200 retraits d'un coup, rien n'est retiré et le résumé le signale ;
+- un document devenu **non rattaché** (homonymes en double dans PlaniLogix) reste en place :
+  compté dans `incertains`, à régler dans PlaniLogix ;
+- un document attendu mais **absent** (copie échouée : Bad Gateway, connexion coupée) est
+  recopié, 10 par passage, 3 tentatives par fichier (mémoire : `sync_state` clé
+  `documents_reprises`) ; les abandons sont listés dans `rapprochement.abandonnes`.
+
+Essai à blanc, sans rien retirer ni copier : ajouter `?a_blanc=1` à l'appel.
+
 ## Vérifier / exploiter
 
 ```sql
