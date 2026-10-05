@@ -3,8 +3,92 @@
 // (public.interets_fonctionnalites, via portail_aviser_moi) : on saura ce que les
 // clients veulent vraiment avant de le bâtir, et à qui écrire le jour de la sortie.
 // Aucun courriel n'est envoyé au clic.
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
+import { withBaseAsset } from "../lib/url";
+import { mesurer } from "../lib/mesure";
+
+// Vidéo de présentation du relevé (1 min), montrée dans la carte du Portrait.
+// Une vignette dans la carte, la vidéo en grand dans une fenêtre <dialog> :
+// Échap, le bouton Fermer ou un clic à côté la referment (et la mettent en pause).
+function VideoReleve() {
+  const dialogue = useRef<HTMLDialogElement>(null);
+  const video = useRef<HTMLVideoElement>(null);
+  const etapes = useRef(new Set<string>());
+
+  function noter(etape: string) {
+    if (etapes.current.has(etape)) return;
+    etapes.current.add(etape);
+    mesurer("video_releve", { etape });
+  }
+
+  function ouvrir() {
+    dialogue.current?.showModal();
+    video.current?.play().catch(() => {});
+  }
+
+  function fermer() {
+    dialogue.current?.close();
+  }
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={ouvrir}
+        className="group relative mt-4 block aspect-video w-full overflow-hidden rounded-lg bg-cfrq-deep text-left"
+        aria-label="Voir la vidéo de présentation du relevé (1 minute)"
+      >
+        <img
+          src={withBaseAsset("/videos/releve-cfrq.jpg")}
+          alt=""
+          loading="lazy"
+          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+        />
+        <span className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/25">
+          <span aria-hidden className="flex h-12 w-12 items-center justify-center rounded-full bg-cfrq-green shadow-[0_6px_20px_rgba(0,0,0,.35)]">
+            <svg viewBox="0 0 24 24" className="ml-0.5 h-6 w-6 fill-[#123005]"><path d="M8 5.5v13l11-6.5z" /></svg>
+          </span>
+          <span className="rounded-full bg-black/50 px-3 py-1 text-[13px] font-semibold text-white">Voir la vidéo · 1 min</span>
+        </span>
+      </button>
+      <dialog
+        ref={dialogue}
+        onClose={() => video.current?.pause()}
+        onClick={(e) => e.target === dialogue.current && fermer()}
+        className="m-auto w-[min(1100px,94vw)] overflow-visible bg-transparent p-0 backdrop:bg-black/80"
+        aria-label="Vidéo de présentation du relevé forestier CFRQ"
+      >
+        <div className="flex justify-end pb-2">
+          <button
+            type="button"
+            onClick={fermer}
+            className="rounded-lg bg-white/10 px-4 py-2 text-[15px] font-medium text-white hover:bg-white/20"
+          >
+            Fermer ✕
+          </button>
+        </div>
+        <video
+          ref={video}
+          controls
+          playsInline
+          preload="none"
+          poster={withBaseAsset("/videos/releve-cfrq.jpg")}
+          className="aspect-video w-full rounded-xl bg-black"
+          onPlay={() => noter("debut")}
+          onTimeUpdate={(e) => {
+            const v = e.currentTarget;
+            if (v.duration && v.currentTime >= v.duration / 2) noter("moitie");
+          }}
+          onEnded={() => noter("fin")}
+        >
+          <source src={withBaseAsset("/videos/releve-cfrq.mp4")} type="video/mp4" />
+          <track kind="captions" srcLang="fr" label="Français" src={withBaseAsset("/videos/releve-cfrq.fr.vtt")} />
+        </video>
+      </dialog>
+    </>
+  );
+}
 
 // Les clés doivent rester celles permises par la contrainte de la table.
 export const A_VENIR = [
@@ -84,6 +168,7 @@ export default function Bientot({
               </div>
               <h3 className="mt-3 font-medium text-cfrq-deep">{f.titre}</h3>
               <p className="mt-1.5 flex-1 text-[14px] leading-relaxed text-cfrq-ink/65">{f.texte}</p>
+              {f.cle === "portrait" && <VideoReleve />}
               {inscrit ? (
                 <p className="mt-4 text-[14px] font-medium text-cfrq-leaf">✓ Nous vous aviserons</p>
               ) : (

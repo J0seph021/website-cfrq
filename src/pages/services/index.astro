@@ -4,7 +4,7 @@ import Base from "../../layouts/Base.astro";
 import Header from "../../components/Header.astro";
 import Footer from "../../components/Footer.astro";
 import { site } from "../../data/site";
-import { withBase, withBaseAsset } from "../../lib/url";
+import { withBase } from "../../lib/url";
 import { PUBLIER_ESPACE_CLIENT } from "../../data/flags";
 import { MODE_DOSSIERS } from "../../data/espaceClient";
 
@@ -95,6 +95,12 @@ const cartes = [
     texte: "Pour les municipalités, les promoteurs et les propriétaires, nous évaluons la santé et le risque des arbres et prescrivons les travaux correctifs requis, signés par des ingénieurs forestiers.",
     chips: ["Santé de l'arbre", "Évaluation du risque", "Boisés municipaux", "Accompagnement des promoteurs"],
   },
+];
+
+const releveBarres = [
+  { label: "Valeur du bois sur pied", pct: 74 },
+  { label: "Accroissement annuel", pct: 48 },
+  { label: "Potentiel d'aménagement", pct: 63 },
 ];
 
 const ld = {
@@ -208,7 +214,7 @@ const eyebrow = "text-[12.5px] font-semibold uppercase tracking-[0.18em]";
          et mène à la page qui explique l'espace client. -->
     <section aria-labelledby="releve-titre" class="mx-auto max-w-[1160px] px-[22px] pb-6 pt-7">
       <div class="flex flex-wrap items-center gap-x-12 gap-y-9 rounded-3xl border border-cfrq-green/20 p-[clamp(28px,4vw,48px)]" style="background:linear-gradient(140deg,#EAF4E0,#FFFFFF 66%)">
-        <div class="flex-1 basis-[320px]">
+        <div class="flex-[1.2] basis-[380px]">
           <span class="inline-flex items-center gap-2 rounded-full bg-cfrq-green px-3 py-[5px] text-[11.5px] font-bold uppercase tracking-[0.12em] text-[#123005]">
             {releveDisponible ? "Nouveau service" : "Bientôt disponible"}
           </span>
@@ -221,39 +227,27 @@ const eyebrow = "text-[12.5px] font-semibold uppercase tracking-[0.18em]";
             {PUBLIER_ESPACE_CLIENT && !releveDisponible ? "Accéder à l'espace client" : "Découvrir le relevé"} <span aria-hidden="true">→</span>
           </a>
         </div>
-        <!-- Vidéo de présentation (1 min). Rien n'est téléchargé avant le clic
-             (preload="none") ; le gros bouton de lecture est pensé pour un public
-             de 65 ans et plus. Sous-titres offerts, pas imposés : la vidéo a déjà
-             ses propres titres en bas de l'image. -->
-        <figure class="flex-[1.35] basis-[420px]">
-          <div class="relative aspect-video overflow-hidden rounded-[18px] bg-cfrq-deep shadow-[0_24px_44px_-30px_rgba(20,51,26,.55)]">
-            <video
-              id="video-releve"
-              class="h-full w-full object-cover"
-              controls
-              preload="none"
-              playsinline
-              poster={withBaseAsset("/videos/releve-cfrq.jpg")}
-              aria-label="Vidéo de présentation du relevé forestier CFRQ (1 minute)"
-            >
-              <source src={withBaseAsset("/videos/releve-cfrq.mp4")} type="video/mp4" />
-              <track kind="captions" srclang="fr" label="Français" src={withBaseAsset("/videos/releve-cfrq.fr.vtt")} />
-            </video>
-            <button
-              id="video-releve-jouer"
-              type="button"
-              class="group absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/25 text-cfrq-cream transition-colors hover:bg-black/15"
-            >
-              <span class="flex h-[76px] w-[76px] items-center justify-center rounded-full bg-cfrq-green shadow-[0_10px_30px_rgba(0,0,0,.35)] transition-transform group-hover:scale-105" aria-hidden="true">
-                <svg viewBox="0 0 24 24" class="ml-1 h-9 w-9 fill-[#123005]"><path d="M8 5.5v13l11-6.5z" /></svg>
-              </span>
-              <span class="rounded-full bg-black/45 px-4 py-1.5 text-[15px] font-semibold">Voir la vidéo · 1 min</span>
-            </button>
+        <div class="flex-1 basis-[300px]">
+          <div class="rounded-[18px] border border-black/5 bg-white p-6 shadow-[0_24px_44px_-30px_rgba(20,51,26,.55)]">
+            <div class="flex items-center justify-between">
+              <span class="text-[12px] font-bold uppercase tracking-[0.12em] text-cfrq-leaf">Votre relevé</span>
+              <span class="font-mono text-[11px] text-cfrq-ink/40">exemple</span>
+            </div>
+            <div class="mt-[18px] flex flex-col gap-[15px]">
+              {releveBarres.map((b) => (
+                <div>
+                  <p class="text-[13.5px] text-cfrq-deep">{b.label}</p>
+                  <div class="mt-1.5 h-[7px] w-full overflow-hidden rounded bg-[#eaf0e1]">
+                    <div class="h-full rounded bg-cfrq-green" style={`width:${b.pct}%`}></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <p class="mt-3.5 border-t border-black/5 pt-3.5 text-[12.5px] text-cfrq-ink/55">
+              {releveDisponible ? "Disponible dans votre espace client." : "Bientôt disponible dans votre espace client."}
+            </p>
           </div>
-          <figcaption class="mt-3 text-[12.5px] text-cfrq-ink/55">
-            {releveDisponible ? "Disponible dans votre espace client." : "Bientôt disponible dans votre espace client."}
-          </figcaption>
-        </figure>
+        </div>
       </div>
     </section>
 
@@ -273,31 +267,3 @@ const eyebrow = "text-[12.5px] font-semibold uppercase tracking-[0.18em]";
   </main>
   <Footer />
 </Base>
-
-<script>
-  import { mesurer } from "../../lib/mesure";
-
-  const video = document.getElementById("video-releve") as HTMLVideoElement | null;
-  const bouton = document.getElementById("video-releve-jouer");
-  if (video && bouton) {
-    // style.display plutôt que l'attribut hidden : la classe « flex » l'emporterait.
-    const cacher = (oui: boolean) => (bouton.style.display = oui ? "none" : "");
-    bouton.addEventListener("click", () => {
-      cacher(true);
-      video.play().catch(() => cacher(false));
-    });
-    // Le bouton disparaît aussi si la lecture part des contrôles natifs.
-    video.addEventListener("play", () => cacher(true));
-    const etapes = new Set<string>();
-    const noter = (etape: string) => {
-      if (etapes.has(etape)) return;
-      etapes.add(etape);
-      mesurer("video_releve", { etape });
-    };
-    video.addEventListener("play", () => noter("debut"));
-    video.addEventListener("timeupdate", () => {
-      if (video.duration && video.currentTime >= video.duration / 2) noter("moitie");
-    });
-    video.addEventListener("ended", () => noter("fin"));
-  }
-</script>

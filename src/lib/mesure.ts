@@ -12,8 +12,9 @@
 //   - clic_courriel      clic sur un lien mailto:
 // Et des signaux secondaires, à laisser en simples événements :
 //   - calculateur_utilise  première saisie dans un calculateur
-//   - video_releve         vidéo du relevé (page Services) ; paramètre etape :
-//                          debut, moitie ou fin, une fois chacun par visite
+//   - video_releve         vidéo du relevé (espace client, carte « Portrait » de
+//                          la section Bientôt) ; paramètre etape : debut, moitie
+//                          ou fin, une fois chacun par visite
 //
 // Les deux derniers clics et le calculateur sont captés par délégation dans
 // Analytique.astro; seuls les formulaires appellent `mesurer` eux-mêmes, parce
