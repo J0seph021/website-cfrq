@@ -10,6 +10,7 @@ import CompteNonRelie from "./DemandeAcces";
 import Bientot from "./Bientot";
 import PartageAcces from "./PartageAcces";
 import VisiteGuidee from "./VisiteGuidee";
+import Logo from "./Logo";
 import { essencesArbres } from "../lib/foret/essences-mffp";
 import { MODE_DOSSIERS } from "../data/espaceClient";
 
@@ -802,8 +803,8 @@ export function DashboardView({
         <header className="border-b border-black/[.07] bg-white">
           <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-[11px]">
             <div className="flex items-center gap-3">
-              <a href={withBase("/")} className="font-display text-xl text-cfrq-deep" aria-label="Accueil CFRQ">
-                CFR<span style={{ color: "#5abd2a" }}>Q</span>
+              <a href={withBase("/")} className="flex items-center text-cfrq-ink" aria-label="Accueil CFRQ">
+                <Logo className="h-8 w-auto" />
               </a>
               <span className="hidden border-l border-black/10 pl-3 text-[14px] text-cfrq-ink/60 sm:inline">Espace client</span>
             </div>

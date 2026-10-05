@@ -6,6 +6,7 @@
 // d'elle-même après 12 h et chaque ouverture est journalisée.
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
+import Logo from "./Logo";
 
 export type ClientPortail = {
   id: number;
@@ -366,8 +367,8 @@ export function ChoixClient({
       <header className="border-b border-black/[.07] bg-white">
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-4 px-5 py-[11px]">
           <div className="flex items-center gap-3">
-            <span className="font-display text-xl text-cfrq-deep">
-              CFR<span style={{ color: "#5abd2a" }}>Q</span>
+            <span className="flex items-center text-cfrq-ink">
+              <Logo className="h-8 w-auto" />
             </span>
             <span className="border-l border-black/10 pl-3 text-[14px] text-cfrq-ink/60">Vue employé</span>
           </div>
