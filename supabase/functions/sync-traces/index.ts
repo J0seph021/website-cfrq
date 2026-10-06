@@ -35,6 +35,10 @@ const {
 // injoignable à moitié) plutôt qu'une correction : on ne retire rien et on le dit.
 const MAX_RETRAITS = 200;
 const LOT = 500;
+// Client de démonstration (scripts/client-demo) : absent de PlaniLogix, ses
+// traces sont posées à la main pour montrer la couche ; ce passage n'y touche
+// jamais (même règle que sync-documents).
+const PRODUCTEUR_DEMO_MIN = 900000;
 
 // Simplifiée à environ 1 m (en degrés) : une journée de machine compte des
 // milliers de sommets, la carte du client n'a pas besoin de plus.
@@ -105,9 +109,11 @@ Deno.serve(async (req) => {
     // Par pages : PostgREST rend 1 000 lignes au plus par appel.
     const deja: number[] = [];
     for (let de = 0; ; de += 1000) {
-      const { data, error } = await site.from("traces_chantier").select("id").order("id").range(de, de + 999);
+      const { data, error } = await site.from("traces_chantier").select("id,producteur_id").order("id").range(de, de + 999);
       if (error) throw new Error("lecture traces_chantier: " + error.message);
-      for (const d of data ?? []) deja.push(Number(d.id));
+      for (const d of data ?? []) {
+        if (Number(d.producteur_id) < PRODUCTEUR_DEMO_MIN) deja.push(Number(d.id));
+      }
       if (!data || data.length < 1000) break;
     }
     const garder = new Set(lignes.map((l) => l.id));
