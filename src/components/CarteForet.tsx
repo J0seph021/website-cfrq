@@ -25,6 +25,7 @@ interface Props {
 const COUCHES = [
   { id: "peuplement", label: "Peuplements" },
   { id: "travaux", label: "Travaux réalisés" },
+  { id: "trace", label: "Passages de l'entrepreneur (GPS)" },
   { id: "hydro", label: "Ruisseaux et écoulements" },
   { id: "prescription", label: "Prescriptions" },
   { id: "propriete", label: "Limites de propriété" },
@@ -42,11 +43,13 @@ const COULEUR_PRESCRIPTION = "#111111"; // noir : prescriptions, pour ne plus le
 const COULEUR_PROPRIETE = "#ffffff";
 const COULEUR_PEUPLEMENT_CONTOUR = "#ffffff"; // contour pointillé blanc entre peuplements
 const COULEUR_HYDRO = "#2b8ae6"; // bleu : ruisseaux LiDAR (le bleu est libre, prescriptions en noir)
+const COULEUR_TRACE = "#f59f00"; // orange : passages GPS de l'entrepreneur (ni le rouge des travaux, ni le bleu de l'eau)
 
 // Couches MapLibre rattachées à chaque couche logique (pour un affichage/masquage groupé).
 const LAYERS_PAR_COUCHE: Record<string, string[]> = {
   peuplement: ["peuplement-fill", "peuplement-line"],
   travaux: ["travaux-fill"],
+  trace: ["trace-casing", "trace-line", "trace-hit"],
   hydro: ["hydro-perm", "hydro-int"],
   prescription: ["prescription-hit", "prescription-casing", "prescription-line"],
   propriete: ["propriete-line"],
@@ -92,12 +95,16 @@ export default function CarteForet({ data: donneesBrutes, bbox, documents = [], 
         : donneesBrutes,
     [donneesBrutes, sansPeuplements]
   );
-  const couches = sansPeuplements ? COUCHES.filter((c) => c.id !== "peuplement") : COUCHES;
+  // La case « Passages de l'entrepreneur » n'apparaît que s'il y en a.
+  const aDesTraces = (data?.features ?? []).some((f) => f?.properties?.couche === "trace");
+  const couches = COUCHES.filter(
+    (c) => !(sansPeuplements && c.id === "peuplement") && (aDesTraces || c.id !== "trace")
+  );
   const conteneur = useRef<HTMLDivElement>(null);
   const enveloppe = useRef<HTMLDivElement>(null);
   const carte = useRef<maplibregl.Map | null>(null);
   const [visibles, setVisibles] = useState<Record<string, boolean>>({
-    peuplement: true, travaux: true, hydro: true, prescription: true, propriete: true,
+    peuplement: true, travaux: true, trace: true, hydro: true, prescription: true, propriete: true,
   });
   // Sur mobile, les panneaux démarrent repliés pour laisser voir la carte.
   const [couchesOuvert, setCouchesOuvert] = useState(!estPetitEcran());
@@ -264,6 +271,26 @@ export default function CarteForet({ data: donneesBrutes, bbox, documents = [], 
         filter: ["==", ["get", "couche"], "travaux"],
         paint: { "fill-color": COULEUR_TRAVAUX, "fill-opacity": 0.4, "fill-outline-color": COULEUR_TRAVAUX },
       });
+      // Passages GPS de l'entrepreneur (sync-traces) : orange sur un liseré sombre
+      // pour rester lisibles sur l'imagerie, et une bande invisible plus large
+      // comme cible de clic (une ligne de 2 px ne se vise pas au doigt).
+      map.addLayer({
+        id: "trace-casing", source: "foret", type: "line",
+        filter: ["==", ["get", "couche"], "trace"],
+        layout: { "line-cap": "round", "line-join": "round" },
+        paint: { "line-color": "#3b2a00", "line-width": 4, "line-opacity": 0.45 },
+      });
+      map.addLayer({
+        id: "trace-line", source: "foret", type: "line",
+        filter: ["==", ["get", "couche"], "trace"],
+        layout: { "line-cap": "round", "line-join": "round" },
+        paint: { "line-color": COULEUR_TRACE, "line-width": 2.2, "line-opacity": 0.95 },
+      });
+      map.addLayer({
+        id: "trace-hit", source: "foret", type: "line",
+        filter: ["==", ["get", "couche"], "trace"],
+        paint: { "line-color": "#000000", "line-width": 14, "line-opacity": 0 },
+      });
       // Ruisseaux LiDAR (A5 focus group) : permanents en trait plein, plus large
       // pour les ruisseaux que pour les zones de permanence ; intermittents en
       // pointillé fin. Par-dessus les remplissages, sous les prescriptions.
@@ -317,7 +344,7 @@ export default function CarteForet({ data: donneesBrutes, bbox, documents = [], 
 
       const popup = new maplibregl.Popup({ closeButton: true, maxWidth: "290px" });
       // Ordre = priorité de popup quand les polygones se superposent (le dernier gagne).
-      const cibles = ["peuplement-fill", "travaux-fill", "prescription-hit", "propriete-line"];
+      const cibles = ["peuplement-fill", "travaux-fill", "prescription-hit", "trace-hit", "propriete-line"];
       for (const couche of cibles) {
         map.on("mouseenter", couche, () => (map.getCanvas().style.cursor = "pointer"));
         map.on("mouseleave", couche, () => { map.getCanvas().style.cursor = ""; });
@@ -378,6 +405,7 @@ export default function CarteForet({ data: donneesBrutes, bbox, documents = [], 
 
   const pastille = (id: string) => {
     if (id === "travaux") return { background: COULEUR_TRAVAUX, border: "none" };
+    if (id === "trace") return { background: "transparent", border: `2px solid ${COULEUR_TRACE}` };
     if (id === "hydro") return { background: "transparent", border: `2px solid ${COULEUR_HYDRO}` };
     if (id === "prescription") return { background: "transparent", border: `2px dashed ${COULEUR_PRESCRIPTION}` };
     if (id === "propriete") return { background: "transparent", border: "2px solid #b9c2cc" };
@@ -742,6 +770,25 @@ function contenuPopup(p: Record<string, any>, docsParRef?: Map<string, Doc[]>, a
         ligne("Date du rapport", p.date_rapport) +
         liensDocs(p.no_prescription)
       );
+    case "trace": {
+      // Une trace de machine telle que ForestLogix l'a enregistrée : un relevé de
+      // l'entrepreneur, pas une mesure de CFRQ ; la superficie officielle est
+      // celle du rapport d'exécution.
+      const heure = (v?: string) => {
+        if (!v) return "";
+        const d = new Date(v);
+        return isNaN(d.getTime()) ? "" : d.toLocaleTimeString("fr-CA", { hour: "2-digit", minute: "2-digit", timeZone: "America/Toronto" });
+      };
+      const jour = p.jour ? new Date(`${p.jour}T12:00:00`).toLocaleDateString("fr-CA", { day: "numeric", month: "long", year: "numeric" }) : "";
+      const plage = heure(p.debut) && heure(p.fin) ? `${heure(p.debut)} à ${heure(p.fin)}` : "";
+      const km = p.longueur_m != null ? new Intl.NumberFormat("fr-CA", { maximumFractionDigits: 2 }).format(Number(p.longueur_m) / 1000) : null;
+      return wrap(
+        titre("Travaux de l'entrepreneur", jour) +
+        ligne("Heures", plage) +
+        ligne("Parcours dans vos lots", km, " km") +
+        `<div style="margin-top:6px;padding-top:6px;border-top:1px solid #eee;color:#6b7280;font-size:11.5px">Relevé GPS de la machine de l'entrepreneur, à titre indicatif. La superficie traitée est celle du rapport d'exécution.</div>`
+      );
+    }
     case "propriete":
       return wrap(titre("Limites de la propriété"));
     default:

@@ -348,6 +348,20 @@ function appellations(peuplements: Row[]): { nb: number; top: string[] } {
   return { nb: compte.size, top };
 }
 
+// Les traces GPS des entrepreneurs (table traces_chantier) rejoignent la carte
+// comme une couche de plus (`couche: "trace"`) : la carte n'a qu'une source.
+function avecTraces(carte: Row | null, traces: Row[]): Row | null {
+  if (!carte?.geojson || !traces.length) return carte;
+  const feats = traces
+    .filter((t) => t?.geometrie)
+    .map((t) => ({
+      type: "Feature",
+      geometry: t.geometrie,
+      properties: { couche: "trace", jour: t.jour, debut: t.debut, fin: t.fin, longueur_m: t.longueur_m },
+    }));
+  return { ...carte, geojson: { ...carte.geojson, features: [...(carte.geojson.features ?? []), ...feats] } };
+}
+
 // La table travaux n'est pas alimentee: les travaux reels vivent dans le geojson, dedupliques.
 function travauxDepuisCarte(carte: Row | null): Row[] {
   const feats = props(carte, "travaux");
@@ -1544,7 +1558,7 @@ export default function EspaceClient() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) { window.location.replace(withBase("/espace-client/connexion")); return; }
       setCourriel(session.user?.email ?? null);
-      const [prod, proprietes, lots, paf, travaux, docs, carte, bilan, offreRes, moiRes] = await Promise.all([
+      const [prod, proprietes, lots, paf, travaux, docs, carte, bilan, offreRes, moiRes, traces] = await Promise.all([
         supabase.from("producteurs").select("*").maybeSingle(),
         supabase.from("proprietes").select("*").order("no_propriete"),
         supabase.from("lots").select("*"),
@@ -1558,6 +1572,9 @@ export default function EspaceClient() {
         supabase.rpc("portrait_offre_client"),
         // Vue employé : employe / producteur_id / vue_employe / client.
         supabase.rpc("portail_moi"),
+        // Traces GPS des entrepreneurs, coupées aux lots du client (sync-traces).
+        // Table absente ou aucune ligne -> la carte reste telle quelle.
+        supabase.from("traces_chantier").select("id,jour,debut,fin,longueur_m,geometrie").order("jour"),
       ]);
       if (!alive) return;
       setD({
@@ -1567,7 +1584,7 @@ export default function EspaceClient() {
         paf: paf.data ?? [],
         travaux: travaux.data ?? [],
         documents: docs.data ?? [],
-        carte: carte.data ?? null,
+        carte: avecTraces(carte.data ?? null, traces?.data ?? []),
         bilan: bilan.data ?? null,
       });
       setOffre((offreRes?.data as Offre) ?? null);
