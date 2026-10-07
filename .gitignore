@@ -33,6 +33,9 @@ src/components/FormTestHarness.tsx
 # etat local du CLI Supabase, ne doit jamais etre committe
 supabase/.temp/
 
+# Donnees nominatives (employes) pour reconstruire une base neuve. LE DEPOT EST PUBLIC.
+supabase/seed-local/
+
 # Documents d'affaires internes. LE DEPOT EST PUBLIC : rapport de focus group,
 # plan marketing et prix internes n'ont rien a y faire, et l'historique Git
 # garderait une copie meme apres suppression. Ils restent en local (OneDrive).

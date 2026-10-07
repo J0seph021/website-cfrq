@@ -16,23 +16,10 @@ create table if not exists public.employes_cfrq (
 alter table public.employes_cfrq enable row level security;
 revoke all on table public.employes_cfrq from anon, authenticated;
 
-insert into public.employes_cfrq (courriel, nom) values
-  ('a.fortier@cfrq.ca',      'Alexandra Fortier'),
-  ('a.bouillon@cfrq.ca',     'Alexandre Bouillon'),
-  ('ar.rheaume@cfrq.ca',     'Ann-Renée Rhéaume'),
-  ('c.boisvert@cfrq.ca',     'Camay Boisvert'),
-  ('c.maheu@cfrq.ca',        'Cédric Maheu'),
-  ('c.dumont@cfrq.ca',       'Christian Dumont'),
-  ('fo.soucy@cfrq.ca',       'Frank-Olivier Soucy'),
-  ('g.kelly-poulin@cfrq.ca', 'Gabrielle Kelly-Poulin'),
-  ('jb.girard@cfrq.ca',      'Jean-Benoît Girard'),
-  ('j.moffet@cfrq.ca',       'Joseph Moffet'),
-  ('l.chabot@cfrq.ca',       'Louis Chabot'),
-  ('m.jolibois@cfrq.ca',     'Mathieu Jolibois'),
-  ('p.cadorette@cfrq.ca',    'Pierre Cadorette'),
-  ('s.rioux@cfrq.ca',        'Sébastien Rioux'),
-  ('s.proulx@cfrq.ca',       'Simon Proulx')
-on conflict (courriel) do nothing;
+-- La liste nominative des employés n'est plus dans ce fichier : le dépôt est PUBLIC
+-- (retrait le 2026-10-07, plan d'action de l'EFVP, constat 6). Elle vit dans la base
+-- (déjà chargée) et, pour reconstruire une base neuve, dans le fichier LOCAL non suivi
+-- supabase/seed-local/employes_cfrq.sql (voir .gitignore).
 
 create or replace function public.est_employe_cfrq()
 returns boolean

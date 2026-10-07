@@ -84,7 +84,7 @@ Ce que la nouvelle version change : la branche `calculateur-taxes` lit `nom`, `m
 ```bash
 curl -s -X POST "https://bpxzznykbikbqbvraqxj.supabase.co/functions/v1/capter-lead" \
   -H "content-type: application/json" \
-  -d '{"courriel":"jmoffet021021@gmail.com","nom":"Test migration","municipalite":"Saint-Raymond","details":{"Numéro(s) de lot":"1 234 567"},"superficie_ha":40,"taxes_annuelles":1400,"potentiel_annuel":1190,"potentiel_5ans":5950,"source":"calculateur-taxes"}'
+  -d '{"courriel":"votre.adresse@exemple.com","nom":"Test migration","municipalite":"Saint-Raymond","details":{"Numéro(s) de lot":"1 234 567"},"superficie_ha":40,"taxes_annuelles":1400,"potentiel_annuel":1190,"potentiel_5ans":5950,"source":"calculateur-taxes"}'
 ```
 
 Attendu : `{"ok":true}`, un courriel de relance à l'adresse gmail (« Bonjour Test migration, »), une notification interne à cfrq@cfrq.ca avec Nom/Municipalité/lot, et la vérification en base :

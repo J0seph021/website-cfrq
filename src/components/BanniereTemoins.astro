@@ -1,6 +1,11 @@
 ---
 // Bandeau de consentement aux témoins (cookies), exigé par la Loi 25 pour les
-// témoins de mesure d'audience.
+// témoins de mesure d'audience et de publicité.
+//
+// « Accepter » accorde la mesure d'audience ET les signaux publicitaires de Google
+// (ad_storage, ad_user_data, ad_personalization) : décision de Joseph Moffet, 2026-10-07. Le
+// texte doit donc nommer la publicité, sinon le consentement n'est pas éclairé
+// (Loi 25, art. 8.1 et 14 ; docs/conformite/EFVP_2026-10.md du dépôt des relevés).
 //
 // Ce que la loi demande et qui est respecté ici :
 //  - rien n'est déposé avant le choix (voir Analytique.astro, Consent Mode) ;
@@ -27,9 +32,10 @@ import { withBase } from "../lib/url";
         Témoins de navigation
       </h2>
       <p id="temoins-texte" class="mt-1.5 text-[14.5px] leading-relaxed text-cfrq-ink/70">
-        Nous aimerions déposer des témoins de mesure d'audience pour comprendre comment le site est
-        utilisé et l'améliorer. Ils ne sont pas nécessaires au fonctionnement du site, et vous pouvez
-        refuser sans rien perdre. Détails dans notre
+        Nous aimerions déposer des témoins de Google pour mesurer l'audience du site et pour la
+        publicité : savoir comment le site est utilisé, et mesurer et adapter nos annonces. Ils ne
+        sont pas nécessaires au fonctionnement du site, et vous pouvez refuser sans rien perdre.
+        Détails dans notre
         <a
           href={withBase("/politique-de-confidentialite-et-sur-les-cookies/")}
           class="font-medium text-cfrq-leaf underline underline-offset-2">politique de confidentialité</a
