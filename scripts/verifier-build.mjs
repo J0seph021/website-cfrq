@@ -264,9 +264,18 @@ if (EST_PRODUCTION && ID_MESURE === '') {
   }
 }
 
+// Pages volontairement SANS mesure d'audience (Base.astro, mesure={false}) : leur adresse
+// porte des renseignements personnels (page de désabonnement : courriel encodé). On y
+// vérifie l'inverse : aucune balise de mesure.
+const SANS_MESURE = new Set(['/desabonnement/']);
+
 if (EST_PRODUCTION && ID_MESURE !== '') {
   for (const [url, html] of pages) {
     if (/http-equiv=["']?refresh/i.test(html)) continue; // redirections : pas de mesure
+    if (SANS_MESURE.has(url)) {
+      if (html.includes(ID_MESURE)) echec(`${url} doit rester sans mesure d'audience, or la balise ${ID_MESURE} y est.`);
+      continue;
+    }
 
     if (!html.includes(ID_MESURE)) {
       echec(`Balise de mesure ${ID_MESURE} absente de ${url}.`);

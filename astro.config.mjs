@@ -37,6 +37,7 @@ const horsSitemap = [
   /\/private-page\//,
   /\/service-aux-entrepreneurs-en-travaux-sylvicoles\//,
   /\/espace-client\/.+/,
+  /\/desabonnement\//, // page en noindex, atteinte seulement par les liens de nos courriels
   ...(publierEspaceClient ? [] : [/\/espace-client\/$/]),
 ];
 

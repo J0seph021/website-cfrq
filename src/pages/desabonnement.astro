@@ -1,0 +1,128 @@
+---
+// Désabonnement de nos offres par courriel (loi anti-pourriel, art. 11 ; Loi 25, art. 22).
+//
+// Les courriels d'offre (aperçu des relevés, relance du calculateur de taxes) mènent ici
+// avec ?c=<courriel en base64url>&s=<signature>&src=<provenance>. La personne CONFIRME
+// d'un clic : les filtres de sécurité des courriels ouvrent les liens tout seuls, et un
+// lien qui désabonnerait au premier chargement désabonnerait des clients à leur insu.
+// Le clic appelle la fonction `desabonnement` du projet Supabase de vente, qui vérifie
+// la signature et inscrit le refus dans portrait.desabonnements.
+//
+// Aucune mesure d'audience ici (mesure={false}) : l'adresse porte un courriel encodé.
+import Base from "../layouts/Base.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { site } from "../data/site";
+
+const FONCTION = "https://sfzcslpbysabsiszcpqm.supabase.co/functions/v1/desabonnement";
+---
+
+<Base
+  title="Désabonnement | CFRQ"
+  description="Ne plus recevoir les offres de CFRQ par courriel : confirmez votre désabonnement en un clic."
+  canonical="/desabonnement/"
+  robots="noindex, nofollow"
+  mesure={false}
+>
+  <Header />
+  <main id="contenu">
+    <section style="background:linear-gradient(160deg,#EAF4E0,#F7F5EE 60%)">
+      <div class="mx-auto max-w-[720px] px-[22px] pb-14 pt-16">
+        <p class="text-[12.5px] font-semibold uppercase tracking-[0.2em] text-cfrq-leaf">Courriels</p>
+        <h1 class="mt-3.5 font-display font-medium text-cfrq-deep text-[clamp(32px,5vw,46px)] leading-[1.06] tracking-[-0.02em] text-balance">
+          Ne plus recevoir nos offres
+        </h1>
+
+        <div id="desabo-confirmer" class="mt-6 hidden">
+          <p class="text-[17px] leading-[1.6] text-cfrq-ink/80">
+            Vous ne recevrez plus nos offres par courriel à l'adresse
+            <strong id="desabo-courriel" class="text-cfrq-deep"></strong>. Vous continuerez de
+            recevoir les messages liés à vos dossiers et à vos achats.
+          </p>
+          <button
+            id="desabo-bouton"
+            type="button"
+            class="mt-6 rounded-[10px] border border-cfrq-green bg-cfrq-green px-7 py-3.5 text-[16px] font-semibold text-[#123005] transition-colors hover:bg-cfrq-green-hover disabled:opacity-60"
+          >
+            Confirmer mon désabonnement
+          </button>
+        </div>
+
+        <p id="desabo-fait" class="mt-6 hidden text-[17px] leading-[1.6] text-cfrq-ink/80" role="status">
+          C'est fait : vous ne recevrez plus nos offres par courriel. Merci de nous l'avoir dit.
+        </p>
+
+        <p id="desabo-autre" class="mt-6 text-[17px] leading-[1.6] text-cfrq-ink/80">
+          Pour ne plus recevoir nos offres par courriel, écrivez-nous à
+          <a href={`mailto:${site.courriel}?subject=D%C3%A9sabonnement%20des%20offres`} class="font-medium text-cfrq-leaf underline underline-offset-2">{site.courriel}</a>
+          ou appelez-nous au <a href={site.telHref} class="font-medium text-cfrq-leaf">{site.tel}</a> :
+          nous traiterons votre demande.
+        </p>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Base>
+
+<script is:inline define:vars={{ FONCTION }}>
+  (function () {
+    var p = new URLSearchParams(location.search);
+    var c = p.get("c") || "";
+    var s = p.get("s") || "";
+    var src = p.get("src") || "";
+    var autre = document.getElementById("desabo-autre");
+    if (!c || !s) return; // lien incomplet : on garde le message « écrivez-nous »
+
+    var courriel = "";
+    try {
+      var b64 = c.replace(/-/g, "+").replace(/_/g, "/");
+      var bin = atob(b64 + "===".slice((b64.length + 3) % 4));
+      courriel = decodeURIComponent(
+        Array.prototype.map
+          .call(bin, function (ch) {
+            return "%" + ("0" + ch.charCodeAt(0).toString(16)).slice(-2);
+          })
+          .join(""),
+      );
+    } catch (e) {
+      return;
+    }
+
+    var bloc = document.getElementById("desabo-confirmer");
+    var bouton = document.getElementById("desabo-bouton");
+    var fait = document.getElementById("desabo-fait");
+    document.getElementById("desabo-courriel").textContent = courriel;
+    bloc.classList.remove("hidden");
+    autre.classList.add("hidden");
+
+    bouton.addEventListener("click", function () {
+      bouton.disabled = true;
+      bouton.textContent = "Un instant…";
+      fetch(FONCTION, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ c: c, s: s, src: src }),
+      })
+        .then(function (r) {
+          return r.json().catch(function () {
+            return { ok: false };
+          });
+        })
+        .then(function (rep) {
+          if (rep && rep.ok) {
+            bloc.classList.add("hidden");
+            fait.classList.remove("hidden");
+            // Retirer le courriel encodé de l'adresse (historique, partage de l'onglet).
+            history.replaceState(null, "", location.pathname);
+          } else {
+            bloc.classList.add("hidden");
+            autre.classList.remove("hidden");
+          }
+        })
+        .catch(function () {
+          bloc.classList.add("hidden");
+          autre.classList.remove("hidden");
+        });
+    });
+  })();
+</script>

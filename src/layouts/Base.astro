@@ -16,6 +16,9 @@ interface Props {
   robots?: string;
   /** Image Open Graph (chemin absolu ou relatif au site). Par défaut : og-cfrq.jpg. */
   ogImage?: string;
+  /** false : aucune mesure d'audience sur cette page (ex. page de désabonnement, dont
+   *  l'adresse porte un courriel encodé). Par défaut : selon l'environnement. */
+  mesure?: boolean;
 }
 
 const {
@@ -27,6 +30,7 @@ const {
   // iMessage et Slack. Sans elle, ces réseaux affichent un rectangle gris à la
   // place du lien. Régénérable : node scripts/generer-og-image.mjs
   ogImage = "/og-cfrq.jpg",
+  mesure = true,
 } = Astro.props;
 
 // URL canonique absolue à partir de Astro.site (configuré dans astro.config.mjs).
@@ -41,7 +45,7 @@ const ogImageUrl = ogImage ? new URL(ogImage, siteOrigin).href : undefined;
 const production = estProduction(siteOrigin);
 const robotsFinal = robots ?? (production ? undefined : "noindex, follow");
 
-const mesureActive = analytiqueActive(siteOrigin);
+const mesureActive = mesure && analytiqueActive(siteOrigin);
 ---
 
 <!doctype html>

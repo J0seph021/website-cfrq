@@ -38,6 +38,7 @@ const M365_CLIENT_ID = Deno.env.get("M365_CLIENT_ID") || "";
 const M365_CLIENT_SECRET = Deno.env.get("M365_CLIENT_SECRET") || "";
 const M365_SENDER = Deno.env.get("M365_SENDER") || "cfrq@cfrq.ca";
 const LEADS_NOTIFY = Deno.env.get("LEADS_NOTIFY_EMAIL") || M365_SENDER;
+const IP_HASH_SEL = Deno.env.get("IP_HASH_SEL") || "";
 const LOGO = "https://bpxzznykbikbqbvraqxj.supabase.co/storage/v1/object/public/medias-publics/logo-courriel.png";
 
 // --- Turnstile (Cloudflare) --------------------------------------------------
@@ -165,7 +166,44 @@ const SIGN =
     "<div>367 777-0555&nbsp;·&nbsp;<a href='mailto:cfrq@cfrq.ca' style='color:#4BA31F;text-decoration:none;'>cfrq@cfrq.ca</a>&nbsp;·&nbsp;<a href='https://www.cfrq.ca' style='color:#4BA31F;text-decoration:none;'>www.cfrq.ca</a></div>" +
     "</td></tr></table>";
 
-function coquille(eyebrow: string, titre: string, corps: string): string {
+// --- Désabonnement (loi anti-pourriel, art. 6 et 11 ; Loi 25, art. 22) ------------
+// La relance du calculateur est un message commercial : elle doit identifier CFRQ
+// (raison sociale ET adresse postale) et offrir un désabonnement qui fonctionne. Le
+// lien mène à la page cfrq.ca/desabonnement/, où la personne confirme d'un clic (les
+// filtres de sécurité des courriels ouvrent les liens tout seuls) ; la fonction
+// `desabonnement` du projet de vente vérifie la signature et inscrit le refus dans
+// portrait.desabonnements. La signature (HMAC du courriel avec DESABO_SECRET, le même
+// secret que web/courriel.py du dépôt des relevés) empêche de désabonner quelqu'un
+// d'autre. Sans secret configuré : courriel prérempli à cfrq@cfrq.ca, jamais un lien mort.
+const DESABO_SECRET = Deno.env.get("DESABO_SECRET") || "";
+const PAGE_DESABONNEMENT = "https://cfrq.ca/desabonnement/";
+const ADRESSE_POSTALE =
+  "6021, boul. Wilfrid-Hamel, bureau 200, L'Ancienne-Lorette (Québec) G2E 2H3";
+
+function base64Url(texte: string): string {
+  let bin = "";
+  for (const b of new TextEncoder().encode(texte)) bin += String.fromCharCode(b);
+  return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+async function hmacHex(secret: string, message: string): Promise<string> {
+  const cle = await crypto.subtle.importKey("raw", new TextEncoder().encode(secret),
+    { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  const sig = await crypto.subtle.sign("HMAC", cle, new TextEncoder().encode(message));
+  return [...new Uint8Array(sig)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+async function lienDesabonnement(courriel: string, source: string): Promise<string> {
+  const c = courriel.trim().toLowerCase();
+  if (!DESABO_SECRET) {
+    return "mailto:cfrq@cfrq.ca?subject=" + encodeURIComponent("Désabonnement des offres") +
+      "&body=" + encodeURIComponent("Veuillez ne plus m'envoyer vos offres par courriel.");
+  }
+  const s = (await hmacHex(DESABO_SECRET, c)).slice(0, 32);
+  return PAGE_DESABONNEMENT + "?c=" + base64Url(c) + "&s=" + s + "&src=" + encodeURIComponent(source);
+}
+
+function coquille(eyebrow: string, titre: string, corps: string, pied = ""): string {
   return "<table role='presentation' width='100%' cellpadding='0' cellspacing='0' border='0' style='background-color:#f4f5f2;margin:0;padding:28px 12px;'><tr><td align='center'>" +
     "<table role='presentation' width='580' cellpadding='0' cellspacing='0' border='0' style='width:580px;max-width:100%;background-color:#ffffff;border:1px solid #e6e8e3;border-radius:14px;overflow:hidden;'>" +
     "<tr><td style='background-color:#5ABD2A;height:4px;line-height:4px;font-size:0;'>&nbsp;</td></tr>" +
@@ -175,7 +213,7 @@ function coquille(eyebrow: string, titre: string, corps: string): string {
       "<h1 style='font-family:Arial,Helvetica,sans-serif;font-size:23px;line-height:1.28;color:#141414;margin:7px 0 2px;'>" + titre + "</h1>" +
     "</td></tr>" +
     "<tr><td style='padding:12px 38px 4px;'>" + corps + "</td></tr>" +
-    "<tr><td style='padding:4px 38px 30px;'>" + SIGN + "</td></tr>" +
+    "<tr><td style='padding:4px 38px 30px;'>" + SIGN + pied + "</td></tr>" +
     "</table></td></tr></table>";
 }
 
@@ -197,9 +235,14 @@ function geste(nom: string, desc: string): string {
     "</tr>";
 }
 
-function htmlRelance(l: Lead): string {
+function htmlRelance(l: Lead, desabo: string): string {
   const para = (t: string) => "<p style='" + P + "'>" + t + "</p>";
   const foot = (t: string) => "<p style='" + FOOT + "'>" + t + "</p>";
+  const pied = "<p style='font-family:Arial,Helvetica,sans-serif;font-size:11.5px;line-height:1.55;color:#7A807A;margin:12px 0 0;'>" +
+    "Conseillers Forestiers de la Région de Québec inc., " + ADRESSE_POSTALE + ". " +
+    "Vous recevez ce courriel parce que vous avez utilisé notre calculateur de taxes. " +
+    "Vous pouvez en tout temps retirer votre consentement à recevoir nos offres : " +
+    "<a href='" + desabo + "' style='color:#4BA31F;'>se désabonner</a>.</p>";
 
   const gestes = "<table role='presentation' cellpadding='0' cellspacing='0' border='0' style='margin:2px 0 10px;'>" +
     geste("Une éclaircie", "on donne de l'espace aux plus beaux arbres, qui poussent mieux et prennent de la valeur") +
@@ -234,7 +277,8 @@ function htmlRelance(l: Lead): string {
     para("La reconnaissance de producteur, les demandes de subvention, l'admissibilité, la paperasse des programmes : c'est nous qui nous en occupons. Vous, vous profitez de votre boisé.") +
     para("La suite ne vous engage à rien : un de nos ingénieurs forestiers ou techniciens forestiers vient marcher votre boisé avec vous. On regarde vos arbres, on repère les possibilités, et on vous remet un portrait clair et chiffré de ce que votre forêt peut devenir, subventions et remboursement de taxes compris.") +
     bouton +
-    foot("Un propriétaire sur deux consulte un ingénieur forestier avant de décider quoi que ce soit sur son boisé. Depuis 1996, plus de 3000 nous ont fait confiance pour le leur. Au plaisir de marcher le vôtre."));
+    foot("Un propriétaire sur deux consulte un ingénieur forestier avant de décider quoi que ce soit sur son boisé. Depuis 1996, plus de 3000 nous ont fait confiance pour le leur. Au plaisir de marcher le vôtre."),
+    pied);
 }
 
 function htmlNotif(l: Lead): string {
@@ -261,7 +305,11 @@ function htmlNotif(l: Lead): string {
 async function envoyerCourriels(l: Lead): Promise<void> {
   if (!M365_TENANT || !M365_CLIENT_ID || !M365_CLIENT_SECRET) return;
   const access = await graphToken();
-  await envoyer(access, l.courriel, "Votre estimation, et ce que votre boisé pourrait devenir", htmlRelance(l)).catch((e) => console.error("relance:", (e as Error).message));
+  // Un lien de désabonnement qui ne se fabrique pas ne doit jamais faire échouer
+  // l'envoi : on retombe sur le courriel prérempli.
+  const desabo = await lienDesabonnement(l.courriel, "calculateur-taxes").catch(() =>
+    "mailto:cfrq@cfrq.ca?subject=" + encodeURIComponent("Désabonnement des offres"));
+  await envoyer(access, l.courriel, "Votre estimation, et ce que votre boisé pourrait devenir", htmlRelance(l, desabo)).catch((e) => console.error("relance:", (e as Error).message));
   await envoyer(access, LEADS_NOTIFY, "Nouveau lead calculateur : " + l.courriel, htmlNotif(l)).catch((e) => console.error("notif:", (e as Error).message));
 }
 
@@ -569,10 +617,20 @@ Deno.serve(async (req) => {
   const referrer = req.headers.get("referer")?.slice(0, 500) ?? null;
   const userAgent = req.headers.get("user-agent")?.slice(0, 500) ?? null;
 
+  // Empreinte de l'IP (limite d'envois, anti-pourriel) : HMAC avec une clé SECRÈTE
+  // (IP_HASH_SEL), jamais un sel écrit ici. Ce dépôt est public : avec un sel connu, on
+  // retrouve n'importe quelle adresse IPv4 en essayant les quatre milliards possibles.
+  // Sans clé configurée, on garde l'ancien calcul pour ne pas casser la limite d'envois,
+  // et on le signale dans les journaux de la fonction.
   let ipHash: string | null = null;
   if (ip) {
-    const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(ip + "|cfrq-leads-web"));
-    ipHash = [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 32);
+    if (IP_HASH_SEL) {
+      ipHash = (await hmacHex(IP_HASH_SEL, ip)).slice(0, 32);
+    } else {
+      console.warn("IP_HASH_SEL absent : empreinte d'IP avec l'ancien sel public");
+      const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(ip + "|cfrq-leads-web"));
+      ipHash = [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 32);
+    }
   }
 
   // Formulaires visite-conseil / plants -> table de suivi generique (capter_prospect_web).
