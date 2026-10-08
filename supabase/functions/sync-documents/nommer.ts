@@ -17,7 +17,7 @@
  */
 
 export interface DocANommer {
-  /** Code du centre documentaire : prs, rap, paf ou rtf. */
+  /** Code du centre documentaire : prs, rap, paf, rtf ou exp (plan d'érablière). */
   code: string;
   /** Nom du fichier (original ou tel que rangé dans le stockage). */
   fichier: string;
@@ -89,6 +89,12 @@ function nomDeBase(doc: DocANommer): string {
     return date ? `Rapport d'exécution, ${date}` : avecAnnee("Rapport d'exécution", annee);
   }
   if (code === "rtf") return avecAnnee("Rapport de taxes foncières", annee);
+  // Plan d'érablière (PPAQ) ; l'annexe 2, les instructions et la page de signature
+  // sont classées avec lui mais ne sont pas le plan.
+  if (code === "exp") {
+    const annexe = /annexe|inst|sign/i.test(doc.fichier);
+    return avecAnnee(annexe ? "Annexe du plan d'érablière" : "Plan d'érablière", annee);
+  }
   return avecAnnee("Plan d'aménagement forestier", annee);
 }
 

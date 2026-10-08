@@ -1,6 +1,7 @@
 /**
  * Edge Function `sync-documents` — couche 2. Logique de copie identique à
  * scripts/copy-documents.mjs (prs/rap/paf, dest {id}/{prescriptions|rapports|plans}/,
+ * + rtf -> taxes/, + exp -> erablieres/ : plans d'érablière rattachés par le PPAQ, v18),
  * safeName, upsert onConflict storage_path). Bornée par lot, filigrane dans public.sync_state.
  *
  * Curseur KEYSET (maj_le, producteur_id). PRÉCISION : maj_le a une précision microseconde ;
@@ -42,13 +43,14 @@ const {
   TIME_BUDGET_MS = "25000",
 } = Deno.env.toObject();
 
-const TYPES = ["prs", "rap", "paf", "rtf"];
+const TYPES = ["prs", "rap", "paf", "rtf", "exp"];
 
 const META: Record<string, { type: string; dossier: string }> = {
   prs: { type: "prescription", dossier: "prescriptions" },
   rap: { type: "rapport", dossier: "rapports" },
   paf: { type: "paf", dossier: "plans" },
   rtf: { type: "rtf", dossier: "taxes" },
+  exp: { type: "erabliere", dossier: "erablieres" },
 };
 const TYPES_PORTAIL = Object.values(META).map((m) => m.type);
 
@@ -61,16 +63,40 @@ const MAX_RETRAITS = 200;
 const MAX_REPRISES = 10;
 const MAX_TENTATIVES = 3;
 
+/**
+ * La source, avec le producteur EFFECTIF de chaque document.
+ * Plan d'érablière (exp, 2026-10-07) : le client est la fiche PlaniLogix qui porte le
+ * numéro PPAQ inscrit au centre doc (« PPAQ 20825 » dans la case N° producteur), et
+ * rien d'autre. On le calcule ici plutôt que de lire centre_doc_fichier.producteur_id :
+ * les versions de PlaniLogix d'avant le 2026-10-07 re-résolvent toutes les lignes avec
+ * l'ancienne règle (filet par le nom), et un homonyme recevrait le plan d'un autre.
+ * Même clé que l'index unique producteur_no_ppaq_unique (migration 106 de PlaniLogix) ;
+ * min() plutôt qu'une sous-requête scalaire : jamais d'erreur « plus d'une ligne ».
+ */
+const SOURCE = `(
+SELECT c.storage_key, c.nom_fichier, c.sp_type_code, c.no_prescription, c.taille_octets,
+       c.sp_annee, c.statut, c.maj_le,
+       CASE WHEN c.sp_type_code = 'exp' THEN (
+         SELECT min(p.id) FROM planilogix.producteur p
+         WHERE p.no_ppaq IS NOT NULL
+           AND ltrim(upper(regexp_replace(p.no_ppaq, '[^0-9A-Za-z]', '', 'g')), '0') <> ''
+           AND ltrim(upper(regexp_replace(p.no_ppaq, '[^0-9A-Za-z]', '', 'g')), '0') =
+               ltrim(upper(regexp_replace(
+                 substring(c.sp_producteur_num FROM '^[[:space:]]*[Pp][Pp][Aa][Qq][[:space:]]*[-:#]?[[:space:]]*(.+)$'),
+                 '[^0-9A-Za-z]', '', 'g')), '0')
+       ) ELSE c.producteur_id END AS producteur_id
+FROM planilogix.centre_doc_fichier c) src`;
+
 const SQL_DOCS = `
 SELECT storage_key, nom_fichier, sp_type_code, no_prescription, taille_octets, sp_annee
-FROM planilogix.centre_doc_fichier
+FROM ${SOURCE}
 WHERE producteur_id = $1 AND statut = 'uploaded' AND sp_type_code = ANY($2)
 ORDER BY sp_type_code, no_prescription NULLS LAST, nom_fichier`;
 
 // pmax en TEXTE pour garder la précision microseconde (voir en-tête).
 const SQL_BATCH = `
 SELECT producteur_id, max(maj_le)::text AS pmax
-FROM planilogix.centre_doc_fichier
+FROM ${SOURCE}
 WHERE producteur_id IS NOT NULL AND statut = 'uploaded' AND sp_type_code = ANY($1)
 GROUP BY producteur_id
 HAVING max(maj_le) > $2::timestamptz
@@ -81,7 +107,7 @@ LIMIT $4`;
 // Tous les documents de la source, rattachés ou non (le rapprochement a besoin des deux).
 const SQL_SOURCE = `
 SELECT producteur_id, sp_type_code, nom_fichier
-FROM planilogix.centre_doc_fichier
+FROM ${SOURCE}
 WHERE statut = 'uploaded' AND sp_type_code = ANY($1)`;
 
 function safeName(name: string) {

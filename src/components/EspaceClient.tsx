@@ -426,6 +426,7 @@ function titreGenerique(doc: Row): string {
   if (doc.type_document === "prescription") return "Prescription sylvicole";
   if (doc.type_document === "rapport") return "Rapport d'exécution";
   if (doc.type_document === "rtf") return "Rapport de taxes foncières";
+  if (doc.type_document === "erabliere") return "Plan d'érablière";
   return "Plan d'aménagement forestier";
 }
 
@@ -732,12 +733,22 @@ export function DashboardView({
   const docsHorsPaf = useMemo(
     () =>
       d.documents
-        .filter((x) => x.type_document !== "paf" && x.type_document !== "rtf")
+        .filter((x) => x.type_document !== "paf" && x.type_document !== "rtf" && x.type_document !== "erabliere")
         .sort(
           (a, b) =>
             (anneeDoc(b) ?? "").localeCompare(anneeDoc(a) ?? "") ||
             String(a.reference ?? "").localeCompare(String(b.reference ?? ""))
         ),
+    [d.documents]
+  );
+
+  // Plans d'érablière (PPAQ) : catégorie à part, du plus récent au plus ancien. Ils sont
+  // rattachés au dossier par le numéro PPAQ inscrit sur la fiche du client, jamais par le nom.
+  const erablDocs = useMemo(
+    () =>
+      d.documents
+        .filter((x) => x.type_document === "erabliere")
+        .sort((a, b) => (anneeDoc(b) ?? "").localeCompare(anneeDoc(a) ?? "")),
     [d.documents]
   );
 
@@ -1226,6 +1237,8 @@ export function DashboardView({
                     );
                   })}
                 </ul>
+              ) : erablDocs.length > 0 ? (
+                <p className="text-[15px] text-black/60">Vos prescriptions et rapports forestiers apparaîtront ici.</p>
               ) : (
                 <p className="text-[15px] text-black/60">Vos plans et rapports apparaîtront ici.</p>
               )}
@@ -1236,6 +1249,41 @@ export function DashboardView({
                 {docsOuvert ? "Voir moins" : `Voir les ${docsHorsPaf.length - LIMITE_DOCS} autres documents`}
                 <span aria-hidden className={`transition-transform ${docsOuvert ? "rotate-180" : ""}`}>⌄</span>
               </button>
+            )}
+
+            {/* Plans d'érablière : catégorie à part, tous affichés (rarement plus de
+                quelques-uns par client). */}
+            {erablDocs.length > 0 && (
+              <>
+                <div className="mt-8 flex flex-wrap items-end justify-between gap-2">
+                  <h3 className="font-display text-lg font-medium text-cfrq-deep">Vos plans d'érablière</h3>
+                  <span className="text-[13px] text-black/50">{erablDocs.length} au total</span>
+                </div>
+                <p className="mt-1 text-[14.5px] text-black/55">Les plans d'érablière signés par nos ingénieurs forestiers selon les exigences des Producteurs et productrices acéricoles du Québec, avec leurs annexes.</p>
+                <div className="mt-4 rounded-2xl border border-black/5 bg-white p-6">
+                  <ul className="divide-y divide-black/5">
+                    {erablDocs.map((doc) => {
+                      const { titre, date: annee } = titreEtDate(doc);
+                      return (
+                        <li key={doc.id}>
+                          <button onClick={() => ouvrirDoc(doc.storage_path)} disabled={!doc.storage_path}
+                            className="flex w-full items-center justify-between gap-3 py-3 text-left text-[15px] disabled:cursor-default">
+                            <span className="flex items-center gap-2">
+                              {doc.storage_path && <span aria-hidden>📄</span>}
+                              <span className={`font-medium text-cfrq-deep ${doc.storage_path ? "hover:underline" : ""}`}>{titre}</span>
+                            </span>
+                            {annee ? (
+                              <span className="shrink-0 rounded-full bg-cfrq-tint px-3 py-1 text-[13px] font-medium text-cfrq-leaf">{annee}</span>
+                            ) : (
+                              <span className="shrink-0 text-[13px] text-black/50">{doc.taille ?? doc.date_document}</span>
+                            )}
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              </>
             )}
 
             {/* Rapports de remboursement de taxes foncières : catégorie à part (un
