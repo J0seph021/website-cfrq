@@ -202,8 +202,17 @@ if (essai) {
 }
 
 const sb = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } });
-const { data: portail, error } = await sb.from("producteurs").select("id").lt("id", 900000).limit(10000);
-if (error) throw error;
+// Page par page : l'API du portail rend au plus 1 000 lignes par lecture, et
+// `.limit(10000)` n'y change rien. Le 2026-10-08, le portail comptait 1 730
+// dossiers et le script n'en voyait que 1 000 (les autres restaient sans salutation).
+const portail = [];
+for (let de = 0; ; de += 1000) {
+  const { data, error } = await sb.from("producteurs").select("id").lt("id", 900000)
+    .order("id").range(de, de + 999);
+  if (error) throw error;
+  portail.push(...data);
+  if (data.length < 1000) break;
+}
 const auPortail = new Set(portail.map((p) => p.id));
 
 const resultats = [];
