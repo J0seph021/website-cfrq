@@ -50,9 +50,20 @@ const PORTRAIT = {
   ],
 };
 
+// Offre de lancement (JM, 2026-10-07) : l'édition imprimée du relevé complet est incluse,
+// sans frais, pour toute commande passée au plus tard le 31 mars 2027 ; la date fait foi
+// dans demander_impression (base de vente). Ensuite, l'édition imprimée devient une
+// option à 49 $. Code de déontologie des ingénieurs forestiers, art. 59 d) : une offre
+// publiée reste en vigueur 60 jours après sa dernière publication. La mention disparaît
+// donc d'elle-même après le 30 janvier 2027, et l'offre reste honorée jusqu'au 31 mars.
+// Une seule mention, sans compte à rebours (art. 50 a) : pas d'incitation pressante).
+const OFFRE_IMPRIMEE_AFFICHEE = Date.now() < Date.parse("2027-01-31T00:00:00-05:00");
+
 // Liens de paiement Stripe (MODE TEST / bac à sable). Le token à usage unique du
 // client est ajouté en client_reference_id pour que le webhook associe l'achat au
 // bon dossier. Pour le lancement: recréer ces liens en LIVE et remplacer ces URLs.
+// Le lien du complet demande l'adresse de livraison (Canada) pour l'édition imprimée :
+// le refaire en LIVE avec la même option.
 const PAYMENT_LINKS: Record<string, string> = {
   complet:      "https://buy.stripe.com/test_dRm3cueyEe428pO3oifnO07",
   bois:         "https://buy.stripe.com/test_14A6oG0HO7FE21q2kefnO01",
@@ -1409,6 +1420,12 @@ export function DashboardView({
                 </div>
                 <div className="mt-1 font-display text-3xl font-medium text-cfrq-deep">{cad(PORTRAIT.complet.prix)}</div>
                 <p className="mt-2 text-[14px] leading-relaxed text-black/60">{PORTRAIT.complet.desc}</p>
+                {OFFRE_IMPRIMEE_AFFICHEE && !acheteParTheme.get("complet") && !toutAchete && (
+                  <div className="mt-3 rounded-lg bg-cfrq-tint px-3.5 py-3 text-[13.5px] leading-relaxed text-cfrq-deep">
+                    <strong className="font-medium">Offre de lancement :</strong> l'édition imprimée de votre relevé complet est incluse, sans frais. Nous l'imprimons en format livre, couverture couleur, et vous l'envoyons par la poste : l'impression et la livraison sont comprises dans les {cad(PORTRAIT.complet.prix)}. C'est une aubaine réservée au lancement : pour toute commande passée après le 31 mars 2027, l'édition imprimée sera offerte en option, à 49 $.
+                    <span className="mt-1.5 block text-[12.5px] text-cfrq-ink/60">Offre valable pour toute commande du relevé complet passée au plus tard le 31 mars 2027, livrée au Canada. Livraison en trois semaines à un mois.</span>
+                  </div>
+                )}
                 {acheteParTheme.get("complet") ? (
                   <button onClick={() => telecharger("complet")}
                     className="mt-4 inline-flex items-center justify-center gap-2 rounded-lg bg-cfrq-green px-5 py-3 text-[15px] font-medium text-[#123005] transition-colors hover:bg-cfrq-green-hover">
