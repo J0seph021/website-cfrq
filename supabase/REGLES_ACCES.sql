@@ -20,6 +20,13 @@
 -- passent par proprietes_visibles(), calculée une fois par requête
 -- (migrations/20261001152000_lots_paf_rls_une_evaluation.sql).
 --
+-- Mis à jour le 2026-10-09 : un compte dont le courriel CONFIRMÉ est celui d'un ou
+-- de plusieurs dossiers dans PlaniLogix en est titulaire d'office, sans approbation
+-- (est_titulaire, portail_dossiers_courriel). Le portail ne garde que l'empreinte
+-- SHA-256 des courriels (producteurs_courriels, rechargée par sync-courriels toutes
+-- les 15 min) ; un courriel retiré de PlaniLogix referme l'accès au passage suivant.
+-- Voir migrations/20261009160000_liaison_par_courriel.sql.
+--
 -- Pour vérifier que rien n'a bougé :
 --   select schemaname, tablename, policyname, roles, cmd, qual
 --   from pg_policies where schemaname in ('public','storage','portrait');

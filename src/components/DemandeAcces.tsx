@@ -1,8 +1,11 @@
 // Compte créé mais pas encore relié à un dossier : le client dit qui il est, un
 // employé de CFRQ relie son compte au bon dossier (vue employé, « Demandes d'accès »).
-// Jamais de liaison automatique : quiconque peut prétendre être le propriétaire d'un
-// boisé ; seule une personne de CFRQ tranche. La demande part par
-// portail_demander_acces, puis notifier-acces avise cfrq@cfrq.ca.
+// Un compte dont le courriel confirmé est celui du dossier dans PlaniLogix n'arrive
+// jamais ici : il est titulaire d'office (migration 20261009160000_liaison_par_courriel).
+// Ce qui arrive ici, c'est une adresse que CFRQ n'a pas au dossier : aucune liaison
+// automatique sur la foi d'un nom ou d'un lot, que n'importe qui peut écrire ; une
+// personne de CFRQ tranche. La demande part par portail_demander_acces, puis
+// notifier-acces avise cfrq@cfrq.ca.
 import { useEffect, useState, type ChangeEvent } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { withBase } from "../lib/url";
@@ -140,9 +143,13 @@ export default function CompteNonRelie({ courriel, onDeconnexion }: { courriel: 
           Il reste à relier votre espace à votre dossier forestier
         </h1>
         <p className="mt-4 text-[16px] leading-relaxed text-cfrq-ink/70">
-          Votre compte {courriel ? <strong className="font-semibold text-cfrq-deep">{courriel}</strong> : "est bien créé"} fonctionne.
-          Dites-nous qui vous êtes : un membre de notre équipe vérifie et relie votre compte au dossier de votre boisé,
-          pour être certain de vous donner le bon.
+          Votre compte {courriel ? <strong className="font-semibold text-cfrq-deep">{courriel}</strong> : "est bien créé"} fonctionne,
+          mais nous ne trouvons pas cette adresse dans nos dossiers.
+        </p>
+        <p className="mt-3 text-[16px] leading-relaxed text-cfrq-ink/70">
+          Vous nous avez déjà donné une autre adresse ? Déconnectez-vous et créez votre espace avec celle-là :
+          votre dossier s'ouvrira dès que vous l'aurez confirmée. Sinon, dites-nous qui vous êtes : un membre de
+          notre équipe vérifie et relie votre compte au dossier de votre boisé.
         </p>
 
         {chargement ? (

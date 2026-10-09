@@ -871,8 +871,9 @@ export function DashboardView({
       </div>
 
       <div className="mx-auto max-w-6xl px-5 py-8">
-        {/* Plusieurs dossiers ouverts (le sien et un dossier partagé, ou deux dossiers
-            partagés) : on choisit celui qu'on regarde. Le choix est gardé en base. */}
+        {/* Plusieurs dossiers ouverts (plusieurs compagnies ou propriétés au même
+            courriel, le sien et un dossier partagé, ou deux dossiers partagés) : on
+            choisit celui qu'on regarde. Le choix est gardé en base. */}
         {!vueEmploye && dossiers.length > 1 && (
           <label className="mb-5 flex flex-wrap items-center gap-2 text-[14px] text-cfrq-ink/65">
             Dossier affiché
@@ -1603,8 +1604,10 @@ function ParcoursBar({ pourcentage }: { pourcentage: number }) {
 /**
  * Compte créé mais pas encore rattaché à un dossier producteur.
  *
- * L'inscription est ouverte à tous, mais le lien compte <-> dossier se pose à la main
- * (portal_users). Entre les deux, current_producteur_id() vaut null et la RLS ne rend
+ * L'inscription est ouverte à tous. Un compte dont le courriel confirmé est celui du
+ * dossier dans PlaniLogix l'ouvre d'office (tous ses dossiers, s'il en a plusieurs) ;
+ * sinon le lien compte <-> dossier se pose à la main (portal_users). Entre les deux,
+ * current_producteur_id() vaut null et la RLS ne rend
  * aucune ligne : sans cet écran, la personne voyait un tableau de bord entièrement vide
  * sans savoir si elle s'était trompée, si son dossier était perdu, ou quoi faire.
  */
