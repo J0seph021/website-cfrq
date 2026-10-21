@@ -124,6 +124,7 @@ ${FAQ.map((f) => `### ${f.question}\n\n${f.reponse}`).join("\n\n")}
 - Services : ${url("/services/")}
 - Territoire desservi : ${url("/territoire-desservi/")}
 - Ingénieur forestier par secteur : ${url("/ingenieur-forestier/")}
+- Comment choisir son conseiller forestier (groupement forestier, firme, coopérative ou syndicat; vérifier si CFRQ est actif dans sa municipalité) : ${url("/choisir-son-conseiller-forestier/")}
 - À propos de nous : ${url("/a-propos-de-nous/")}
 - Notre équipe : ${url("/notre-equipe/")}
 - Contact et demande de visite-conseil : ${url("/contact/")}

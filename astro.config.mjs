@@ -34,11 +34,10 @@ const publierEspaceClient = estProduction ? process.env.PUBLIER_ESPACE_CLIENT ==
 // jamais construites pour cfrq.ca. Une fusion de preview dans main ne peut donc
 // pas les mettre en ligne par accident. Pour en publier une : déplacer le
 // fichier dans src/pages/ (en corrigeant ses imports relatifs) et retirer sa
-// ligne ici.
-const brouillons = [
-  { pattern: '/choisir-son-conseiller-forestier', entrypoint: './src/routes-differees/brouillons/choisir-son-conseiller-forestier.astro' },
-  { pattern: '/groupement-forestier', entrypoint: './src/routes-differees/brouillons/groupement-forestier.astro' },
-];
+// ligne ici. Forme d'une entrée :
+//   { pattern: '/ma-page', entrypoint: './src/routes-differees/brouillons/ma-page.astro' }
+/** @type {{ pattern: string, entrypoint: string }[]} */
+const brouillons = [];
 
 /** Pages volontairement absentes du sitemap : redirections et pages noindex.
  *  De l'espace client, seule la présentation y figure, et seulement portail ouvert

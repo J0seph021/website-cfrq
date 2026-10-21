@@ -1,19 +1,19 @@
 ---
-import EnteteImage from "../../components/EnteteImage.astro";
-import Base from "../../layouts/Base.astro";
-import Header from "../../components/Header.astro";
-import Footer from "../../components/Footer.astro";
-import { site } from "../../data/site";
-import { withBase } from "../../lib/url";
-import { SITE_PRODUCTION } from "../../data/flags";
-import { liensSecteurs } from "../../lib/liensSecteurs";
-import VerifierSecteur from "../../components/VerifierSecteur";
-import peuplement from "../../assets/photos/peuplement.jpg";
+import EnteteImage from "../components/EnteteImage.astro";
+import Base from "../layouts/Base.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { site } from "../data/site";
+import { withBase } from "../lib/url";
+import { SITE_PRODUCTION } from "../data/flags";
+import { liensSecteurs } from "../lib/liensSecteurs";
+import VerifierSecteur from "../components/VerifierSecteur";
+import peuplement from "../assets/photos/peuplement.jpg";
 
-// Guide neutre pour choisir son conseiller forestier. Version douce de
-// /groupement-forestier/ : même but (répondre aux gens qui cherchent
-// « groupement forestier », que cfrq.ca affiche déjà sans clic), mais sur le ton
-// de l'expert qui renseigne. Les quatre types de conseillers accrédités sont
+// Guide neutre pour choisir son conseiller forestier. But : répondre aux gens
+// qui cherchent « groupement forestier », que cfrq.ca affiche déjà sans clic,
+// sur le ton de l'expert qui renseigne. Une version plus offensive, centrée sur
+// les groupements, a été écartée par Joseph le 2026-10-21 (risque de riposte). Les quatre types de conseillers accrédités sont
 // présentés à égalité, dans l'ordre du ministère, et CFRQ ne parle de lui qu'à
 // la fin.
 //
