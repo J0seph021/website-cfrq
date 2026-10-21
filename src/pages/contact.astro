@@ -86,6 +86,11 @@ const itineraire = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
                 <input id="c-muni" name="muni" type="text" required placeholder="Ex. Saint-Raymond" class={`mt-1.5 ${champ}`} />
               </div>
               <div class="sm:col-span-2">
+                <label for="c-lot" class={labelCls}>Numéro de lot <span class="font-normal text-cfrq-ink/50">(si vous le connaissez)</span></label>
+                <input id="c-lot" name="lot" type="text" maxlength="200" autocomplete="off" placeholder="Ex. 5 123 456" aria-describedby="c-lot-aide" class={`mt-1.5 ${champ}`} />
+                <p id="c-lot-aide" class="mt-1.5 text-[12.5px] text-cfrq-ink/50">Il figure sur votre compte de taxes municipales. S'il y en a plusieurs, séparez-les par une virgule.</p>
+              </div>
+              <div class="sm:col-span-2">
                 <label for="c-type" class={labelCls}>Votre besoin</label>
                 <select id="c-type" name="besoin" class={`mt-1.5 ${champ}`}>
                   {besoins.map((b) => <option value={b}>{b}</option>)}
@@ -194,6 +199,7 @@ const itineraire = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
         `Courriel : ${v("courriel")}`,
         `Téléphone : ${v("tel")}`,
         `Municipalité du boisé : ${v("muni")}`,
+        ...(v("lot") ? [`Numéro(s) de lot : ${v("lot")}`] : []),
         `Besoin : ${v("besoin")}`,
         "",
         "Message :",
@@ -206,6 +212,9 @@ const itineraire = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
     // Vrai si la capture a echoue : on bascule alors sur le brouillon courriel et
     // on ne doit PAS annoncer « bien envoyée ».
     let echec = false;
+    // Meme cle que les calculateurs : PlaniLogix l'affiche sans changement.
+    const details: Record<string, string> = { "Besoin": v("besoin") };
+    if (v("lot")) details["Numéro(s) de lot"] = v("lot");
     try {
       const res = await fetch(ENDPOINT, {
         method: "POST",
@@ -217,7 +226,7 @@ const itineraire = `https://www.google.com/maps/dir/?api=1&destination=${encodeU
           telephone: v("tel"),
           municipalite: v("muni"),
           message: v("message"),
-          details: { "Besoin": v("besoin") },
+          details,
           website: v("website"),
           turnstile: await garde.jeton(),
         }),
