@@ -8,6 +8,8 @@ import { site } from "../data/site";
 import { zonesDesservies } from "../data/territoires";
 import { withBase } from "../lib/url";
 import { SECTEURS } from "../data/secteurs";
+import { liensSecteurs } from "../lib/liensSecteurs";
+import VerifierSecteur from "../components/VerifierSecteur";
 import territoire from "../assets/photos/territoire.jpg";
 
 const regions = [
@@ -90,6 +92,20 @@ const eyebrow = "text-[12.5px] font-semibold uppercase tracking-[0.18em]";
             Prendre rendez-vous <span aria-hidden="true">→</span>
           </a>
         </div>
+      </div>
+    </section>
+
+    <!-- OUTIL : CFRQ EST-IL ACTIF CHEZ VOUS? -->
+    <section class="mx-auto max-w-[1160px] px-[22px] pb-5 pt-16">
+      <div class="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+        <div class="max-w-[520px]">
+          <p class={`${eyebrow} text-cfrq-leaf`}>Vérifier</p>
+          <h2 class="mt-3.5 font-display font-medium text-cfrq-deep text-[clamp(30px,4.5vw,42px)] leading-[1.05] tracking-[-0.015em] text-balance">CFRQ est-il actif chez vous?</h2>
+          <p class="mt-4 text-[17px] leading-[1.6] text-cfrq-ink/70">
+            Entrez votre municipalité : on vous dit si votre boisé est sur le territoire d'une des six agences régionales qui accréditent CFRQ.
+          </p>
+        </div>
+        <VerifierSecteur client:idle liens={liensSecteurs()} />
       </div>
     </section>
 

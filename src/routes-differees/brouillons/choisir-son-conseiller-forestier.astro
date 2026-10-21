@@ -6,9 +6,8 @@ import Footer from "../../components/Footer.astro";
 import { site } from "../../data/site";
 import { withBase } from "../../lib/url";
 import { SITE_PRODUCTION } from "../../data/flags";
-import { SECTEURS, ancre } from "../../data/secteurs";
-import { AGENCES_CFRQ, COUVERTURE, NOMS_AGENCES } from "../../data/couverture";
-import VerifierSecteur, { type LiensSecteurs } from "../../components/VerifierSecteur";
+import { liensSecteurs } from "../../lib/liensSecteurs";
+import VerifierSecteur from "../../components/VerifierSecteur";
 import peuplement from "../../assets/photos/peuplement.jpg";
 
 // Guide neutre pour choisir son conseiller forestier. Version douce de
@@ -96,23 +95,7 @@ const faq = [
   },
 ];
 
-// Pour l'outil : chaque municipalité citée dans une page de secteur pointe vers
-// son ancre. Un même nom peut exister dans deux agences de CFRQ (Saint-Séverin,
-// en Mauricie et en Beauce) : on tranche alors par l'agence du secteur, et sans
-// réponse unique on ne met pas de lien plutôt qu'un mauvais.
-const couvertes = COUVERTURE.filter(([agence]) => AGENCES_CFRQ.includes(agence)).flatMap(([agence, mrc, noms]) =>
-  noms.split(";").map((nom) => ({ nom, mrc, agence })),
-);
-const liens: LiensSecteurs = {};
-for (const s of SECTEURS) {
-  for (const m of s.municipalites) {
-    let candidates = couvertes.filter((c) => c.nom === m.nom);
-    if (candidates.length > 1) candidates = candidates.filter((c) => NOMS_AGENCES[c.agence] === s.agence);
-    if (candidates.length !== 1) continue;
-    const c = candidates[0];
-    liens[`${c.mrc}|${c.nom}`] = { href: `${withBase(`/ingenieur-forestier/${s.slug}`)}#${ancre(m.nom)}`, secteur: s.nom };
-  }
-}
+const liens = liensSecteurs();
 
 const url = `${SITE_PRODUCTION}/choisir-son-conseiller-forestier/`;
 const ld = {
