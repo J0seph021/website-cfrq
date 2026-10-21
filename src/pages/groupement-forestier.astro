@@ -1,0 +1,238 @@
+---
+import EnteteImage from "../components/EnteteImage.astro";
+import Base from "../layouts/Base.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { site } from "../data/site";
+import { withBase } from "../lib/url";
+import { SITE_PRODUCTION } from "../data/flags";
+import boiseSentier from "../assets/photos/boise-sentier.jpg";
+
+// Page qui répond aux recherches « groupement forestier ». Search Console montre
+// que cfrq.ca sort déjà en tête sur cette recherche sans rien en dire, donc sans
+// clic : cette page donne enfin au propriétaire une raison de cliquer.
+//
+// Règles de rédaction (Code de déontologie des ingénieurs forestiers, I-10, r. 5) :
+// art. 58, aucun procédé qui dévalorise un ingénieur forestier, et art. 53,
+// ne jamais discréditer le travail d'un confrère. Les groupements emploient des
+// ingénieurs forestiers : on décrit leur modèle avec leurs propres mots (principes
+// de Groupements forestiers Québec, définition du ministère), on ne compare que
+// des faits de structure, et on ne nomme aucun groupement en particulier.
+
+const titre = "Groupement forestier : vous choisissez votre conseiller | CFRQ";
+const description =
+  "Un groupement forestier est un conseiller accrédité parmi d'autres. Pour votre plan d'aménagement et l'aide financière, c'est vous qui choisissez votre conseiller.";
+
+const SOURCE_MRNF =
+  "https://www.quebec.ca/agriculture-environnement-et-ressources-naturelles/forets/proprietaires-forets-privees/organismes-foret-privee";
+
+const pareil = [
+  "Le même programme d'aide, administré par la même agence régionale.",
+  "Les mêmes normes pour les travaux admissibles à l'aide financière.",
+  "Un plan d'aménagement forestier signé par un ingénieur forestier.",
+  "Le même accès au statut de producteur forestier et au remboursement des taxes foncières.",
+];
+
+const raisons = [
+  { titre: `Accrédité depuis ${site.depuis}`, texte: "Auprès de six agences régionales : Québec, Mauricie, Bois-Francs, Chaudière, Appalaches et Côte-Nord." },
+  { titre: "Des ingénieurs forestiers qui signent", texte: "Nos ingénieurs forestiers préparent et signent les plans, les prescriptions et les rapports. Nos techniciens supervisent les travaux sur le terrain." },
+  { titre: "Du plan jusqu'à la vente du bois", texte: "Plan d'aménagement, travaux sylvicoles, récolte, évaluation, érablière : la même équipe suit votre boisé d'une étape à l'autre." },
+  { titre: "Sans adhésion", texte: "Vous nous confiez un mandat, comme à un notaire ou à un comptable, et nous en répondons. Aucune part ni cotisation pour devenir client." },
+];
+
+// Source unique : affichée telle quelle à l'écran et reprise dans le balisage
+// FAQPage, pour que les deux ne puissent pas diverger.
+const faq = [
+  {
+    question: "Faut-il passer par un groupement forestier pour obtenir des subventions?",
+    reponse:
+      "Non. L'aide du Programme d'aide à la mise en valeur des forêts privées (PAMVFP) passe par un conseiller forestier accrédité par l'agence régionale de votre territoire. Un groupement forestier peut l'être, tout comme une firme de consultants, une coopérative forestière ou un syndicat de producteurs. CFRQ est accrédité auprès de six agences.",
+  },
+  {
+    question: "Quelle est la différence entre un groupement forestier et un conseiller forestier?",
+    reponse:
+      "Le groupement forestier est l'un des types d'organisations où travaillent des conseillers forestiers accrédités : c'est un regroupement de propriétaires de boisés. Un cabinet comme CFRQ est une entreprise privée à qui l'on confie un mandat, sans y adhérer. Le programme d'aide et ses normes restent les mêmes.",
+  },
+  {
+    question: "Comment trouver un conseiller forestier accrédité dans ma région?",
+    reponse:
+      "L'agence régionale de mise en valeur des forêts privées de votre territoire peut vous donner la liste de ses conseillers accrédités, et le ministère des Ressources naturelles et des Forêts publie la liste complète. Dans la région de Québec, la Mauricie, les Bois-Francs, la Chaudière, les Appalaches et la Côte-Nord, CFRQ en fait partie.",
+  },
+  {
+    question: "Faut-il devenir membre de CFRQ?",
+    reponse:
+      "Non. CFRQ est un cabinet privé de conseillers forestiers : vous nous confiez un mandat (visite-conseil, plan d'aménagement, travaux, récolte), sans adhésion.",
+  },
+];
+
+const url = `${SITE_PRODUCTION}/groupement-forestier/`;
+const ld = {
+  "@context": "https://schema.org",
+  "@graph": [
+    { "@type": "WebPage", "@id": `${url}#webpage`, url, name: titre, description, inLanguage: "fr-CA", about: { "@id": `${SITE_PRODUCTION}/#organization` } },
+    {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Accueil", item: `${SITE_PRODUCTION}/` },
+        { "@type": "ListItem", position: 2, name: "Groupement forestier ou conseiller forestier", item: url },
+      ],
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: faq.map((f) => ({ "@type": "Question", name: f.question, acceptedAnswer: { "@type": "Answer", text: f.reponse } })),
+    },
+  ],
+};
+
+const eyebrow = "text-[12.5px] font-semibold uppercase tracking-[0.18em]";
+const h2 = "mt-3.5 font-display font-medium text-cfrq-deep text-[clamp(28px,4.2vw,40px)] leading-[1.06] tracking-[-0.015em] text-balance";
+const texte = "text-[17px] leading-[1.65] text-cfrq-ink/75";
+const lien = "font-semibold text-cfrq-leaf underline decoration-cfrq-green/40 underline-offset-2 hover:decoration-cfrq-green";
+---
+
+<Base title={titre} description={description} canonical="/groupement-forestier/">
+  <script type="application/ld+json" set:html={JSON.stringify(ld)} slot="head" />
+
+  <Header />
+  <main id="contenu">
+    <!-- HERO -->
+    <section class="relative isolate overflow-hidden bg-[#16200f]">
+      <EnteteImage src={boiseSentier} alt="Sentier dans un boisé privé" ratioDesktop={3.4} class="absolute inset-0 -z-10 h-full w-full object-cover" />
+      <div class="absolute inset-0 -z-10" style="background:linear-gradient(120deg,rgba(15,22,10,.9) 0%,rgba(15,22,10,.66) 60%,rgba(15,22,10,.34) 100%)"></div>
+      <div class="mx-auto max-w-[1160px] px-[22px] py-[84px]">
+        <div class="max-w-[680px]">
+          <p class={`${eyebrow} tracking-[0.2em] text-cfrq-green-light`}>Groupement forestier</p>
+          <h1 class="mt-3 font-display font-medium text-cfrq-cream text-[clamp(34px,5.5vw,52px)] leading-[1.05] tracking-[-0.02em] text-balance">
+            Groupement forestier ou conseiller forestier&nbsp;: le choix vous revient
+          </h1>
+          <p class="mt-5 max-w-[580px] text-[19px] leading-[1.55] text-[#dce2d2] text-pretty">
+            Plusieurs propriétaires pensent devoir passer par le groupement forestier de leur région pour aménager leur boisé et obtenir de l'aide financière. C'est une option, pas une obligation. Voici comment ça fonctionne.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- EN BREF -->
+    <section class="mx-auto max-w-[1160px] px-[22px] pt-14">
+      <div class="rounded-3xl border border-cfrq-green/25 bg-[#eef2e6] p-[clamp(24px,4vw,36px)]">
+        <p class={`${eyebrow} text-[#2e6b1e]`}>En bref</p>
+        <ul class="mt-4 grid gap-3 text-[16.5px] leading-[1.6] text-cfrq-deep">
+          <li class="flex gap-3"><span class="mt-[9px] h-[8px] w-[8px] flex-none rounded-full bg-cfrq-green"></span><span>Un groupement forestier regroupe des propriétaires de boisés qui s'associent pour obtenir ensemble des services d'aménagement.</span></li>
+          <li class="flex gap-3"><span class="mt-[9px] h-[8px] w-[8px] flex-none rounded-full bg-cfrq-green"></span><span>L'aide financière passe par un <strong class="font-semibold">conseiller forestier accrédité</strong> par l'agence régionale. Les groupements en font partie, tout comme des firmes de consultants, des coopératives et des syndicats de producteurs.</span></li>
+          <li class="flex gap-3"><span class="mt-[9px] h-[8px] w-[8px] flex-none rounded-full bg-cfrq-green"></span><span>C'est vous qui choisissez votre conseiller. CFRQ est accrédité auprès de six agences régionales depuis {site.depuis}.</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- DEFINITION -->
+    <section class="mx-auto max-w-[1160px] px-[22px] pt-16">
+      <div class="max-w-[720px]">
+        <p class={`${eyebrow} text-cfrq-leaf`}>Définition</p>
+        <h2 class={h2}>Qu'est-ce qu'un groupement forestier?</h2>
+        <p class={`mt-5 ${texte}`}>
+          Un groupement forestier est une organisation qui regroupe des propriétaires de boisés privés. Les premiers sont apparus au début des années 1970, dans la foulée des Opérations Dignité dans l'est du Québec, et le gouvernement du Québec reconnaît leur modèle d'affaires depuis 2012.
+        </p>
+        <p class={`mt-4 ${texte}`}>
+          Selon Groupements forestiers Québec, ce modèle repose sur quatre principes : l'adhésion libre, la gouvernance démocratique, la redistribution des profits et des surplus, et l'accès égal aux services. Le ministère les classe parmi les organismes de gestion en commun, des regroupements de propriétaires de lots privés dont la conformité au modèle reconnu est vérifiée par audit.
+        </p>
+      </div>
+    </section>
+
+    <!-- QUI DONNE ACCES A L'AIDE -->
+    <section class="mx-auto max-w-[1160px] px-[22px] pt-16">
+      <div class="max-w-[720px]">
+        <p class={`${eyebrow} text-cfrq-leaf`}>Aide financière</p>
+        <h2 class={h2}>Qui peut vous donner accès aux subventions?</h2>
+        <p class={`mt-5 ${texte}`}>
+          Le Programme d'aide à la mise en valeur des forêts privées (PAMVFP) passe obligatoirement par un <strong class="font-semibold text-cfrq-deep">conseiller forestier accrédité</strong> par l'agence régionale de mise en valeur des forêts privées de votre territoire. Ces conseillers travaillent dans des groupements forestiers, des firmes de consultants en foresterie, des coopératives forestières et des syndicats ou offices de producteurs de bois.
+        </p>
+        <p class={`mt-4 ${texte}`}>
+          Vous faites appel au conseiller de votre choix parmi ceux que l'agence accrédite. L'agence de votre territoire peut vous en donner la liste.
+        </p>
+      </div>
+    </section>
+
+    <!-- PAREIL / CE QUI CHANGE -->
+    <section class="mx-auto max-w-[1160px] px-[22px] pt-16">
+      <div class="max-w-[720px]">
+        <p class={`${eyebrow} text-cfrq-leaf`}>Comparer</p>
+        <h2 class={h2}>Ce qui est pareil, ce qui change</h2>
+      </div>
+      <div class="mt-[34px] grid gap-5 lg:grid-cols-[1fr_1.15fr]">
+        <div class="rounded-2xl border border-black/5 bg-white p-[26px]">
+          <h3 class="font-display text-[21px] font-medium text-cfrq-deep">Pareil, peu importe le conseiller accrédité</h3>
+          <ul class="mt-4 grid gap-3 text-[15.5px] leading-[1.55] text-cfrq-ink/75">
+            {pareil.map((p) => (
+              <li class="flex gap-3"><span aria-hidden="true" class="font-bold text-cfrq-green">✓</span><span>{p}</span></li>
+            ))}
+          </ul>
+        </div>
+        <div class="grid gap-5 sm:grid-cols-2">
+          <div class="rounded-2xl border border-black/5 bg-white p-[26px]">
+            <p class="text-[11px] font-bold uppercase tracking-[0.16em] text-cfrq-ink/50">Ce qui change : la formule</p>
+            <h3 class="mt-3 font-display text-[21px] font-medium text-cfrq-deep">Groupement forestier</h3>
+            <p class="mt-3 text-[15.5px] leading-[1.55] text-cfrq-ink/75">Une organisation de propriétaires, à adhésion libre et à gouvernance démocratique, qui redistribue ses profits et ses surplus.</p>
+          </div>
+          <div class="rounded-2xl bg-cfrq-deep p-[26px] text-cfrq-cream">
+            <p class="text-[11px] font-bold uppercase tracking-[0.16em] text-cfrq-green-light">Ce qui change : la formule</p>
+            <h3 class="mt-3 font-display text-[21px] font-medium">Cabinet de conseillers, comme CFRQ</h3>
+            <p class="mt-3 text-[15.5px] leading-[1.55] text-cfrq-cream/[.82]">Une entreprise privée d'ingénieurs forestiers et de techniciens forestiers. Pas d'adhésion : vous confiez un mandat et le cabinet en répond. Six agences, huit régions.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- POURQUOI CFRQ -->
+    <section class="mx-auto max-w-[1160px] px-[22px] pt-16">
+      <div class="max-w-[720px]">
+        <p class={`${eyebrow} text-cfrq-leaf`}>L'option CFRQ</p>
+        <h2 class={h2}>Pourquoi des propriétaires nous confient leur boisé</h2>
+      </div>
+      <div class="mt-[34px] grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {raisons.map((r) => (
+          <div class="rounded-2xl border border-black/5 bg-white p-[22px]">
+            <h3 class="font-display text-[19px] font-medium leading-tight text-cfrq-deep">{r.titre}</h3>
+            <p class="mt-2.5 text-[14px] leading-[1.6] text-cfrq-ink/65">{r.texte}</p>
+          </div>
+        ))}
+      </div>
+      <p class={`mt-6 max-w-[720px] text-[15.5px] leading-[1.6] text-cfrq-ink/65`}>
+        Voyez nos services en <a href={withBase("/amenagement")} class={lien}>aménagement forestier</a>, notre <a href={withBase("/territoire-desservi")} class={lien}>territoire</a> et les <a href={withBase("/ingenieur-forestier")} class={lien}>secteurs où l'on travaille</a>.
+      </p>
+    </section>
+
+    <!-- FAQ -->
+    <section aria-labelledby="faq-titre" class="mx-auto max-w-[1160px] px-[22px] pt-16">
+      <div class="max-w-[720px]">
+        <p class={`${eyebrow} text-cfrq-leaf`}>Questions fréquentes</p>
+        <h2 id="faq-titre" class={h2}>Groupement forestier&nbsp;: vos questions</h2>
+      </div>
+      <div class="mt-[34px] grid gap-4 md:grid-cols-2">
+        {faq.map((f) => (
+          <div class="rounded-2xl border border-black/5 bg-white p-[26px]">
+            <h3 class="font-display text-[20px] font-medium leading-tight text-cfrq-deep">{f.question}</h3>
+            <p class="mt-3 text-[15px] leading-relaxed text-cfrq-ink/70">{f.reponse}</p>
+          </div>
+        ))}
+      </div>
+      <p class="mt-6 text-[13px] leading-[1.6] text-cfrq-ink/50">
+        Sources : Groupements forestiers Québec, et ministère des Ressources naturelles et des Forêts, <a href={SOURCE_MRNF} target="_blank" rel="noopener" class="underline hover:text-cfrq-deep">Organismes actifs en forêt privée</a>.
+      </p>
+    </section>
+
+    <!-- CTA FINAL -->
+    <section class="mx-auto max-w-[1160px] px-[22px] pb-[84px] pt-16">
+      <div class="rounded-3xl px-[clamp(34px,5vw,56px)] py-[clamp(34px,5vw,56px)] text-center text-cfrq-cream" style="background:linear-gradient(140deg,#1D4011,#14331A)">
+        <h2 class="font-display text-[clamp(28px,4.5vw,44px)] font-medium leading-[1.06] text-balance">Parlons de votre boisé</h2>
+        <p class="mx-auto mt-4 max-w-[540px] text-[18px] leading-[1.55] text-cfrq-cream/[.82]">
+          Un technicien se déplace pour une visite-conseil, sans engagement, et on regarde ensemble ce que votre boisé peut faire.
+        </p>
+        <div class="mt-[30px] flex flex-wrap items-center justify-center gap-4">
+          <a href={withBase("/contact")} class="inline-flex items-center rounded-xl bg-cfrq-green px-8 py-4 text-[16.5px] font-bold text-[#123005] transition-colors hover:bg-[#6ecb3e]">Réserver une visite-conseil</a>
+          <p class="text-[16px] text-cfrq-cream/85">ou&nbsp;<a href={site.telHref} class="font-semibold text-cfrq-cream hover:underline">{site.tel}</a></p>
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Base>

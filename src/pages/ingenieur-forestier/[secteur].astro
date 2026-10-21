@@ -93,7 +93,7 @@ const [v1, v2] = secteur.vedettes;
 const description = [
   v2 ? `Boisé ${secteur.dans}, à ${v1} ou à ${v2} ? ${suite}` : "",
   `Boisé ${secteur.dans} ? ${suite}`,
-  `Boisé ${secteur.dans} ? Nos ingénieurs et techniciens forestiers y travaillent déjà. Visite-conseil sans engagement.`,
+  `Boisé ${secteur.dans} ? Nos ingénieurs forestiers et techniciens forestiers y travaillent déjà. Visite-conseil sans engagement.`,
 ].find((d) => d && d.length <= 160)!;
 
 const exemples = secteur.municipalites.length > 2 ? `, à ${secteur.vedettes[0]}, à ${secteur.vedettes[1]} ou ailleurs ${secteur.dans}` : ` ${secteur.dans}`;
@@ -177,7 +177,7 @@ const lien = "font-medium text-cfrq-deep underline decoration-cfrq-green/50 unde
             Ingénieur forestier {secteur.dans}
           </h1>
           <p class="mt-4 text-[19px] leading-[1.5] text-[#dce2d2] text-pretty">
-            Un boisé {secteur.dans} ? Notre équipe d'ingénieurs et de techniciens forestiers y travaille déjà : plan d'aménagement, travaux, récolte et aide financière.
+            Un boisé {secteur.dans} ? Notre équipe d'ingénieurs forestiers et de techniciens forestiers y travaille déjà : plan d'aménagement, travaux, récolte et aide financière.
           </p>
           <div class="mt-7 flex flex-wrap items-center gap-4">
             <a href={withBase("/contact")} class="inline-flex items-center rounded-xl bg-cfrq-green px-6 py-3.5 text-[16px] font-bold text-[#123005] transition-colors hover:bg-[#6ecb3e]">Réserver une visite-conseil</a>
