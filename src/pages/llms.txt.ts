@@ -124,7 +124,6 @@ ${FAQ.map((f) => `### ${f.question}\n\n${f.reponse}`).join("\n\n")}
 - Services : ${url("/services/")}
 - Territoire desservi : ${url("/territoire-desservi/")}
 - Ingénieur forestier par secteur : ${url("/ingenieur-forestier/")}
-- Groupement forestier ou conseiller forestier (le libre choix du conseiller accrédité) : ${url("/groupement-forestier/")}
 - À propos de nous : ${url("/a-propos-de-nous/")}
 - Notre équipe : ${url("/notre-equipe/")}
 - Contact et demande de visite-conseil : ${url("/contact/")}
