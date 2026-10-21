@@ -6,6 +6,9 @@ import Footer from "../../components/Footer.astro";
 import { site } from "../../data/site";
 import { withBase } from "../../lib/url";
 import { SITE_PRODUCTION } from "../../data/flags";
+import { SECTEURS, ancre } from "../../data/secteurs";
+import { AGENCES_CFRQ, COUVERTURE, NOMS_AGENCES } from "../../data/couverture";
+import VerifierSecteur, { type LiensSecteurs } from "../../components/VerifierSecteur";
 import peuplement from "../../assets/photos/peuplement.jpg";
 
 // Guide neutre pour choisir son conseiller forestier. Version douce de
@@ -44,7 +47,7 @@ const types = [
   {
     nom: "Firme de consultants en foresterie",
     texte:
-      "Une entreprise privée d'ingénieurs forestiers et de techniciens forestiers, à qui l'on confie un mandat sans y adhérer.",
+      "Une entreprise privée d'ingénieurs forestiers et de techniciens forestiers, à qui l'on confie un mandat sans y adhérer. Le mandat peut se limiter à une visite-conseil ou couvrir tout l'aménagement, du plan jusqu'à la vente du bois. Une firme peut être accréditée auprès de plusieurs agences, et plusieurs offrent aussi des services hors du programme d'aide, comme l'évaluation de propriété ou l'expertise. C'est le modèle de CFRQ.",
   },
   {
     nom: "Coopérative forestière",
@@ -92,6 +95,24 @@ const faq = [
       "L'agence régionale de mise en valeur des forêts privées de votre territoire peut vous donner la liste de ses conseillers accrédités, et le ministère des Ressources naturelles et des Forêts publie la liste complète, classée par agence.",
   },
 ];
+
+// Pour l'outil : chaque municipalité citée dans une page de secteur pointe vers
+// son ancre. Un même nom peut exister dans deux agences de CFRQ (Saint-Séverin,
+// en Mauricie et en Beauce) : on tranche alors par l'agence du secteur, et sans
+// réponse unique on ne met pas de lien plutôt qu'un mauvais.
+const couvertes = COUVERTURE.filter(([agence]) => AGENCES_CFRQ.includes(agence)).flatMap(([agence, mrc, noms]) =>
+  noms.split(";").map((nom) => ({ nom, mrc, agence })),
+);
+const liens: LiensSecteurs = {};
+for (const s of SECTEURS) {
+  for (const m of s.municipalites) {
+    let candidates = couvertes.filter((c) => c.nom === m.nom);
+    if (candidates.length > 1) candidates = candidates.filter((c) => NOMS_AGENCES[c.agence] === s.agence);
+    if (candidates.length !== 1) continue;
+    const c = candidates[0];
+    liens[`${c.mrc}|${c.nom}`] = { href: `${withBase(`/ingenieur-forestier/${s.slug}`)}#${ancre(m.nom)}`, secteur: s.nom };
+  }
+}
 
 const url = `${SITE_PRODUCTION}/choisir-son-conseiller-forestier/`;
 const ld = {
@@ -188,6 +209,20 @@ const puce = "mt-[9px] h-[8px] w-[8px] flex-none rounded-full bg-cfrq-green";
         <p class={`mt-5 ${texte}`}>
           L'agence régionale de votre territoire tient la liste de ses conseillers accrédités, et le ministère publie la liste complète, classée par agence. Vous faites appel au conseiller de votre choix parmi eux, et rien ne vous empêche d'en rencontrer plus d'un avant de décider.
         </p>
+      </div>
+    </section>
+
+    <!-- OUTIL : CFRQ EST-IL ACTIF CHEZ VOUS? -->
+    <section class="mx-auto max-w-[1160px] px-[22px] pt-16">
+      <div class="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+        <div>
+          <p class={`${eyebrow} text-cfrq-leaf`}>Vérifier</p>
+          <h2 class={h2}>CFRQ est-il actif chez vous?</h2>
+          <p class={`mt-5 ${texte}`}>
+            CFRQ est accrédité auprès de six agences régionales. Entrez votre municipalité pour savoir si votre boisé est sur leur territoire.
+          </p>
+        </div>
+        <VerifierSecteur client:idle liens={liens} />
       </div>
     </section>
 
