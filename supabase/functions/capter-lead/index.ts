@@ -661,6 +661,11 @@ Deno.serve(async (req) => {
       details = recompose;
     }
 
+    // `details` passe en OBJET, jamais JSON.stringify : postgres.js serialise deja
+    // tout parametre jsonb. Une chaine y serait encodee une deuxieme fois et
+    // stockee comme chaine JSON (jsonb_typeof = 'string'), ce qui est arrive du
+    // 2026-08-18 au 2026-10-21 : le correctif avait ete deploye sans etre committe,
+    // et le deploiement suivant depuis ce depot l'a efface.
     const sqlP = postgres(Deno.env.get("SUPABASE_DB_URL")!, { prepare: false, max: 1, idle_timeout: 5 });
     let idP: string | null = null;
     try {
@@ -668,7 +673,7 @@ Deno.serve(async (req) => {
         select public.capter_prospect_web(
           ${source}::text, ${courriel}::text, ${nom || null}::text, ${telephone || null}::text,
           ${municipalite || null}::text, ${message || null}::text,
-          ${details ? JSON.stringify(details) : null}::jsonb,
+          ${details}::jsonb,
           ${region}::text, ${referrer}::text, ${userAgent}::text, ${ipHash}::text
         ) as id`;
       idP = rows[0]?.id ?? null;
@@ -700,6 +705,7 @@ Deno.serve(async (req) => {
   const details = (body.details && typeof body.details === "object" && !Array.isArray(body.details))
     ? (body.details as Record<string, unknown>) : null;
 
+  // `details` en objet, pas en chaine : voir la note de la branche prospect.
   const sql = postgres(Deno.env.get("SUPABASE_DB_URL")!, { prepare: false, max: 1, idle_timeout: 5 });
   let id: string | null = null;
   try {
@@ -709,7 +715,7 @@ Deno.serve(async (req) => {
         ${potAnnuel}::numeric, ${pot5}::numeric, ${source}::text,
         ${region}::text, ${referrer}::text, ${userAgent}::text, ${ipHash}::text,
         ${nom || null}::text, ${municipalite || null}::text,
-        ${details ? JSON.stringify(details) : null}::jsonb
+        ${details}::jsonb
       ) as id`;
     id = rows[0]?.id ?? null;
   } catch (e) {
