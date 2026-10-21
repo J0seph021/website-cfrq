@@ -12,6 +12,8 @@
 //   - clic_courriel      clic sur un lien mailto:
 // Et des signaux secondaires, à laisser en simples événements :
 //   - calculateur_utilise  première saisie dans un calculateur
+//   - verification_secteur municipalité choisie dans l'outil « CFRQ est-il
+//                          actif chez vous? » ; paramètre resultat : oui ou non
 //   - video_releve         vidéo du relevé (espace client, carte « Portrait » de
 //                          la section Bientôt) ; paramètre etape : debut, moitie
 //                          ou fin, une fois chacun par visite
