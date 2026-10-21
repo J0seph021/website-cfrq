@@ -63,7 +63,7 @@ export const FAMILLES: Record<FamilleTravaux, { titre: string; court: string; te
   eclaircieCom: {
     titre: "Éclaircie commerciale",
     court: "éclaircie commerciale",
-    texte: "Dans les plantations et les jeunes peuplements résineux, on retire une partie des tiges pour faire grossir les meilleures. Le bois récolté se vend déjà.",
+    texte: "Dans les plantations et les jeunes peuplements résineux, on retire une partie des tiges pour faire grossir les meilleures. Les tiges récoltées ont déjà une valeur commerciale.",
     lien: "/operation-forestieres",
   },
   eclairciePrecom: {
