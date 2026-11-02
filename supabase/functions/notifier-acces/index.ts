@@ -133,7 +133,7 @@ Deno.serve(async (req) => {
         "<table role='presentation' cellpadding='0' cellspacing='0' style='margin:4px 0 8px;'>" +
         ligne("Nom", d.nom) + ligne("Municipalité", d.municipalite) + ligne("Téléphone", d.telephone) +
         ligne("Nº de producteur", d.no_producteur) + ligne("Lot(s)", d.lots) + ligne("Courriel", ligneDemande?.courriel) + "</table>" +
-        "<p style='" + P + "'>Ouvrez l'espace client avec votre compte employé : la demande s'affiche en haut, avec les dossiers qui lui correspondent. Un clic sur « Relier » suffit. Au besoin, appelez le client pour confirmer.</p>" +
+        "<p style='" + P + "'>Ouvrez l'espace client avec votre compte employé : la demande s'affiche en haut, avec les dossiers qui lui correspondent. Cochez le ou les dossiers du client (à son nom, avec un conjoint, sa compagnie), puis cliquez « Relier ». Au besoin, appelez le client pour confirmer.</p>" +
         bouton(lienPortail + "tableau-de-bord/", "Traiter la demande"),
       ));
       await admin.from("demandes_acces").update({ notifie_le: new Date().toISOString() }).eq("id", d.id);

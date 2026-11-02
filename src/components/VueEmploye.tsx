@@ -34,7 +34,7 @@ export type Moi = {
 
 const nfEnt = new Intl.NumberFormat("fr-CA", { maximumFractionDigits: 0 });
 
-// indices : pourquoi le dossier est proposé (lot, no_producteur, nom, municipalite),
+// indices : pourquoi le dossier est proposé (lot, no_producteur, nom ou nom_partiel, municipalite),
 // calculés par portail_demandes_acces.
 export type SuggestionDossier = {
   id: number; nom: string | null; no_prod: string | null; municipalite: string | null;
@@ -64,6 +64,7 @@ const LIBELLES_INDICES: Record<string, string> = {
   lot: "le lot",
   no_producteur: "le nº de producteur",
   nom: "le nom",
+  nom_partiel: "une partie du nom",
   municipalite: "la municipalité",
 };
 
