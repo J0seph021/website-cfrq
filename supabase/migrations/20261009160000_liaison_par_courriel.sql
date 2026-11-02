@@ -26,6 +26,14 @@
 -- PlaniLogix par sync-courriels. On compare l'empreinte du courriel confirmé de
 -- l'appelant à ces empreintes. Les adresses @cfrq.ca sont écartées à la source :
 -- l'équipe a sa vue employé.
+--
+-- Mis à jour le 2026-11-02, avant d'être appliquée : 20261102150000_plusieurs_
+-- dossiers_par_compte.sql, appliquée AVANT celle-ci, permet de relier un compte à
+-- plusieurs dossiers dans portal_users (clé user_id, producteur_id). Les versions
+-- ci-dessous en tiennent compte (portail_dossier_titulaire garde l'ordre de liaison,
+-- portail_demandes_acces garde les indices et le numéro de producteur sans zéros de
+-- tête, la synchro remplit producteurs_relies) : appliquer celle-ci par-dessus ne
+-- défait rien.
 
 -- ---------------------------------------------------------------- tables
 create table if not exists public.producteurs_courriels (
@@ -114,19 +122,19 @@ security definer
 set search_path to 'public'
 as $function$
   with t as (
-    select pu.producteur_id, 0 as rang
+    select pu.producteur_id, 0 as rang, pu.created_at as depuis
       from public.portal_users pu
      where pu.user_id = (select auth.uid())
        and pu.actif
     union
-    select c, 1 from public.portail_dossiers_courriel() c
+    select c, 1, null::timestamptz from public.portail_dossiers_courriel() c
   )
   select t.producteur_id
     from t
    order by t.producteur_id is not distinct from
               (select a.producteur_id from public.portal_dossier_actif a
                 where a.user_id = (select auth.uid())) desc,
-            t.rang, t.producteur_id
+            t.rang, t.depuis, t.producteur_id
    limit 1;
 $function$;
 
@@ -411,34 +419,46 @@ as $function$
   select coalesce(jsonb_agg(d order by d.cree_le), '[]'::jsonb)
   from (
     select r.id, r.courriel, r.nom, r.municipalite, r.telephone, r.no_producteur, r.lots, r.cree_le,
-      (select coalesce(jsonb_agg(s order by s.score desc, s.nom), '[]'::jsonb) from (
+      (select coalesce(jsonb_agg(jsonb_build_object(
+                'id', s.id, 'nom', s.nom, 'no_prod', s.no_prod, 'municipalite', s.municipalite,
+                'a_compte', s.a_compte, 'score', s.score, 'indices', s.indices)
+              order by s.score desc, s.nom), '[]'::jsonb) from (
          select p.id, p.nom, p.no_prod,
                 (select min(pr.municipalite) from public.proprietes pr where pr.producteur_id = p.id) as municipalite,
                 public.dossier_a_compte(p.id) as a_compte,
-                (case when cardinality(m.lots) > 0 and exists (
-                        select 1 from public.lots l join public.proprietes pr on pr.id = l.propriete_id
-                        where pr.producteur_id = p.id and regexp_replace(l.no_lot, '\D', '', 'g') = any(m.lots))
-                      then 100 else 0 end)
-              + (case when r.no_producteur is not null
-                        and replace(public.sans_accents(p.no_prod), ' ', '') = replace(public.sans_accents(r.no_producteur), ' ', '')
-                      then 100 else 0 end)
-              + (case when cardinality(m.mots) = 0 then 0
-                      when not exists (select 1 from unnest(m.mots) t where public.sans_accents(p.nom) not like '%' || t || '%') then 60
-                      when exists (select 1 from unnest(m.mots) t where public.sans_accents(p.nom) like '%' || t || '%') then 25
-                      else 0 end)
-              + (case when exists (select 1 from public.proprietes pr where pr.producteur_id = p.id
-                                     and public.sans_accents(pr.municipalite) like '%' || public.sans_accents(r.municipalite) || '%')
-                      then 30 else 0 end) as score
+                  (case when i.lot then 100 else 0 end)
+                + (case when i.no_prod then 100 else 0 end)
+                + (case when i.nom_complet then 60 when i.nom_partiel then 25 else 0 end)
+                + (case when i.municipalite then 30 else 0 end) as score,
+                array_remove(array[
+                  case when i.lot then 'lot' end,
+                  case when i.no_prod then 'no_producteur' end,
+                  case when i.nom_complet then 'nom' end,
+                  case when i.municipalite then 'municipalite' end], null) as indices
          from public.producteurs p
+         cross join lateral (
+           select
+             cardinality(m.lots) > 0 and exists (
+               select 1 from public.lots l join public.proprietes pr on pr.id = l.propriete_id
+               where pr.producteur_id = p.id and regexp_replace(l.no_lot, '\D', '', 'g') = any(m.lots)) as lot,
+             m.no_prod <> ''
+               and ltrim(replace(public.sans_accents(p.no_prod), ' ', ''), '0') = m.no_prod as no_prod,
+             cardinality(m.mots) > 0
+               and not exists (select 1 from unnest(m.mots) t where public.sans_accents(p.nom) not like '%' || t || '%') as nom_complet,
+             exists (select 1 from unnest(m.mots) t where public.sans_accents(p.nom) like '%' || t || '%') as nom_partiel,
+             exists (select 1 from public.proprietes pr where pr.producteur_id = p.id
+                       and public.sans_accents(pr.municipalite) like '%' || public.sans_accents(r.municipalite) || '%') as municipalite
+         ) i
          where p.id < 900000
-         order by 6 desc
+         order by 6 desc, p.nom
          limit 5
        ) s where s.score >= 55) as suggestions
     from public.demandes_acces r
     cross join lateral (
       select coalesce((select array_agg(w) from unnest(regexp_split_to_array(public.sans_accents(r.nom), '[^a-z0-9]+')) w
                         where length(w) >= 3), '{}') as mots,
-             public.lots_normalises(r.lots) as lots) m
+             public.lots_normalises(r.lots) as lots,
+             ltrim(replace(public.sans_accents(r.no_producteur), ' ', ''), '0') as no_prod) m
     where r.statut = 'en_attente' and public.est_employe_cfrq()
   ) d;
 $function$;
@@ -481,6 +501,7 @@ as $function$
     update public.demandes_acces d
        set statut = 'reliee',
            producteur_id = (select min(m.producteur_id) from m where m.user_id = d.user_id),
+           producteurs_relies = (select array_agg(m.producteur_id order by m.producteur_id) from m where m.user_id = d.user_id),
            traitee_le = now(),
            traitee_par = 'automatique : courriel au dossier'
      where d.statut = 'en_attente'

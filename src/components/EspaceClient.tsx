@@ -423,7 +423,10 @@ function nomAffiche(nom: string): string {
   const sansSuffixe = nom.replace(/\s*\b(inc|enr|ltée|ltee|senc|s\.e\.n\.c\.)\b\.?$/i, "").trim() || nom;
   return sansSuffixe
     .split(/\s+/)
-    .map((mot) => (mot.length <= 2 ? mot.toUpperCase() : mot.charAt(0).toUpperCase() + mot.slice(1).toLowerCase()))
+    // « et » des dossiers conjoints (« FOURNIER SERGE ET JEAN ») reste en minuscules ;
+    // les autres mots de deux lettres sont des initiales (« JP »).
+    .map((mot) => (mot.toLowerCase() === "et" ? "et"
+      : mot.length <= 2 ? mot.toUpperCase() : mot.charAt(0).toUpperCase() + mot.slice(1).toLowerCase()))
     .join(" ");
 }
 

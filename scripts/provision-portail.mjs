@@ -93,7 +93,8 @@ async function provisionner({ email, producteur_id, password, label }) {
   // 2) Relier au dossier producteur (idempotent).
   const { error: e2 } = await sb
     .from("portal_users")
-    .upsert({ user_id: userId, producteur_id, actif: true }, { onConflict: "user_id" });
+    // Clé (user_id, producteur_id) depuis 2026-11-02 : un compte peut avoir plusieurs dossiers.
+    .upsert({ user_id: userId, producteur_id, actif: true }, { onConflict: "user_id,producteur_id" });
   if (e2) throw e2;
 
   // 3) Vérifier ce que la RLS exposera (nom du dossier + nb documents).

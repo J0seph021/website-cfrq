@@ -34,7 +34,13 @@ export type Moi = {
 
 const nfEnt = new Intl.NumberFormat("fr-CA", { maximumFractionDigits: 0 });
 
-export type SuggestionDossier = { id: number; nom: string | null; no_prod: string | null; municipalite: string | null; a_compte: boolean; score: number };
+// indices : pourquoi le dossier est proposé (lot, no_producteur, nom, municipalite),
+// calculés par portail_demandes_acces.
+export type SuggestionDossier = {
+  id: number; nom: string | null; no_prod: string | null; municipalite: string | null;
+  a_compte: boolean; score: number; indices?: string[];
+};
+export type DossierChoisi = { id: number; nom: string | null };
 export type DemandeAccesEmploye = {
   id: number;
   courriel: string;
@@ -50,21 +56,49 @@ export type DemandeAccesEmploye = {
 /* ------------------------------------------------------------------ */
 /* Demandes d'accès : un client s'est inscrit mais son compte n'est    */
 /* relié à aucun dossier. On relie à la main, jamais automatiquement.   */
+/* Un client peut avoir plusieurs dossiers (à son nom, avec un         */
+/* conjoint, sa compagnie) : on les coche tous et on relie d'un coup.  */
 /* ------------------------------------------------------------------ */
+
+const LIBELLES_INDICES: Record<string, string> = {
+  lot: "le lot",
+  no_producteur: "le nº de producteur",
+  nom: "le nom",
+  municipalite: "la municipalité",
+};
+
+function phraseIndices(indices?: string[]): string | null {
+  const l = (indices ?? []).map((i) => LIBELLES_INDICES[i]).filter(Boolean);
+  if (l.length === 0) return null;
+  const fin = l.length > 1 ? `${l.slice(0, -1).join(", ")} et ${l[l.length - 1]}` : l[0];
+  return `Correspond par ${fin}.`;
+}
+
+function nomsDossiers(dossiers: DossierChoisi[]): string {
+  const n = dossiers.map((x) => `« ${x.nom ?? "Dossier " + x.id} »`);
+  return n.length > 1 ? `${n.slice(0, -1).join(", ")} et ${n[n.length - 1]}` : n[0] ?? "";
+}
 
 export function DemandesAccesVue({
   demandes,
   occupe,
+  ajouts = {},
   onRelier,
   onChercher,
   onRefuser,
 }: {
   demandes: DemandeAccesEmploye[];
   occupe: number | null;
-  onRelier: (d: DemandeAccesEmploye, producteurId: number, nomDossier: string | null) => void;
+  // Dossiers trouvés par « Chercher un autre dossier », par demande : ils s'ajoutent,
+  // déjà cochés, sous les suggestions.
+  ajouts?: Record<number, SuggestionDossier[]>;
+  onRelier: (d: DemandeAccesEmploye, dossiers: DossierChoisi[]) => void;
   onChercher: (d: DemandeAccesEmploye) => void;
   onRefuser: (d: DemandeAccesEmploye) => void;
 }) {
+  // Cases cochées ou décochées par l'employé ; sans choix, une suggestion est
+  // décochée et un dossier ajouté par la recherche est coché.
+  const [etat, setEtat] = useState<Record<string, boolean>>({});
   if (demandes.length === 0) return null;
   return (
     <section className="mb-6 rounded-2xl border border-cfrq-green/30 bg-white p-5">
@@ -72,50 +106,81 @@ export function DemandesAccesVue({
         Demandes d'accès <span className="ml-1 rounded-full bg-cfrq-green px-2.5 py-0.5 align-middle text-[13px] font-semibold text-[#123005]">{demandes.length}</span>
       </h2>
       <p className="mt-1 text-[14px] text-cfrq-ink/60">
-        Ces clients ont créé leur compte. Reliez chacun à son dossier : il recevra un courriel l'avisant que son espace est prêt. Au moindre doute, appelez-le d'abord.
+        Ces clients ont créé leur compte. Cochez le ou les dossiers de chacun (à son nom, avec un conjoint, sa compagnie) puis reliez : il recevra un courriel l'avisant que son espace est prêt, et passera d'un dossier à l'autre en haut de son espace. Au moindre doute, appelez-le d'abord.
       </p>
       <ul className="mt-4 space-y-3">
-        {demandes.map((d) => (
-          <li key={d.id} className="rounded-xl border border-black/[.07] bg-cfrq-cream/50 p-4">
-            <div className="flex flex-wrap items-start justify-between gap-2">
-              <div className="min-w-0">
-                <p className="font-medium text-cfrq-deep">{d.nom} <span className="font-normal text-cfrq-ink/60">· {d.municipalite}</span></p>
-                <p className="mt-0.5 text-[13.5px] text-cfrq-ink/60">
-                  {[d.courriel, d.telephone, d.no_producteur ? `nº ${d.no_producteur}` : null, d.lots ? `lot(s) ${d.lots}` : null,
-                    `reçue le ${new Date(d.cree_le).toLocaleDateString("fr-CA", { day: "numeric", month: "long" })}`].filter(Boolean).join(" · ")}
-                </p>
+        {demandes.map((d) => {
+          const deja = new Set(d.suggestions.map((s) => s.id));
+          const liste = [
+            ...d.suggestions.map((s) => ({ s, ajout: false })),
+            ...(ajouts[d.id] ?? []).filter((s) => !deja.has(s.id)).map((s) => ({ s, ajout: true })),
+          ];
+          const coche = (id: number, ajout: boolean) => etat[`${d.id}:${id}`] ?? ajout;
+          const choisis = liste.filter((x) => coche(x.s.id, x.ajout)).map((x) => x.s);
+          const enCours = occupe === d.id;
+          return (
+            <li key={d.id} className="rounded-xl border border-black/[.07] bg-cfrq-cream/50 p-4">
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="font-medium text-cfrq-deep">{d.nom} <span className="font-normal text-cfrq-ink/60">· {d.municipalite}</span></p>
+                  <p className="mt-0.5 text-[13.5px] text-cfrq-ink/60">
+                    {[d.courriel, d.telephone, d.no_producteur ? `nº ${d.no_producteur}` : null, d.lots ? `lot(s) ${d.lots}` : null,
+                      `reçue le ${new Date(d.cree_le).toLocaleDateString("fr-CA", { day: "numeric", month: "long" })}`].filter(Boolean).join(" · ")}
+                  </p>
+                </div>
+                <button onClick={() => onRefuser(d)} disabled={enCours} className="text-[13px] text-cfrq-ink/50 underline-offset-2 hover:text-red-700 hover:underline">
+                  Refuser
+                </button>
               </div>
-              <button onClick={() => onRefuser(d)} disabled={occupe === d.id} className="text-[13px] text-cfrq-ink/50 underline-offset-2 hover:text-red-700 hover:underline">
-                Refuser
-              </button>
-            </div>
-            {d.suggestions.length > 0 ? (
-              <ul className="mt-3 space-y-2">
-                {d.suggestions.map((s) => (
-                  <li key={s.id} className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-white px-3.5 py-2.5">
-                    <span className="min-w-0 text-[14.5px]">
-                      <span className="font-medium text-cfrq-deep">{s.nom ?? "Dossier " + s.id}</span>
-                      <span className="text-cfrq-ink/55"> · {[s.no_prod, s.municipalite].filter(Boolean).join(" · ")}</span>
-                      {s.a_compte && <span className="ml-2 rounded-full bg-[#fff6dc] px-2 py-0.5 text-[12px] text-[#6b4e00]">a déjà un compte</span>}
-                    </span>
-                    <button
-                      onClick={() => onRelier(d, s.id, s.nom)}
-                      disabled={occupe === d.id}
-                      className="rounded-full bg-cfrq-green px-3.5 py-1.5 text-[13px] font-semibold text-[#123005] transition-colors hover:bg-cfrq-green-hover disabled:opacity-60"
-                    >
-                      {occupe === d.id ? "…" : "Relier"}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="mt-3 text-[14px] text-cfrq-ink/60">Aucun dossier ne ressemble à cette demande.</p>
-            )}
-            <button onClick={() => onChercher(d)} className="mt-2.5 text-[13.5px] font-medium text-cfrq-leaf underline-offset-2 hover:underline">
-              Chercher un autre dossier →
-            </button>
-          </li>
-        ))}
+              {liste.length > 0 ? (
+                <ul className="mt-3 space-y-2">
+                  {liste.map(({ s, ajout }) => {
+                    const indices = phraseIndices(s.indices);
+                    return (
+                      <li key={s.id}>
+                        <label className="flex cursor-pointer items-start gap-3 rounded-lg bg-white px-3.5 py-2.5 transition-colors hover:bg-cfrq-tint/40">
+                          <input
+                            type="checkbox"
+                            checked={coche(s.id, ajout)}
+                            disabled={enCours}
+                            onChange={(e) => setEtat((x) => ({ ...x, [`${d.id}:${s.id}`]: e.target.checked }))}
+                            className="mt-[3px] h-[18px] w-[18px] shrink-0 accent-[#5abd2a]"
+                          />
+                          <span className="min-w-0 text-[14.5px]">
+                            <span className="font-medium text-cfrq-deep">{s.nom ?? "Dossier " + s.id}</span>
+                            <span className="text-cfrq-ink/55"> · {[s.no_prod, s.municipalite].filter(Boolean).join(" · ")}</span>
+                            {s.a_compte && <span className="ml-2 inline-block whitespace-nowrap rounded-full bg-[#fff6dc] px-2 py-0.5 text-[12px] text-[#6b4e00]">a déjà un compte</span>}
+                            {ajout && <span className="ml-2 inline-block whitespace-nowrap rounded-full bg-cfrq-tint px-2 py-0.5 text-[12px] text-cfrq-leaf">ajouté par la recherche</span>}
+                            {indices && <span className="mt-0.5 block text-[12.5px] text-cfrq-ink/50">{indices}</span>}
+                          </span>
+                        </label>
+                      </li>
+                    );
+                  })}
+                </ul>
+              ) : (
+                <p className="mt-3 text-[14px] text-cfrq-ink/60">Aucun dossier ne ressemble à cette demande. Cherchez-le ci-dessous.</p>
+              )}
+              {choisis.some((s) => s.a_compte) && (
+                <p className="mt-2.5 text-[13px] text-[#6b4e00]">
+                  Un dossier coché a déjà un compte : ce client y aura accès lui aussi, en plus de l'autre compte.
+                </p>
+              )}
+              <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+                <button onClick={() => onChercher(d)} className="text-[13.5px] font-medium text-cfrq-leaf underline-offset-2 hover:underline">
+                  Chercher un autre dossier →
+                </button>
+                <button
+                  onClick={() => onRelier(d, choisis.map((s) => ({ id: s.id, nom: s.nom })))}
+                  disabled={enCours || choisis.length === 0}
+                  className="rounded-full bg-cfrq-green px-4 py-2 text-[13.5px] font-semibold text-[#123005] transition-colors hover:bg-cfrq-green-hover disabled:opacity-50"
+                >
+                  {enCours ? "…" : choisis.length > 1 ? `Relier aux ${choisis.length} dossiers` : choisis.length === 1 ? "Relier au dossier coché" : "Cochez un dossier"}
+                </button>
+              </div>
+            </li>
+          );
+        })}
       </ul>
     </section>
   );
@@ -149,6 +214,7 @@ export function ChoixClient({
   const [demandeActive, setDemandeActive] = useState<DemandeAccesEmploye | null>(null);
   const [occupe, setOccupe] = useState<number | null>(null);
   const [annonce, setAnnonce] = useState("");
+  const [ajouts, setAjouts] = useState<Record<number, SuggestionDossier[]>>({});
 
   useEffect(() => {
     supabase.rpc("portail_demandes_acces").then(({ data }) => {
@@ -156,11 +222,14 @@ export function ChoixClient({
     });
   }, []);
 
-  async function relier(d: DemandeAccesEmploye, producteurId: number, nomDossier: string | null) {
-    if (occupe) return;
+  async function relier(d: DemandeAccesEmploye, dossiers: DossierChoisi[]) {
+    if (occupe || dossiers.length === 0) return;
     setOccupe(d.id);
     setErreur("");
-    const { error } = await supabase.rpc("portail_relier_demande", { p_demande_id: d.id, p_producteur_id: producteurId });
+    const { error } = await supabase.rpc("portail_relier_dossiers", {
+      p_demande_id: d.id,
+      p_producteur_ids: dossiers.map((x) => x.id),
+    });
     if (error) {
       setErreur("Le compte n'a pas pu être relié. Réessayez.");
       setOccupe(null);
@@ -170,12 +239,14 @@ export function ChoixClient({
       .invoke("notifier-acces", { body: { type: "acces_pret", demande_id: d.id, origine: window.location.origin } })
       .catch(() => ({ error: true }));
     setDemandes((liste) => liste.filter((x) => x.id !== d.id));
+    setAjouts((a) => { const n = { ...a }; delete n[d.id]; return n; });
     setDemandeActive(null);
     setOccupe(null);
+    const plusieurs = dossiers.length > 1;
     setAnnonce(
-      `Compte ${d.courriel} relié au dossier ${nomDossier ?? producteurId}. ` +
+      `Compte ${d.courriel} relié ${plusieurs ? "aux dossiers" : "au dossier"} ${nomsDossiers(dossiers)}. ` +
         (avis?.error ? "Le courriel au client n'a pas pu partir : prévenez-le vous-même. " : "Le client a été avisé par courriel. ") +
-        "Pensez à ajouter ce courriel à son dossier dans PlaniLogix.",
+        `Pensez à ajouter ce courriel à ${plusieurs ? "ses dossiers" : "son dossier"} dans PlaniLogix.`,
     );
   }
 
@@ -221,10 +292,18 @@ export function ChoixClient({
     return () => { vivant = false; clearTimeout(t); };
   }, [recherche]);
 
+  // Dossiers déjà proposés ou ajoutés pour la demande en cours de recherche.
+  const dejaAjoutes = new Set(
+    demandeActive ? [...demandeActive.suggestions, ...(ajouts[demandeActive.id] ?? [])].map((s) => s.id) : [],
+  );
+
   async function ouvrir(c: ClientPortail) {
-    // En recherche pour une demande d'accès : cliquer un dossier le relie, sans l'ouvrir.
+    // En recherche pour une demande d'accès : cliquer un dossier l'ajoute, coché, à la
+    // demande ; on relie ensuite d'un seul clic, avec les autres dossiers cochés.
     if (demandeActive) {
-      await relier(demandeActive, c.id, c.nom);
+      if (dejaAjoutes.has(c.id)) return;
+      const ajout: SuggestionDossier = { id: c.id, nom: c.nom, no_prod: c.no_prod, municipalite: c.municipalite, a_compte: c.a_compte, score: 0 };
+      setAjouts((a) => ({ ...a, [demandeActive.id]: [...(a[demandeActive.id] ?? []), ajout] }));
       return;
     }
     if (ouverture) return;
@@ -247,11 +326,14 @@ export function ChoixClient({
           ✓ {annonce}
         </p>
       )}
-      <DemandesAccesVue demandes={demandes} occupe={occupe} onRelier={relier} onChercher={chercher} onRefuser={refuser} />
+      <DemandesAccesVue demandes={demandes} occupe={occupe} ajouts={ajouts} onRelier={relier} onChercher={chercher} onRefuser={refuser} />
       {demandeActive && (
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2 rounded-xl bg-[#fff6dc] px-4 py-3 text-[14px] text-[#6b4e00]">
-          <span>Choisissez ci-dessous le dossier à relier au compte de <strong>{demandeActive.nom}</strong> ({demandeActive.courriel}).</span>
-          <button onClick={() => setDemandeActive(null)} className="font-medium underline-offset-2 hover:underline">Annuler</button>
+          <span>
+            Cliquez ci-dessous le ou les dossiers à ajouter à la demande de <strong>{demandeActive.nom}</strong> ({demandeActive.courriel}).
+            Ils s'ajoutent, cochés, à sa demande plus haut : il restera à cliquer « Relier ».
+          </span>
+          <button onClick={() => setDemandeActive(null)} className="font-medium underline-offset-2 hover:underline">Terminé</button>
         </div>
       )}
       <div className="relative">
@@ -310,9 +392,15 @@ export function ChoixClient({
                         ].filter(Boolean).join(" · ")}
                       </span>
                     </span>
-                    <span aria-hidden className="shrink-0 text-cfrq-leaf">
-                      {ouverture === c.id ? "…" : "→"}
-                    </span>
+                    {demandeActive ? (
+                      <span className="shrink-0 text-[13px] font-medium text-cfrq-leaf">
+                        {dejaAjoutes.has(c.id) ? "Dans la demande ✓" : "Ajouter"}
+                      </span>
+                    ) : (
+                      <span aria-hidden className="shrink-0 text-cfrq-leaf">
+                        {ouverture === c.id ? "…" : "→"}
+                      </span>
+                    )}
                   </button>
                 </li>
               );
