@@ -10,9 +10,12 @@ const DEMANDES_DEMO: DemandeAccesEmploye[] = [
   {
     id: 1, courriel: "pierre.gagnon@exemple.test", nom: "Pierre Gagnon", municipalite: "Saint-Raymond",
     telephone: "418 555-0142", no_producteur: null, lots: "5 612 384", cree_le: new Date().toISOString(),
+    // Deux dossiers pour les mêmes lots (le sien et celui qu'il a avec sa conjointe) :
+    // on coche les deux et on relie d'un seul clic.
     suggestions: [
-      { id: 101, nom: "GAGNON PIERRE", no_prod: "GAGP00001234", municipalite: "Saint-Raymond", a_compte: false, score: 90 },
-      { id: 102, nom: "GAGNON PIERRE-LUC", no_prod: "GAGP00005678", municipalite: "Pont-Rouge", a_compte: true, score: 60 },
+      { id: 101, nom: "GAGNON PIERRE", no_prod: "000000041234", municipalite: "Saint-Raymond", a_compte: false, score: 190, indices: ["lot", "nom", "municipalite"] },
+      { id: 103, nom: "GAGNON PIERRE ET LUCIE", no_prod: "GAGP00009012", municipalite: "Saint-Raymond", a_compte: false, score: 190, indices: ["lot", "nom", "municipalite"] },
+      { id: 102, nom: "GAGNON PIERRE-LUC", no_prod: "GAGP00005678", municipalite: "Pont-Rouge", a_compte: true, score: 60, indices: ["nom"] },
     ],
   },
   {

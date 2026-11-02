@@ -6,8 +6,9 @@
 //   { type: "nouvelle_demande", origine }       client dont le compte n'est pas relié,
 //       après portail_demander_acces : avise cfrq@cfrq.ca (au plus 1 fois par heure
 //       et par demande, contre les renvois en boucle).
-//   { type: "acces_pret", demande_id, origine } employé, après portail_relier_demande :
-//       écrit au client que son espace est prêt. Refusé si l'appelant n'est pas
+//   { type: "acces_pret", demande_id, origine } employé, après portail_relier_dossiers :
+//       écrit au client que son espace est prêt (et nomme ses dossiers s'il y en a
+//       plusieurs, demandes_acces.producteurs_relies). Refusé si l'appelant n'est pas
 //       employé (portail_moi lu AVEC SON JETON, jamais avec la clé de service).
 //   { type: "invitation", partage_id, origine } titulaire d'un dossier, après
 //       portail_partager : écrit au tiers qu'il a maintenant accès. Le droit et la
@@ -97,7 +98,8 @@ function nomLisible(nom: string | null | undefined): string {
   if (!n) return "";
   const sansSuffixe = n.replace(/\s*\b(inc|enr|ltée|ltee|senc|s\.e\.n\.c\.)\b\.?$/i, "").trim() || n;
   return sansSuffixe.split(/\s+/)
-    .map((m) => (m.length <= 2 ? m.toUpperCase() : m.charAt(0).toUpperCase() + m.slice(1).toLowerCase()))
+    .map((m) => (m.toLowerCase() === "et" ? "et"
+      : m.length <= 2 ? m.toUpperCase() : m.charAt(0).toUpperCase() + m.slice(1).toLowerCase()))
     .join(" ");
 }
 
@@ -141,12 +143,23 @@ Deno.serve(async (req) => {
     if (corps.type === "acces_pret") {
       const { data: m } = await moi.rpc("portail_moi");
       if (!m?.employe) return json({ error: "réservé aux employés" }, 403);
-      const { data: d } = await admin.from("demandes_acces").select("courriel, nom, statut").eq("id", Number(corps.demande_id)).single();
+      const { data: d } = await admin.from("demandes_acces").select("courriel, nom, statut, producteurs_relies").eq("id", Number(corps.demande_id)).single();
       if (!d || d.statut !== "reliee") return json({ error: "demande non reliée" }, 400);
+      // Plusieurs dossiers reliés d'un coup (le sien, celui avec un conjoint, sa
+      // compagnie) : on les nomme et on dit où passer de l'un à l'autre.
+      const ids: number[] = Array.isArray(d.producteurs_relies) ? d.producteurs_relies : [];
+      let relie = "à votre dossier forestier";
+      if (ids.length > 1) {
+        const { data: prods } = await admin.from("producteurs").select("id, nom").in("id", ids);
+        const noms = ids.map((id) => nomLisible(prods?.find((x) => x.id === id)?.nom)).filter(Boolean).map((n) => "<strong>" + esc(n) + "</strong>");
+        relie = `à vos ${ids.length} dossiers forestiers` +
+          (noms.length === ids.length ? " : " + noms.slice(0, -1).join(", ") + " et " + noms[noms.length - 1] : "") +
+          ". Vous passez de l'un à l'autre avec le menu « Dossier affiché », en haut de votre espace";
+      }
       await envoyer(d.courriel, "Votre espace client CFRQ est prêt", page(
         "Votre espace client est prêt",
         "<p style='" + P + "'>Bonjour,</p>" +
-        "<p style='" + P + "'>Nous avons relié votre compte (" + esc(d.courriel) + ") à votre dossier forestier. Vos documents, la carte de votre forêt et vos travaux réalisés vous attendent.</p>" +
+        "<p style='" + P + "'>Nous avons relié votre compte (" + esc(d.courriel) + ") " + relie + ". Vos documents, la carte de votre forêt et vos travaux réalisés vous attendent.</p>" +
         // /espace-client/ : la présentation mène à « Me connecter » (ou « Ouvrir mon
         // espace » si la session est déjà ouverte). Adresse stable, quelle que soit
         // la version publiée du site.

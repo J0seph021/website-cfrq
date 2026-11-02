@@ -20,6 +20,12 @@
 -- passent par proprietes_visibles(), calculée une fois par requête
 -- (migrations/20261001152000_lots_paf_rls_une_evaluation.sql).
 --
+-- Mis à jour le 2026-11-02 : un compte peut être relié par CFRQ à plusieurs dossiers
+-- (portal_users, clé user_id + producteur_id) et un dossier à plusieurs comptes ;
+-- est_titulaire() remplace la comparaison au dossier unique, et une demande d'accès
+-- se relie à plusieurs dossiers d'un coup (portail_relier_dossiers). Voir
+-- migrations/20261102150000_plusieurs_dossiers_par_compte.sql.
+--
 -- Pour vérifier que rien n'a bougé :
 --   select schemaname, tablename, policyname, roles, cmd, qual
 --   from pg_policies where schemaname in ('public','storage','portrait');
