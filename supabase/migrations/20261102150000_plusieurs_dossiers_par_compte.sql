@@ -30,7 +30,7 @@
 --   4. portail_demandes_acces : le numéro de producteur se compare sans les zéros de
 --      tête (Serge a écrit « 57706 », son dossier porte « 000000057706 » : l'indice
 --      ne comptait pas) et chaque suggestion dit pourquoi elle est proposée
---      (indices : lot, no_producteur, nom, municipalite).
+--      (indices : lot, no_producteur, nom ou nom_partiel, municipalite).
 --
 -- Appliquée le 2026-11-02, AVANT 20261009160000_liaison_par_courriel.sql (écrite
 -- plus tôt, pas encore appliquée). Celle-ci a été mise à jour le même jour pour
@@ -271,7 +271,7 @@ as $function$
                 array_remove(array[
                   case when i.lot then 'lot' end,
                   case when i.no_prod then 'no_producteur' end,
-                  case when i.nom_complet then 'nom' end,
+                  case when i.nom_complet then 'nom' when i.nom_partiel then 'nom_partiel' end,
                   case when i.municipalite then 'municipalite' end], null) as indices
          from public.producteurs p
          cross join lateral (
