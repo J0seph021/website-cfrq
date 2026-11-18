@@ -632,8 +632,41 @@ export function DashboardView({
     return groupes.filter((g) => g.defs.length > 0);
   }, [lexiquePaf]);
 
-  const superficieTotale = d.proprietes.reduce((t, p) => t + (Number(p.superficie_totale) || 0), 0);
-  const superficieBoisee = d.proprietes.reduce((t, p) => t + (Number(p.superficie_boisee) || 0), 0);
+  // Superficies. PlaniLogix contient des doublons de saisie : un meme lot sous deux
+  // proprietes (No 01 et No 03 qui pointent sur le meme lot). On compte
+  // chaque lot une seule fois (sa plus grande superficie). Une propriete sans lots
+  // complets garde sa superficie declaree.
+  const { superficieTotale, nbLots, lotPartage } = useMemo(() => {
+    const cle = (n: unknown) => String(n ?? "").replace(/\D/g, "");
+    const parLot = new Map<string, number>();
+    const proprio = new Map<string, number>();
+    const sansNumero = new Set<number>();
+    let horsLots = 0;
+    let partage = false;
+    for (const p of d.proprietes) {
+      const ls = d.lots.filter((l) => l.propriete_id === p.id);
+      const complets = ls.length > 0 && ls.every((l) => cle(l.no_lot) && Number(l.superficie_totale) > 0);
+      if (!complets) horsLots += Number(p.superficie_totale) || 0;
+      for (const l of ls) {
+        const k = cle(l.no_lot);
+        if (!k) { sansNumero.add(l.id); continue; }
+        if (proprio.has(k) && proprio.get(k) !== p.id) partage = true;
+        proprio.set(k, p.id);
+        if (complets) parLot.set(k, Math.max(parLot.get(k) ?? 0, Number(l.superficie_totale)));
+      }
+    }
+    let total = horsLots;
+    parLot.forEach((v) => { total += v; });
+    return { superficieTotale: total, nbLots: proprio.size + sansNumero.size, lotPartage: partage };
+  }, [d.proprietes, d.lots]);
+  // Superficie boisee : affichee seulement si CHAQUE propriete en a une. Une somme
+  // partielle affichait p. ex. 26 ha boises sur 223 ha au total.
+  // Si un lot figure sous deux proprietes, la somme compterait deux fois : on s'abstient.
+  const boiseeComplete = d.proprietes.length > 0 && !lotPartage
+    && d.proprietes.every((p) => p.superficie_boisee !== null && p.superficie_boisee !== undefined && p.superficie_boisee !== "");
+  const superficieBoisee = boiseeComplete
+    ? Math.min(d.proprietes.reduce((t, p) => t + (Number(p.superficie_boisee) || 0), 0), superficieTotale || Infinity)
+    : 0;
   const lotsParPropriete = (id: number) => d.lots.filter((l) => l.propriete_id === id).length;
   const aPaf = d.paf.length > 0 || d.documents.some((x) => x.type_document === "paf");
   const reconnu = estProducteurReconnu(d.producteur);
@@ -659,6 +692,13 @@ export function DashboardView({
         sous: "Un milieu naturel que vous protégez, lot par lot.",
       };
     }
+    if (superficieTotale >= 1) {
+      return {
+        valeur: superficieTotale, decimals: 2, mot: "hectares",
+        avant: "Sous votre intendance,",
+        sous: "Un milieu naturel que vous protégez, lot par lot.",
+      };
+    }
     return {
       valeur: d.proprietes.length, decimals: 0, mot: d.proprietes.length > 1 ? "propriétés forestières" : "propriété forestière",
       avant: "Votre forêt, regroupée en",
@@ -668,9 +708,10 @@ export function DashboardView({
 
   // Sous-bande de reperes (on masque ce qui vaut 0)
   const reperes = [
-    { valeur: superficieTotale, decimals: 1, suffixe: " ha", label: "Superficie totale" },
+    // Deja en vedette dans le heros quand la superficie boisee manque : pas de doublon.
+    { valeur: heros.mot === "hectares" ? 0 : superficieTotale, decimals: 1, suffixe: " ha", label: "Superficie totale" },
     { valeur: d.proprietes.length, decimals: 0, suffixe: "", label: d.proprietes.length > 1 ? "Propriétés" : "Propriété" },
-    { valeur: d.lots.length, decimals: 0, suffixe: "", label: "Lots boisés" },
+    { valeur: nbLots, decimals: 0, suffixe: "", label: nbLots > 1 ? "Lots" : "Lot" },
     MODE_DOSSIERS
       ? { valeur: d.documents.length, decimals: 0, suffixe: "", label: d.documents.length > 1 ? "Documents au dossier" : "Document au dossier" }
       : { valeur: nbPeuplements, decimals: 0, suffixe: "", label: "Peuplements recensés" },
@@ -1105,6 +1146,10 @@ export function DashboardView({
                   </tbody>
                 </table>
               </div>
+              <p className="mt-2 text-[13px] text-cfrq-ink/60">
+                Superficies tirées de votre dossier chez CFRQ. Une information vous semble inexacte?{" "}
+                <a href={`mailto:${site.courriel}?subject=${encodeURIComponent("Correction de mes propriétés")}`} className="font-medium text-cfrq-leaf underline underline-offset-2">Écrivez-nous</a>.
+              </p>
             </section>
           </Reveal>
         )}
